@@ -65,6 +65,20 @@ export const EVENTS = [
   }
 ];
 
+export const LOVE_CODE_AREAS = [
+  { id: "god-love", name: "GOD/LOVE", color: "bg-pink-500", progress: 85 },
+  { id: "romance", name: "Romance", color: "bg-red-500", progress: 60 },
+  { id: "family", name: "Family", color: "bg-orange-500", progress: 75 },
+  { id: "community", name: "Community", color: "bg-yellow-400", progress: 90 },
+  { id: "world-mission", name: "World/Mission", color: "bg-lime-400", progress: 40 },
+  { id: "money", name: "Money", color: "bg-green-500", progress: 55 },
+  { id: "time", name: "Time", color: "bg-cyan-400", progress: 30 },
+  { id: "environment", name: "Environment", color: "bg-blue-600", progress: 70 },
+  { id: "body", name: "Body", color: "bg-indigo-600", progress: 65 },
+  { id: "mind", name: "Mind", color: "bg-violet-600", progress: 80 },
+  { id: "soul", name: "Soul", color: "bg-purple-500", progress: 95 },
+];
+
 export const ONBOARDING_STEPS = [
   {
     id: "step-1",
