@@ -1,0 +1,262 @@
+# 🔥 Replit + Claude Opus 4.5 Vibe Coding Prompt
+
+<aside>
+🎯
+
+**Purpose:** Build a privacy-first, Bitcoin-native community + course platform for coaches, creators, and community leaders — combining the best of Circle, Mighty Networks, and [Primal.net](http://Primal.net) with deep gamification.
+
+</aside>
+
+---
+
+## 📋 THE PROMPT
+
+<aside>
+📝
+
+**Copy everything below this callout and paste it into Replit.**
+
+</aside>
+
+---
+
+You are the world's best full-stack developer and product architect. I want to build a SaaS platform for desktop (web) and mobile (iOS/Android) that serves course creators, coaches, and community leaders.
+
+This platform must combine ALL the best features from these three platforms:
+
+1. [**Circle.so**](http://Circle.so) — Community spaces, course hosting, member directory, events, gamification
+2. **Mighty Networks** — Courses, community, native mobile apps, member profiles, activity feeds
+3. [**Primal.net**](http://Primal.net) — Nostr protocol, Bitcoin Lightning zaps, privacy-first social, decentralized identity
+
+You decide the tech stack, architecture, and implementation details. I'll describe what I want it to do and how it should feel.
+
+---
+
+## 🏠 COMMUNITY FEATURES
+
+Members should be able to:
+
+- Join different spaces/groups within a community
+- Post discussions with rich text, images, videos, links, and mentions
+- See a personalized activity feed of what's happening
+- Browse a member directory with profiles, badges, and achievements
+- Send private messages (1:1 and group DMs) with encryption
+- RSVP to events and get calendar reminders
+- Join live video/audio rooms for group sessions
+- Get onboarded with a welcome flow when they first join
+
+Admins should be able to:
+
+- Create and manage spaces with custom permissions
+- Moderate content and manage members
+- Feature member content and send announcements
+
+---
+
+## 📚 COURSE & CONTENT FEATURES
+
+Creators should be able to:
+
+- Build courses with modules and lessons (drag-and-drop)
+- Upload video, audio, text, PDFs, and downloadable files
+- Schedule drip content to release over time
+- Run cohort-based courses with start/end dates
+- Auto-generate completion certificates
+- Maintain a resource library for the community
+
+Members should be able to:
+
+- Track their progress through courses
+- See completion percentages and checkmarks
+- Access all their enrolled content in one place
+
+---
+
+## ⚡ BITCOIN LIGHTNING + NOSTR FEATURES
+
+This is non-negotiable — Bitcoin is core to the platform:
+
+- **Zaps:** Members can send Bitcoin Lightning micropayments to posts, comments, and creators
+- **Lightning Wallet:** Built-in wallet OR ability to connect external wallets (Alby, Zeus, etc.)
+- **Quick Tipping:** One-click zap buttons (21 sats, 100 sats, 1000 sats, custom)
+- **Creator Dashboard:** Show earnings, zaps received, withdrawal options
+- **Nostr Login (Optional):** Allow login via Nostr keypair (npub/nsec)
+- **Nostr Cross-posting:** Option to broadcast public posts to Nostr relays
+- **Bitcoin Payments:** Accept course/membership payments in Bitcoin with 15% discount
+- **Zap Splits:** Platform can take a percentage of zaps automatically
+
+---
+
+## 🔒 PRIVACY & SECURITY FEATURES
+
+Privacy is critical — some communities deal with sensitive topics:
+
+- **Anonymous Profiles:** Option to use pseudonyms instead of real names
+- **Private Spaces:** Invite-only communities with zero public visibility
+- **End-to-End Encryption:** For DMs and sensitive community types
+- **Data Sovereignty:** Members can export or delete all their data
+- **No Data Selling:** Privacy policy commits to never selling user data
+- **Sensitive Topic Modes:** Special privacy settings for recovery, health, and spiritual communities
+- **Strong Auth:** Two-factor authentication options
+
+---
+
+## 🎮 GAMIFICATION SYSTEM
+
+Use the **Octalysis Framework** (8 Core Drives) by Yu-kai Chou to make engagement addictive in a healthy way:
+
+**Epic Meaning:** Make members feel part of something bigger
+
+- Show impact metrics ("Your contributions helped X members")
+- Community mission visible everywhere
+
+**Accomplishment:** Reward progress
+
+- XP system for actions (posts, comments, course completion, zaps)
+- Levels with titles (Newcomer → Contributor → Guide → Mentor → Legend)
+- Badges for milestones (streaks, first zap, courses completed)
+- Leaderboards (opt-in for privacy)
+- Progress bars everywhere
+
+**Creativity:** Let members express themselves
+
+- Custom profile personalization
+- Rich content creation tools
+- Member spotlights curated by admins
+
+**Ownership:** Make achievements feel real
+
+- Collectible badges that feel owned
+- Unlockable profile themes and frames
+- Personal stats dashboard
+- Referral rewards
+
+**Social Influence:** Build connection
+
+- **Buddy System:** Match members for accountability (BOGO style)
+- Group challenges with shared goals
+- Social proof ("X members completed this")
+- Easy @mentions and tagging
+- Small accountability pods
+
+**Scarcity:** Create urgency
+
+- Limited spots messaging ("Only 20 spots in VIP")
+- Time-limited founding member pricing with countdowns
+- Exclusive early access for top contributors
+- Content that unlocks with progress
+
+**Unpredictability:** Keep it interesting
+
+- Surprise bonus rewards for engagement
+- Mystery badges to discover
+- Daily rotating challenges
+- "You might like" discovery suggestions
+
+**Loss Avoidance:** Maintain momentum
+
+- **Streaks** for daily activity
+- Streak freeze (spend XP to save a streak)
+- Expiring bonuses
+- Warnings before losing progress
+
+---
+
+## 📱 MOBILE STREAK & GOALS WIDGET
+
+Build a **Home Screen Widget** for iOS and Android:
+
+**What it shows:**
+
+- 🔥 Current streak with day count
+- Daily goal progress (ring or bar showing "3/5 actions done")
+- XP earned today
+- Quick tap to open app for daily check-in
+
+**Widget sizes:**
+
+- Small: Just the streak
+- Medium: Streak + daily progress
+- Large: Streak + progress + XP + motivational quote
+
+**Streak rules:**
+
+- Actions that count: check-in, post, comment, complete lesson, send zap
+- Bonuses: 7-day = badge, 30-day = special badge, 100-day = legendary
+- Recovery: Miss a day? Spend 50 XP to restore (once per week max)
+- Notifications: Gentle reminders before streak breaks
+
+---
+
+## 🎨 DESIGN VIBES
+
+- **Warm and welcoming** — this is for spiritual/wellness communities, not cold corporate
+- **Clean and modern** — not cluttered, easy to navigate
+- **Mobile-first** — most users will be moms on their phones
+- **Dark/Light mode** — full theme support
+- **Accessible** — works for everyone
+- **Encouraging empty states** — when there's no content, guide users warmly
+- **Onboarding that teaches the gamification** — show people how to earn XP, streaks, badges
+
+---
+
+## 📦 BUILD PRIORITIES
+
+*Build in this order — you determine pacing:*
+
+**🔴 Priority 1: Core Foundation**
+
+- [ ]  User auth with multiple options
+- [ ]  Community spaces with posts/comments
+- [ ]  Member profiles with customization
+- [ ]  Activity feed
+- [ ]  Mobile app shell
+
+**🟠 Priority 2: Courses + Gamification**
+
+- [ ]  Course builder and delivery
+- [ ]  XP system, levels, badges
+- [ ]  Streak tracking + mobile widget
+- [ ]  Progress tracking
+
+**🟡 Priority 3: Bitcoin + Privacy**
+
+- [ ]  Lightning wallet integration
+- [ ]  Zaps on posts and to creators
+- [ ]  Bitcoin payment processing
+- [ ]  Privacy controls and encryption
+
+**🟢 Priority 4: Advanced Features**
+
+- [ ]  Live events and video rooms
+- [ ]  Advanced gamification (leaderboards, challenges)
+- [ ]  Buddy matching system
+- [ ]  Admin analytics
+
+---
+
+## 🚀 START HERE
+
+Begin with Priority 1. Ask me clarifying questions if anything is unclear. Let's build this step by step — you lead the technical decisions, I'll give feedback on the experience.
+
+---
+
+## ✏️ NOTES FOR FINE-TUNING
+
+*Decisions to make as we go:*
+
+- [ ]  **App Name:** 11x LOVE App? Magic Money Mamas App? Something else?
+- [ ]  **Design Inspiration:** Any specific apps/sites I love the look of?
+- [ ]  **Nostr Priority:** Full integration or optional add-on?
+- [ ]  **Custom Gamification:** Any specific badges or achievements for my brand?
+
+---
+
+## 📚 REFERENCE LINKS
+
+| Platform | Purpose |
+| --- | --- |
+| [Circle.so](http://Circle.so) | Community platform features |
+| [Mighty Networks](https://mightynetworks.com) | Course + community features |
+| [Primal.net](http://Primal.net) | Nostr + Lightning social |
+| [Octalysis Framework](https://yukaichou.com/gamification-examples/octalysis-complete-gamification-framework/) | 8 Core Drives of gamification |
