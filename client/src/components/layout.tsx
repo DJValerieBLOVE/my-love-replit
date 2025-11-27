@@ -13,7 +13,8 @@ import {
   ChevronDown,
   ChevronRight,
   Hash,
-  GraduationCap
+  GraduationCap,
+  Bot
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useState } from "react";
 import { AiBuddy } from "@/components/ai-buddy";
+import BuddyAvatar from "@assets/generated_images/ai_buddy_avatar.png";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
@@ -50,6 +52,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </Link>
         <div className="flex items-center gap-2">
+          <AiBuddy trigger={
+             <Button variant="ghost" size="icon" className="rounded-full">
+               <img src={BuddyAvatar} alt="AI" className="w-6 h-6 rounded-full" />
+             </Button>
+          } />
           <Button variant="ghost" size="icon" className="rounded-full">
             <Search className="w-5 h-5 text-muted-foreground" />
           </Button>

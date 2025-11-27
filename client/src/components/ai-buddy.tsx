@@ -19,33 +19,35 @@ import { LOVE_CODE_AREAS } from "@/lib/mock-data";
 import BuddyAvatar from "@assets/generated_images/ai_buddy_avatar.png";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-export function AiBuddy() {
+export function AiBuddy({ trigger }: { trigger?: React.ReactNode }) {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <div className="p-4 mt-4 mx-3 bg-gradient-to-br from-purple-900/10 to-primary/10 rounded-xl border border-primary/20 cursor-pointer hover:shadow-md transition-all group">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="relative">
-              <img src={BuddyAvatar} alt="AI Buddy" className="w-10 h-10 rounded-full shadow-sm group-hover:scale-110 transition-transform duration-500" />
-              <div className="absolute -bottom-1 -right-1 bg-green-500 w-3 h-3 rounded-full border-2 border-white" />
+        {trigger || (
+          <div className="p-4 mt-4 mx-3 bg-gradient-to-br from-purple-900/10 to-primary/10 rounded-xl border border-primary/20 cursor-pointer hover:shadow-md transition-all group">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="relative">
+                <img src={BuddyAvatar} alt="AI Buddy" className="w-10 h-10 rounded-full shadow-sm group-hover:scale-110 transition-transform duration-500" />
+                <div className="absolute -bottom-1 -right-1 bg-green-500 w-3 h-3 rounded-full border-2 border-white" />
+              </div>
+              <div>
+                <h4 className="font-bold text-sm">Lumina Guide</h4>
+                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Sparkles className="w-3 h-3 text-yellow-500" /> 
+                  Ready to help
+                </p>
+              </div>
             </div>
-            <div>
-              <h4 className="font-bold text-sm">Lumina Guide</h4>
-              <p className="text-xs text-muted-foreground flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-yellow-500" /> 
-                Ready to help
-              </p>
+            
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs font-medium">
+                <span>11x LOVE Balance</span>
+                <span>68%</span>
+              </div>
+              <Progress value={68} className="h-1.5 bg-background/50 [&>div]:bg-gradient-to-r [&>div]:from-pink-500 [&>div]:via-purple-500 [&>div]:to-cyan-500" />
             </div>
           </div>
-          
-          <div className="space-y-2">
-            <div className="flex justify-between text-xs font-medium">
-              <span>11x LOVE Balance</span>
-              <span>68%</span>
-            </div>
-            <Progress value={68} className="h-1.5 bg-background/50 [&>div]:bg-gradient-to-r [&>div]:from-pink-500 [&>div]:via-purple-500 [&>div]:to-cyan-500" />
-          </div>
-        </div>
+        )}
       </SheetTrigger>
       <SheetContent side="left" className="w-[350px] sm:w-[400px] p-0">
         <div className="h-full flex flex-col">
