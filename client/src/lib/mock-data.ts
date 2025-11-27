@@ -26,6 +26,60 @@ export const CURRENT_USER = {
   badges: ["Early Adopter", "Zap Queen", "Course Finisher"],
 };
 
+export const EVENTS = [
+  {
+    id: "event-1",
+    title: "All Community Meeting",
+    host: "Maureen Anderson",
+    date: "Today",
+    time: "8:00am",
+    type: "Repeat Event",
+    attendees: 68,
+    image: "https://images.unsplash.com/photo-1528605105345-5344ea20e269?w=800&q=80",
+    description: "This is an open meeting for anyone in the community to attend.",
+    category: "Gathering"
+  },
+  {
+    id: "event-2",
+    title: "Embodiment Sobriety Support",
+    host: "Tammi Scott / Kelvin...",
+    date: "Today",
+    time: "1:00pm",
+    type: "Repeat Event",
+    attendees: 84,
+    image: "https://images.unsplash.com/photo-1544367563-12123d8965cd?w=800&q=80",
+    description: "Click 'Zoom' or 'Join Now' at the time of the meeting to join.",
+    category: "Support"
+  },
+  {
+    id: "event-3",
+    title: "11x LOVE Method Masterclass",
+    host: "Sarah Jenkins",
+    date: "Tomorrow",
+    time: "10:00am",
+    type: "Live Workshop",
+    attendees: 120,
+    image: "https://images.unsplash.com/photo-1551818255-e6e10975bc17?w=800&q=80",
+    description: "Deep dive into the 5 Badassery pillars. Bring your journals!",
+    category: "Workshop"
+  }
+];
+
+export const ONBOARDING_STEPS = [
+  {
+    id: "step-1",
+    title: "Get started in the Lumina community",
+    completed: false,
+    steps: [
+      { id: "s1-1", label: "Complete your profile", isCompleted: true },
+      { id: "s1-2", label: "Customize your notifications", isCompleted: true },
+      { id: "s1-3", label: "Get to know gamification", isCompleted: true },
+      { id: "s1-4", label: "How to find what you're looking for", isCompleted: false },
+      { id: "s1-5", label: "Community Guidelines", isCompleted: false },
+    ]
+  }
+];
+
 export const SPACES = [
   {
     id: "space-1",

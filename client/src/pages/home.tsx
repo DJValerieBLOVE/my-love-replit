@@ -7,6 +7,9 @@ import { Plus, Sparkles } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 
+import { ONBOARDING_STEPS } from "@/lib/mock-data";
+import { OnboardingChecklist } from "@/components/onboarding-checklist";
+
 export default function Home() {
   return (
     <Layout>
@@ -23,6 +26,9 @@ export default function Home() {
             <Plus className="w-4 h-4 mr-2" /> New Post
           </Button>
         </div>
+
+        {/* Onboarding Checklist (Collapsible if needed) */}
+        <OnboardingChecklist data={ONBOARDING_STEPS} />
 
         {/* Mobile Streak Widget */}
         <StreakWidget streak={CURRENT_USER.streak} data={STREAK_DATA} />

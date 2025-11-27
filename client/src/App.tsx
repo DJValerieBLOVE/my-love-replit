@@ -9,6 +9,8 @@ import Community from "@/pages/community";
 import Courses from "@/pages/courses";
 import Wallet from "@/pages/wallet";
 import Profile from "@/pages/profile";
+import Events from "@/pages/events";
+import AdminOnboarding from "@/pages/admin/onboarding";
 
 function Router() {
   return (
@@ -18,6 +20,8 @@ function Router() {
       <Route path="/courses" component={Courses} />
       <Route path="/wallet" component={Wallet} />
       <Route path="/profile" component={Profile} />
+      <Route path="/events" component={Events} />
+      <Route path="/admin/onboarding" component={AdminOnboarding} />
       <Route component={NotFound} />
     </Switch>
   );

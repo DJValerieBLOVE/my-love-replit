@@ -7,6 +7,8 @@ import {
   User, 
   Menu, 
   Bell,
+  Settings,
+  Calendar,
   Search
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -14,12 +16,14 @@ import { Button } from "@/components/ui/button";
 import { CURRENT_USER } from "@/lib/mock-data";
 import Logo from "@assets/generated_images/app_logo.png";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ThemeCustomizer } from "@/components/theme-customizer";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
 
   const navItems = [
     { icon: Home, label: "Home", href: "/" },
+    { icon: Calendar, label: "Events", href: "/events" },
     { icon: LayoutGrid, label: "Community", href: "/community" },
     { icon: BookOpen, label: "Courses", href: "/courses" },
     { icon: Wallet, label: "Wallet", href: "/wallet" },
@@ -28,6 +32,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/20">
+      <ThemeCustomizer />
       {/* Mobile Header */}
       <header className="lg:hidden fixed top-0 left-0 right-0 h-16 border-b bg-white/80 dark:bg-black/80 backdrop-blur-md z-50 px-4 flex items-center justify-between">
         <Link href="/">
