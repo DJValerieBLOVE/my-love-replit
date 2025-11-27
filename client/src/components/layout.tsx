@@ -15,7 +15,8 @@ import {
   Hash,
   GraduationCap,
   Bot,
-  Target
+  Target,
+  Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -52,7 +53,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const mobileNav = [
     { icon: Home, label: "Home", href: "/" },
-    { icon: Target, label: "Goals", href: "#", action: () => setIsAiOpen(true) },
+    { icon: Sparkles, label: "AI Buddy", href: "#", action: () => setIsAiOpen(true), className: "text-purple-500" },
     { icon: Calendar, label: "Events", href: "/events" },
     { icon: LayoutGrid, label: "Groups", href: "/community" },
     { icon: BookOpen, label: "Courses", href: "/courses" },
@@ -232,17 +233,25 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-white/90 dark:bg-black/90 backdrop-blur-lg border-t z-50 flex items-center justify-around px-2">
         {mobileNav.map((item) => {
           const isActive = location === item.href;
+          const isAi = item.label === "AI Buddy";
+          
           const Content = (
             <div className="flex flex-col items-center justify-center w-16 h-full cursor-pointer" onClick={item.action}>
               <div className={cn(
                 "p-1.5 rounded-full transition-all duration-200 mb-1",
-                isActive ? "bg-primary/10 text-primary" : "text-muted-foreground"
+                isActive ? "bg-primary/10 text-primary" : "text-muted-foreground",
+                isAi && "bg-purple-100 text-purple-600 shadow-sm ring-1 ring-purple-200 dark:bg-purple-900/30 dark:ring-purple-800"
               )}>
-                <item.icon className={cn("w-6 h-6", isActive && "fill-current")} />
+                <item.icon className={cn(
+                  "w-6 h-6", 
+                  isActive && "fill-current",
+                  isAi && "fill-purple-200 animate-pulse"
+                )} />
               </div>
               <span className={cn(
                 "text-[10px] font-medium transition-colors",
-                isActive ? "text-primary" : "text-muted-foreground"
+                isActive ? "text-primary" : "text-muted-foreground",
+                isAi && "text-purple-600 font-bold"
               )}>{item.label}</span>
             </div>
           );
