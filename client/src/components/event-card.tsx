@@ -1,4 +1,11 @@
-import { Calendar, MapPin, Clock, Users, MoreHorizontal, Video, ArrowRight } from "lucide-react";
+import { 
+  Clock, 
+  Users, 
+  MoreHorizontal, 
+  Video, 
+  ArrowRight,
+  Calendar as CalendarIcon 
+} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -21,71 +28,74 @@ interface EventProps {
 export function EventCard({ event }: EventProps) {
   return (
     <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-all group bg-card">
-      <div className="flex flex-col md:flex-row">
-        {/* Date & Image Section */}
-        <div className="md:w-48 h-48 md:h-auto relative shrink-0 overflow-hidden">
-          <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors z-10" />
+      <div className="flex flex-row h-40 sm:h-48">
+        {/* Date & Image Section - Compact on left */}
+        <div className="w-32 sm:w-48 relative shrink-0 overflow-hidden bg-muted">
+          <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors z-10" />
           <img 
             src={event.image} 
             alt={event.title} 
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
           />
-          <div className="absolute top-3 left-3 z-20 bg-white/90 backdrop-blur-sm rounded-lg p-2 text-center min-w-[60px] shadow-sm">
-            <span className="block text-xs font-bold text-red-500 uppercase tracking-wider">{event.date === "Today" ? "NOW" : "NOV"}</span>
-            <span className="block text-xl font-black leading-none text-black">27</span>
+          
+          {/* Category Badge - Top Left */}
+          <div className="absolute top-0 left-0 p-2 z-20">
+             <Badge variant="secondary" className="bg-white/90 text-black text-[10px] font-bold shadow-sm backdrop-blur-sm hover:bg-white">
+              {event.category}
+            </Badge>
           </div>
-          <Badge className="absolute top-3 right-3 z-20 bg-black/50 hover:bg-black/70 backdrop-blur-md border-none text-white">
-            {event.type}
-          </Badge>
+
+          {/* Date Block - Bottom Left overlay */}
+          <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent z-20">
+             <div className="text-white font-bold text-xs flex items-center gap-1">
+                <CalendarIcon className="w-3 h-3" />
+                <span>{event.date === "Today" ? "TODAY" : "NOV 28"}</span>
+             </div>
+          </div>
         </div>
 
         {/* Content Section */}
-        <CardContent className="p-5 flex-1 flex flex-col justify-center">
-          <div className="flex justify-between items-start mb-2">
-            <Badge variant="secondary" className="mb-2 bg-primary/10 text-primary hover:bg-primary/20 border-none">
-              {event.category}
-            </Badge>
-            <Button variant="ghost" size="icon" className="h-8 w-8 -mt-1 -mr-2 text-muted-foreground">
-              <MoreHorizontal className="w-4 h-4" />
-            </Button>
+        <CardContent className="p-4 flex-1 flex flex-col justify-between min-w-0">
+          <div>
+            <div className="flex justify-between items-start gap-2">
+              <h3 className="font-bold text-base sm:text-lg leading-tight group-hover:text-primary transition-colors line-clamp-1">
+                {event.title}
+              </h3>
+              <Button variant="ghost" size="icon" className="h-6 w-6 -mt-1 -mr-1 text-muted-foreground shrink-0">
+                <MoreHorizontal className="w-4 h-4" />
+              </Button>
+            </div>
+            
+            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1 mb-2">
+              <span className="font-medium text-foreground">{event.time}</span>
+              <span>•</span>
+              <span>{event.type}</span>
+            </div>
+
+            <p className="text-sm text-muted-foreground line-clamp-2 hidden sm:block">
+              {event.description}
+            </p>
+            
+            {/* Mobile-only description truncation */}
+            <p className="text-sm text-muted-foreground line-clamp-1 sm:hidden">
+              {event.description}
+            </p>
           </div>
 
-          <h3 className="font-bold text-lg leading-tight mb-2 group-hover:text-primary transition-colors">
-            {event.title}
-          </h3>
-          
-          <div className="flex flex-col gap-1.5 mb-4 text-sm text-muted-foreground">
+          <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/50">
             <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-primary" />
-              <span>{event.date} • {event.time}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Video className="w-4 h-4 text-blue-500" />
-              <span>Hosted by {event.host} (Open)</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Users className="w-4 h-4 text-orange-500" />
-              <span>{event.attendees} going</span>
-            </div>
-          </div>
-
-          <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
-            {event.description}
-          </p>
-
-          <div className="mt-auto pt-4 border-t flex items-center justify-between">
-            <div className="flex -space-x-2">
-              {[1,2,3,4].map(i => (
-                <div key={i} className="w-8 h-8 rounded-full border-2 border-card bg-muted overflow-hidden">
-                  <img src={`https://i.pravatar.cc/100?img=${i + 10}`} alt="Attendee" />
-                </div>
-              ))}
-              <div className="w-8 h-8 rounded-full border-2 border-card bg-muted flex items-center justify-center text-[10px] font-bold text-muted-foreground">
-                +{event.attendees - 4}
+               <div className="flex -space-x-2">
+                {[1,2,3].map(i => (
+                  <div key={i} className="w-6 h-6 rounded-full border-2 border-card bg-muted overflow-hidden">
+                    <img src={`https://i.pravatar.cc/100?img=${i + 10}`} alt="Attendee" />
+                  </div>
+                ))}
               </div>
+              <span className="text-xs text-muted-foreground font-medium">+{event.attendees} going</span>
             </div>
-            <Button size="sm" className="group-hover:translate-x-1 transition-transform">
-              RSVP <ArrowRight className="w-4 h-4 ml-2" />
+
+            <Button size="sm" variant="secondary" className="h-7 text-xs px-3 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+              RSVP
             </Button>
           </div>
         </CardContent>
