@@ -115,7 +115,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   </Link>
                   {SPACES.map((space) => (
                     <div key={space.id} className="flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200 cursor-pointer group text-sm text-muted-foreground hover:bg-muted hover:text-foreground pl-6">
-                      <Hash className={cn("w-4 h-4", space.color)} />
+                      <div className={cn("w-2.5 h-2.5 rounded-full", space.color.replace('text-', 'bg-'))} />
                       <span className="truncate">{space.name}</span>
                     </div>
                   ))}
