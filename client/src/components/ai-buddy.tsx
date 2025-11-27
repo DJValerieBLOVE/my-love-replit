@@ -19,12 +19,12 @@ import { LOVE_CODE_AREAS } from "@/lib/mock-data";
 import BuddyAvatar from "@assets/generated_images/ai_buddy_avatar.png";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-export function AiBuddy({ trigger }: { trigger?: React.ReactNode }) {
+export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.ReactNode, open?: boolean, onOpenChange?: (open: boolean) => void }) {
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetTrigger asChild>
         {trigger || (
-          <div className="p-4 mt-4 mx-3 bg-gradient-to-br from-purple-900/10 to-primary/10 rounded-xl border border-primary/20 cursor-pointer hover:shadow-md transition-all group">
+          <div className="hidden lg:block p-4 mt-4 mx-3 bg-gradient-to-br from-purple-900/10 to-primary/10 rounded-xl border border-primary/20 cursor-pointer hover:shadow-md transition-all group">
             <div className="flex items-center gap-3 mb-3">
               <div className="relative">
                 <img src={BuddyAvatar} alt="AI Buddy" className="w-10 h-10 rounded-full shadow-sm group-hover:scale-110 transition-transform duration-500" />

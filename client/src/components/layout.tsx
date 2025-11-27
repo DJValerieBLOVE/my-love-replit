@@ -14,7 +14,8 @@ import {
   ChevronRight,
   Hash,
   GraduationCap,
-  Bot
+  Bot,
+  Target
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -27,17 +28,34 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { useState } from "react";
 import { AiBuddy } from "@/components/ai-buddy";
 import BuddyAvatar from "@assets/generated_images/ai_buddy_avatar.png";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [isCommunityOpen, setIsCommunityOpen] = useState(true);
   const [isCoursesOpen, setIsCoursesOpen] = useState(true);
+  const [isAiOpen, setIsAiOpen] = useState(false);
 
-  const mainNav = [
+  const desktopNav = [
     { icon: Home, label: "Home", href: "/" },
     { icon: Calendar, label: "Events", href: "/events" },
     { icon: Wallet, label: "Wallet", href: "/wallet" },
     { icon: User, label: "Profile", href: "/profile" },
+  ];
+
+  const mobileNav = [
+    { icon: Home, label: "Home", href: "/" },
+    { icon: Target, label: "Goals", href: "#", action: () => setIsAiOpen(true) },
+    { icon: Calendar, label: "Events", href: "/events" },
+    { icon: LayoutGrid, label: "Groups", href: "/community" },
+    { icon: BookOpen, label: "Courses", href: "/courses" },
   ];
 
   return (
@@ -52,20 +70,42 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </Link>
         <div className="flex items-center gap-2">
-          <AiBuddy trigger={
-             <Button variant="ghost" size="icon" className="rounded-full">
-               <img src={BuddyAvatar} alt="AI" className="w-6 h-6 rounded-full" />
-             </Button>
-          } />
           <Button variant="ghost" size="icon" className="rounded-full">
             <Search className="w-5 h-5 text-muted-foreground" />
           </Button>
-          <Button variant="ghost" size="icon" className="rounded-full relative">
-            <Bell className="w-5 h-5 text-muted-foreground" />
-            <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-black"></span>
-          </Button>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Avatar className="h-8 w-8 cursor-pointer border-2 border-primary/20">
+                <AvatarImage src={CURRENT_USER.avatar} />
+                <AvatarFallback>SJ</AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <Link href="/profile">
+                <DropdownMenuItem className="cursor-pointer">
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                </DropdownMenuItem>
+              </Link>
+              <Link href="/wallet">
+                <DropdownMenuItem className="cursor-pointer">
+                  <Wallet className="mr-2 h-4 w-4" />
+                  <span>Wallet</span>
+                </DropdownMenuItem>
+              </Link>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="cursor-pointer">
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Settings</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
+
 
       <div className="flex h-screen pt-16 lg:pt-0 overflow-hidden">
         {/* Desktop Sidebar */}
@@ -81,7 +121,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
           <ScrollArea className="flex-1 px-4">
             <nav className="space-y-1 pb-4">
-              {mainNav.map((item) => {
+              {desktopNav.map((item) => {
                 const isActive = location === item.href;
                 return (
                   <Link key={item.href} href={item.href}>
@@ -190,26 +230,37 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Mobile Bottom Nav */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-white/90 dark:bg-black/90 backdrop-blur-lg border-t z-50 flex items-center justify-around px-2">
-        {mainNav.map((item) => {
+        {mobileNav.map((item) => {
           const isActive = location === item.href;
+          const Content = (
+            <div className="flex flex-col items-center justify-center w-16 h-full cursor-pointer" onClick={item.action}>
+              <div className={cn(
+                "p-1.5 rounded-full transition-all duration-200 mb-1",
+                isActive ? "bg-primary/10 text-primary" : "text-muted-foreground"
+              )}>
+                <item.icon className={cn("w-6 h-6", isActive && "fill-current")} />
+              </div>
+              <span className={cn(
+                "text-[10px] font-medium transition-colors",
+                isActive ? "text-primary" : "text-muted-foreground"
+              )}>{item.label}</span>
+            </div>
+          );
+
+          if (item.action) {
+            return <div key={item.label}>{Content}</div>;
+          }
+
           return (
             <Link key={item.href} href={item.href}>
-              <div className="flex flex-col items-center justify-center w-16 h-full cursor-pointer">
-                <div className={cn(
-                  "p-1.5 rounded-full transition-all duration-200 mb-1",
-                  isActive ? "bg-primary/10 text-primary" : "text-muted-foreground"
-                )}>
-                  <item.icon className={cn("w-6 h-6", isActive && "fill-current")} />
-                </div>
-                <span className={cn(
-                  "text-[10px] font-medium transition-colors",
-                  isActive ? "text-primary" : "text-muted-foreground"
-                )}>{item.label}</span>
-              </div>
+              {Content}
             </Link>
           );
         })}
       </nav>
+      
+      {/* Hidden AiBuddy Trigger for Mobile Nav */}
+      <AiBuddy open={isAiOpen} onOpenChange={setIsAiOpen} />
     </div>
   );
 }
