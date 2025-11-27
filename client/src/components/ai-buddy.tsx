@@ -54,7 +54,9 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
           {/* Header */}
           <div className="p-6 border-b bg-muted/10">
             <div className="flex items-center gap-4 mb-4">
-              <img src={BuddyAvatar} alt="AI Buddy" className="w-16 h-16 rounded-full shadow-lg ring-4 ring-background" />
+              <div className="relative flex items-center justify-center w-16 h-16 rounded-full bg-purple-100 shadow-lg ring-4 ring-background">
+                <Sparkles className="w-8 h-8 text-purple-600 fill-purple-200" />
+              </div>
               <div>
                 <SheetTitle className="text-2xl font-serif">Lumina Guide</SheetTitle>
                 <SheetDescription>Your personal accountability partner</SheetDescription>
