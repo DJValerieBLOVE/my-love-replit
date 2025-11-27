@@ -26,8 +26,8 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
         {trigger || (
           <div className="hidden lg:block p-4 mt-4 mx-3 bg-gradient-to-br from-purple-900/10 to-primary/10 rounded-xl border border-primary/20 cursor-pointer hover:shadow-md transition-all group">
             <div className="flex items-center gap-3 mb-3">
-              <div className="relative">
-                <img src={BuddyAvatar} alt="AI Buddy" className="w-10 h-10 rounded-full shadow-sm group-hover:scale-110 transition-transform duration-500" />
+              <div className="relative flex items-center justify-center w-10 h-10 rounded-full bg-purple-100 shadow-sm group-hover:scale-110 transition-transform duration-500">
+                <Sparkles className="w-6 h-6 text-purple-600 fill-purple-200" />
                 <div className="absolute -bottom-1 -right-1 bg-green-500 w-3 h-3 rounded-full border-2 border-white" />
               </div>
               <div>
