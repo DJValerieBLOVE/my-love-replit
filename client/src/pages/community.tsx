@@ -58,7 +58,7 @@ export default function Community() {
             </div>
             <h3 className="font-bold">Live Q&A with Dr. Maya</h3>
             <p className="text-sm text-muted-foreground mt-1 mb-4">Friday, 2:00 PM EST • Zoom</p>
-            <Button>RSVP Now</Button>
+            <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold rounded-lg" data-testid="button-rsvp">RSVP Now</Button>
           </Card>
         </div>
       </div>

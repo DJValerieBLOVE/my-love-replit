@@ -48,7 +48,7 @@ export default function Courses() {
                     with {course.instructor}
                   </p>
                   
-                  <Button className="w-full gap-2 bg-muted hover:bg-primary hover:text-primary-foreground text-foreground transition-all" data-testid={`button-mission-${course.id}`}>
+                  <Button className="w-full gap-2 bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold transition-all" data-testid={`button-mission-${course.id}`}>
                     {course.progress === 0 ? (
                       <>Start Mission</>
                     ) : course.progress === 100 ? (
@@ -70,7 +70,7 @@ export default function Courses() {
             <CardContent className="p-5">
               <h3 className="font-bold text-lg leading-tight mb-1">Advanced Cohort</h3>
               <p className="text-sm text-muted-foreground mb-4">Coming Soon</p>
-              <Button disabled className="w-full">Locked</Button>
+              <Button disabled className="w-full bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold">Locked</Button>
             </CardContent>
           </Card>
         </div>
