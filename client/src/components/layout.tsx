@@ -19,7 +19,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { CURRENT_USER, CLUBS, MISSIONS, LOVE_CODE_AREAS } from "@/lib/mock-data";
-import Logo from "@assets/generated_images/11x_love_rainbow_heart_wings_logo_transparent.png";
+import Logo from "@assets/generated_images/11x_love_logo_transparent_background_removed.png";
 import SatsIcon from "@assets/generated_images/sats_icon.png";
 import MagicMentor from "@assets/djvalerieblove_twirling_bitcoin_goddess_colorful_vivid_psyche_4e0fb7f6-b95b-488f-9d18-eb77e7dd0a60_1_1764334332945.png";
 import Course1 from "@assets/generated_images/missions_header.png";
@@ -65,9 +65,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="w-full flex items-center justify-between h-16">
           <div className="flex items-center gap-4">
             <Link href="/">
-              <div className="flex items-center gap-2 cursor-pointer">
-                <img src={Logo} alt="11x LOVE LaB" className="w-10 h-10 shadow-lg" />
-                <span className="font-serif font-bold text-xl tracking-tight hidden md:block text-white">11x LOVE LaB</span>
+              <div className="flex items-center gap-3 cursor-pointer">
+                <img src={Logo} alt="11x LOVE LaB" className="w-10 h-10" />
+                <span className="font-serif font-bold text-lg tracking-tight hidden md:block text-foreground">11x LOVE LaB</span>
               </div>
             </Link>
           </div>
