@@ -198,19 +198,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Widget 2: Streaks */}
-          <div className="bg-gradient-to-br from-orange-600/50 to-orange-500/40 rounded-lg border border-orange-500/60 p-4" data-testid="widget-streaks">
-            <div className="flex justify-between items-center mb-3">
+          <div className="bg-gradient-to-r from-orange-500/20 to-yellow-500/20 rounded-full border border-orange-400/40 hover:border-orange-400/60 transition-colors p-4" data-testid="widget-streaks">
+            <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <Zap className="w-5 h-5 text-yellow-300 fill-current" />
-                <h4 className="font-bold text-sm uppercase text-white">Streak</h4>
+                <Zap className="w-5 h-5 text-orange-500 fill-current" />
+                <h4 className="font-bold text-xs uppercase text-orange-500">Streak</h4>
               </div>
-              <span className="text-3xl font-black text-yellow-300">{CURRENT_USER.streak}</span>
+              <span className="text-2xl font-black text-orange-500">{CURRENT_USER.streak}</span>
             </div>
             <div className="flex justify-between gap-1">
               {['M','T','W','T','F','S','S'].map((d, i) => (
                 <div key={i} className={cn(
                   "flex-1 h-6 rounded-sm flex items-center justify-center text-xs font-bold transition-all",
-                  i < 5 ? "bg-yellow-400 text-orange-900 shadow-md" : "bg-white/20 text-white/70"
+                  i < 5 ? "bg-orange-500 text-white shadow-md" : "bg-white/20 text-white/50"
                 )}>
                   {d}
                 </div>
