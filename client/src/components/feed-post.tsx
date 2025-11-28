@@ -62,10 +62,6 @@ export function FeedPost({ post }: FeedPostProps) {
               <div>
                 <h3 className="font-bold text-foreground text-[15px] flex items-center gap-2">
                   {post.author.name}
-                  {/* Placeholder for Level/Badge */}
-                  <span className="inline-flex items-center justify-center bg-primary/10 text-primary text-[10px] font-bold px-1.5 py-0.5 rounded-full h-5 border border-primary/20">
-                    Lvl 1
-                  </span>
                   <span className="text-muted-foreground font-normal text-[15px]">
                     {post.timestamp.replace(" ago", "")}
                   </span>
