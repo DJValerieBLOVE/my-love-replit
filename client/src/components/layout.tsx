@@ -170,7 +170,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </main>
 
         {/* Right Sidebar (Gamification) */}
-        <aside className="hidden lg:flex flex-col w-[280px] border-l bg-card/50 p-4 gap-4 overflow-y-auto">
+        <aside className="hidden lg:flex flex-col w-[320px] border-l bg-card/50 p-4 gap-4 overflow-y-auto">
           {/* Widget 1: Magic Mentor */}
           <div className="bg-gradient-to-br from-purple-900/50 via-purple-800/40 to-pink-900/30 rounded-xs border border-purple-500/40 p-4 overflow-hidden relative group cursor-pointer hover:border-purple-500/60 transition-all shadow-md" data-testid="widget-mentor">
             <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-purple-500/40 to-pink-500/30 rounded-full -mr-12 -mt-12 blur-2xl group-hover:from-purple-500/50 group-hover:to-pink-500/40 transition-all" />
@@ -235,8 +235,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {/* Widget 3: Current Focus */}
           <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow bg-card" data-testid="widget-focus">
             <div className="p-4">
-              <h4 className="font-bold text-xs uppercase text-muted-foreground mb-2">Current Focus</h4>
-              <p className="text-sm font-semibold text-foreground mb-1">Finance Sovereignty</p>
+              <h4 className="font-bold text-[13px] uppercase text-muted-foreground mb-2">Current Focus</h4>
+              <p className="text-[15px] font-semibold text-foreground mb-1">Finance Sovereignty</p>
               <div className="flex items-center justify-between">
                 <p className="text-xs text-muted-foreground">80%</p>
                 <div className="w-16 bg-muted rounded-full h-1.5">
@@ -249,11 +249,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {/* Widget 4: Upcoming Event */}
           <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow bg-card" data-testid="widget-event">
             <div className="p-4">
-              <h4 className="font-bold text-xs uppercase text-muted-foreground mb-2">Upcoming Event</h4>
+              <h4 className="font-bold text-[13px] uppercase text-muted-foreground mb-2">Upcoming Event</h4>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-semibold text-foreground">Full Moon Ceremony</p>
-                  <p className="text-xs text-muted-foreground">Nov 30</p>
+                  <p className="text-[15px] font-semibold text-foreground">Full Moon Ceremony</p>
+                  <p className="text-[13px] text-muted-foreground">Nov 30</p>
                 </div>
                 <span className="text-lg">🌙</span>
               </div>
@@ -265,15 +265,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {/* Widget 6: Who to Follow */}
           <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow bg-card" data-testid="widget-follow">
             <div className="p-4">
-              <h4 className="font-bold text-xs uppercase text-muted-foreground mb-3">Who to Follow</h4>
+              <h4 className="font-bold text-[13px] uppercase text-muted-foreground mb-3">Who to Follow</h4>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs">
+                  <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-sm">
                     👤
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-foreground">Alex Luna</p>
-                    <p className="text-[10px] text-muted-foreground">@alexluna</p>
+                    <p className="text-[14px] font-bold text-foreground">Alex Luna</p>
+                    <p className="text-[12px] text-muted-foreground">@alexluna</p>
                   </div>
                 </div>
                 <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold text-xs rounded-lg px-6 py-1 h-7 border-0" data-testid="button-follow">
