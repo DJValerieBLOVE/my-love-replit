@@ -284,7 +284,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     <p className="text-[10px] text-muted-foreground">@alexluna</p>
                   </div>
                 </div>
-                <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold text-xs rounded-lg px-2 py-1 h-7 border-0" data-testid="button-follow">
+                <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold text-xs rounded-lg px-6 py-1 h-7 border-0" data-testid="button-follow">
                   Follow
                 </Button>
               </div>
