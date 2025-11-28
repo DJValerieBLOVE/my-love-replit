@@ -18,7 +18,7 @@ export default function Events() {
             <h1 className="text-3xl font-serif font-bold text-foreground mb-2">Meetings & Gatherings</h1>
             <p className="text-muted-foreground">Connect with the community in real-time.</p>
           </div>
-          <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white shadow-lg rounded-lg font-bold" data-testid="button-create-event">
+          <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white shadow-lg rounded-lg font-bold px-6 py-1.5 h-8" data-testid="button-create-event">
             <Plus className="w-4 h-4 mr-2" /> Create Event
           </Button>
         </div>
@@ -93,7 +93,7 @@ export default function Events() {
                   }}
                 />
                 <div className="mt-4 pt-4 border-t flex justify-end">
-                  <Button size="sm" className="text-xs h-7 rounded-md bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold" data-testid="button-today">Today</Button>
+                  <Button size="sm" className="text-xs h-7 rounded-md bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold px-6" data-testid="button-today">Today</Button>
                 </div>
               </CardContent>
             </Card>
@@ -101,7 +101,7 @@ export default function Events() {
             <div className="mt-6 p-4 bg-primary/5 rounded-xs border border-primary/10">
               <h3 className="font-bold text-primary mb-2">Host an Event?</h3>
               <p className="text-base text-muted-foreground mb-3">Community members can host their own gatherings.</p>
-              <Button className="w-full rounded-lg bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold" data-testid="button-learn-more">Learn More</Button>
+              <Button className="w-full rounded-lg bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold px-6 py-1.5 h-8" data-testid="button-learn-more">Learn More</Button>
             </div>
           </div>
         </div>

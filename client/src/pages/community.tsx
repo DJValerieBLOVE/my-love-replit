@@ -41,7 +41,7 @@ export default function Community() {
                     <Users className="w-3 h-3" />
                     <span>1.2k members</span>
                   </div>
-                  <Button size="sm" className="h-7 px-3 -mr-2 bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold transition-all" data-testid="button-join-club">
+                  <Button size="sm" className="h-7 px-6 -mr-2 bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold transition-all" data-testid="button-join-club">
                     Join <ArrowRight className="w-3 h-3 ml-1" />
                   </Button>
                 </div>
@@ -58,7 +58,7 @@ export default function Community() {
             </div>
             <h3 className="font-bold">Live Q&A with Dr. Maya</h3>
             <p className="text-sm text-muted-foreground mt-1 mb-4">Friday, 2:00 PM EST • Zoom</p>
-            <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold rounded-lg" data-testid="button-rsvp">RSVP Now</Button>
+            <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold rounded-lg px-6 py-1.5 h-8" data-testid="button-rsvp">RSVP Now</Button>
           </Card>
         </div>
       </div>
