@@ -185,13 +185,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               {/* Tagline */}
               <p className="text-sm text-purple-100 mb-4 italic font-medium">"Rock Your Dreams!"</p>
 
-              {/* Chat Button */}
+              {/* Ask Magic Mentor Button */}
               <Button 
                 onClick={() => setIsAiOpen(true)}
                 className="w-full bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold rounded-lg transition-all hover:shadow-lg border-0 text-xs py-1.5 h-8"
                 data-testid="button-ask-mentor"
               >
-                <Sparkles className="w-4 h-4 mr-1.5" /> Chat
+                <Sparkles className="w-4 h-4 mr-1.5" /> Ask Magic Mentor
               </Button>
             </div>
           </div>
