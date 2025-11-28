@@ -23,8 +23,6 @@ export function VibeRater({ value, onChange }: VibeRaterProps) {
     return { label: "Shame/Guilt", color: "text-red-700", zone: "Suffering Survival", desc: "Contracted, Hiding" };
   };
 
-  const info = getZoneInfo(value);
-
   return (
     <div className="space-y-8 py-4">
       <div className="text-center space-y-2">
@@ -32,15 +30,11 @@ export function VibeRater({ value, onChange }: VibeRaterProps) {
           key={value}
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className={cn("text-7xl font-serif font-bold mb-4 drop-shadow-sm", info.color)}
+          className={cn("text-9xl font-serif font-bold mb-4 drop-shadow-sm text-primary")}
         >
           {value}
         </motion.div>
-        <h3 className={cn("text-4xl font-serif font-bold tracking-tight", info.color)}>{info.label}</h3>
-        <p className="text-xl font-serif text-muted-foreground italic">{info.desc}</p>
-        <div className="inline-block px-4 py-1.5 rounded-full bg-muted/50 border border-border text-xs font-bold uppercase tracking-[0.2em] mt-4 text-muted-foreground">
-          {info.zone}
-        </div>
+        <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest">Current Vibe</p>
       </div>
 
       <div className="px-4">
@@ -52,11 +46,9 @@ export function VibeRater({ value, onChange }: VibeRaterProps) {
           onValueChange={(vals) => onChange(vals[0])}
           className="cursor-pointer"
         />
-        <div className="flex justify-between mt-2 text-xs font-bold text-muted-foreground uppercase">
-          <span>Survival</span>
-          <span>Flow</span>
-          <span>Love</span>
-          <span>Ultimate</span>
+        <div className="flex justify-between mt-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+          <span>1</span>
+          <span>11</span>
         </div>
       </div>
     </div>
