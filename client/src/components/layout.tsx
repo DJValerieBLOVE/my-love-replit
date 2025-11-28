@@ -14,13 +14,14 @@ import {
   Zap,
   Rocket,
   Trophy,
-  Menu
+  Menu,
+  Mail
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { CURRENT_USER, CLUBS, MISSIONS, LOVE_CODE_AREAS } from "@/lib/mock-data";
 import Logo from "../assets/11x_love_logo.png";
-import SatsIcon from "@assets/generated_images/sats_icon.png";
+import BitcoinIcon from "../assets/bitcoin_icon.png";
 import MagicMentor from "@assets/djvalerieblove_twirling_bitcoin_goddess_colorful_vivid_psyche_4e0fb7f6-b95b-488f-9d18-eb77e7dd0a60_1_1764334332945.png";
 import Course1 from "@assets/generated_images/missions_header.png";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -73,14 +74,23 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="flex items-center gap-2 md:gap-4">
-            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-secondary/10 rounded-full border border-secondary/20">
-              <img src={SatsIcon} alt="Sats" className="w-5 h-5" />
-              <span className="font-bold text-sm text-secondary-foreground">{CURRENT_USER.walletBalance.toLocaleString()}</span>
+            {/* Wallet Balance */}
+            <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500/20 to-yellow-500/20 rounded-full border border-orange-400/30 hover:border-orange-400/50 transition-colors cursor-pointer">
+              <img src={BitcoinIcon} alt="Bitcoin" className="w-6 h-6 rounded-full" />
+              <span className="font-bold text-base text-orange-400">{CURRENT_USER.walletBalance.toLocaleString()}</span>
+              <span className="text-xs text-orange-300">Sats</span>
             </div>
 
+            {/* Inbox */}
+            <Button variant="ghost" size="icon" className="rounded-full relative" data-testid="button-inbox">
+              <Mail className="w-5 h-5" />
+              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" data-testid="notification-dot-inbox"></span>
+            </Button>
 
-            <Button variant="ghost" size="icon" className="rounded-full">
+            {/* Notifications */}
+            <Button variant="ghost" size="icon" className="rounded-full relative" data-testid="button-notifications">
               <Bell className="w-5 h-5" />
+              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" data-testid="notification-dot-bell"></span>
             </Button>
 
             <DropdownMenu>
@@ -154,82 +164,108 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </main>
 
         {/* Right Sidebar (Gamification) */}
-        <aside className="hidden xl:flex flex-col w-[300px] border-l bg-card/50 p-6 gap-6 overflow-y-auto">
-          {/* Mentor Hub - Combined VIP Status + Magic Mentor */}
-          <div className="bg-gradient-to-br from-purple-900/30 to-pink-900/20 rounded-2xl border border-purple-500/20 p-6 text-center overflow-hidden relative group cursor-pointer hover:border-purple-500/40 transition-all">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/20 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-purple-500/30 transition-colors" />
+        <aside className="hidden xl:flex flex-col w-[320px] border-l bg-card/50 p-6 gap-6 overflow-y-auto">
+          {/* Widget 1: Magic Mentor Hub */}
+          <div className="bg-gradient-to-br from-purple-900/40 via-pink-900/30 to-purple-900/20 rounded-2xl border border-purple-400/30 p-6 text-center overflow-hidden relative group cursor-pointer hover:border-purple-400/50 transition-all shadow-lg" data-testid="widget-mentor">
+            <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-purple-500/30 to-pink-500/20 rounded-full -mr-20 -mt-20 blur-3xl group-hover:from-purple-500/40 group-hover:to-pink-500/30 transition-all" />
             
             <div className="relative z-10">
               {/* VIP Level Badge */}
-              <div className="inline-flex items-center gap-2 bg-yellow-400/20 border border-yellow-400/40 rounded-full px-3 py-1 mb-4">
-                <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
-                <span className="text-xs font-bold text-yellow-300">Level 12 Guide</span>
+              <div className="inline-flex items-center gap-2 bg-yellow-400/20 border border-yellow-400/50 rounded-full px-3 py-1.5 mb-4">
+                <Sparkles className="w-4 h-4 text-yellow-300" />
+                <span className="text-xs font-bold text-yellow-300">Level 12 Lumina Guide</span>
               </div>
 
               {/* Mentor Image */}
-              <div className="relative inline-block mb-4 mt-2">
-                <div className="absolute inset-0 bg-purple-500 blur-2xl opacity-40 rounded-full" />
-                <img src={MagicMentor} alt="Magic Mentor" className="w-24 h-24 rounded-full border-2 border-purple-400 relative z-10 shadow-lg" />
+              <div className="relative inline-block mb-5 mt-3">
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-pink-500 blur-2xl opacity-50 rounded-full" />
+                <img src={MagicMentor} alt="Magic Mentor" className="w-28 h-28 rounded-full border-3 border-yellow-400/50 relative z-10 shadow-2xl" />
               </div>
 
               {/* Mentor Info */}
-              <h3 className="font-bold text-lg font-serif mb-1">Your Magic Mentor</h3>
-              <p className="text-xs text-purple-200 mb-1 italic">"You're crushing your Soul mission, Sarah!"</p>
+              <h3 className="font-bold text-lg font-serif mb-2 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">Your Lumina Guide</h3>
+              <p className="text-xs text-purple-200 mb-2 italic">"You're crushing your Soul mission, Sarah!"</p>
               
               {/* Level Progress */}
-              <div className="mt-4 space-y-1.5">
+              <div className="mt-5 space-y-2 bg-black/20 rounded-xl p-3">
                 <div className="flex justify-between items-center text-xs">
-                  <span className="text-muted-foreground">Progress to Guide Master</span>
-                  <span className="font-bold text-yellow-300">65%</span>
+                  <span className="text-yellow-300 font-semibold">Progress to Guide Master</span>
+                  <span className="font-black text-yellow-300">65%</span>
                 </div>
-                <Progress value={65} className="h-1.5" />
+                <Progress value={65} className="h-2 bg-purple-900/50" />
               </div>
 
               {/* Ask Mentor Button */}
               <Button 
                 onClick={() => setIsAiOpen(true)}
-                className="w-full mt-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold rounded-xl transition-all hover:shadow-lg"
+                className="w-full mt-5 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 hover:from-purple-700 hover:via-pink-700 hover:to-purple-700 text-white font-bold rounded-xl transition-all hover:shadow-xl border border-purple-400/40"
+                data-testid="button-ask-mentor"
               >
                 <Sparkles className="w-4 h-4 mr-2" /> Ask Mentor
               </Button>
             </div>
           </div>
 
-          {/* Streak Widget */}
-          <div className="bg-card rounded-2xl p-4 border border-border shadow-sm">
-            <div className="flex justify-between items-center mb-4">
-              <h4 className="font-bold flex items-center gap-2">
-                <Zap className="w-4 h-4 text-orange-500 fill-current" /> Streak
-              </h4>
-              <span className="text-2xl font-black text-orange-500">12</span>
-            </div>
-            <div className="flex justify-between">
-              {['M','T','W','T','F','S','S'].map((d, i) => (
-                <div key={i} className={cn(
-                  "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold",
-                  i < 5 ? "bg-orange-500 text-white" : "bg-muted text-muted-foreground"
-                )}>
-                  {d}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Next Mission */}
-          <div>
-            <h4 className="font-bold text-sm text-muted-foreground uppercase tracking-wider mb-3">Up Next</h4>
-            <div className="bg-card rounded-xl overflow-hidden border border-border group cursor-pointer hover:border-primary transition-colors">
-              <div className="h-24 bg-black/50 relative">
-                <img src={Course1} className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-                <div className="absolute bottom-2 left-3 text-white font-bold text-sm">Finance Sovereignty</div>
+          {/* Widget 2: Stats Hub */}
+          <div className="space-y-4" data-testid="widget-stats">
+            {/* Wallet */}
+            <div className="bg-gradient-to-br from-orange-900/30 to-yellow-900/20 rounded-xl border border-orange-400/30 p-4 text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <img src={BitcoinIcon} alt="Bitcoin" className="w-5 h-5 rounded-full" />
+                <span className="text-xs font-bold text-orange-300 uppercase">Wallet</span>
               </div>
-              <div className="p-3">
-                <div className="flex justify-between text-xs mb-1">
-                  <span>Progress</span>
-                  <span>25%</span>
+              <p className="text-2xl font-black text-orange-400">{CURRENT_USER.walletBalance.toLocaleString()}</p>
+              <p className="text-xs text-orange-200">Sats Available</p>
+            </div>
+
+            {/* Streak */}
+            <div className="bg-gradient-to-br from-orange-900/30 to-yellow-900/20 rounded-xl border border-orange-400/30 p-4">
+              <div className="flex justify-between items-center mb-3">
+                <div className="flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-orange-400 fill-current" />
+                  <h4 className="font-bold text-xs uppercase text-orange-300">Streak</h4>
                 </div>
-                <Progress value={25} className="h-1.5" />
+                <span className="text-2xl font-black text-orange-400">{CURRENT_USER.streak}</span>
+              </div>
+              <div className="flex justify-between gap-1">
+                {['M','T','W','T','F','S','S'].map((d, i) => (
+                  <div key={i} className={cn(
+                    "flex-1 h-6 rounded-md flex items-center justify-center text-[10px] font-bold transition-all",
+                    i < 5 ? "bg-orange-500 text-white shadow-md" : "bg-muted/50 text-muted-foreground"
+                  )}>
+                    {d}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* VIP Level */}
+            <div className="bg-gradient-to-br from-purple-900/30 to-pink-900/20 rounded-xl border border-purple-400/30 p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles className="w-4 h-4 text-yellow-400" />
+                <h4 className="font-bold text-xs uppercase text-purple-300">VIP Level</h4>
+              </div>
+              <p className="text-lg font-bold text-purple-300 mb-2">Level 12</p>
+              <Progress value={65} className="h-2 bg-purple-900/50" />
+              <p className="text-xs text-purple-200 mt-1">65% to Guide Master</p>
+            </div>
+
+            {/* Next Mission */}
+            <div>
+              <h4 className="font-bold text-xs text-muted-foreground uppercase tracking-wider mb-2">Up Next Mission</h4>
+              <div className="bg-card rounded-xl overflow-hidden border border-border group cursor-pointer hover:border-primary transition-colors shadow-sm">
+                <div className="h-20 bg-black/50 relative">
+                  <img src={Course1} className="w-full h-full object-cover opacity-75 group-hover:scale-110 transition-transform" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                  <div className="absolute bottom-2 left-3 text-white font-bold text-xs">Finance Sovereignty</div>
+                </div>
+                <div className="p-2.5">
+                  <div className="flex justify-between text-xs mb-1">
+                    <span className="text-muted-foreground">Progress</span>
+                    <span className="font-bold text-mission">25%</span>
+                  </div>
+                  <Progress value={25} className="h-1.5" />
+                </div>
               </div>
             </div>
           </div>
