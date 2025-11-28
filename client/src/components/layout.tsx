@@ -77,8 +77,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             {/* Wallet Balance */}
             <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-orange-500/20 to-yellow-500/20 rounded-full border border-orange-400/40 hover:border-orange-400/60 transition-colors cursor-pointer">
               <img src={BitcoinIcon} alt="Bitcoin" className="w-5 h-5 rounded-full" />
-              <span className="font-black text-base text-orange-500">{CURRENT_USER.walletBalance.toLocaleString()}</span>
-              <span className="text-xs font-bold text-orange-400">Sats</span>
+              <span className="font-bold text-sm text-orange-400">{CURRENT_USER.walletBalance.toLocaleString()}</span>
+              <span className="text-xs font-black text-orange-500">Sats</span>
             </div>
 
             {/* Inbox */}
