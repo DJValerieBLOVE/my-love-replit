@@ -54,7 +54,7 @@
 
   --font-sans: 'Marcellus', Georgia, sans-serif;
   --font-serif: 'Marcellus', Georgia, serif;
-  --font-display: 'Playfair Display', Georgia, serif;
+  --font-display: 'Cinzel', Georgia, serif;
   
   --radius: 1.5rem;
 }
@@ -164,7 +164,7 @@
     font-size: 18px;
   }
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: 'Cinzel', Georgia, serif;
     @apply font-semibold tracking-tight;
   }
   p {
