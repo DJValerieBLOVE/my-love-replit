@@ -25,7 +25,7 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
       <SheetTrigger asChild>
         {trigger}
       </SheetTrigger>
-      <SheetContent side="left" className="w-[350px] sm:w-[400px] p-0" hidden={!trigger}>
+      <SheetContent side="left" className="w-[350px] sm:w-[400px] p-0">
         <div className="h-full flex flex-col">
           {/* Header */}
           <div className="p-6 border-b bg-muted/10">
