@@ -11,31 +11,37 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useState, useMemo } from "react";
 
 export default function Events() {
-  const [selectedDate, setSelectedDate] = useState(new Date(2025, 10, 28)); // Nov 28
+  const today = new Date();
+  const [selectedDate, setSelectedDate] = useState(today);
   
   // Get meetings for selected date
   const selectedMeetings = useMemo(() => {
-    const day = selectedDate.getDate();
-    if (day === 28) return EVENTS.filter(e => e.date === "Today");
-    if (day === 29) return EVENTS.filter(e => e.date === "Tomorrow");
+    const selectedDay = selectedDate.getDate();
+    const todayDay = today.getDate();
+    
+    if (selectedDay === todayDay) return EVENTS.filter(e => e.date === "Today");
+    if (selectedDay === todayDay + 1) return EVENTS.filter(e => e.date === "Tomorrow");
     return [];
-  }, [selectedDate]);
+  }, [selectedDate, today]);
 
   // Map event dates to check which days have events
   const eventDays = useMemo(() => {
     const days = new Set<number>();
+    const todayDay = today.getDate();
     EVENTS.forEach(event => {
-      if (event.date === "Today") days.add(28);
-      if (event.date === "Tomorrow") days.add(29);
+      if (event.date === "Today") days.add(todayDay);
+      if (event.date === "Tomorrow") days.add(todayDay + 1);
     });
     return days;
-  }, []);
+  }, [today]);
 
   const getDateLabel = () => {
     const day = selectedDate.getDate();
     const monthName = selectedDate.toLocaleString('default', { month: 'long' });
-    if (day === 28) return `Today, ${monthName} ${day}`;
-    if (day === 29) return `Tomorrow, ${monthName} ${day}`;
+    const todayDay = today.getDate();
+    
+    if (day === todayDay) return `Today, ${monthName} ${day}`;
+    if (day === todayDay + 1) return `Tomorrow, ${monthName} ${day}`;
     return `${monthName} ${day}`;
   };
 
@@ -106,28 +112,36 @@ export default function Events() {
                   className="rounded-xs border-none w-full flex justify-center"
                   classNames={{
                     head_row: "flex w-full justify-between mb-2",
-                    head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.75rem] uppercase font-bold",
+                    head_cell: "text-muted-foreground rounded-md w-10 font-normal text-[0.75rem] uppercase font-bold",
                     row: "flex w-full mt-2 justify-between",
-                    cell: "h-10 w-10 text-center text-xs p-0 relative",
-                    day: "h-10 w-10 p-0 font-medium flex flex-col items-center justify-center rounded-full relative cursor-pointer hover:bg-muted/50 transition-colors",
-                    day_selected: "bg-[#6600ff] text-white hover:bg-[#6600ff]",
-                    day_today: "bg-[#6600ff] text-white font-bold",
-                    day_outside: "text-muted-foreground/40 opacity-50",
+                    cell: "h-10 w-10 p-0 text-center text-xs relative flex items-center justify-center",
+                    day: "h-10 w-10 p-0 font-medium flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity",
+                    day_outside: "text-muted-foreground/40",
                     day_disabled: "text-muted-foreground/40",
                     day_hidden: "invisible",
                   }}
                 />
                 <style>{`
-                  .rdp-day_selected { background-color: #6600ff !important; color: white !important; }
-                  .rdp-day_today { background-color: #6600ff !important; color: white !important; }
+                  .rdp-day {
+                    border-radius: 50% !important;
+                  }
+                  .rdp-day_selected {
+                    background-color: #6600ff !important;
+                    color: white !important;
+                    border-radius: 50% !important;
+                    font-weight: bold !important;
+                  }
+                  .rdp-day_today {
+                    background-color: #6600ff !important;
+                    color: white !important;
+                    border-radius: 50% !important;
+                    font-weight: bold !important;
+                  }
                   ${Array.from(eventDays).map(day => `
-                    .rdp-cell:has([aria-label*="November ${day}"]) .rdp-day:not(.rdp-day_selected):not(.rdp-day_today) {
-                      position: relative;
-                    }
-                    .rdp-cell:has([aria-label*="November ${day}"]) .rdp-day:not(.rdp-day_selected):not(.rdp-day_today)::after {
+                    .rdp-cell:nth-child(${(day - 1) % 7 + 1}) .rdp-day:not(.rdp-day_selected):not(.rdp-day_today)::after {
                       content: '•';
                       position: absolute;
-                      bottom: 2px;
+                      bottom: 0;
                       font-size: 10px;
                       color: #6600ff;
                       font-weight: bold;
@@ -135,7 +149,7 @@ export default function Events() {
                   `).join('')}
                 `}</style>
                 <div className="mt-4 pt-4 border-t flex justify-end">
-                  <Button size="sm" className="text-xs h-7 rounded-md bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold px-6" data-testid="button-today" onClick={() => setSelectedDate(new Date(2025, 10, 28))}>Today</Button>
+                  <Button size="sm" className="text-xs h-7 rounded-md bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold px-6" data-testid="button-today" onClick={() => setSelectedDate(new Date())}>Today</Button>
                 </div>
               </CardContent>
             </Card>
