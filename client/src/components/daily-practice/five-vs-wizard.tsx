@@ -39,7 +39,7 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
           <p className="text-lg text-muted-foreground italic font-serif">"Where attention goes, energy flows."</p>
           <Textarea 
             placeholder="I am creating..." 
-            className="text-xl p-6 min-h-[180px] rounded-xl border-primary/10 focus-visible:ring-primary/20 bg-white/50 font-serif resize-none"
+            className="text-xl p-6 min-h-[180px] bg-muted/30 border-muted focus:bg-background resize-none font-serif rounded-lg"
             value={data.vision}
             onChange={e => setData({...data, vision: e.target.value})}
           />
@@ -59,7 +59,7 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
                 key={v} 
                 variant={data.villain === v ? "default" : "outline"}
                 onClick={() => setData({...data, villain: v})}
-                className={`rounded-full px-6 h-10 transition-all text-base border-primary/20 ${data.villain === v ? 'bg-primary text-white shadow-md shadow-primary/30' : 'hover:border-primary/50 hover:text-primary hover:bg-primary/5'}`}
+                className={`rounded-lg px-6 h-10 transition-all text-base font-serif ${data.villain === v ? 'bg-primary text-white shadow-sm' : 'bg-muted/30 border-muted hover:bg-primary/5 hover:text-primary'}`}
               >
                 {v}
               </Button>
@@ -67,7 +67,7 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
           </div>
           <Input 
             placeholder="Or name your specific resistance..." 
-            className="text-xl p-6 h-14 rounded-xl border-primary/10 focus-visible:ring-primary/20 bg-white/50"
+            className="text-xl p-6 h-14 bg-muted/30 border-muted focus:bg-background font-serif rounded-lg"
             value={data.villain}
             onChange={e => setData({...data, villain: e.target.value})}
           />
@@ -83,7 +83,7 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
           <p className="text-lg text-muted-foreground italic font-serif">Anchor to your core values.</p>
           <Input 
             placeholder="Today I value..." 
-            className="text-xl p-6 h-16 rounded-xl border-primary/10 focus-visible:ring-primary/20 bg-white/50 font-serif"
+            className="text-xl p-6 h-16 bg-muted/30 border-muted focus:bg-background font-serif rounded-lg"
             value={data.value}
             onChange={e => setData({...data, value: e.target.value})}
           />
@@ -99,7 +99,7 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
           <p className="text-lg text-muted-foreground italic font-serif">What is one small win you commit to?</p>
           <Input 
             placeholder="I will..." 
-            className="text-xl p-6 h-16 rounded-xl border-primary/10 focus-visible:ring-primary/20 bg-white/50 font-serif"
+            className="text-xl p-6 h-16 bg-muted/30 border-muted focus:bg-background font-serif rounded-lg"
             value={data.victory}
             onChange={e => setData({...data, victory: e.target.value})}
           />
@@ -125,11 +125,12 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
           exit={{ x: -20, opacity: 0 }}
           transition={{ duration: 0.2 }}
         >
-          <Card className="border-none shadow-lg bg-card/50 backdrop-blur-sm">
+          <Card className="border-none shadow-lg bg-card">
+            <div className="h-[2px] w-full bg-[#6600ff]" />
             <CardContent className="p-8 min-h-[400px] flex flex-col">
               <div className="mb-6 text-center">
-                <h3 className="text-3xl font-bold mb-2">{currentStep.title}</h3>
-                <p className="text-muted-foreground">{currentStep.subtitle}</p>
+                <h3 className="text-3xl font-serif font-bold mb-2">{currentStep.title}</h3>
+                <p className="text-muted-foreground font-serif text-lg">{currentStep.subtitle}</p>
               </div>
               
               <div className="flex-1">
@@ -139,7 +140,7 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
               <div className="mt-8 flex justify-end">
                 <Button 
                   size="lg" 
-                  className="gap-2 px-8 rounded-full bg-[#6600ff] hover:bg-[#5500dd] text-white shadow-lg shadow-primary/20"
+                  className="gap-2 px-8 rounded-lg bg-[#6600ff] hover:bg-[#5500dd] text-white shadow-md font-serif font-bold"
                   onClick={step < 5 ? nextStep : onComplete}
                 >
                   {step < 5 ? (
