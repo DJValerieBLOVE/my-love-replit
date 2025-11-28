@@ -236,7 +236,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow bg-card" data-testid="widget-focus">
             <div className="p-4">
               <h4 className="font-bold text-[13px] uppercase text-muted-foreground mb-2">Current Focus</h4>
-              <p className="text-[15px] font-semibold text-foreground mb-1">Finance Sovereignty</p>
+              <p className="text-[15px] font-medium text-muted-foreground mb-1">Finance Sovereignty</p>
               <div className="flex items-center justify-between">
                 <p className="text-xs text-muted-foreground">80%</p>
                 <div className="w-16 bg-muted rounded-full h-1.5">
@@ -252,7 +252,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <h4 className="font-bold text-[13px] uppercase text-muted-foreground mb-2">Upcoming Event</h4>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[15px] font-semibold text-foreground">Full Moon Ceremony</p>
+                  <p className="text-[15px] font-medium text-muted-foreground">Full Moon Ceremony</p>
                   <p className="text-[13px] text-muted-foreground">Nov 30</p>
                 </div>
                 <span className="text-lg">🌙</span>
@@ -272,7 +272,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     👤
                   </div>
                   <div>
-                    <p className="text-[14px] font-bold text-foreground">Alex Luna</p>
+                    <p className="text-[14px] font-medium text-muted-foreground">Alex Luna</p>
                     <p className="text-[12px] text-muted-foreground">@alexluna</p>
                   </div>
                 </div>
