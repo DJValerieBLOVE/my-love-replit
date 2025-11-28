@@ -24,7 +24,7 @@ export default function Community() {
       <div className="max-w-4xl mx-auto p-4 lg:p-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {CLUBS.map((space) => (
-            <Card key={space.id} className="hover:shadow-md transition-all border-none bg-card/50 shadow-sm group cursor-pointer overflow-hidden">
+            <Card key={space.id} className="hover:shadow-md transition-all border-none bg-card/50 shadow-sm group cursor-pointer overflow-hidden flex flex-col">
               <div className="h-2 w-full bg-gradient-to-r from-primary/20 to-primary/5 group-hover:from-primary group-hover:to-purple-400 transition-all" />
               <CardHeader className="pb-2">
                 <div className={`w-10 h-10 rounded-lg bg-muted flex items-center justify-center mb-2 group-hover:scale-110 transition-transform duration-300 ${space.color}`}>
@@ -32,7 +32,7 @@ export default function Community() {
                 </div>
                 <CardTitle className="text-lg">{space.name}</CardTitle>
               </CardHeader>
-              <CardContent className="flex flex-col h-full">
+              <CardContent className="flex flex-col flex-1">
                 <p className="text-base text-muted-foreground mb-4 line-clamp-2">
                   {space.description}
                 </p>
