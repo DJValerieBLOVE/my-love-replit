@@ -60,17 +60,18 @@
 
 /* 11x LOVE Code Colors - Neon/Cyber Palette */
 :root {
-  --love-god: 320 100% 50%; /* Hot Pink */
-  --love-romance: 350 100% 60%; /* Red/Pink */
-  --love-family: 25 100% 60%; /* Neon Orange */
-  --love-community: 50 100% 60%; /* Golden Yellow */
-  --love-mission: 80 100% 60%; /* Lime Green */
-  --love-money: 140 100% 60%; /* Matrix Green */
-  --love-time: 180 100% 60%; /* Cyan */
-  --love-env: 200 100% 60%; /* Sky Blue */
-  --love-body: 240 100% 70%; /* Electric Blue/Indigo */
-  --love-mind: 270 100% 65%; /* Purple */
-  --love-soul: 290 100% 60%; /* Magenta */
+  /* Official Brand Colors */
+  --love-god: #eb00a8;        /* Hot Pink */
+  --love-soul: #cc00ff;       /* Magenta */
+  --love-mind: #9900ff;       /* Purple */
+  --love-body: #6600ff;       /* Purple - Primary Brand Color */
+  --love-romance: #e60023;    /* Red */
+  --love-family: #ff6600;     /* Orange */
+  --love-community: #ffdf00;  /* Yellow */
+  --love-mission: #a2f005;    /* Lime Green */
+  --love-money: #00d81c;      /* Matrix Green */
+  --love-time: #00ccff;       /* Cyan */
+  --love-env: #0033ff;        /* Blue */
 
   /* Light Mode: Clean, Modern, High Energy */
   --background: 0 0% 98%;

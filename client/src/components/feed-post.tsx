@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { 
   Clock, 
   Users, 
@@ -5,13 +6,15 @@ import {
   Video, 
   ArrowRight,
   Calendar as CalendarIcon,
-  Zap
+  Zap,
+  MessageSquare
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import SatsIcon from "@assets/generated_images/sats_icon.png";
+import { toast } from "sonner";
 
 interface FeedPostProps {
   post: {
@@ -31,6 +34,21 @@ interface FeedPostProps {
 }
 
 export function FeedPost({ post }: FeedPostProps) {
+  const [zaps, setZaps] = useState(post.zaps);
+  const [isZapped, setIsZapped] = useState(false);
+
+  const handleZap = () => {
+    setZaps(prev => prev + 100);
+    setIsZapped(true);
+    toast("Zap Sent! ⚡", {
+      description: `You sent 100 sats to ${post.author.name}`,
+      action: {
+        label: "Undo",
+        onClick: () => setZaps(prev => prev - 100),
+      },
+    });
+  };
+
   return (
     <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow bg-card mb-4">
       <CardContent className="p-0">
@@ -62,9 +80,14 @@ export function FeedPost({ post }: FeedPostProps) {
 
             <div className="flex items-center justify-between mt-4 pt-2 border-t border-border/30">
               {/* Lightning Tip Button */}
-              <Button variant="ghost" size="sm" className="text-orange-500 bg-orange-500/10 hover:bg-orange-500/20 group px-3 h-8 rounded-full transition-all">
-                <img src={SatsIcon} alt="Zap" className="w-4 h-4 mr-1.5 animate-pulse" />
-                <span className="text-xs font-bold">{post.zaps.toLocaleString()} sats</span>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleZap}
+                className={`px-3 h-8 rounded-full transition-all group ${isZapped ? 'bg-orange-500/20 text-orange-600' : 'text-orange-500 bg-orange-500/10 hover:bg-orange-500/20'}`}
+              >
+                <img src={SatsIcon} alt="Zap" className={`w-4 h-4 mr-1.5 ${isZapped ? 'scale-125' : 'animate-pulse'}`} />
+                <span className="text-xs font-bold">{zaps.toLocaleString()} sats</span>
               </Button>
               
               <div className="flex gap-2">
@@ -85,6 +108,3 @@ export function FeedPost({ post }: FeedPostProps) {
     </Card>
   );
 }
-
-// Import MessageSquare for the above component
-import { MessageSquare } from "lucide-react";

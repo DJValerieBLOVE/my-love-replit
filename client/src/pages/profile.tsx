@@ -31,7 +31,7 @@ export default function Profile() {
                   Level 12 {CURRENT_USER.level}
                 </span>
                 <span className="bg-orange-500/10 text-orange-600 px-2 py-0.5 rounded-full text-xs font-medium border border-orange-500/20">
-                  {CURRENT_USER.xp} XP
+                  {CURRENT_USER.sats.toLocaleString()} Sats
                 </span>
               </div>
             </div>

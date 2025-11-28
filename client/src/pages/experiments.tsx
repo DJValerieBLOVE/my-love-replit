@@ -1,57 +1,57 @@
 import Layout from "@/components/layout";
-import { MISSIONS } from "@/lib/mock-data";
+import { EXPERIMENTS } from "@/lib/mock-data";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { PlayCircle, CheckCircle, Lock } from "lucide-react";
+import { PlayCircle, CheckCircle, Lock, FlaskConical } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
 
-export default function Courses() {
+export default function Experiments() {
   return (
     <Layout>
       <div className="max-w-5xl mx-auto p-4 lg:p-8 space-y-8">
         <div>
-          <h1 className="text-2xl font-serif font-bold">My Learning Journey</h1>
-          <p className="text-muted-foreground">Continue where you left off.</p>
+          <h1 className="text-2xl font-serif font-bold">My Experiments</h1>
+          <p className="text-muted-foreground">Life is a game. Life is an experiment.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {MISSIONS.map((course) => (
-            <Link key={course.id} href={`/missions/${course.id}`}>
+          {EXPERIMENTS.map((experiment) => (
+            <Link key={experiment.id} href={`/experiments/${experiment.id}`}>
               <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 group border-none shadow-sm bg-card cursor-pointer">
                 <div className="relative h-48 overflow-hidden">
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors z-10" />
                   <img 
-                    src={course.image} 
-                    alt={course.title} 
+                    src={experiment.image} 
+                    alt={experiment.title} 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <Badge className="absolute top-3 right-3 z-20 bg-white/90 text-black hover:bg-white" data-testid={`badge-${course.id}`}>
-                    {course.category}
+                  <Badge className="absolute top-3 right-3 z-20 bg-white/90 text-black hover:bg-white" data-testid={`badge-${experiment.id}`}>
+                    {experiment.category}
                   </Badge>
-                  {course.progress > 0 && (
+                  {experiment.progress > 0 && (
                     <div className="absolute bottom-3 left-3 right-3 z-20">
                       <div className="flex justify-between text-xs text-white font-medium mb-1 shadow-sm">
-                        <span>{course.progress}% Complete</span>
-                        <span>{course.completedLessons}/{course.totalLessons}</span>
+                        <span>{experiment.progress}% Complete</span>
+                        <span>{experiment.completedDiscoveries}/{experiment.totalDiscoveries}</span>
                       </div>
-                      <Progress value={course.progress} className="h-1.5 bg-white/30 [&>div]:bg-white" />
+                      <Progress value={experiment.progress} className="h-1.5 bg-white/30 [&>div]:bg-white" />
                     </div>
                   )}
                 </div>
                 <CardContent className="p-5">
-                  <h3 className="font-bold text-lg leading-tight mb-1 group-hover:text-primary transition-colors" data-testid={`text-mission-${course.id}`}>
-                    {course.title}
+                  <h3 className="font-bold text-lg leading-tight mb-1 group-hover:text-primary transition-colors" data-testid={`text-experiment-${experiment.id}`}>
+                    {experiment.title}
                   </h3>
-                  <p className="text-base text-muted-foreground mb-4" data-testid={`text-instructor-${course.id}`}>
-                    with {course.instructor}
+                  <p className="text-base text-muted-foreground mb-4" data-testid={`text-guide-${experiment.id}`}>
+                    with {experiment.guide}
                   </p>
                   
-                  <Button className="w-full gap-2 bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold transition-all px-6 py-1.5 h-8" data-testid={`button-mission-${course.id}`}>
-                    {course.progress === 0 ? (
-                      <>Start Mission</>
-                    ) : course.progress === 100 ? (
+                  <Button className="w-full gap-2 bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold transition-all px-6 py-1.5 h-8" data-testid={`button-experiment-${experiment.id}`}>
+                    {experiment.progress === 0 ? (
+                      <><FlaskConical className="w-4 h-4" /> Begin Experiment</>
+                    ) : experiment.progress === 100 ? (
                       <><CheckCircle className="w-4 h-4" /> Completed</>
                     ) : (
                       <><PlayCircle className="w-4 h-4" /> Resume</>
@@ -62,13 +62,13 @@ export default function Courses() {
             </Link>
           ))}
           
-          {/* Locked Mission Teaser */}
+          {/* Locked Experiment Teaser */}
           <Card className="overflow-hidden border-dashed border-2 bg-muted/20 opacity-70 hover:opacity-100 transition-opacity">
             <div className="h-48 bg-muted flex items-center justify-center">
               <Lock className="w-12 h-12 text-muted-foreground" />
             </div>
             <CardContent className="p-5">
-              <h3 className="font-bold text-lg leading-tight mb-1">Advanced Cohort</h3>
+              <h3 className="font-bold text-lg leading-tight mb-1">Advanced Lab</h3>
               <p className="text-base text-muted-foreground mb-4">Coming Soon</p>
               <Button disabled className="w-full bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold px-6 py-1.5 h-8">Locked</Button>
             </CardContent>

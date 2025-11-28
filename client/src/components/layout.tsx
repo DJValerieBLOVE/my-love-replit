@@ -2,7 +2,7 @@ import { Link, useLocation } from "wouter";
 import { 
   Home, 
   LayoutGrid, 
-  BookOpen, 
+  Book, // Changed from BookOpen
   Wallet, 
   User, 
   Bell,
@@ -12,14 +12,16 @@ import {
   Target,
   Sparkles,
   Zap,
-  Rocket,
+  FlaskConical, // Changed from Rocket
   Trophy,
   Menu,
-  Mail
+  Mail,
+  Wrench, // Added
+  Music   // Added
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { CURRENT_USER, CLUBS, MISSIONS, LOVE_CODE_AREAS } from "@/lib/mock-data";
+import { CURRENT_USER, CLUBS, EXPERIMENTS, LOVE_CODE_AREAS } from "@/lib/mock-data";
 import Logo from "../assets/11x_love_logo.png";
 import BitcoinIcon from "../assets/bitcoin_icon.png";
 import MagicMentor from "@assets/djvalerieblove_twirling_bitcoin_goddess_colorful_vivid_psyche_4e0fb7f6-b95b-488f-9d18-eb77e7dd0a60_1_1764334332945.png";
@@ -52,10 +54,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const navLinks = [
     { icon: Home, label: "Home", href: "/" },
-    { icon: Rocket, label: "Missions", href: "/courses" },
-    { icon: LayoutGrid, label: "Clubs", href: "/community" },
-    { icon: Calendar, label: "Events", href: "/events" },
-    { icon: Trophy, label: "Leaderboard", href: "/leaderboard" },
+    { icon: Book, label: "Journal", href: "/journal" },
+    { icon: FlaskConical, label: "Experiments", href: "/experiments" },
+    { icon: Wrench, label: "Toolbox", href: "/toolbox" },
+    { icon: Music, label: "Resources", href: "/resources" },
+    { icon: LayoutGrid, label: "Community", href: "/community" },
+    { icon: User, label: "Profile", href: "/profile" },
   ];
 
   return (

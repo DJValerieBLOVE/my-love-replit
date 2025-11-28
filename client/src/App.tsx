@@ -6,8 +6,11 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Community from "@/pages/community";
-import Courses from "@/pages/courses";
-import MissionDetail from "@/pages/mission-detail";
+import Experiments from "@/pages/experiments";
+import ExperimentDetail from "@/pages/experiment-detail";
+import Journal from "@/pages/journal";
+import Toolbox from "@/pages/toolbox";
+import Resources from "@/pages/resources";
 import Wallet from "@/pages/wallet";
 import Profile from "@/pages/profile";
 import Events from "@/pages/events";
@@ -19,8 +22,11 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/community" component={Community} />
-      <Route path="/courses" component={Courses} />
-      <Route path="/missions/:id" component={MissionDetail} />
+      <Route path="/experiments" component={Experiments} />
+      <Route path="/experiments/:id" component={ExperimentDetail} />
+      <Route path="/journal" component={Journal} />
+      <Route path="/toolbox" component={Toolbox} />
+      <Route path="/resources" component={Resources} />
       <Route path="/wallet" component={Wallet} />
       <Route path="/profile" component={Profile} />
       <Route path="/events" component={Events} />
