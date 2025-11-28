@@ -260,21 +260,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </Card>
 
-          {/* Widget 5: Poll of the Day */}
-          <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow bg-card" data-testid="widget-poll">
-            <div className="p-4">
-              <h4 className="font-bold text-xs uppercase text-muted-foreground mb-2">Poll of the Day</h4>
-              <p className="text-xs text-foreground mb-3">What area needs focus?</p>
-              <div className="space-y-1.5">
-                {['Health', 'Relationships', 'Career'].map((option, i) => (
-                  <button key={i} className="w-full text-left text-xs py-1 px-2 rounded-xs bg-muted hover:bg-muted/80 transition-colors text-foreground hover:text-primary font-medium">
-                    {option}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </Card>
-
+          {/* Widget 5: Poll of the Day - Removed */}
+          
           {/* Widget 6: Who to Follow */}
           <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow bg-card" data-testid="widget-follow">
             <div className="p-4">
