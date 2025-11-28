@@ -28,7 +28,7 @@
 
 ### Category Badges (Image Cards)
 - **Position**: Top-Right (`absolute top-3 right-3`)
-- **Style**: `bg-white/90` (Glass/White), `text-black`.
+- **Style**: `bg-white/90` (Glass/White), `text-black`, `font-normal`.
 - **Hover**: `hover:bg-white`
 - **Z-Index**: Ensure `z-20` to sit above image overlays.
 - **Example**:

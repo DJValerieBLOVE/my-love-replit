@@ -27,7 +27,7 @@ export default function Experiments() {
                     alt={experiment.title} 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <Badge className="absolute top-3 right-3 z-20 bg-white/90 text-black hover:bg-white" data-testid={`badge-${experiment.id}`}>
+                  <Badge className="absolute top-3 right-3 z-20 bg-white/90 text-black hover:bg-white font-normal" data-testid={`badge-${experiment.id}`}>
                     {experiment.category}
                   </Badge>
                   {experiment.progress > 0 && (
