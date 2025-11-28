@@ -60,14 +60,12 @@ export default function Events() {
 
         {/* Filters & Search */}
         <div className="flex flex-col md:flex-row gap-4 mb-8 items-center justify-between">
-          <Tabs defaultValue="upcoming" className="w-full md:w-auto">
-            <TabsList className="bg-transparent h-8 gap-2">
-              <TabsTrigger value="upcoming" className="px-6 py-1.5 h-8 rounded-full font-bold text-sm data-[state=active]:bg-[#6600ff] data-[state=active]:text-white data-[state=active]:hover:bg-[#5500dd] data-[state=inactive]:text-muted-foreground">Upcoming</TabsTrigger>
-              <TabsTrigger value="nearby" className="px-6 py-1.5 h-8 rounded-full font-bold text-sm data-[state=active]:bg-[#6600ff] data-[state=active]:text-white data-[state=active]:hover:bg-[#5500dd] data-[state=inactive]:text-muted-foreground">Nearby</TabsTrigger>
-              <TabsTrigger value="past" className="px-6 py-1.5 h-8 rounded-full font-bold text-sm data-[state=active]:bg-[#6600ff] data-[state=active]:text-white data-[state=active]:hover:bg-[#5500dd] data-[state=inactive]:text-muted-foreground">Past</TabsTrigger>
-              <TabsTrigger value="yours" className="px-6 py-1.5 h-8 rounded-full font-bold text-sm data-[state=active]:bg-[#6600ff] data-[state=active]:text-white data-[state=active]:hover:bg-[#5500dd] data-[state=inactive]:text-muted-foreground">Yours</TabsTrigger>
-            </TabsList>
-          </Tabs>
+          <div className="flex gap-2">
+            <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold px-6 py-1.5 h-8 rounded-lg">Upcoming</Button>
+            <Button variant="outline" className="text-muted-foreground font-bold px-6 py-1.5 h-8 rounded-lg">Nearby</Button>
+            <Button variant="outline" className="text-muted-foreground font-bold px-6 py-1.5 h-8 rounded-lg">Past</Button>
+            <Button variant="outline" className="text-muted-foreground font-bold px-6 py-1.5 h-8 rounded-lg">Yours</Button>
+          </div>
           
           <div className="flex gap-2 w-full md:w-auto">
             <div className="relative flex-1 md:w-64">
