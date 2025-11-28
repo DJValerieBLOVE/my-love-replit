@@ -54,7 +54,6 @@
 
   --font-sans: 'Marcellus', Georgia, sans-serif;
   --font-serif: 'Marcellus', Georgia, serif;
-  --font-display: 'Abril Fatface', Georgia, serif;
   
   --radius: 1.5rem;
 }
@@ -163,9 +162,37 @@
     @apply font-sans antialiased bg-background text-foreground selection:bg-primary/30 selection:text-primary;
     font-size: 18px;
   }
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Abril Fatface', Georgia, serif;
-    @apply font-semibold tracking-tight;
+  h1 {
+    font-family: 'Marcellus', Georgia, serif;
+    font-size: 48px;
+    font-weight: 400;
+    letter-spacing: -0.5px;
+  }
+  h2 {
+    font-family: 'Marcellus', Georgia, serif;
+    font-size: 36px;
+    font-weight: 400;
+    letter-spacing: -0.3px;
+  }
+  h3 {
+    font-family: 'Marcellus', Georgia, serif;
+    font-size: 28px;
+    font-weight: 400;
+  }
+  h4 {
+    font-family: 'Marcellus', Georgia, serif;
+    font-size: 24px;
+    font-weight: 400;
+  }
+  h5 {
+    font-family: 'Marcellus', Georgia, serif;
+    font-size: 20px;
+    font-weight: 400;
+  }
+  h6 {
+    font-family: 'Marcellus', Georgia, serif;
+    font-size: 18px;
+    font-weight: 400;
   }
   p {
     font-size: 18px;
