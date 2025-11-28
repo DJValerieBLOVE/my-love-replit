@@ -44,7 +44,7 @@ export default function Courses() {
                   <h3 className="font-bold text-lg leading-tight mb-1 group-hover:text-primary transition-colors" data-testid={`text-mission-${course.id}`}>
                     {course.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground mb-4" data-testid={`text-instructor-${course.id}`}>
+                  <p className="text-base text-muted-foreground mb-4" data-testid={`text-instructor-${course.id}`}>
                     with {course.instructor}
                   </p>
                   
@@ -69,7 +69,7 @@ export default function Courses() {
             </div>
             <CardContent className="p-5">
               <h3 className="font-bold text-lg leading-tight mb-1">Advanced Cohort</h3>
-              <p className="text-sm text-muted-foreground mb-4">Coming Soon</p>
+              <p className="text-base text-muted-foreground mb-4">Coming Soon</p>
               <Button disabled className="w-full bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold">Locked</Button>
             </CardContent>
           </Card>

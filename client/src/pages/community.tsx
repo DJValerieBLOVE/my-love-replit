@@ -33,7 +33,7 @@ export default function Community() {
                 <CardTitle className="text-lg">{space.name}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                <p className="text-base text-muted-foreground mb-4 line-clamp-2">
                   {space.description}
                 </p>
                 <div className="flex items-center justify-between text-xs text-muted-foreground">

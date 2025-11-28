@@ -50,7 +50,7 @@ export function FeedPost({ post }: FeedPostProps) {
               </Button>
             </div>
             
-            <p className="mt-2 text-sm leading-relaxed text-foreground/90 whitespace-pre-wrap">
+            <p className="mt-2 text-base leading-relaxed text-foreground/90 whitespace-pre-wrap">
               {post.content}
             </p>
             

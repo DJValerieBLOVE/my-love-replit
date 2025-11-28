@@ -247,7 +247,7 @@ export default function MissionDetail() {
             </div>
             <CardContent className="p-6 bg-card">
               <h3 className="font-bold text-lg mb-2" data-testid="text-video-title">Lesson 1: Introduction to {mission.title}</h3>
-              <p className="text-sm text-muted-foreground mb-4">Duration: 8 minutes</p>
+              <p className="text-base text-muted-foreground mb-4">Duration: 8 minutes</p>
               <p className="text-foreground">Watch this comprehensive introduction to understand the fundamentals and learning objectives for this mission.</p>
             </CardContent>
           </Card>

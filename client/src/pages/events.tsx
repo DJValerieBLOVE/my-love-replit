@@ -100,7 +100,7 @@ export default function Events() {
             
             <div className="mt-6 p-4 bg-primary/5 rounded-xs border border-primary/10">
               <h3 className="font-bold text-primary mb-2">Host an Event?</h3>
-              <p className="text-sm text-muted-foreground mb-3">Community members can host their own gatherings.</p>
+              <p className="text-base text-muted-foreground mb-3">Community members can host their own gatherings.</p>
               <Button className="w-full rounded-lg bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold" data-testid="button-learn-more">Learn More</Button>
             </div>
           </div>
