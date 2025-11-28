@@ -148,10 +148,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             return (
               <Link key={item.href} href={item.href}>
                 <div className={cn(
-                  "flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-300 cursor-pointer group font-medium sidebar-menu text-base",
+                  "flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-300 cursor-pointer group font-medium sidebar-menu text-base",
                   isActive 
-                    ? "bg-white dark:bg-white/5 text-primary shadow-md shadow-primary/10 border border-primary/10 font-bold" 
-                    : "text-muted-foreground hover:bg-white/50 dark:hover:bg-white/5 hover:text-primary hover:shadow-sm hover:translate-x-1"
+                    ? "bg-primary/10 text-primary shadow-md shadow-primary/10 border border-primary/10 font-bold" 
+                    : "text-muted-foreground hover:bg-primary/5 hover:text-primary hover:shadow-sm hover:translate-x-1"
                 )}>
                   <item.icon className={cn("w-5 h-5 transition-transform group-hover:scale-110", isActive && "fill-current opacity-100")} />
                   <span>{item.label}</span>
