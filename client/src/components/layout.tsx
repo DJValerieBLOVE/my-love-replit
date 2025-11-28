@@ -173,9 +173,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               {/* Image and Badge on same line */}
               <div className="flex items-center justify-center gap-2 mb-3">
                 {/* Mentor Image */}
-                <div className="relative">
+                <div className="relative flex-shrink-0">
                   <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-pink-500 blur-xl opacity-40 rounded-full" />
-                  <img src={MagicMentor} alt="Magic Mentor" className="w-16 h-16 rounded-full border-3 border-purple-300 relative z-10 shadow-lg" />
+                  <img src={MagicMentor} alt="Magic Mentor" className="w-16 h-16 rounded-full border-3 border-purple-300 relative z-10 shadow-lg object-cover" />
                 </div>
                 
                 {/* VIP Level Badge */}
