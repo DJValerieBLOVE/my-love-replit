@@ -227,23 +227,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Widget 3: Current Focus */}
-          <div className="rounded-xs overflow-hidden hover:shadow-md transition-all border-none bg-card/50 shadow-sm group cursor-pointer" data-testid="widget-focus">
-            <div className="h-1 w-full bg-gradient-to-r from-cyan-500/20 to-cyan-500/5 group-hover:from-cyan-500 group-hover:to-blue-500 transition-all" />
+          <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow bg-card" data-testid="widget-focus">
             <div className="p-4">
               <h4 className="font-bold text-xs uppercase text-muted-foreground mb-2">Current Focus</h4>
               <p className="text-sm font-semibold text-foreground mb-1">Finance Sovereignty</p>
               <div className="flex items-center justify-between">
                 <p className="text-xs text-muted-foreground">80%</p>
                 <div className="w-16 bg-muted rounded-full h-1.5">
-                  <div className="bg-foreground/40 h-1.5 rounded-full w-4/5"></div>
+                  <div className="bg-[#00d81c] h-1.5 rounded-full w-4/5"></div>
                 </div>
               </div>
             </div>
-          </div>
+          </Card>
 
           {/* Widget 4: Upcoming Event */}
-          <div className="rounded-xs overflow-hidden hover:shadow-md transition-all border-none bg-card/50 shadow-sm group cursor-pointer" data-testid="widget-event">
-            <div className="h-1 w-full bg-gradient-to-r from-pink-500/20 to-pink-500/5 group-hover:from-pink-500 group-hover:to-rose-500 transition-all" />
+          <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow bg-card" data-testid="widget-event">
             <div className="p-4">
               <h4 className="font-bold text-xs uppercase text-muted-foreground mb-2">Upcoming Event</h4>
               <div className="flex items-center justify-between">
@@ -254,11 +252,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <span className="text-lg">🌙</span>
               </div>
             </div>
-          </div>
+          </Card>
 
           {/* Widget 5: Poll of the Day */}
-          <div className="rounded-xs overflow-hidden hover:shadow-md transition-all border-none bg-card/50 shadow-sm group cursor-pointer" data-testid="widget-poll">
-            <div className="h-1 w-full bg-gradient-to-r from-indigo-500/20 to-indigo-500/5 group-hover:from-indigo-500 group-hover:to-purple-500 transition-all" />
+          <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow bg-card" data-testid="widget-poll">
             <div className="p-4">
               <h4 className="font-bold text-xs uppercase text-muted-foreground mb-2">Poll of the Day</h4>
               <p className="text-xs text-foreground mb-3">What area needs focus?</p>
@@ -270,11 +267,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 ))}
               </div>
             </div>
-          </div>
+          </Card>
 
           {/* Widget 6: Who to Follow */}
-          <div className="rounded-xs overflow-hidden hover:shadow-md transition-all border-none bg-card/50 shadow-sm group cursor-pointer" data-testid="widget-follow">
-            <div className="h-1 w-full bg-gradient-to-r from-emerald-500/20 to-emerald-500/5 group-hover:from-emerald-500 group-hover:to-green-500 transition-all" />
+          <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow bg-card" data-testid="widget-follow">
             <div className="p-4">
               <h4 className="font-bold text-xs uppercase text-muted-foreground mb-3">Who to Follow</h4>
               <div className="flex items-center justify-between">
@@ -292,7 +288,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </Button>
               </div>
             </div>
-          </div>
+          </Card>
         </aside>
       </div>
 
