@@ -48,24 +48,31 @@ export const LOVE_CODE_AREAS = [
 export const CLUBS = [
   {
     id: "space-1",
-    name: "General Lounge",
-    icon: MessageSquare,
-    color: "text-[hsl(270,100%,65%)]",
-    description: "Hang out and chat with everyone",
+    name: "Magic Money Mamas",
+    icon: Zap,
+    color: "text-[hsl(35,100%,60%)]",
+    description: "Bitcoin, wealth sovereignty, and financial freedom",
   },
   {
     id: "space-2",
-    name: "Bitcoin & Chill",
-    icon: Zap,
-    color: "text-[hsl(35,100%,60%)]",
-    description: "Discussing the future of money",
+    name: "Soulful Sisters",
+    icon: Users,
+    color: "text-[hsl(270,100%,65%)]",
+    description: "Meditation, spirituality, and deep connection",
   },
   {
     id: "space-3",
-    name: "Morning Meditators",
-    icon: Users,
+    name: "Tech Goddesses",
+    icon: MessageSquare,
     color: "text-[hsl(200,100%,60%)]",
-    description: "Meditation, health, and spirit",
+    description: "Nostr, Lightning, and building the future",
+  },
+  {
+    id: "space-4",
+    name: "Creative Flow",
+    icon: LayoutGrid,
+    color: "text-[hsl(320,100%,60%)]",
+    description: "Art, writing, and expressing your unique voice",
   },
 ];
 

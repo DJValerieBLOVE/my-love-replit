@@ -59,7 +59,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { icon: Book, label: "Lab Notes", href: "/journal" },
     { icon: Wrench, label: "My Toolbox", href: "/toolbox" },
     { icon: Calendar, label: "Events", href: "/events" },
-    { icon: LayoutGrid, label: "Community", href: "/community" },
+    { icon: LayoutGrid, label: "Clubs", href: "/community" },
     { icon: Music, label: "Resources", href: "/resources" },
   ];
 

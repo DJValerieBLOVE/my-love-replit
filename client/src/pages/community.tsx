@@ -16,8 +16,8 @@ export default function Community() {
           className="w-full h-full object-cover"
         />
         <div className="absolute bottom-0 left-0 p-6 z-20">
-          <h1 className="text-3xl font-serif font-bold text-foreground">Community Spaces</h1>
-          <p className="text-muted-foreground max-w-md">Connect with like-minded individuals on your journey.</p>
+          <h1 className="text-3xl font-serif font-bold text-foreground">Clubs</h1>
+          <p className="text-muted-foreground max-w-md">Intimate spaces for Magic Mamas to connect and grow.</p>
         </div>
       </div>
 
