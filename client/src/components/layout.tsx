@@ -37,6 +37,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Progress } from "@/components/ui/progress";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
@@ -55,54 +61,67 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <ThemeCustomizer />
       
       {/* Top Navigation Bar */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl px-4 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link href="/">
-            <div className="flex items-center gap-2 cursor-pointer">
-              <img src={Logo} alt="11x LOVE LaB" className="w-8 h-8 rounded-full shadow-lg" />
-              <span className="font-serif font-bold text-xl tracking-tight hidden md:block text-gradient-cyber">11x LOVE LaB</span>
+      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl px-4 h-32 flex flex-col items-center justify-center">
+        <div className="w-full flex items-center justify-between h-16">
+          <div className="flex items-center gap-4">
+            <Link href="/">
+              <div className="flex items-center gap-2 cursor-pointer">
+                <img src={Logo} alt="11x LOVE LaB" className="w-8 h-8 rounded-full shadow-lg" />
+                <span className="font-serif font-bold text-xl tracking-tight hidden md:block text-gradient-cyber">11x LOVE LaB</span>
+              </div>
+            </Link>
+          </div>
+
+          <div className="flex items-center gap-2 md:gap-4">
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-secondary/10 rounded-full border border-secondary/20">
+              <img src={SatsIcon} alt="Sats" className="w-5 h-5" />
+              <span className="font-bold text-sm text-secondary-foreground">{CURRENT_USER.walletBalance.toLocaleString()}</span>
             </div>
-          </Link>
+
+            <Button variant="ghost" size="icon" className="rounded-full">
+              <Bell className="w-5 h-5" />
+            </Button>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Avatar className="h-9 w-9 cursor-pointer ring-2 ring-primary/20 transition-all hover:ring-primary">
+                  <AvatarImage src={CURRENT_USER.avatar} />
+                  <AvatarFallback>SJ</AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <Link href="/profile"><DropdownMenuItem>Profile</DropdownMenuItem></Link>
+                <Link href="/wallet"><DropdownMenuItem>Wallet</DropdownMenuItem></Link>
+                <DropdownMenuItem>Settings</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
 
         {/* Center EQ Visualizer (Hidden on mobile) */}
-        <div className="hidden md:flex items-center justify-center gap-1 flex-1 max-w-md mx-4 h-8">
-          {LOVE_CODE_AREAS.map((area) => (
-            <div 
-              key={area.id} 
-              className={cn("w-full h-full rounded-full opacity-80 hover:opacity-100 hover:scale-110 transition-all cursor-pointer", area.color)}
-              style={{ height: `${20 + (area.progress / 100) * 80}%` }}
-              title={`${area.name}: ${area.progress}%`}
-            />
-          ))}
-        </div>
-
-        <div className="flex items-center gap-2 md:gap-4">
-          <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-secondary/10 rounded-full border border-secondary/20">
-            <img src={SatsIcon} alt="Sats" className="w-5 h-5" />
-            <span className="font-bold text-sm text-secondary-foreground">{CURRENT_USER.walletBalance.toLocaleString()}</span>
+        <TooltipProvider>
+          <div className="hidden md:flex items-end justify-center gap-1 flex-1 w-full max-w-2xl h-16 px-4">
+            {LOVE_CODE_AREAS.map((area) => (
+              <Tooltip key={area.id}>
+                <TooltipTrigger asChild>
+                  <div 
+                    className={cn("w-full rounded-t-lg opacity-80 hover:opacity-100 transition-all cursor-pointer hover:scale-y-110", area.color)}
+                    style={{ height: `${20 + (area.progress / 100) * 80}%` }}
+                    data-testid={`eq-bar-${area.id}`}
+                  />
+                </TooltipTrigger>
+                <TooltipContent side="top" className="bg-black/90 text-white border border-white/20 backdrop-blur-sm">
+                  <div className="text-center">
+                    <p className="font-semibold">{area.name}</p>
+                    <p className="text-sm font-bold text-green-400">{area.progress}% Complete</p>
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            ))}
           </div>
-
-          <Button variant="ghost" size="icon" className="rounded-full">
-            <Bell className="w-5 h-5" />
-          </Button>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Avatar className="h-9 w-9 cursor-pointer ring-2 ring-primary/20 transition-all hover:ring-primary">
-                <AvatarImage src={CURRENT_USER.avatar} />
-                <AvatarFallback>SJ</AvatarFallback>
-              </Avatar>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <Link href="/profile"><DropdownMenuItem>Profile</DropdownMenuItem></Link>
-              <Link href="/wallet"><DropdownMenuItem>Wallet</DropdownMenuItem></Link>
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        </TooltipProvider>
       </header>
 
       <div className="flex-1 flex overflow-hidden">
