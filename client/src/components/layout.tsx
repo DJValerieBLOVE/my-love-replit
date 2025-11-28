@@ -224,40 +224,36 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Widget 3: Current Focus */}
-          <div className="bg-gradient-to-br from-cyan-500/20 via-teal-500/20 to-blue-500/20 rounded-xs border border-cyan-400/40 hover:border-cyan-400/60 transition-colors p-4" data-testid="widget-focus">
-            <div className="flex items-start justify-between gap-2 mb-2">
-              <h4 className="font-bold text-xs uppercase text-cyan-500">Current Focus</h4>
-              <span className="text-xs px-2 py-0.5 bg-cyan-500/40 text-cyan-200 rounded-full">80%</span>
-            </div>
-            <div className="mb-2">
-              <p className="text-sm font-semibold text-white">Finance Sovereignty</p>
-              <p className="text-xs text-cyan-200">Financial Literacy Path</p>
-            </div>
-            <div className="w-full bg-cyan-500/20 rounded-full h-2">
-              <div className="bg-gradient-to-r from-cyan-500 to-blue-500 h-2 rounded-full w-4/5 shadow-md"></div>
+          <div className="bg-gradient-to-br from-white/5 to-white/5 rounded-xs border border-white/10 hover:border-white/20 transition-colors p-4" data-testid="widget-focus">
+            <h4 className="font-bold text-xs uppercase text-white/60 mb-2">Current Focus</h4>
+            <p className="text-sm font-semibold text-white mb-1">Finance Sovereignty</p>
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-white/50">80%</p>
+              <div className="w-16 bg-white/10 rounded-full h-1.5">
+                <div className="bg-white/40 h-1.5 rounded-full w-4/5"></div>
+              </div>
             </div>
           </div>
 
           {/* Widget 4: Upcoming Event */}
-          <div className="rounded-xs overflow-hidden border border-pink-400/40 hover:border-pink-400/60 transition-colors group cursor-pointer" data-testid="widget-event">
-            <div className="relative h-24 bg-gradient-to-br from-pink-600 to-rose-600 overflow-hidden">
-              <div className="absolute top-2 right-2 bg-white/20 backdrop-blur-sm px-2 py-0.5 rounded-full text-xs font-bold text-white">
-                Nov 30
+          <div className="bg-gradient-to-br from-white/5 to-white/5 rounded-xs border border-white/10 hover:border-white/20 transition-colors p-4" data-testid="widget-event">
+            <h4 className="font-bold text-xs uppercase text-white/60 mb-2">Upcoming Event</h4>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-white">Full Moon Ceremony</p>
+                <p className="text-xs text-white/50">Nov 30</p>
               </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-3">
-                <p className="text-sm font-bold text-white">Full Moon Ceremony</p>
-              </div>
+              <span className="text-lg">🌙</span>
             </div>
-            <div className="bg-pink-500/30 p-3 text-xs text-pink-100">📍 Online Event</div>
           </div>
 
           {/* Widget 5: Poll of the Day */}
-          <div className="bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-xs border border-indigo-400/40 hover:border-indigo-400/60 transition-colors p-4" data-testid="widget-poll">
-            <h4 className="font-bold text-xs uppercase text-indigo-400 mb-3">Poll of the Day</h4>
-            <p className="text-sm font-semibold text-white mb-3">What area needs the most focus?</p>
-            <div className="space-y-2">
+          <div className="bg-gradient-to-br from-white/5 to-white/5 rounded-xs border border-white/10 hover:border-white/20 transition-colors p-4" data-testid="widget-poll">
+            <h4 className="font-bold text-xs uppercase text-white/60 mb-2">Poll of the Day</h4>
+            <p className="text-xs text-white/80 mb-2">What area needs focus?</p>
+            <div className="space-y-1">
               {['Health', 'Relationships', 'Career'].map((option, i) => (
-                <button key={i} className="w-full text-left text-xs p-2 rounded-sm bg-indigo-500/20 hover:bg-indigo-500/40 transition-colors text-indigo-100 font-medium">
+                <button key={i} className="w-full text-left text-xs py-1.5 px-2 rounded-xs bg-white/5 hover:bg-white/10 transition-colors text-white/70 hover:text-white/90 font-medium">
                   {option}
                 </button>
               ))}
@@ -265,19 +261,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Widget 6: Who to Follow */}
-          <div className="bg-gradient-to-br from-emerald-500/20 to-green-500/20 rounded-xs border border-emerald-400/40 hover:border-emerald-400/60 transition-colors p-4" data-testid="widget-follow">
-            <h4 className="font-bold text-xs uppercase text-emerald-500 mb-3">Who to Follow</h4>
+          <div className="bg-gradient-to-br from-white/5 to-white/5 rounded-xs border border-white/10 hover:border-white/20 transition-colors p-4" data-testid="widget-follow">
+            <h4 className="font-bold text-xs uppercase text-white/60 mb-3">Who to Follow</h4>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-full bg-emerald-500/40 border-2 border-emerald-400 flex items-center justify-center text-xs font-bold text-white">
+                <div className="w-9 h-9 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-xs">
                   👤
                 </div>
                 <div>
                   <p className="text-xs font-bold text-white">Alex Luna</p>
-                  <p className="text-[10px] text-emerald-200">@alexluna</p>
+                  <p className="text-[10px] text-white/50">@alexluna</p>
                 </div>
               </div>
-              <Button className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs rounded-lg px-2.5 py-1 h-7 border-0" data-testid="button-follow">
+              <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold text-xs rounded-lg px-2 py-1 h-7 border-0" data-testid="button-follow">
                 Follow
               </Button>
             </div>
