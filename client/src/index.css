@@ -54,6 +54,7 @@
 
   --font-sans: 'Marcellus', Georgia, sans-serif;
   --font-serif: 'Marcellus', Georgia, serif;
+  --font-display: 'Playfair Display', Georgia, serif;
   
   --radius: 1.5rem;
 }
@@ -163,7 +164,8 @@
     font-size: 18px;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-serif font-semibold tracking-tight;
+    font-family: 'Playfair Display', Georgia, serif;
+    @apply font-semibold tracking-tight;
   }
   p {
     font-size: 18px;
