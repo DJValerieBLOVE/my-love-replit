@@ -29,10 +29,10 @@ const buttonVariants = cva(
       },
       size: {
         // @replit changed sizes
-        default: "min-h-9 px-4 py-2",
-        sm: "min-h-8 rounded-lg px-3 text-xs",
-        lg: "min-h-10 rounded-lg px-8",
-        icon: "h-9 w-9 rounded-lg",
+        default: "h-8 px-4 py-1.5 text-sm",
+        sm: "h-8 rounded-lg px-3 text-xs",
+        lg: "h-8 rounded-lg px-8",
+        icon: "h-8 w-8 rounded-lg",
       },
     },
     defaultVariants: {
