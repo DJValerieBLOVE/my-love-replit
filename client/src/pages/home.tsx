@@ -7,7 +7,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { EqVisualizer } from "@/components/eq-visualizer";
 import { Link } from "wouter";
 import WhiteLogo from "@assets/white transparent vector and png art  11x LOVE logo _1764365495719.png";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { FiveVsWizard } from "@/components/daily-practice/five-vs-wizard";
 import { useState } from "react";
 
@@ -32,16 +31,11 @@ export default function Home() {
               <HelpCircle className="w-4 h-4" /> How it works
             </Button>
             
-            <Dialog open={isDailyOpen} onOpenChange={setIsDailyOpen}>
-              <DialogTrigger asChild>
-                <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold px-6 gap-2">
-                  <img src={WhiteLogo} alt="Logo" className="w-4 h-4" /> Daily 5 V's
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-2xl bg-transparent border-none shadow-none p-0">
-                 <FiveVsWizard onComplete={() => setIsDailyOpen(false)} />
-              </DialogContent>
-            </Dialog>
+            <Link href="/journal">
+              <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold px-6 gap-2">
+                <img src={WhiteLogo} alt="Logo" className="w-4 h-4" /> Daily 5 V's
+              </Button>
+            </Link>
           </div>
         </div>
 
