@@ -41,7 +41,7 @@ export default function Community() {
                     <Users className="w-3 h-3" />
                     <span>1.2k members</span>
                   </div>
-                  <Button variant="ghost" size="sm" className="h-7 px-2 -mr-2 group-hover:text-primary group-hover:translate-x-1 transition-all">
+                  <Button size="sm" className="h-7 px-3 -mr-2 bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold transition-all" data-testid="button-join-club">
                     Join <ArrowRight className="w-3 h-3 ml-1" />
                   </Button>
                 </div>
