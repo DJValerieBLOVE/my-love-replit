@@ -182,17 +182,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <img src={MagicMentor} alt="Magic Mentor" className="w-20 h-20 rounded-full border-3 border-purple-300 relative z-10 shadow-lg" />
               </div>
 
-              {/* Mentor Info */}
-              <h3 className="font-bold text-base font-serif text-white">Magic Mentor</h3>
-              <p className="text-sm text-purple-100 mb-3 italic font-medium">"Rock Your Dreams!"</p>
+              {/* Tagline */}
+              <p className="text-sm text-purple-100 mb-4 italic font-medium">"Rock Your Dreams!"</p>
 
-              {/* Ask Mentor Button */}
+              {/* Chat Button */}
               <Button 
                 onClick={() => setIsAiOpen(true)}
                 className="w-full bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold rounded-lg transition-all hover:shadow-lg border-0 text-xs py-1.5 h-8"
                 data-testid="button-ask-mentor"
               >
-                <Sparkles className="w-4 h-4 mr-1.5" /> Ask Magic Mentor
+                <Sparkles className="w-4 h-4 mr-1.5" /> Chat
               </Button>
             </div>
           </div>
