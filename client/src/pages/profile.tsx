@@ -77,12 +77,12 @@ export default function Profile() {
           <h2 className="font-bold text-lg mb-4">Badges</h2>
           <div className="grid grid-cols-3 md:grid-cols-5 gap-4">
             {CURRENT_USER.badges.map((badge, i) => (
-              <div key={i} className="aspect-square rounded-md bg-muted/50 flex flex-col items-center justify-center p-2 text-center gap-2 hover:bg-muted transition-colors cursor-pointer group">
+              <div key={i} className="aspect-square rounded-sm bg-muted/50 flex flex-col items-center justify-center p-2 text-center gap-2 hover:bg-muted transition-colors cursor-pointer group">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-300 to-orange-400 shadow-lg group-hover:scale-110 transition-transform" />
                 <span className="text-xs font-medium leading-tight">{badge}</span>
               </div>
             ))}
-            <div className="aspect-square rounded-md border-2 border-dashed border-muted flex flex-col items-center justify-center p-2 text-center gap-2 opacity-50">
+            <div className="aspect-square rounded-sm border-2 border-dashed border-muted flex flex-col items-center justify-center p-2 text-center gap-2 opacity-50">
               <div className="w-12 h-12 rounded-full bg-muted" />
               <span className="text-xs">Locked</span>
             </div>

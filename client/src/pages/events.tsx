@@ -78,7 +78,7 @@ export default function Events() {
                 <Calendar
                   mode="single"
                   selected={new Date()}
-                  className="rounded-md border-none w-full flex justify-center pointer-events-none"
+                  className="rounded-sm border-none w-full flex justify-center pointer-events-none"
                   classNames={{
                     head_row: "flex w-full justify-between",
                     head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
@@ -98,7 +98,7 @@ export default function Events() {
               </CardContent>
             </Card>
             
-            <div className="mt-6 p-4 bg-primary/5 rounded-md border border-primary/10">
+            <div className="mt-6 p-4 bg-primary/5 rounded-sm border border-primary/10">
               <h3 className="font-bold text-primary mb-2">Host an Event?</h3>
               <p className="text-sm text-muted-foreground mb-3">Community members can host their own gatherings.</p>
               <Button className="w-full rounded-lg bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold" data-testid="button-learn-more">Learn More</Button>

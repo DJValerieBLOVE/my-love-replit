@@ -166,7 +166,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {/* Right Sidebar (Gamification) */}
         <aside className="hidden xl:flex flex-col w-[300px] border-l bg-card/50 p-4 gap-4 overflow-y-auto">
           {/* Widget 1: Magic Mentor */}
-          <div className="bg-gradient-to-br from-purple-900/50 via-purple-800/40 to-pink-900/30 rounded-md border border-purple-500/40 p-3 text-center overflow-hidden relative group cursor-pointer hover:border-purple-500/60 transition-all shadow-md" data-testid="widget-mentor">
+          <div className="bg-gradient-to-br from-purple-900/50 via-purple-800/40 to-pink-900/30 rounded-sm border border-purple-500/40 p-3 text-center overflow-hidden relative group cursor-pointer hover:border-purple-500/60 transition-all shadow-md" data-testid="widget-mentor">
             <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-purple-500/40 to-pink-500/30 rounded-full -mr-12 -mt-12 blur-2xl group-hover:from-purple-500/50 group-hover:to-pink-500/40 transition-all" />
             
             <div className="relative z-10">
@@ -198,7 +198,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Widget 2: Streaks */}
-          <div className="bg-gradient-to-r from-orange-500/20 to-yellow-500/20 rounded-md border border-orange-400/40 hover:border-orange-400/60 transition-colors p-4" data-testid="widget-streaks">
+          <div className="bg-gradient-to-r from-orange-500/20 to-yellow-500/20 rounded-sm border border-orange-400/40 hover:border-orange-400/60 transition-colors p-4" data-testid="widget-streaks">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <Zap className="w-5 h-5 text-orange-500 fill-current" />
