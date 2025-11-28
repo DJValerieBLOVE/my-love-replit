@@ -94,7 +94,7 @@ export function EventCard({ event }: EventProps) {
               <span className="text-xs text-muted-foreground font-medium">+{event.attendees} going</span>
             </div>
 
-            <Button size="sm" variant="secondary" className="h-7 text-xs px-3 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+            <Button size="sm" className="h-7 text-xs px-3 bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold transition-colors" data-testid="button-event-rsvp">
               RSVP
             </Button>
           </div>
