@@ -86,7 +86,7 @@ export default function Events() {
                     cell: "h-9 w-9 text-center text-sm p-0 relative",
                     day: "h-9 w-9 p-0 font-normal flex items-center justify-center rounded-full",
                     day_selected: "!bg-[#6600ff] !text-white",
-                    day_today: "!bg-[#6600ff] !text-white",
+                    day_today: "!bg-[#6600ff] !text-white font-bold",
                     day_outside: "text-muted-foreground opacity-50",
                     day_disabled: "text-muted-foreground opacity-50",
                     day_hidden: "invisible",

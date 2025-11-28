@@ -225,4 +225,15 @@
   .text-gradient-cyber {
     @apply bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 text-transparent bg-clip-text;
   }
+
+  /* Calendar day styling */
+  [class*="day_today"] {
+    background-color: #6600ff !important;
+    color: white !important;
+  }
+
+  [class*="day_selected"] {
+    background-color: #6600ff !important;
+    color: white !important;
+  }
 }
