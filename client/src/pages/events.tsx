@@ -71,8 +71,8 @@ export default function Events() {
                 <div className="flex items-center justify-between mb-4 px-2">
                   <span className="font-bold text-lg">November 2025</span>
                   <div className="flex gap-1">
-                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md
-                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md
+                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md"><ChevronLeft className="w-4 h-4" /></Button>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md"><ChevronRight className="w-4 h-4" /></Button>
                   </div>
                 </div>
                 <Calendar
