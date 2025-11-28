@@ -263,7 +263,7 @@ export default function MissionDetail() {
                   <h3 className="font-bold mb-1">Presentation Slides</h3>
                   <p className="text-sm text-muted-foreground">PDF • 2.4 MB</p>
                 </div>
-                <Button variant="ghost" className="rounded-2xl" data-testid="button-download-slides">Download</Button>
+                <Button variant="ghost" className="rounded-lg" data-testid="button-download-slides">Download</Button>
               </CardContent>
             </Card>
             <Card className="border-none shadow-sm hover:shadow-md transition-all cursor-pointer" data-testid="card-material-workbook">

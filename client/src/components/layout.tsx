@@ -143,7 +143,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             return (
               <Link key={item.href} href={item.href}>
                 <div className={cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer group font-medium sidebar-menu text-base",
+                  "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 cursor-pointer group font-medium sidebar-menu text-base",
                   isActive 
                     ? "bg-primary/10 text-primary shadow-sm" 
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -164,109 +164,57 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </main>
 
         {/* Right Sidebar (Gamification) */}
-        <aside className="hidden xl:flex flex-col w-[320px] border-l bg-card/50 p-6 gap-6 overflow-y-auto">
-          {/* Widget 1: Magic Mentor Hub */}
-          <div className="bg-gradient-to-br from-purple-900/40 via-pink-900/30 to-purple-900/20 rounded-2xl border border-purple-400/30 p-6 text-center overflow-hidden relative group cursor-pointer hover:border-purple-400/50 transition-all shadow-lg" data-testid="widget-mentor">
-            <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-purple-500/30 to-pink-500/20 rounded-full -mr-20 -mt-20 blur-3xl group-hover:from-purple-500/40 group-hover:to-pink-500/30 transition-all" />
+        <aside className="hidden xl:flex flex-col w-[300px] border-l bg-card/50 p-4 gap-4 overflow-y-auto">
+          {/* Widget 1: Magic Mentor */}
+          <div className="bg-gradient-to-br from-purple-900/50 via-purple-800/40 to-pink-900/30 rounded-lg border border-purple-500/40 p-5 text-center overflow-hidden relative group cursor-pointer hover:border-purple-500/60 transition-all shadow-md" data-testid="widget-mentor">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/40 to-pink-500/30 rounded-full -mr-16 -mt-16 blur-2xl group-hover:from-purple-500/50 group-hover:to-pink-500/40 transition-all" />
             
             <div className="relative z-10">
               {/* VIP Level Badge */}
-              <div className="inline-flex items-center gap-2 bg-yellow-400/20 border border-yellow-400/50 rounded-full px-3 py-1.5 mb-4">
-                <Sparkles className="w-4 h-4 text-yellow-300" />
-                <span className="text-xs font-bold text-yellow-300">Level 12</span>
+              <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-2.5 py-1 mb-3">
+                <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
+                <span className="text-xs font-bold text-white">Level 12</span>
               </div>
 
               {/* Mentor Image */}
-              <div className="relative inline-block mb-5 mt-3">
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-pink-500 blur-2xl opacity-50 rounded-full" />
-                <img src={MagicMentor} alt="Magic Mentor" className="w-28 h-28 rounded-full border-3 border-yellow-400/50 relative z-10 shadow-2xl" />
+              <div className="relative inline-block mb-3 mt-2">
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-pink-500 blur-xl opacity-40 rounded-full" />
+                <img src={MagicMentor} alt="Magic Mentor" className="w-20 h-20 rounded-full border-2 border-purple-400 relative z-10 shadow-lg" />
               </div>
 
               {/* Mentor Info */}
-              <h3 className="font-bold text-lg font-serif mb-2 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">Your Magic Mentor</h3>
-              <p className="text-xs text-purple-200 mb-2 italic">"You're crushing your Soul mission, Sarah!"</p>
-              
-              {/* Level Progress */}
-              <div className="mt-5 space-y-2 bg-black/20 rounded-xl p-3">
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-yellow-300 font-semibold">Progress to Guide Master</span>
-                  <span className="font-black text-yellow-300">65%</span>
-                </div>
-                <Progress value={65} className="h-2 bg-purple-900/50" />
-              </div>
+              <h3 className="font-bold text-base font-serif mb-1 text-white">Your Magic Mentor</h3>
+              <p className="text-xs text-purple-100 mb-3 italic">"Crush your goals today!"</p>
 
               {/* Ask Mentor Button */}
               <Button 
                 onClick={() => setIsAiOpen(true)}
-                className="w-full mt-5 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 hover:from-purple-700 hover:via-pink-700 hover:to-purple-700 text-white font-bold rounded-xl transition-all hover:shadow-xl border border-purple-400/40"
+                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold rounded-lg transition-all hover:shadow-lg border-0 text-sm"
                 data-testid="button-ask-mentor"
               >
-                <Sparkles className="w-4 h-4 mr-2" /> Ask Mentor
+                <Sparkles className="w-3.5 h-3.5 mr-2" /> Ask Mentor
               </Button>
             </div>
           </div>
 
-          {/* Widget 2: Stats Hub */}
-          <div className="space-y-4" data-testid="widget-stats">
-            {/* Wallet */}
-            <div className="bg-gradient-to-br from-orange-900/30 to-yellow-900/20 rounded-xl border border-orange-400/30 p-4 text-center">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <img src={BitcoinIcon} alt="Bitcoin" className="w-5 h-5 rounded-full" />
-                <span className="text-xs font-bold text-orange-300 uppercase">Wallet</span>
+          {/* Widget 2: Streaks */}
+          <div className="bg-gradient-to-br from-orange-500/30 via-yellow-500/20 to-orange-400/20 rounded-lg border border-orange-400/50 p-4" data-testid="widget-streaks">
+            <div className="flex justify-between items-center mb-3">
+              <div className="flex items-center gap-2">
+                <Zap className="w-4 h-4 text-orange-300 fill-current" />
+                <h4 className="font-bold text-xs uppercase text-orange-200">Streak</h4>
               </div>
-              <p className="text-2xl font-black text-orange-400">{CURRENT_USER.walletBalance.toLocaleString()}</p>
-              <p className="text-xs text-orange-200">Sats Available</p>
+              <span className="text-2xl font-black text-orange-300">{CURRENT_USER.streak}</span>
             </div>
-
-            {/* Streak */}
-            <div className="bg-gradient-to-br from-orange-900/30 to-yellow-900/20 rounded-xl border border-orange-400/30 p-4">
-              <div className="flex justify-between items-center mb-3">
-                <div className="flex items-center gap-2">
-                  <Zap className="w-4 h-4 text-orange-400 fill-current" />
-                  <h4 className="font-bold text-xs uppercase text-orange-300">Streak</h4>
+            <div className="flex justify-between gap-1">
+              {['M','T','W','T','F','S','S'].map((d, i) => (
+                <div key={i} className={cn(
+                  "flex-1 h-5 rounded-sm flex items-center justify-center text-[9px] font-bold transition-all",
+                  i < 5 ? "bg-orange-500 text-white shadow-sm" : "bg-muted/40 text-muted-foreground"
+                )}>
+                  {d}
                 </div>
-                <span className="text-2xl font-black text-orange-400">{CURRENT_USER.streak}</span>
-              </div>
-              <div className="flex justify-between gap-1">
-                {['M','T','W','T','F','S','S'].map((d, i) => (
-                  <div key={i} className={cn(
-                    "flex-1 h-6 rounded-md flex items-center justify-center text-[10px] font-bold transition-all",
-                    i < 5 ? "bg-orange-500 text-white shadow-md" : "bg-muted/50 text-muted-foreground"
-                  )}>
-                    {d}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* VIP Level */}
-            <div className="bg-gradient-to-br from-purple-900/30 to-pink-900/20 rounded-xl border border-purple-400/30 p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Sparkles className="w-4 h-4 text-yellow-400" />
-                <h4 className="font-bold text-xs uppercase text-purple-300">VIP Level</h4>
-              </div>
-              <p className="text-lg font-bold text-purple-300 mb-2">Level 12</p>
-              <Progress value={65} className="h-2 bg-purple-900/50" />
-              <p className="text-xs text-purple-200 mt-1">65% to Guide Master</p>
-            </div>
-
-            {/* Next Mission */}
-            <div>
-              <h4 className="font-bold text-xs text-muted-foreground uppercase tracking-wider mb-2">Up Next Mission</h4>
-              <div className="bg-card rounded-xl overflow-hidden border border-border group cursor-pointer hover:border-primary transition-colors shadow-sm">
-                <div className="h-20 bg-black/50 relative">
-                  <img src={Course1} className="w-full h-full object-cover opacity-75 group-hover:scale-110 transition-transform" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-                  <div className="absolute bottom-2 left-3 text-white font-bold text-xs">Finance Sovereignty</div>
-                </div>
-                <div className="p-2.5">
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="text-muted-foreground">Progress</span>
-                    <span className="font-bold text-mission">25%</span>
-                  </div>
-                  <Progress value={25} className="h-1.5" />
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </aside>
