@@ -41,7 +41,7 @@ export default function Community() {
                   <span>1.2k members</span>
                 </div>
                 <div className="flex-1 flex items-end justify-center">
-                  <Button size="sm" className="h-7 px-6 bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold transition-all" data-testid="button-join-club">
+                  <Button size="sm" className="h-8 px-6 bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold transition-all" data-testid="button-join-club">
                     Join <ArrowRight className="w-3 h-3 ml-1" />
                   </Button>
                 </div>
