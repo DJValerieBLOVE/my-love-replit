@@ -199,17 +199,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
           {/* Widget 2: Streaks */}
           <div className="bg-gradient-to-r from-orange-500/20 to-yellow-500/20 rounded-xs border border-orange-400/40 hover:border-orange-400/60 transition-colors p-4" data-testid="widget-streaks">
-            <div className="flex items-center justify-between mb-4">
+            {/* Header + Days on one line */}
+            <div className="flex items-center justify-between gap-2 mb-4">
               <div className="flex items-center gap-2">
                 <Zap className="w-5 h-5 text-orange-500 fill-current" />
                 <h4 className="font-bold text-xs uppercase text-orange-500">Streak</h4>
               </div>
-            </div>
-
-            {/* Days Number + Label */}
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <span className="text-3xl font-black text-orange-500">{CURRENT_USER.streak}</span>
-              <span className="text-sm font-bold text-orange-600">Days</span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-2xl font-black text-orange-500">{CURRENT_USER.streak}</span>
+                <span className="text-xs font-bold text-orange-600">Days</span>
+              </div>
             </div>
 
             {/* Day Circles */}
