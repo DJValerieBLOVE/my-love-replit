@@ -16,8 +16,8 @@ export default function Community() {
           className="w-full h-full object-cover"
         />
         <div className="absolute bottom-0 left-0 p-6 z-20">
-          <h1 className="text-3xl font-serif font-bold text-foreground">Clubs</h1>
-          <p className="text-muted-foreground max-w-md">Intimate spaces for Magic Mamas to connect and grow.</p>
+          <h1 className="text-3xl font-serif font-medium text-foreground">Clubs</h1>
+          <p className="text-muted-foreground max-w-md">Intimate spaces to connect and grow.</p>
         </div>
       </div>
 
@@ -30,7 +30,7 @@ export default function Community() {
                 <div className={`w-10 h-10 rounded-lg bg-muted flex items-center justify-center mb-2 group-hover:scale-110 transition-transform duration-300 ${space.color}`}>
                   <space.icon className="w-6 h-6" />
                 </div>
-                <CardTitle className="text-lg">{space.name}</CardTitle>
+                <CardTitle className={`text-lg font-serif ${space.color}`}>{space.name}</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col flex-1">
                 <p className="text-base text-muted-foreground mb-4 line-clamp-2">
