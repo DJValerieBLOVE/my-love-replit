@@ -23,7 +23,7 @@ export default function Home() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="outline" className="gap-2">
+            <Button variant="outline" className="gap-2 font-bold text-muted-foreground border-muted hover:border-primary/50 hover:text-primary shadow-sm bg-background">
               <HelpCircle className="w-4 h-4" /> How it works
             </Button>
             <Link href="/big-dreams">
@@ -92,7 +92,7 @@ export default function Home() {
                     <div className="bg-primary h-2 rounded-full w-[42%]" />
                   </div>
                 </div>
-                <Button className="w-full" variant="outline">Continue</Button>
+                <Button className="w-full font-bold text-muted-foreground border-muted hover:border-primary/50 hover:text-primary shadow-sm bg-background" variant="outline">Continue</Button>
               </CardContent>
             </Card>
           </div>

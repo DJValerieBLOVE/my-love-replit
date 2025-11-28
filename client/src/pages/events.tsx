@@ -2,7 +2,7 @@ import Layout from "@/components/layout";
 import { EVENTS } from "@/lib/mock-data";
 import { EventCard } from "@/components/event-card";
 import { Button } from "@/components/ui/button";
-import { Calendar as CalendarIcon, Plus, Filter, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar as CalendarIcon, Plus, Filter, Search, ChevronLeft, ChevronRight, Users } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import EventHeader from "@assets/generated_images/zoom_meeting_event.png";
@@ -148,6 +148,17 @@ export default function Events() {
               <h3 className="font-bold text-primary mb-2">Host an Event?</h3>
               <p className="text-base text-muted-foreground mb-3">Community members can host their own gatherings.</p>
               <Button className="w-full rounded-lg bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold px-6 py-1.5 h-8" data-testid="button-learn-more">Learn More</Button>
+            </div>
+
+            <div className="mt-6">
+              <Card className="p-6 border-dashed border-2 flex flex-col items-center justify-center text-center py-8 bg-muted/30 border-muted">
+                <div className="w-12 h-12 bg-background rounded-full flex items-center justify-center mb-3 shadow-sm">
+                  <Users className="w-6 h-6 text-muted-foreground" />
+                </div>
+                <h3 className="font-bold">Live Q&A with Dr. Maya</h3>
+                <p className="text-sm text-muted-foreground mt-1 mb-4">Friday, 2:00 PM EST • Zoom</p>
+                <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold rounded-lg px-6 py-1.5 h-8 w-full" data-testid="button-rsvp-sidebar">RSVP Now</Button>
+              </Card>
             </div>
           </div>
         </div>
