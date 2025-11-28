@@ -123,29 +123,20 @@ export default function Events() {
                   .rdp-day {
                     border-radius: 50% !important;
                   }
-                  [aria-selected="true"] {
+                  .rdp-day_selected,
+                  .rdp-day_selected:hover,
+                  .rdp-day_today,
+                  .rdp-day_today:hover,
+                  [aria-selected="true"],
+                  [aria-current="date"] {
                     background-color: #6600ff !important;
                     color: white !important;
                     border-radius: 50% !important;
                     font-weight: bold !important;
                   }
-                  .rdp-day_selected {
+                  .rdp-button[aria-selected]:focus,
+                  .rdp-button[aria-current]:focus {
                     background-color: #6600ff !important;
-                    color: white !important;
-                    border-radius: 50% !important;
-                    font-weight: bold !important;
-                  }
-                  .rdp-day_today {
-                    background-color: #6600ff !important;
-                    color: white !important;
-                    border-radius: 50% !important;
-                    font-weight: bold !important;
-                  }
-                  button[aria-current="date"] {
-                    background-color: #6600ff !important;
-                    color: white !important;
-                    border-radius: 50% !important;
-                    font-weight: bold !important;
                   }
                   ${Array.from(eventDays).map(day => `
                     .rdp-cell:nth-child(${(day - 1) % 7 + 1}) .rdp-day:not(.rdp-day_selected):not(.rdp-day_today)::after {
