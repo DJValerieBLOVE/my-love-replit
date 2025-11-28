@@ -19,7 +19,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { CURRENT_USER, CLUBS, MISSIONS, LOVE_CODE_AREAS } from "@/lib/mock-data";
-import Logo from "@assets/11x_love_logo_rainbow.png";
+import Logo from "../assets/11x_love_logo_rainbow.png";
 import SatsIcon from "@assets/generated_images/sats_icon.png";
 import MagicMentor from "@assets/djvalerieblove_twirling_bitcoin_goddess_colorful_vivid_psyche_4e0fb7f6-b95b-488f-9d18-eb77e7dd0a60_1_1764334332945.png";
 import Course1 from "@assets/generated_images/missions_header.png";
