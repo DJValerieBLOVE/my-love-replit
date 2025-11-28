@@ -54,7 +54,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const navLinks = [
     { icon: Home, label: "Home", href: "/" },
-    { icon: Book, label: "Journal", href: "/journal" },
+    { icon: Target, label: "Big Dreams", href: "/big-dreams" },
     { icon: FlaskConical, label: "Experiments", href: "/experiments" },
     { icon: Wrench, label: "Toolbox", href: "/toolbox" },
     { icon: Music, label: "Resources", href: "/resources" },

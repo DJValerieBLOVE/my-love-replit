@@ -25,7 +25,7 @@ export default function Home() {
             <Button variant="outline" className="gap-2">
               <HelpCircle className="w-4 h-4" /> How it works
             </Button>
-            <Link href="/journal">
+            <Link href="/big-dreams">
               <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold px-6 shadow-lg shadow-primary/20 gap-2">
                 <Play className="w-4 h-4 fill-current" /> Daily 5 V's
               </Button>
