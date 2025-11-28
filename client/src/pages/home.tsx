@@ -22,7 +22,7 @@ export default function Home() {
             </h1>
             <p className="text-muted-foreground">You're on a 12-day streak. Keep it up!</p>
           </div>
-          <Button className="hidden md:flex hover:opacity-90 transition-opacity font-semibold px-6 py-2" style={{ fontSize: "16px", backgroundColor: "#6600ff", borderRadius: "20px" }}>
+          <Button className="hidden md:flex hover:opacity-90 transition-opacity font-semibold px-6 py-2 rounded-full" style={{ backgroundColor: "#6600ff" }}>
             <Plus className="w-4 h-4 mr-2" /> New Post
           </Button>
         </div>
