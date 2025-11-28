@@ -199,18 +199,25 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
           {/* Widget 2: Streaks */}
           <div className="bg-gradient-to-r from-orange-500/20 to-yellow-500/20 rounded-xs border border-orange-400/40 hover:border-orange-400/60 transition-colors p-4" data-testid="widget-streaks">
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <Zap className="w-5 h-5 text-orange-500 fill-current" />
                 <h4 className="font-bold text-xs uppercase text-orange-500">Streak</h4>
               </div>
-              <span className="text-2xl font-black text-orange-500">{CURRENT_USER.streak}</span>
             </div>
-            <div className="flex justify-between gap-1">
+
+            {/* Days Number + Label */}
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <span className="text-3xl font-black text-orange-500">{CURRENT_USER.streak}</span>
+              <span className="text-sm font-bold text-orange-600">Days</span>
+            </div>
+
+            {/* Day Circles */}
+            <div className="flex justify-between gap-1.5">
               {['M','T','W','T','F','S','S'].map((d, i) => (
                 <div key={i} className={cn(
-                  "flex-1 h-6 rounded-xs flex items-center justify-center text-xs font-bold transition-all",
-                  i < 5 ? "bg-orange-500 text-white shadow-md" : "bg-white/20 text-white/50"
+                  "flex-1 aspect-square rounded-full flex items-center justify-center text-xs font-bold transition-all",
+                  i < 5 ? "bg-orange-500 text-white shadow-md" : "bg-orange-400/40 text-orange-700 border-2 border-orange-400/60 font-bold"
                 )}>
                   {d}
                 </div>
