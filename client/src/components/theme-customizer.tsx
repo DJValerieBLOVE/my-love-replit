@@ -113,7 +113,7 @@ export function ThemeCustomizer() {
                 <div 
                   key={theme.id}
                   className={`
-                    cursor-pointer rounded-xl border-2 p-4 transition-all hover:scale-[1.02]
+                    cursor-pointer rounded-md
                     ${activeTheme === theme.id ? "border-primary ring-2 ring-primary/20" : "border-muted"}
                   `}
                   onClick={() => applyTheme(theme.id)}
@@ -171,7 +171,7 @@ export function ThemeCustomizer() {
           </TabsContent>
 
           <TabsContent value="branding" className="space-y-6">
-            <div className="bg-muted/30 p-4 rounded-xl border-2 border-dashed text-center">
+            <div className="bg-muted/30 p-4 rounded-md
               <div className="w-16 h-16 mx-auto bg-muted rounded-full flex items-center justify-center mb-3">
                 <LayoutTemplate className="w-6 h-6 text-muted-foreground" />
               </div>

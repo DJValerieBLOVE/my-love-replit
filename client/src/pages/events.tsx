@@ -71,8 +71,8 @@ export default function Events() {
                 <div className="flex items-center justify-between mb-4 px-2">
                   <span className="font-bold text-lg">November 2025</span>
                   <div className="flex gap-1">
-                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-xl"><ChevronLeft className="w-4 h-4" /></Button>
-                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-xl"><ChevronRight className="w-4 h-4" /></Button>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md
+                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md
                   </div>
                 </div>
                 <Calendar
@@ -98,7 +98,7 @@ export default function Events() {
               </CardContent>
             </Card>
             
-            <div className="mt-6 p-4 bg-primary/5 rounded-xl border border-primary/10">
+            <div className="mt-6 p-4 bg-primary/5 rounded-md
               <h3 className="font-bold text-primary mb-2">Host an Event?</h3>
               <p className="text-sm text-muted-foreground mb-3">Community members can host their own gatherings.</p>
               <Button className="w-full rounded-lg bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold" data-testid="button-learn-more">Learn More</Button>

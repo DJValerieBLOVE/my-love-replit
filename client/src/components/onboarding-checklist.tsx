@@ -70,7 +70,7 @@ export function OnboardingChecklist({ data: initialData, className }: Props) {
   return (
     <div className={cn("space-y-4", className)}>
       {progress === 100 ? (
-        <div className="text-center p-8 bg-primary/10 rounded-2xl border-2 border-primary/20 animate-in zoom-in duration-500">
+        <div className="text-center p-8 bg-primary/10 rounded-md border-2 border-primary/20 animate-in zoom-in duration-500">
           <div className="w-16 h-16 bg-primary/20 text-primary rounded-full flex items-center justify-center mx-auto mb-4">
             <PartyPopper className="w-8 h-8" />
           </div>

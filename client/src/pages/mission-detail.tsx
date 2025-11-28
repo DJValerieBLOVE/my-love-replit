@@ -66,7 +66,7 @@ export default function MissionDetail() {
         </Link>
 
         {/* Hero Section */}
-        <div className="relative mb-8 rounded-2xl overflow-hidden h-80">
+        <div className="relative mb-8 rounded-md overflow-hidden h-80">
           <div className="absolute inset-0 bg-black/30 z-10" />
           <img 
             src={mission.image} 
@@ -239,7 +239,7 @@ export default function MissionDetail() {
               <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <Video className="w-20 h-20 text-primary/40 group-hover:text-primary/60 transition-colors" />
               <Button 
-                className="absolute gap-2 bg-primary hover:bg-primary/90 rounded-2xl px-6 py-3"
+                className="absolute gap-2 bg-primary hover:bg-primary/90 rounded-md px-6 py-3"
                 data-testid="button-play-video"
               >
                 <PlayCircle className="w-5 h-5" /> Play Lesson
@@ -272,7 +272,7 @@ export default function MissionDetail() {
                   <h3 className="font-bold mb-1">Student Workbook</h3>
                   <p className="text-sm text-muted-foreground">DOCX • 1.8 MB</p>
                 </div>
-                <Button variant="ghost" className="rounded-2xl" data-testid="button-download-workbook">Download</Button>
+                <Button variant="ghost" className="rounded-md" data-testid="button-download-workbook">Download</Button>
               </CardContent>
             </Card>
             <Card className="border-none shadow-sm hover:shadow-md transition-all cursor-pointer" data-testid="card-material-resources">
@@ -281,7 +281,7 @@ export default function MissionDetail() {
                   <h3 className="font-bold mb-1">Additional Resources</h3>
                   <p className="text-sm text-muted-foreground">LINK • External</p>
                 </div>
-                <Button variant="ghost" className="rounded-2xl" data-testid="button-view-resources">View</Button>
+                <Button variant="ghost" className="rounded-md" data-testid="button-view-resources">View</Button>
               </CardContent>
             </Card>
             <Card className="border-none shadow-sm hover:shadow-md transition-all cursor-pointer" data-testid="card-material-transcript">
@@ -290,7 +290,7 @@ export default function MissionDetail() {
                   <h3 className="font-bold mb-1">Video Transcript</h3>
                   <p className="text-sm text-muted-foreground">TXT • 285 KB</p>
                 </div>
-                <Button variant="ghost" className="rounded-2xl" data-testid="button-download-transcript">Download</Button>
+                <Button variant="ghost" className="rounded-md" data-testid="button-download-transcript">Download</Button>
               </CardContent>
             </Card>
           </div>
@@ -317,14 +317,14 @@ export default function MissionDetail() {
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                     placeholder="Share your thoughts, questions, or insights with the community..."
-                    className="w-full p-3 rounded-2xl bg-muted text-foreground placeholder-muted-foreground border border-border focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
+                    className="w-full p-3 rounded-md bg-muted text-foreground placeholder-muted-foreground border border-border focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
                     rows={3}
                     data-testid="textarea-discussion"
                   />
                   <div className="mt-3 flex justify-end">
                     <Button 
                       onClick={handleAddComment}
-                      className="gap-2 bg-primary hover:bg-primary/90 rounded-2xl"
+                      className="gap-2 bg-primary hover:bg-primary/90 rounded-md"
                       data-testid="button-post-comment"
                     >
                       <Send className="w-4 h-4" /> Post Comment
@@ -357,7 +357,7 @@ export default function MissionDetail() {
                       <Button 
                         variant="ghost" 
                         size="sm"
-                        className="text-muted-foreground hover:text-primary rounded-2xl"
+                        className="text-muted-foreground hover:text-primary rounded-md"
                         data-testid={`button-like-comment-${comment.id}`}
                       >
                         ❤️ {comment.likes}

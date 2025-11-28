@@ -156,21 +156,21 @@ export default function Leaderboard() {
 
         {/* Stats Footer */}
         <div className="grid grid-cols-3 gap-4 pt-6 border-t border-white/10">
-          <Card className="bg-card rounded-xl border-border">
+          <Card className="bg-card rounded-md
             <CardContent className="p-4 text-center">
               <TrendingUp className="w-5 h-5 text-blue-400 mx-auto mb-2" />
               <p className="text-2xl font-black text-blue-400">{LEADERBOARD_DATA.length}</p>
               <p className="text-xs text-muted-foreground mt-1">Total Guides</p>
             </CardContent>
           </Card>
-          <Card className="bg-card rounded-xl border-border">
+          <Card className="bg-card rounded-md
             <CardContent className="p-4 text-center">
               <Trophy className="w-5 h-5 text-yellow-400 mx-auto mb-2" />
               <p className="text-2xl font-black text-yellow-400">{Math.max(...LEADERBOARD_DATA.map(u => u.sats)).toLocaleString()}</p>
               <p className="text-xs text-muted-foreground mt-1">Highest Sats</p>
             </CardContent>
           </Card>
-          <Card className="bg-card rounded-xl border-border">
+          <Card className="bg-card rounded-md
             <CardContent className="p-4 text-center">
               <Zap className="w-5 h-5 text-orange-400 mx-auto mb-2 fill-current" />
               <p className="text-2xl font-black text-orange-400">{Math.max(...LEADERBOARD_DATA.map(u => u.streak))}</p>

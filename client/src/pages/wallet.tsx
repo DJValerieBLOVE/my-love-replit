@@ -82,7 +82,7 @@ export default function Wallet() {
           </h3>
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/50 hover:bg-muted/50 transition-colors">
+              <div key={i} className="flex items-center justify-between p-4 rounded-md
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
                     <Zap className="w-5 h-5 text-orange-500" />

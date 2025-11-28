@@ -55,7 +55,7 @@ export function FeedPost({ post }: FeedPostProps) {
             </p>
             
             {post.image && (
-              <div className="mt-3 rounded-xl overflow-hidden border border-border/50">
+              <div className="mt-3 rounded-md
                 <img src={post.image} alt="Post content" className="w-full h-auto object-cover max-h-[400px]" />
               </div>
             )}
