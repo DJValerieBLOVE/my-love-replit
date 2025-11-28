@@ -9,10 +9,11 @@ import {
   Home 
 } from "lucide-react";
 
-import HeroBg from "@assets/generated_images/hero_background.png";
-import Course1 from "@assets/generated_images/meditation_course_cover.png";
+import HeroBg from "@assets/generated_images/cyber_goddess_background.png";
+import Course1 from "@assets/generated_images/missions_header.png";
 import Course2 from "@assets/generated_images/bitcoin_course_cover.png";
 import CommunityCover from "@assets/generated_images/community_cover.png";
+import MagicMentor from "@assets/generated_images/magic_mentor_avatar.png";
 
 export const CURRENT_USER = {
   id: "user-1",
@@ -22,9 +23,123 @@ export const CURRENT_USER = {
   xp: 2450,
   level: "Guide",
   streak: 12,
-  walletBalance: 12500, // sats
-  badges: ["Early Adopter", "Zap Queen", "Course Finisher"],
+  walletBalance: 21000, // sats
+  badges: ["Early Adopter", "Zap Queen", "Mission Accomplished"],
 };
+
+export const LOVE_CODE_AREAS = [
+  { id: "god-love", name: "GOD/LOVE", color: "bg-[hsl(320,100%,50%)]", progress: 85 },
+  { id: "romance", name: "Romance", color: "bg-[hsl(350,100%,60%)]", progress: 60 },
+  { id: "family", name: "Family", color: "bg-[hsl(25,100%,60%)]", progress: 75 },
+  { id: "community", name: "Community", color: "bg-[hsl(50,100%,60%)]", progress: 90 },
+  { id: "world-mission", name: "World/Mission", color: "bg-[hsl(80,100%,60%)]", progress: 40 },
+  { id: "money", name: "Money", color: "bg-[hsl(140,100%,60%)]", progress: 55 },
+  { id: "time", name: "Time", color: "bg-[hsl(180,100%,60%)]", progress: 30 },
+  { id: "environment", name: "Environment", color: "bg-[hsl(200,100%,60%)]", progress: 70 },
+  { id: "body", name: "Body", color: "bg-[hsl(240,100%,70%)]", progress: 65 },
+  { id: "mind", name: "Mind", color: "bg-[hsl(270,100%,65%)]", progress: 80 },
+  { id: "soul", name: "Soul", color: "bg-[hsl(290,100%,60%)]", progress: 95 },
+];
+
+export const CLUBS = [
+  {
+    id: "space-1",
+    name: "General Lounge",
+    icon: MessageSquare,
+    color: "text-[hsl(270,100%,65%)]",
+    description: "Hang out and chat with everyone",
+  },
+  {
+    id: "space-2",
+    name: "Bitcoin & Chill",
+    icon: Zap,
+    color: "text-[hsl(35,100%,60%)]",
+    description: "Discussing the future of money",
+  },
+  {
+    id: "space-3",
+    name: "Morning Meditators",
+    icon: Users,
+    color: "text-[hsl(200,100%,60%)]",
+    description: "Meditation, health, and spirit",
+  },
+];
+
+export const FEED_POSTS = [
+  {
+    id: "post-1",
+    author: {
+      name: "Elena Rodriguez",
+      handle: "@elena_r",
+      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=faces",
+    },
+    content: "Just finished the morning meditation session. Feeling so grounded and ready to tackle the day! 🧘‍♀️✨ #MorningRoutine #Mindfulness",
+    image: CommunityCover,
+    likes: 24,
+    comments: 5,
+    zaps: 1200, // sats
+    timestamp: "2h ago",
+  },
+  {
+    id: "post-2",
+    author: {
+      name: "David Chen",
+      handle: "@dchen_btc",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=faces",
+    },
+    content: "The new Bitcoin Mission is fire! 🔥 Finally understand how Lightning channels work under the hood. Highly recommend checking it out.",
+    likes: 45,
+    comments: 12,
+    zaps: 5000,
+    timestamp: "4h ago",
+  },
+  {
+    id: "post-3",
+    author: {
+      name: "Sarah Jenkins",
+      handle: "@sarahj",
+      avatar: CURRENT_USER.avatar,
+    },
+    content: "Who wants to join me for a 7-day gratitude challenge starting Monday? Let's keep each other accountable! 🙌",
+    likes: 18,
+    comments: 8,
+    zaps: 500,
+    timestamp: "5h ago",
+  },
+];
+
+export const MISSIONS = [
+  {
+    id: "course-1",
+    title: "Mindful Leadership",
+    instructor: "Dr. Maya Angelou",
+    progress: 75,
+    totalLessons: 12,
+    completedLessons: 9,
+    image: Course1,
+    category: "Wellness",
+  },
+  {
+    id: "course-2",
+    title: "Bitcoin for Beginners",
+    instructor: "Satoshi University",
+    progress: 30,
+    totalLessons: 20,
+    completedLessons: 6,
+    image: Course2,
+    category: "Finance",
+  },
+  {
+    id: "course-3",
+    title: "Community Building 101",
+    instructor: "Lumina Team",
+    progress: 0,
+    totalLessons: 8,
+    completedLessons: 0,
+    image: HeroBg,
+    category: "Business",
+  },
+];
 
 export const EVENTS = [
   {
@@ -65,24 +180,10 @@ export const EVENTS = [
   }
 ];
 
-export const LOVE_CODE_AREAS = [
-  { id: "god-love", name: "GOD/LOVE", color: "bg-pink-500", progress: 85 },
-  { id: "romance", name: "Romance", color: "bg-red-500", progress: 60 },
-  { id: "family", name: "Family", color: "bg-orange-500", progress: 75 },
-  { id: "community", name: "Community", color: "bg-yellow-400", progress: 90 },
-  { id: "world-mission", name: "World/Mission", color: "bg-lime-400", progress: 40 },
-  { id: "money", name: "Money", color: "bg-green-500", progress: 55 },
-  { id: "time", name: "Time", color: "bg-cyan-400", progress: 30 },
-  { id: "environment", name: "Environment", color: "bg-blue-600", progress: 70 },
-  { id: "body", name: "Body", color: "bg-indigo-600", progress: 65 },
-  { id: "mind", name: "Mind", color: "bg-violet-600", progress: 80 },
-  { id: "soul", name: "Soul", color: "bg-purple-500", progress: 95 },
-];
-
 export const ONBOARDING_STEPS = [
   {
     id: "step-1",
-    title: "Get started in the Lumina community",
+    title: "Get started in the 11x LOVE LaB",
     completed: false,
     steps: [
       { id: "s1-1", label: "Complete your profile", isCompleted: true },
@@ -92,106 +193,6 @@ export const ONBOARDING_STEPS = [
       { id: "s1-5", label: "Community Guidelines", isCompleted: false },
     ]
   }
-];
-
-export const SPACES = [
-  {
-    id: "space-1",
-    name: "General Lounge",
-    icon: MessageSquare,
-    color: "text-blue-500",
-    description: "Hang out and chat with everyone",
-  },
-  {
-    id: "space-2",
-    name: "Bitcoin & Tech",
-    icon: Zap,
-    color: "text-orange-500",
-    description: "Discussing the future of money",
-  },
-  {
-    id: "space-3",
-    name: "Wellness & Mind",
-    icon: Users,
-    color: "text-purple-500",
-    description: "Meditation, health, and spirit",
-  },
-];
-
-export const FEED_POSTS = [
-  {
-    id: "post-1",
-    author: {
-      name: "Elena Rodriguez",
-      handle: "@elena_r",
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=faces",
-    },
-    content: "Just finished the morning meditation session. Feeling so grounded and ready to tackle the day! 🧘‍♀️✨ #MorningRoutine #Mindfulness",
-    image: CommunityCover,
-    likes: 24,
-    comments: 5,
-    zaps: 1200, // sats
-    timestamp: "2h ago",
-  },
-  {
-    id: "post-2",
-    author: {
-      name: "David Chen",
-      handle: "@dchen_btc",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=faces",
-    },
-    content: "The new Bitcoin course module is fire! 🔥 Finally understand how Lightning channels work under the hood. Highly recommend checking it out.",
-    likes: 45,
-    comments: 12,
-    zaps: 5000,
-    timestamp: "4h ago",
-  },
-  {
-    id: "post-3",
-    author: {
-      name: "Sarah Jenkins",
-      handle: "@sarahj",
-      avatar: CURRENT_USER.avatar,
-    },
-    content: "Who wants to join me for a 7-day gratitude challenge starting Monday? Let's keep each other accountable! 🙌",
-    likes: 18,
-    comments: 8,
-    zaps: 500,
-    timestamp: "5h ago",
-  },
-];
-
-export const COURSES = [
-  {
-    id: "course-1",
-    title: "Mindful Leadership",
-    instructor: "Dr. Maya Angelou",
-    progress: 75,
-    totalLessons: 12,
-    completedLessons: 9,
-    image: Course1,
-    category: "Wellness",
-  },
-  {
-    id: "course-2",
-    title: "Bitcoin for Beginners",
-    instructor: "Satoshi University",
-    progress: 30,
-    totalLessons: 20,
-    completedLessons: 6,
-    image: Course2,
-    category: "Finance",
-  },
-  {
-    id: "course-3",
-    title: "Community Building 101",
-    instructor: "Lumina Team",
-    progress: 0,
-    totalLessons: 8,
-    completedLessons: 0,
-    image: HeroBg,
-    category: "Business",
-  },
 ];
 
 export const STREAK_DATA = [

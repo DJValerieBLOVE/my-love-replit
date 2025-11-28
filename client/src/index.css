@@ -55,108 +55,102 @@
   --font-sans: 'Plus Jakarta Sans', sans-serif;
   --font-serif: 'Lora', serif;
   
-  --radius: 0.75rem;
+  --radius: 1rem;
 }
 
-/* LIGHT MODE: Warm, Spiritual, Welcoming */
+/* 11x LOVE Code Colors - Neon/Cyber Palette */
 :root {
-  /* Warm White / Cosmic Latte base */
-  --background: 36 33% 97%; 
-  --foreground: 270 10% 20%;
+  --love-god: 320 100% 50%; /* Hot Pink */
+  --love-romance: 350 100% 60%; /* Red/Pink */
+  --love-family: 25 100% 60%; /* Neon Orange */
+  --love-community: 50 100% 60%; /* Golden Yellow */
+  --love-mission: 80 100% 60%; /* Lime Green */
+  --love-money: 140 100% 60%; /* Matrix Green */
+  --love-time: 180 100% 60%; /* Cyan */
+  --love-env: 200 100% 60%; /* Sky Blue */
+  --love-body: 240 100% 70%; /* Electric Blue/Indigo */
+  --love-mind: 270 100% 65%; /* Purple */
+  --love-soul: 290 100% 60%; /* Magenta */
 
-  /* Card: Slightly warmer white */
+  /* Light Mode: Clean, Modern, High Energy */
+  --background: 0 0% 98%;
+  --foreground: 270 50% 10%;
+
   --card: 0 0% 100%;
-  --card-foreground: 270 10% 20%;
+  --card-foreground: 270 50% 10%;
 
   --popover: 0 0% 100%;
-  --popover-foreground: 270 10% 20%;
+  --popover-foreground: 270 50% 10%;
 
-  /* Primary: Spiritual Purple */
-  --primary: 270 50% 45%;
+  /* Primary: Electric Purple */
+  --primary: 270 90% 60%; 
   --primary-foreground: 0 0% 100%;
 
-  /* Secondary: Soft Gold (Bitcoin-ish but softer) */
-  --secondary: 35 80% 90%;
-  --secondary-foreground: 35 90% 30%;
+  /* Secondary: Cyber Gold/Orange (Sats) */
+  --secondary: 35 100% 60%;
+  --secondary-foreground: 0 0% 100%;
 
-  /* Muted: Soft Lavender Grey */
-  --muted: 270 10% 94%;
-  --muted-foreground: 270 10% 40%;
+  --muted: 270 20% 96%;
+  --muted-foreground: 270 20% 50%;
 
-  /* Accent: Soft Teal/Sage */
-  --accent: 170 30% 94%;
-  --accent-foreground: 170 40% 30%;
+  --accent: 180 80% 96%;
+  --accent-foreground: 180 100% 35%;
 
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 98%;
 
-  --border: 270 10% 90%;
-  --input: 270 10% 90%;
-  --ring: 270 50% 45%;
+  --border: 270 20% 90%;
+  --input: 270 20% 90%;
+  --ring: 270 90% 60%;
 
-  --chart-1: 270 50% 45%;
-  --chart-2: 35 90% 45%;
-  --chart-3: 170 40% 40%;
-  --chart-4: 330 50% 50%;
-  --chart-5: 200 50% 50%;
-
-  --sidebar: 36 33% 97%;
-  --sidebar-foreground: 270 10% 20%;
-  --sidebar-primary: 270 50% 45%;
+  --sidebar: 0 0% 100%;
+  --sidebar-foreground: 270 50% 10%;
+  --sidebar-primary: 270 90% 60%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 35 80% 90%;
-  --sidebar-accent-foreground: 35 90% 30%;
-  --sidebar-border: 270 10% 90%;
-  --sidebar-ring: 270 50% 45%;
+  --sidebar-accent: 270 20% 96%;
+  --sidebar-accent-foreground: 270 90% 60%;
+  --sidebar-border: 270 20% 90%;
+  --sidebar-ring: 270 90% 60%;
 }
 
-/* DARK MODE: Deep Space, Spiritual */
+/* Dark Mode: Cyber Goddess, Deep Space */
 .dark {
-  /* Deep Purple/Black */
-  --background: 270 20% 10%;
-  --foreground: 36 10% 95%;
+  --background: 270 50% 5%; /* Deepest Purple Black */
+  --foreground: 270 10% 98%;
 
-  --card: 270 20% 14%;
-  --card-foreground: 36 10% 95%;
+  --card: 270 40% 10%;
+  --card-foreground: 270 10% 98%;
 
-  --popover: 270 20% 14%;
-  --popover-foreground: 36 10% 95%;
+  --popover: 270 40% 10%;
+  --popover-foreground: 270 10% 98%;
 
-  /* Primary: Brighter Spiritual Purple */
-  --primary: 270 60% 65%;
-  --primary-foreground: 270 20% 10%;
+  --primary: 270 100% 70%; /* Glowing Purple */
+  --primary-foreground: 270 50% 10%;
 
-  /* Secondary: Deep Gold */
-  --secondary: 35 30% 20%;
-  --secondary-foreground: 35 80% 80%;
+  --secondary: 35 100% 60%;
+  --secondary-foreground: 0 0% 100%;
 
-  --muted: 270 20% 20%;
-  --muted-foreground: 270 10% 70%;
+  --muted: 270 30% 20%;
+  --muted-foreground: 270 20% 70%;
 
-  --accent: 170 30% 20%;
-  --accent-foreground: 170 80% 80%;
+  --accent: 180 100% 20%;
+  --accent-foreground: 180 100% 80%;
 
   --destructive: 0 62% 30%;
   --destructive-foreground: 0 0% 98%;
 
-  --border: 270 20% 25%;
-  --input: 270 20% 25%;
-  --ring: 270 60% 65%;
+  --border: 270 30% 20%;
+  --input: 270 30% 20%;
+  --ring: 270 100% 70%;
 
-  --chart-1: 270 60% 65%;
-  --chart-2: 35 80% 60%;
-  --chart-3: 170 60% 60%;
-  --chart-4: 330 60% 65%;
-  --chart-5: 200 60% 65%;
-
-  --sidebar: 270 20% 12%;
-  --sidebar-foreground: 36 10% 95%;
-  --sidebar-primary: 270 60% 65%;
-  --sidebar-primary-foreground: 270 20% 10%;
-  --sidebar-accent: 35 30% 20%;
-  --sidebar-accent-foreground: 35 80% 80%;
-  --sidebar-border: 270 20% 25%;
-  --sidebar-ring: 270 60% 65%;
+  --sidebar: 270 50% 7%;
+  --sidebar-foreground: 270 10% 98%;
+  --sidebar-primary: 270 100% 70%;
+  --sidebar-primary-foreground: 270 50% 10%;
+  --sidebar-accent: 270 30% 20%;
+  --sidebar-accent-foreground: 270 100% 80%;
+  --sidebar-border: 270 30% 20%;
+  --sidebar-ring: 270 100% 70%;
 }
 
 @layer base {
@@ -164,28 +158,27 @@
     @apply border-border;
   }
   body {
-    @apply font-sans antialiased bg-background text-foreground selection:bg-primary/20 selection:text-primary;
+    @apply font-sans antialiased bg-background text-foreground selection:bg-primary/30 selection:text-primary;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif font-semibold tracking-tight;
   }
 }
 
-/* Custom Utilities */
 @layer utilities {
   .glass-panel {
-    @apply bg-white/50 dark:bg-black/30 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg;
+    @apply bg-white/70 dark:bg-black/40 backdrop-blur-xl border border-white/40 dark:border-white/10 shadow-lg;
   }
   
-  .gold-gradient {
-    @apply bg-gradient-to-r from-orange-300 to-yellow-500 text-transparent bg-clip-text;
-  }
-  
-  .purple-gradient {
-    @apply bg-gradient-to-r from-purple-600 to-indigo-600 text-transparent bg-clip-text;
+  .neon-border {
+    @apply border border-transparent hover:border-primary/50 transition-colors duration-300;
   }
 
-  .card-hover {
-    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  .text-gradient-gold {
+    @apply bg-gradient-to-r from-yellow-400 to-orange-500 text-transparent bg-clip-text;
+  }
+
+  .text-gradient-cyber {
+    @apply bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 text-transparent bg-clip-text;
   }
 }

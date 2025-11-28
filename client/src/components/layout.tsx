@@ -5,30 +5,28 @@ import {
   BookOpen, 
   Wallet, 
   User, 
-  Menu, 
   Bell,
   Settings,
   Calendar,
   Search,
-  ChevronDown,
-  ChevronRight,
-  Hash,
-  GraduationCap,
-  Bot,
   Target,
-  Sparkles
+  Sparkles,
+  Zap,
+  Rocket,
+  Trophy,
+  Menu
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { CURRENT_USER, SPACES, COURSES } from "@/lib/mock-data";
+import { CURRENT_USER, CLUBS, MISSIONS, LOVE_CODE_AREAS } from "@/lib/mock-data";
 import Logo from "@assets/generated_images/app_logo.png";
+import SatsIcon from "@assets/generated_images/sats_icon.png";
+import MagicMentor from "@assets/generated_images/magic_mentor_avatar.png";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeCustomizer } from "@/components/theme-customizer";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useState } from "react";
 import { AiBuddy } from "@/components/ai-buddy";
-import BuddyAvatar from "@assets/generated_images/ai_buddy_avatar.png";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,47 +35,60 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Progress } from "@/components/ui/progress";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
-  const [isCommunityOpen, setIsCommunityOpen] = useState(true);
-  const [isCoursesOpen, setIsCoursesOpen] = useState(true);
   const [isAiOpen, setIsAiOpen] = useState(false);
 
-  const desktopNav = [
+  const navLinks = [
     { icon: Home, label: "Home", href: "/" },
+    { icon: Rocket, label: "Missions", href: "/courses" },
+    { icon: LayoutGrid, label: "Clubs", href: "/community" },
     { icon: Calendar, label: "Events", href: "/events" },
-    { icon: Wallet, label: "Wallet", href: "/wallet" },
-    { icon: User, label: "Profile", href: "/profile" },
-  ];
-
-  const mobileNav = [
-    { icon: Home, label: "Home", href: "/" },
-    { icon: Sparkles, label: "AI Buddy", href: "#", action: () => setIsAiOpen(true), className: "text-purple-500" },
-    { icon: Calendar, label: "Events", href: "/events" },
-    { icon: LayoutGrid, label: "Groups", href: "/community" },
-    { icon: BookOpen, label: "Courses", href: "/courses" },
+    { icon: Trophy, label: "Leaderboard", href: "/leaderboard" },
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/20">
+    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/20 flex flex-col">
       <ThemeCustomizer />
-      {/* Mobile Header */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 h-16 border-b bg-white/80 dark:bg-black/80 backdrop-blur-md z-50 px-4 flex items-center justify-between">
-        <Link href="/">
-          <div className="flex items-center gap-2">
-            <img src={Logo} alt="Lumina" className="w-8 h-8 rounded-full" />
-            <span className="font-serif font-bold text-xl tracking-tight">Lumina</span>
+      
+      {/* Top Navigation Bar */}
+      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl px-4 h-16 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Link href="/">
+            <div className="flex items-center gap-2 cursor-pointer">
+              <img src={Logo} alt="11x LOVE LaB" className="w-8 h-8 rounded-full shadow-lg" />
+              <span className="font-serif font-bold text-xl tracking-tight hidden md:block text-gradient-cyber">11x LOVE LaB</span>
+            </div>
+          </Link>
+        </div>
+
+        {/* Center EQ Visualizer (Hidden on mobile) */}
+        <div className="hidden md:flex items-center justify-center gap-1 flex-1 max-w-md mx-4 h-8">
+          {LOVE_CODE_AREAS.map((area) => (
+            <div 
+              key={area.id} 
+              className={cn("w-full h-full rounded-full opacity-80 hover:opacity-100 hover:scale-110 transition-all cursor-pointer", area.color)}
+              style={{ height: `${20 + (area.progress / 100) * 80}%` }}
+              title={`${area.name}: ${area.progress}%`}
+            />
+          ))}
+        </div>
+
+        <div className="flex items-center gap-2 md:gap-4">
+          <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-secondary/10 rounded-full border border-secondary/20">
+            <img src={SatsIcon} alt="Sats" className="w-5 h-5" />
+            <span className="font-bold text-sm text-secondary-foreground">{CURRENT_USER.walletBalance.toLocaleString()}</span>
           </div>
-        </Link>
-        <div className="flex items-center gap-2">
+
           <Button variant="ghost" size="icon" className="rounded-full">
-            <Search className="w-5 h-5 text-muted-foreground" />
+            <Bell className="w-5 h-5" />
           </Button>
-          
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Avatar className="h-8 w-8 cursor-pointer border-2 border-primary/20">
+              <Avatar className="h-9 w-9 cursor-pointer ring-2 ring-primary/20 transition-all hover:ring-primary">
                 <AvatarImage src={CURRENT_USER.avatar} />
                 <AvatarFallback>SJ</AvatarFallback>
               </Avatar>
@@ -85,190 +96,135 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <Link href="/profile">
-                <DropdownMenuItem className="cursor-pointer">
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
-                </DropdownMenuItem>
-              </Link>
-              <Link href="/wallet">
-                <DropdownMenuItem className="cursor-pointer">
-                  <Wallet className="mr-2 h-4 w-4" />
-                  <span>Wallet</span>
-                </DropdownMenuItem>
-              </Link>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer">
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
-              </DropdownMenuItem>
+              <Link href="/profile"><DropdownMenuItem>Profile</DropdownMenuItem></Link>
+              <Link href="/wallet"><DropdownMenuItem>Wallet</DropdownMenuItem></Link>
+              <DropdownMenuItem>Settings</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </header>
 
-
-      <div className="flex h-screen pt-16 lg:pt-0 overflow-hidden">
-        {/* Desktop Sidebar */}
-        <aside className="hidden lg:flex flex-col w-[280px] border-r bg-card h-full">
-          <div className="p-6 pb-2">
-            <Link href="/">
-              <div className="flex items-center gap-3 cursor-pointer mb-6">
-                <img src={Logo} alt="Lumina" className="w-8 h-8 rounded-full shadow-md" />
-                <span className="font-serif font-bold text-2xl tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">Lumina</span>
-              </div>
-            </Link>
-          </div>
-
-          <ScrollArea className="flex-1 px-4">
-            <nav className="space-y-1 pb-4">
-              {desktopNav.map((item) => {
-                const isActive = location === item.href;
-                return (
-                  <Link key={item.href} href={item.href}>
-                    <div className={cn(
-                      "flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200 cursor-pointer group text-sm font-medium",
-                      isActive 
-                        ? "bg-primary/10 text-primary" 
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                    )}>
-                      <item.icon className={cn("w-4 h-4", isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground")} />
-                      <span>{item.label}</span>
-                    </div>
-                  </Link>
-                );
-              })}
-            </nav>
-
-            <div className="space-y-4 mt-2">
-              {/* Community Spaces Dropdown */}
-              <Collapsible open={isCommunityOpen} onOpenChange={setIsCommunityOpen}>
-                <div className="flex items-center justify-between px-3 py-1 mb-1 group cursor-pointer" onClick={() => setIsCommunityOpen(!isCommunityOpen)}>
-                  <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider group-hover:text-foreground transition-colors">Community</span>
-                  <CollapsibleTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                      {isCommunityOpen ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
-                    </Button>
-                  </CollapsibleTrigger>
+      <div className="flex-1 flex overflow-hidden">
+        {/* Left Sidebar (Navigation) */}
+        <aside className="hidden lg:flex flex-col w-[240px] border-r bg-card/50 p-4 gap-2">
+          {navLinks.map((item) => {
+            const isActive = location === item.href || (item.href !== "/" && location.startsWith(item.href));
+            return (
+              <Link key={item.href} href={item.href}>
+                <div className={cn(
+                  "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer group font-medium",
+                  isActive 
+                    ? "bg-primary/10 text-primary shadow-sm" 
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                )}>
+                  <item.icon className={cn("w-5 h-5", isActive && "fill-current opacity-50")} />
+                  <span>{item.label}</span>
                 </div>
-                <CollapsibleContent className="space-y-1">
-                  <Link href="/community">
-                    <div className={cn(
-                      "flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200 cursor-pointer group text-sm pl-6",
-                      location === "/community" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                    )}>
-                      <LayoutGrid className="w-4 h-4" />
-                      <span>All Spaces</span>
-                    </div>
-                  </Link>
-                  {SPACES.map((space) => (
-                    <div key={space.id} className="flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200 cursor-pointer group text-sm text-muted-foreground hover:bg-muted hover:text-foreground pl-6">
-                      <div className={cn("w-2.5 h-2.5 rounded-full", space.color.replace('text-', 'bg-'))} />
-                      <span className="truncate">{space.name}</span>
-                    </div>
-                  ))}
-                </CollapsibleContent>
-              </Collapsible>
-
-              {/* Courses Dropdown */}
-              <Collapsible open={isCoursesOpen} onOpenChange={setIsCoursesOpen}>
-                <div className="flex items-center justify-between px-3 py-1 mb-1 group cursor-pointer" onClick={() => setIsCoursesOpen(!isCoursesOpen)}>
-                  <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider group-hover:text-foreground transition-colors">Courses</span>
-                  <CollapsibleTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                      {isCoursesOpen ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
-                    </Button>
-                  </CollapsibleTrigger>
-                </div>
-                <CollapsibleContent className="space-y-1">
-                   <Link href="/courses">
-                    <div className={cn(
-                      "flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200 cursor-pointer group text-sm pl-6",
-                      location === "/courses" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                    )}>
-                      <BookOpen className="w-4 h-4" />
-                      <span>All Courses</span>
-                    </div>
-                  </Link>
-                  {COURSES.map((course) => (
-                    <div key={course.id} className="flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200 cursor-pointer group text-sm text-muted-foreground hover:bg-muted hover:text-foreground pl-6">
-                      <GraduationCap className="w-4 h-4" />
-                      <span className="truncate">{course.title}</span>
-                    </div>
-                  ))}
-                </CollapsibleContent>
-              </Collapsible>
-            </div>
-          </ScrollArea>
+              </Link>
+            );
+          })}
           
-          {/* AI Buddy Widget in Sidebar */}
-          <div className="px-1">
-            <AiBuddy />
-          </div>
-
-          <div className="p-4 border-t mt-2">
-            <Link href="/profile">
-              <div className="flex items-center gap-3 p-2 rounded-xl hover:bg-muted transition-colors cursor-pointer">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={CURRENT_USER.avatar} />
-                  <AvatarFallback>SJ</AvatarFallback>
-                </Avatar>
-                <div className="flex-1 overflow-hidden">
-                  <p className="font-medium text-sm truncate">{CURRENT_USER.name}</p>
-                  <p className="text-xs text-muted-foreground truncate">{CURRENT_USER.handle}</p>
-                </div>
-                <Settings className="w-4 h-4 text-muted-foreground" />
-              </div>
-            </Link>
+          <div className="mt-auto">
+            <div className="bg-gradient-to-br from-purple-900/20 to-pink-900/20 p-4 rounded-2xl border border-white/10">
+              <h4 className="font-bold text-sm mb-2 flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-yellow-400" /> VIP Status
+              </h4>
+              <Progress value={65} className="h-2 mb-2" />
+              <p className="text-xs text-muted-foreground">Level 12 Guide</p>
+            </div>
           </div>
         </aside>
 
-        {/* Main Content */}
-        <main className="flex-1 overflow-y-auto h-[calc(100vh-64px)] lg:h-screen pb-20 lg:pb-0 bg-background/50">
-          {children}
+        {/* Main Content Area */}
+        <main className="flex-1 overflow-y-auto bg-muted/30">
+          <div className="max-w-6xl mx-auto">
+            {children}
+          </div>
         </main>
+
+        {/* Right Sidebar (Gamification) */}
+        <aside className="hidden xl:flex flex-col w-[300px] border-l bg-card/50 p-6 gap-6 overflow-y-auto">
+          {/* Magic Mentor Widget */}
+          <div className="text-center">
+            <div className="relative inline-block mb-3">
+              <div className="absolute inset-0 bg-purple-500 blur-xl opacity-30 rounded-full" />
+              <img src={MagicMentor} alt="Magic Mentor" className="w-20 h-20 rounded-full border-2 border-purple-400 relative z-10" />
+              <Button 
+                size="sm" 
+                className="absolute -bottom-2 left-1/2 -translate-x-1/2 z-20 rounded-full h-7 text-xs bg-purple-600 hover:bg-purple-700"
+                onClick={() => setIsAiOpen(true)}
+              >
+                Ask Mentor
+              </Button>
+            </div>
+            <h3 className="font-bold text-lg">Magic Mentor</h3>
+            <p className="text-xs text-muted-foreground">"Focus on your Soul mission today, Sarah!"</p>
+          </div>
+
+          {/* Streak Widget */}
+          <div className="bg-card rounded-2xl p-4 border border-border shadow-sm">
+            <div className="flex justify-between items-center mb-4">
+              <h4 className="font-bold flex items-center gap-2">
+                <Zap className="w-4 h-4 text-orange-500 fill-current" /> Streak
+              </h4>
+              <span className="text-2xl font-black text-orange-500">12</span>
+            </div>
+            <div className="flex justify-between">
+              {['M','T','W','T','F','S','S'].map((d, i) => (
+                <div key={i} className={cn(
+                  "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold",
+                  i < 5 ? "bg-orange-500 text-white" : "bg-muted text-muted-foreground"
+                )}>
+                  {d}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Next Mission */}
+          <div>
+            <h4 className="font-bold text-sm text-muted-foreground uppercase tracking-wider mb-3">Up Next</h4>
+            <div className="bg-card rounded-xl overflow-hidden border border-border group cursor-pointer hover:border-primary transition-colors">
+              <div className="h-24 bg-black/50 relative">
+                <img src={Course1} className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                <div className="absolute bottom-2 left-3 text-white font-bold text-sm">Finance Sovereignty</div>
+              </div>
+              <div className="p-3">
+                <div className="flex justify-between text-xs mb-1">
+                  <span>Progress</span>
+                  <span>25%</span>
+                </div>
+                <Progress value={25} className="h-1.5" />
+              </div>
+            </div>
+          </div>
+        </aside>
       </div>
 
       {/* Mobile Bottom Nav */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-white/90 dark:bg-black/90 backdrop-blur-lg border-t z-50 flex items-center justify-around px-2">
-        {mobileNav.map((item) => {
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-background/90 backdrop-blur-lg border-t z-50 flex items-center justify-around px-2">
+        {navLinks.map((item) => {
           const isActive = location === item.href;
-          const isAi = item.label === "AI Buddy";
-          
-          const Content = (
-            <div className="flex flex-col items-center justify-center w-16 h-full cursor-pointer" onClick={item.action}>
-              <div className={cn(
-                "p-1.5 rounded-full transition-all duration-200 mb-1",
-                isActive ? "bg-primary/10 text-primary" : "text-muted-foreground",
-                isAi && "bg-purple-100 text-purple-600 shadow-sm ring-1 ring-purple-200 dark:bg-purple-900/30 dark:ring-purple-800"
-              )}>
-                <item.icon className={cn(
-                  "w-6 h-6", 
-                  isActive && "fill-current",
-                  isAi && "fill-purple-200 animate-pulse"
-                )} />
-              </div>
-              <span className={cn(
-                "text-[10px] font-medium transition-colors",
-                isActive ? "text-primary" : "text-muted-foreground",
-                isAi && "text-purple-600 font-bold"
-              )}>{item.label}</span>
-            </div>
-          );
-
-          if (item.action) {
-            return <div key={item.label}>{Content}</div>;
-          }
-
           return (
             <Link key={item.href} href={item.href}>
-              {Content}
+              <div className="flex flex-col items-center justify-center w-16 h-full cursor-pointer">
+                <div className={cn(
+                  "p-1.5 rounded-full transition-all duration-200 mb-1",
+                  isActive ? "bg-primary/10 text-primary" : "text-muted-foreground"
+                )}>
+                  <item.icon className={cn("w-6 h-6", isActive && "fill-current")} />
+                </div>
+                <span className={cn(
+                  "text-[10px] font-medium transition-colors",
+                  isActive ? "text-primary" : "text-muted-foreground"
+                )}>{item.label}</span>
+              </div>
             </Link>
           );
         })}
       </nav>
-      
-      {/* Hidden AiBuddy Trigger for Mobile Nav */}
+
       <AiBuddy open={isAiOpen} onOpenChange={setIsAiOpen} />
     </div>
   );

@@ -1,8 +1,17 @@
+import { 
+  Clock, 
+  Users, 
+  MoreHorizontal, 
+  Video, 
+  ArrowRight,
+  Calendar as CalendarIcon,
+  Zap
+} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Share2, Zap, MoreHorizontal } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import SatsIcon from "@assets/generated_images/sats_icon.png";
 
 interface FeedPostProps {
   post: {
@@ -23,10 +32,10 @@ interface FeedPostProps {
 
 export function FeedPost({ post }: FeedPostProps) {
   return (
-    <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow bg-card">
+    <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow bg-card mb-4">
       <CardContent className="p-0">
         <div className="p-4 flex gap-3">
-          <Avatar className="w-10 h-10 border border-border">
+          <Avatar className="w-10 h-10 border-2 border-border">
             <AvatarImage src={post.author.avatar} />
             <AvatarFallback>{post.author.name[0]}</AvatarFallback>
           </Avatar>
@@ -51,25 +60,24 @@ export function FeedPost({ post }: FeedPostProps) {
               </div>
             )}
 
-            <div className="flex items-center justify-between mt-4 pt-2">
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-orange-500 hover:bg-orange-500/10 group px-2 h-8">
-                <Zap className="w-4 h-4 mr-1.5 group-hover:fill-orange-500" />
-                <span className="text-xs font-medium">{post.zaps}</span>
+            <div className="flex items-center justify-between mt-4 pt-2 border-t border-border/30">
+              {/* Lightning Tip Button */}
+              <Button variant="ghost" size="sm" className="text-orange-500 bg-orange-500/10 hover:bg-orange-500/20 group px-3 h-8 rounded-full transition-all">
+                <img src={SatsIcon} alt="Zap" className="w-4 h-4 mr-1.5 animate-pulse" />
+                <span className="text-xs font-bold">{post.zaps.toLocaleString()} sats</span>
               </Button>
               
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-red-500 hover:bg-red-500/10 group px-2 h-8">
-                <Heart className="w-4 h-4 mr-1.5 group-hover:fill-red-500" />
-                <span className="text-xs font-medium">{post.likes}</span>
-              </Button>
-              
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-blue-500 hover:bg-blue-500/10 group px-2 h-8">
-                <MessageCircle className="w-4 h-4 mr-1.5 group-hover:fill-blue-500" />
-                <span className="text-xs font-medium">{post.comments}</span>
-              </Button>
-              
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-green-500 hover:bg-green-500/10 group px-2 h-8">
-                <Share2 className="w-4 h-4" />
-              </Button>
+              <div className="flex gap-2">
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-red-500 hover:bg-red-500/10 px-2 h-8">
+                  <Users className="w-4 h-4 mr-1.5" />
+                  <span className="text-xs font-medium">{post.likes}</span>
+                </Button>
+                
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-blue-500 hover:bg-blue-500/10 px-2 h-8">
+                  <MessageSquare className="w-4 h-4 mr-1.5" />
+                  <span className="text-xs font-medium">{post.comments}</span>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -77,3 +85,6 @@ export function FeedPost({ post }: FeedPostProps) {
     </Card>
   );
 }
+
+// Import MessageSquare for the above component
+import { MessageSquare } from "lucide-react";

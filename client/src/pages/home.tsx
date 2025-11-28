@@ -31,21 +31,25 @@ export default function Home() {
         <OnboardingChecklist data={ONBOARDING_STEPS} />
 
         {/* Mobile Streak Widget */}
-        <StreakWidget streak={CURRENT_USER.streak} data={STREAK_DATA} />
+        <div className="lg:hidden">
+          <StreakWidget streak={CURRENT_USER.streak} data={STREAK_DATA} />
+        </div>
 
         {/* Daily Goal */}
-        <Card className="bg-primary text-primary-foreground border-none shadow-lg relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-2xl" />
+        <Card className="bg-gradient-to-r from-purple-900 to-pink-900 text-white border-none shadow-lg relative overflow-hidden group cursor-pointer">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-2xl group-hover:bg-white/20 transition-colors" />
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-cyan-500/20 rounded-full -ml-10 -mb-10 blur-xl" />
+          
           <CardContent className="p-5 relative z-10">
             <div className="flex justify-between items-center mb-3">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-yellow-300" />
-                <h3 className="font-bold">Daily Goal: Connect</h3>
+                <Sparkles className="w-5 h-5 text-yellow-300 animate-pulse" />
+                <h3 className="font-bold font-serif">Daily Goal: Connect</h3>
               </div>
-              <span className="text-sm font-medium bg-white/20 px-2 py-0.5 rounded-full">2/3</span>
+              <span className="text-xs font-bold bg-white/20 px-2 py-1 rounded-full border border-white/10">2/3</span>
             </div>
-            <p className="text-sm opacity-90 mb-4">Reply to 2 community members to complete today's goal and earn 50 XP.</p>
-            <Progress value={66} className="h-2 bg-black/20 [&>div]:bg-yellow-300" />
+            <p className="text-sm opacity-90 mb-4 font-medium text-purple-100">Reply to 2 community members to complete today's goal and earn <span className="text-yellow-300 font-bold">50 Sats</span>.</p>
+            <Progress value={66} className="h-2 bg-black/30 [&>div]:bg-gradient-to-r [&>div]:from-yellow-400 [&>div]:to-orange-500" />
           </CardContent>
         </Card>
 
