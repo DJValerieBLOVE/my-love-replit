@@ -8,6 +8,7 @@ import { LOVE_CODE_AREAS } from "@/lib/mock-data";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import WhiteLogo from "@assets/white transparent vector and png art  11x LOVE logo _1764365495719.png";
 
 export default function BigDreams() {
   const [isPracticing, setIsPracticing] = useState(false);
@@ -52,7 +53,7 @@ export default function BigDreams() {
                       className="bg-primary hover:bg-primary/90 text-white gap-2 shadow-lg shadow-primary/20"
                       onClick={() => setIsPracticing(true)}
                     >
-                      <Sparkles className="w-4 h-4" /> Start Daily Practice
+                      <img src={WhiteLogo} alt="Logo" className="w-4 h-4" /> Start Daily Practice
                     </Button>
                   </CardContent>
                 </Card>

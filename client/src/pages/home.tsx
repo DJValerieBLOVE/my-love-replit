@@ -6,6 +6,7 @@ import { Plus, Sparkles, Play, HelpCircle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { EqVisualizer } from "@/components/eq-visualizer";
 import { Link } from "wouter";
+import WhiteLogo from "@assets/white transparent vector and png art  11x LOVE logo _1764365495719.png";
 
 export default function Home() {
   return (
@@ -27,7 +28,7 @@ export default function Home() {
             </Button>
             <Link href="/big-dreams">
               <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold px-6 shadow-lg shadow-primary/20 gap-2">
-                <Play className="w-4 h-4 fill-current" /> Daily 5 V's
+                <img src={WhiteLogo} alt="Logo" className="w-4 h-4" /> Daily 5 V's
               </Button>
             </Link>
           </div>
