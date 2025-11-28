@@ -32,16 +32,16 @@ export default function Community() {
                 </div>
                 <CardTitle className="text-lg">{space.name}</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex flex-col h-full">
                 <p className="text-base text-muted-foreground mb-4 line-clamp-2">
                   {space.description}
                 </p>
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <Users className="w-3 h-3" />
-                    <span>1.2k members</span>
-                  </div>
-                  <Button size="sm" className="h-7 px-6 -mr-2 bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold transition-all" data-testid="button-join-club">
+                <div className="flex items-center gap-1 text-xs text-muted-foreground mb-4">
+                  <Users className="w-3 h-3" />
+                  <span>1.2k members</span>
+                </div>
+                <div className="flex-1 flex items-end justify-center">
+                  <Button size="sm" className="h-7 px-6 bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold transition-all" data-testid="button-join-club">
                     Join <ArrowRight className="w-3 h-3 ml-1" />
                   </Button>
                 </div>
