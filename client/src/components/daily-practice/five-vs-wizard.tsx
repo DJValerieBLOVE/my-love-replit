@@ -39,7 +39,7 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
           <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">My Vision</label>
           <Textarea 
             placeholder="I am creating..." 
-            className="min-h-[120px] bg-muted/30 border-muted focus:bg-background resize-none text-base md:text-base font-serif"
+            className="min-h-[120px] bg-muted/30 border-muted focus:bg-background resize-none text-base md:text-base"
             value={data.vision}
             onChange={e => setData({...data, vision: e.target.value})}
           />
@@ -68,7 +68,7 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
             <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Specific Resistance</label>
             <Input 
               placeholder="Name your villain..." 
-              className="h-12 bg-muted/30 border-muted focus:bg-background text-base md:text-base font-serif"
+              className="h-12 bg-muted/30 border-muted focus:bg-background text-base md:text-base"
               value={data.villain}
               onChange={e => setData({...data, villain: e.target.value})}
             />
@@ -85,7 +85,7 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
           <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Core Value</label>
           <Input 
             placeholder="Today I value..." 
-            className="h-12 bg-muted/30 border-muted focus:bg-background text-base md:text-base font-serif"
+            className="h-12 bg-muted/30 border-muted focus:bg-background text-base md:text-base"
             value={data.value}
             onChange={e => setData({...data, value: e.target.value})}
           />
@@ -101,7 +101,7 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
           <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">My Commitment</label>
           <Input 
             placeholder="I will..." 
-            className="h-12 bg-muted/30 border-muted focus:bg-background text-base md:text-base font-serif"
+            className="h-12 bg-muted/30 border-muted focus:bg-background text-base md:text-base"
             value={data.victory}
             onChange={e => setData({...data, victory: e.target.value})}
           />
