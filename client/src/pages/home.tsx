@@ -48,7 +48,7 @@ export default function Home() {
               </div>
               <span className="text-xs font-bold bg-white/20 px-2 py-1 rounded-full border border-white/10">2/3</span>
             </div>
-            <p className="text-base opacity-90 mb-4 font-medium text-purple-100">Reply to 2 community members to complete today's goal and earn <span className="text-white font-bold">50 Sats</span>.</p>
+            <p className="text-base opacity-90 mb-4 font-medium text-purple-100">Reply to 2 community members to complete today's goal and earn <span className="text-white font-bold underline">50 Sats</span>.</p>
             <Progress value={66} className="h-2 bg-white/15 [&>div]:bg-primary" />
           </CardContent>
         </Card>
