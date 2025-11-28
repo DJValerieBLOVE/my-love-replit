@@ -82,8 +82,8 @@ export function OnboardingChecklist({ data: initialData, className }: Props) {
           <div className="bg-primary/5 p-6 border-b border-primary/10">
             <div className="flex justify-between items-end mb-2">
               <div>
-                <h3 className="font-serif font-bold text-xl">Welcome Checklist</h3>
-                <p className="text-sm text-muted-foreground">Get set up for success</p>
+                <h3 className="font-serif font-bold text-2xl">Welcome Checklist</h3>
+                <p className="text-base text-muted-foreground" style={{ fontSize: "16px" }}>Get set up for success</p>
               </div>
               <span className="text-2xl font-bold text-primary">{progress}%</span>
             </div>
@@ -125,9 +125,9 @@ export function OnboardingChecklist({ data: initialData, className }: Props) {
                           <Circle className="w-5 h-5 text-muted-foreground group-hover:text-primary" />
                         )}
                         <span className={cn(
-                          "text-sm transition-colors",
+                          "transition-colors font-medium",
                           step.isCompleted ? "text-muted-foreground line-through decoration-primary/30" : "text-foreground"
-                        )}>
+                        )} style={{ fontSize: "16px" }}>
                           {step.label}
                         </span>
                       </div>
