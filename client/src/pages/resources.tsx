@@ -27,7 +27,7 @@ export default function Resources() {
                     </div>
                   </div>
                   <CardContent className="p-4">
-                    <h3 className="font-bold">High Vibe Mix {i}</h3>
+                    <h3 className="font-bold text-lg">High Vibe Mix {i}</h3>
                     <p className="text-xs text-muted-foreground">Curated for energy</p>
                   </CardContent>
                 </Card>
@@ -49,7 +49,7 @@ export default function Resources() {
                     </div>
                   </div>
                   <CardContent className="p-4">
-                    <h3 className="font-bold">Morning Calm {i}</h3>
+                    <h3 className="font-bold text-lg">Morning Calm {i}</h3>
                     <p className="text-xs text-muted-foreground">10 min • Guided</p>
                   </CardContent>
                 </Card>
