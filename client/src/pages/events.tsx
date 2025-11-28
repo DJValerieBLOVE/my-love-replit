@@ -11,13 +11,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useState, useMemo } from "react";
 
 export default function Events() {
-  const [selectedDate, setSelectedDate] = useState(new Date(2025, 10, 27)); // Nov 27
+  const [selectedDate, setSelectedDate] = useState(new Date(2025, 10, 28)); // Nov 28
   
   // Get meetings for selected date
   const selectedMeetings = useMemo(() => {
     const day = selectedDate.getDate();
-    if (day === 27) return EVENTS.filter(e => e.date === "Today");
-    if (day === 28) return EVENTS.filter(e => e.date === "Tomorrow");
+    if (day === 28) return EVENTS.filter(e => e.date === "Today");
+    if (day === 29) return EVENTS.filter(e => e.date === "Tomorrow");
     return [];
   }, [selectedDate]);
 
@@ -25,8 +25,8 @@ export default function Events() {
   const eventDays = useMemo(() => {
     const days = new Set<number>();
     EVENTS.forEach(event => {
-      if (event.date === "Today") days.add(27);
-      if (event.date === "Tomorrow") days.add(28);
+      if (event.date === "Today") days.add(28);
+      if (event.date === "Tomorrow") days.add(29);
     });
     return days;
   }, []);
@@ -34,8 +34,8 @@ export default function Events() {
   const getDateLabel = () => {
     const day = selectedDate.getDate();
     const monthName = selectedDate.toLocaleString('default', { month: 'long' });
-    if (day === 27) return `Today, ${monthName} ${day}`;
-    if (day === 28) return `Tomorrow, ${monthName} ${day}`;
+    if (day === 28) return `Today, ${monthName} ${day}`;
+    if (day === 29) return `Tomorrow, ${monthName} ${day}`;
     return `${monthName} ${day}`;
   };
 
@@ -135,7 +135,7 @@ export default function Events() {
                   `).join('')}
                 `}</style>
                 <div className="mt-4 pt-4 border-t flex justify-end">
-                  <Button size="sm" className="text-xs h-7 rounded-md bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold px-6" data-testid="button-today" onClick={() => setSelectedDate(new Date(2025, 10, 27))}>Today</Button>
+                  <Button size="sm" className="text-xs h-7 rounded-md bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold px-6" data-testid="button-today" onClick={() => setSelectedDate(new Date(2025, 10, 28))}>Today</Button>
                 </div>
               </CardContent>
             </Card>
