@@ -11,6 +11,7 @@ import MissionDetail from "@/pages/mission-detail";
 import Wallet from "@/pages/wallet";
 import Profile from "@/pages/profile";
 import Events from "@/pages/events";
+import Leaderboard from "@/pages/leaderboard";
 import AdminOnboarding from "@/pages/admin/onboarding";
 
 function Router() {
@@ -23,6 +24,7 @@ function Router() {
       <Route path="/wallet" component={Wallet} />
       <Route path="/profile" component={Profile} />
       <Route path="/events" component={Events} />
+      <Route path="/leaderboard" component={Leaderboard} />
       <Route path="/admin/onboarding" component={AdminOnboarding} />
       <Route component={NotFound} />
     </Switch>
