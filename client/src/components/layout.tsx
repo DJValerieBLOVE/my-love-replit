@@ -67,7 +67,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <Link href="/">
               <div className="flex items-center gap-3 cursor-pointer">
                 <img src={Logo} alt="11x LOVE LaB" className="w-10 h-10" />
-                <span className="font-serif font-bold text-lg tracking-tight hidden md:block text-black dark:text-white">11x LOVE LaB</span>
+                <span className="font-serif font-bold text-lg tracking-tight hidden md:block" style={{ color: '#0a0a0a' }}>11x LOVE LaB</span>
               </div>
             </Link>
           </div>
@@ -112,10 +112,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     data-testid={`eq-bar-${area.id}`}
                   />
                 </TooltipTrigger>
-                <TooltipContent side="top" className="bg-black/90 text-white border border-white/20 backdrop-blur-sm">
+                <TooltipContent side="top" className="backdrop-blur-sm border border-white/20" style={{ backgroundColor: '#0a0a0a' }}>
                   <div className="text-center">
-                    <p className="font-semibold">{area.name}</p>
-                    <p className="text-sm font-bold text-green-400">{area.progress}% Complete</p>
+                    <p className="font-semibold text-white">{area.name}</p>
+                    <p className="text-sm font-bold" style={{ color: '#a2f005' }}>{area.progress}% Complete</p>
                   </div>
                 </TooltipContent>
               </Tooltip>

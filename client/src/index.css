@@ -74,13 +74,13 @@
 
   /* Light Mode: Clean, Modern, High Energy */
   --background: 0 0% 98%;
-  --foreground: 270 50% 10%;
+  --foreground: 0 0% 4%; /* 95% black */
 
   --card: 0 0% 100%;
-  --card-foreground: 270 50% 10%;
+  --card-foreground: 0 0% 4%; /* 95% black */
 
   --popover: 0 0% 100%;
-  --popover-foreground: 270 50% 10%;
+  --popover-foreground: 0 0% 4%; /* 95% black */
 
   /* Primary: Electric Purple */
   --primary: 270 90% 60%; 
@@ -104,7 +104,7 @@
   --ring: 270 90% 60%;
 
   --sidebar: 0 0% 100%;
-  --sidebar-foreground: 270 50% 10%;
+  --sidebar-foreground: 0 0% 4%; /* 95% black */
   --sidebar-primary: 270 90% 60%;
   --sidebar-primary-foreground: 0 0% 100%;
   --sidebar-accent: 270 20% 96%;
