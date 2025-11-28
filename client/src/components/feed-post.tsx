@@ -94,7 +94,7 @@ export function FeedPost({ post }: FeedPostProps) {
 
               {/* 2. Repost */}
               <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-green-500 hover:bg-green-500/10 px-2 h-10 gap-1.5 min-w-[60px]">
-                <Repeat2 className="w-[20px] h-[20px]" strokeWidth={1.5} />
+                <Repeat2 className="w-[18px] h-[18px]" strokeWidth={1.5} />
                 <span className="text-[13px] font-medium"></span>
               </Button>
 
