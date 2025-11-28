@@ -1,5 +1,5 @@
 import Layout from "@/components/layout";
-import { COURSES } from "@/lib/mock-data";
+import { MISSIONS } from "@/lib/mock-data";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ export default function Courses() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {COURSES.map((course) => (
+          {MISSIONS.map((course) => (
             <Card key={course.id} className="overflow-hidden hover:shadow-lg transition-all duration-300 group border-none shadow-sm bg-card">
               <div className="relative h-48 overflow-hidden">
                 <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors z-10" />
