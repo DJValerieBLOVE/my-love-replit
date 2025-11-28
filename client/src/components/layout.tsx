@@ -78,6 +78,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <span className="font-bold text-sm text-secondary-foreground">{CURRENT_USER.walletBalance.toLocaleString()}</span>
             </div>
 
+            {/* VIP Status Widget */}
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-gradient-to-br from-purple-900/20 to-pink-900/20 rounded-full border border-white/10">
+              <Sparkles className="w-4 h-4 text-yellow-400" />
+              <span className="font-bold text-xs text-muted-foreground">Level 12</span>
+            </div>
+
             <Button variant="ghost" size="icon" className="rounded-full">
               <Bell className="w-5 h-5" />
             </Button>
@@ -143,16 +149,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </Link>
             );
           })}
-          
-          <div className="mt-auto">
-            <div className="bg-gradient-to-br from-purple-900/20 to-pink-900/20 p-4 rounded-2xl border border-white/10">
-              <h4 className="font-bold text-sm mb-2 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-yellow-400" /> VIP Status
-              </h4>
-              <Progress value={65} className="h-2 mb-2" />
-              <p className="text-xs text-muted-foreground">Level 12 Guide</p>
-            </div>
-          </div>
         </aside>
 
         {/* Main Content Area */}
