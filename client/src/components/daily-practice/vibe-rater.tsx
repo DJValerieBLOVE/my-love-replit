@@ -30,11 +30,11 @@ export function VibeRater({ value, onChange }: VibeRaterProps) {
           key={value}
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className={cn("text-9xl font-serif font-bold mb-4 drop-shadow-sm text-primary")}
+          className={cn("text-9xl font-serif mb-4 drop-shadow-sm text-primary")}
         >
           {value}
         </motion.div>
-        <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest">Current Vibe</p>
+        <p className="text-sm font-serif text-muted-foreground uppercase tracking-widest">Current Vibe</p>
       </div>
 
       <div className="px-4">
