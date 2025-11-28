@@ -129,7 +129,7 @@ export default function MissionDetail() {
 
         {/* CTA Button */}
         <Button 
-          className="w-full mb-8 py-6 text-lg font-semibold gap-2 bg-primary hover:bg-primary/90" 
+          className="mb-8 px-8 py-3 font-semibold gap-2 bg-primary hover:bg-primary/90 rounded-full" 
           data-testid={`button-${isCompleted ? 'review' : isInProgress ? 'resume' : 'start'}-mission`}
         >
           {isCompleted ? (
