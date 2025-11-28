@@ -183,7 +183,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </div>
 
               {/* Tagline */}
-              <p className="text-sm text-purple-100 mb-4 italic font-medium">"Rock Your Dreams!"</p>
+              <p className="text-base text-purple-50 mb-4 italic font-bold">"Rock Your Dreams!"</p>
 
               {/* Ask Magic Mentor Button */}
               <Button 
@@ -214,7 +214,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="flex justify-between gap-1.5">
               {['M','T','W','T','F','S','S'].map((d, i) => (
                 <div key={i} className={cn(
-                  "flex-1 aspect-square rounded-full flex items-center justify-center text-xs font-bold transition-all",
+                  "w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all",
                   i < 5 ? "bg-orange-500 text-white shadow-md" : "bg-orange-400/40 text-orange-700 border-2 border-orange-400/60 font-bold"
                 )}>
                   {d}
