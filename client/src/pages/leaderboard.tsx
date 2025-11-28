@@ -55,9 +55,9 @@ export default function Leaderboard() {
                 </div>
                 <div className="text-right space-y-2">
                   <div className="flex items-center gap-2 justify-end">
-                    <Zap className="w-4 h-4 text-orange-400 fill-current" />
-                    <span className="font-black text-orange-400">{currentUserData.xp.toLocaleString()}</span>
-                    <span className="text-xs text-orange-300">XP</span>
+                    <Trophy className="w-4 h-4 text-yellow-400 fill-current" />
+                    <span className="font-black text-yellow-400">{currentUserData.sats.toLocaleString()}</span>
+                    <span className="text-xs text-yellow-300">Sats</span>
                   </div>
                   <div className="flex items-center gap-2 justify-end">
                     <span className="text-xs font-bold text-purple-300">{currentUserData.streak}</span>
@@ -123,13 +123,13 @@ export default function Leaderboard() {
 
                     {/* Stats */}
                     <div className="flex items-center gap-6 ml-4">
-                      {/* XP */}
+                      {/* Sats */}
                       <div className="text-right">
                         <div className="flex items-center gap-1 justify-end mb-1">
-                          <Zap className="w-3.5 h-3.5 text-orange-400 fill-current" />
-                          <span className="font-black text-orange-400">{user.xp.toLocaleString()}</span>
+                          <Trophy className="w-3.5 h-3.5 text-yellow-400 fill-current" />
+                          <span className="font-black text-yellow-400">{user.sats.toLocaleString()}</span>
                         </div>
-                        <span className="text-xs text-orange-300">XP</span>
+                        <span className="text-xs text-yellow-300">Sats</span>
                       </div>
 
                       {/* Tips Button */}
@@ -166,8 +166,8 @@ export default function Leaderboard() {
           <Card className="bg-card rounded-xl border-border">
             <CardContent className="p-4 text-center">
               <Trophy className="w-5 h-5 text-yellow-400 mx-auto mb-2" />
-              <p className="text-2xl font-black text-yellow-400">{Math.max(...LEADERBOARD_DATA.map(u => u.xp)).toLocaleString()}</p>
-              <p className="text-xs text-muted-foreground mt-1">Highest XP</p>
+              <p className="text-2xl font-black text-yellow-400">{Math.max(...LEADERBOARD_DATA.map(u => u.sats)).toLocaleString()}</p>
+              <p className="text-xs text-muted-foreground mt-1">Highest Sats</p>
             </CardContent>
           </Card>
           <Card className="bg-card rounded-xl border-border">

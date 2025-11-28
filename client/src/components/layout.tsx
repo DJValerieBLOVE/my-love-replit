@@ -173,7 +173,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               {/* VIP Level Badge */}
               <div className="inline-flex items-center gap-2 bg-yellow-400/20 border border-yellow-400/50 rounded-full px-3 py-1.5 mb-4">
                 <Sparkles className="w-4 h-4 text-yellow-300" />
-                <span className="text-xs font-bold text-yellow-300">Level 12 Lumina Guide</span>
+                <span className="text-xs font-bold text-yellow-300">Level 12</span>
               </div>
 
               {/* Mentor Image */}
@@ -183,7 +183,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </div>
 
               {/* Mentor Info */}
-              <h3 className="font-bold text-lg font-serif mb-2 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">Your Lumina Guide</h3>
+              <h3 className="font-bold text-lg font-serif mb-2 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">Your Magic Mentor</h3>
               <p className="text-xs text-purple-200 mb-2 italic">"You're crushing your Soul mission, Sarah!"</p>
               
               {/* Level Progress */}
