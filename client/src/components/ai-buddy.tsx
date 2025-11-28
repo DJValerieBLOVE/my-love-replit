@@ -23,33 +23,9 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetTrigger asChild>
-        {trigger || (
-          <div className="hidden lg:block p-4 mt-4 mx-3 bg-gradient-to-br from-purple-900/10 to-primary/10 rounded-xs group cursor-pointer hover:bg-primary/20 transition-colors">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="relative flex items-center justify-center w-10 h-10 rounded-full bg-purple-100 shadow-sm group-hover:scale-110 transition-transform duration-500">
-                <Sparkles className="w-6 h-6 text-purple-600 fill-purple-200" />
-                <div className="absolute -bottom-1 -right-1 bg-green-500 w-3 h-3 rounded-full border-2 border-white" />
-              </div>
-              <div>
-                <h4 className="font-bold text-sm">Lumina Guide</h4>
-                <p className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Sparkles className="w-3 h-3 text-yellow-500" /> 
-                  Ready to help
-                </p>
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs font-medium">
-                <span>11x LOVE Balance</span>
-                <span>68%</span>
-              </div>
-              <Progress value={68} className="h-1.5 bg-background/50 [&>div]:bg-gradient-to-r [&>div]:from-pink-500 [&>div]:via-purple-500 [&>div]:to-cyan-500" />
-            </div>
-          </div>
-        )}
+        {trigger}
       </SheetTrigger>
-      <SheetContent side="left" className="w-[350px] sm:w-[400px] p-0">
+      <SheetContent side="left" className="w-[350px] sm:w-[400px] p-0" hidden={!trigger}>
         <div className="h-full flex flex-col">
           {/* Header */}
           <div className="p-6 border-b bg-muted/10">
