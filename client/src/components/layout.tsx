@@ -224,8 +224,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Widget 3: Current Focus */}
-          <div className="bg-white/15 rounded-xs border border-white/30 hover:border-white/50 transition-colors p-4" data-testid="widget-focus">
-            <h4 className="font-bold text-xs uppercase text-white/80 mb-2">Current Focus</h4>
+          <div className="bg-black/40 rounded-xs border border-white/20 hover:border-white/40 transition-colors p-4" data-testid="widget-focus">
+            <h4 className="font-bold text-xs uppercase text-white/60 mb-2">Current Focus</h4>
             <p className="text-sm font-semibold text-white mb-1">Finance Sovereignty</p>
             <div className="flex items-center justify-between">
               <p className="text-xs text-white/70">80%</p>
@@ -236,8 +236,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Widget 4: Upcoming Event */}
-          <div className="bg-white/15 rounded-xs border border-white/30 hover:border-white/50 transition-colors p-4" data-testid="widget-event">
-            <h4 className="font-bold text-xs uppercase text-white/80 mb-2">Upcoming Event</h4>
+          <div className="bg-black/40 rounded-xs border border-white/20 hover:border-white/40 transition-colors p-4" data-testid="widget-event">
+            <h4 className="font-bold text-xs uppercase text-white/60 mb-2">Upcoming Event</h4>
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-semibold text-white">Full Moon Ceremony</p>
@@ -248,12 +248,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Widget 5: Poll of the Day */}
-          <div className="bg-white/15 rounded-xs border border-white/30 hover:border-white/50 transition-colors p-4" data-testid="widget-poll">
-            <h4 className="font-bold text-xs uppercase text-white/80 mb-2">Poll of the Day</h4>
-            <p className="text-xs text-white/90 mb-2">What area needs focus?</p>
+          <div className="bg-black/40 rounded-xs border border-white/20 hover:border-white/40 transition-colors p-4" data-testid="widget-poll">
+            <h4 className="font-bold text-xs uppercase text-white/60 mb-2">Poll of the Day</h4>
+            <p className="text-xs text-white/80 mb-2">What area needs focus?</p>
             <div className="space-y-1">
               {['Health', 'Relationships', 'Career'].map((option, i) => (
-                <button key={i} className="w-full text-left text-xs py-1.5 px-2 rounded-xs bg-white/10 hover:bg-white/20 transition-colors text-white/80 hover:text-white font-medium">
+                <button key={i} className="w-full text-left text-xs py-1.5 px-2 rounded-xs bg-white/10 hover:bg-white/20 transition-colors text-white/70 hover:text-white font-medium">
                   {option}
                 </button>
               ))}
@@ -261,8 +261,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Widget 6: Who to Follow */}
-          <div className="bg-white/15 rounded-xs border border-white/30 hover:border-white/50 transition-colors p-4" data-testid="widget-follow">
-            <h4 className="font-bold text-xs uppercase text-white/80 mb-3">Who to Follow</h4>
+          <div className="bg-black/40 rounded-xs border border-white/20 hover:border-white/40 transition-colors p-4" data-testid="widget-follow">
+            <h4 className="font-bold text-xs uppercase text-white/60 mb-3">Who to Follow</h4>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-9 h-9 rounded-full bg-white/20 border border-white/40 flex items-center justify-center text-xs">
