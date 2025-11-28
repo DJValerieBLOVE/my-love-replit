@@ -11,20 +11,33 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useState, useMemo } from "react";
 
 export default function Events() {
-  const [currentDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(new Date(2025, 10, 27)); // Nov 27
   
+  // Get meetings for selected date
+  const selectedMeetings = useMemo(() => {
+    const day = selectedDate.getDate();
+    if (day === 27) return EVENTS.filter(e => e.date === "Today");
+    if (day === 28) return EVENTS.filter(e => e.date === "Tomorrow");
+    return [];
+  }, [selectedDate]);
+
   // Map event dates to check which days have events
   const eventDays = useMemo(() => {
-    const days = new Set<string>();
+    const days = new Set<number>();
     EVENTS.forEach(event => {
-      if (event.date === "Today") {
-        days.add("27"); // Today is Nov 27
-      } else if (event.date === "Tomorrow") {
-        days.add("28"); // Tomorrow is Nov 28
-      }
+      if (event.date === "Today") days.add(27);
+      if (event.date === "Tomorrow") days.add(28);
     });
     return days;
   }, []);
+
+  const getDateLabel = () => {
+    const day = selectedDate.getDate();
+    const monthName = selectedDate.toLocaleString('default', { month: 'long' });
+    if (day === 27) return `Today, ${monthName} ${day}`;
+    if (day === 28) return `Tomorrow, ${monthName} ${day}`;
+    return `${monthName} ${day}`;
+  };
 
   return (
     <Layout>
@@ -63,20 +76,15 @@ export default function Events() {
           <div className="lg:col-span-2 space-y-6">
             <div className="space-y-4">
               <h2 className="font-bold text-muted-foreground text-sm uppercase tracking-wider flex items-center gap-2">
-                <CalendarIcon className="w-4 h-4" /> Today, November 27
+                <CalendarIcon className="w-4 h-4" /> {getDateLabel()}
               </h2>
-              {EVENTS.filter(e => e.date === "Today").map((event) => (
-                <EventCard key={event.id} event={event} />
-              ))}
-            </div>
-
-            <div className="space-y-4 pt-4">
-              <h2 className="font-bold text-muted-foreground text-sm uppercase tracking-wider flex items-center gap-2">
-                <CalendarIcon className="w-4 h-4" /> Tomorrow, November 28
-              </h2>
-              {EVENTS.filter(e => e.date !== "Today").map((event) => (
-                <EventCard key={event.id} event={event} />
-              ))}
+              {selectedMeetings.length > 0 ? (
+                selectedMeetings.map((event) => (
+                  <EventCard key={event.id} event={event} />
+                ))
+              ) : (
+                <p className="text-muted-foreground">No meetings scheduled for this date</p>
+              )}
             </div>
           </div>
 
@@ -91,51 +99,43 @@ export default function Events() {
                     <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md"><ChevronRight className="w-4 h-4" /></Button>
                   </div>
                 </div>
-                <div className="custom-calendar">
-                  <Calendar
-                    mode="single"
-                    selected={currentDate}
-                    disabled={() => false}
-                    className="rounded-xs border-none w-full flex justify-center pointer-events-none"
-                    classNames={{
-                      head_row: "flex w-full justify-between mb-2",
-                      head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.75rem] uppercase font-bold",
-                      row: "flex w-full mt-2 justify-between",
-                      cell: "h-10 w-10 text-center text-xs p-0 relative",
-                      day: "h-10 w-10 p-0 font-medium flex flex-col items-center justify-center rounded-full relative transition-colors",
-                      day_outside: "text-muted-foreground/40 opacity-50",
-                      day_disabled: "text-muted-foreground/40",
-                      day_hidden: "invisible",
-                    }}
-                  />
-                  <style>{`
-                    .custom-calendar [aria-current="date"] {
-                      background-color: #6600ff !important;
-                      color: white !important;
-                      font-weight: bold !important;
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={(date) => date && setSelectedDate(date)}
+                  className="rounded-xs border-none w-full flex justify-center"
+                  classNames={{
+                    head_row: "flex w-full justify-between mb-2",
+                    head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.75rem] uppercase font-bold",
+                    row: "flex w-full mt-2 justify-between",
+                    cell: "h-10 w-10 text-center text-xs p-0 relative",
+                    day: "h-10 w-10 p-0 font-medium flex flex-col items-center justify-center rounded-full relative cursor-pointer hover:bg-muted/50 transition-colors",
+                    day_selected: "bg-[#6600ff] text-white hover:bg-[#6600ff]",
+                    day_today: "bg-[#6600ff] text-white font-bold",
+                    day_outside: "text-muted-foreground/40 opacity-50",
+                    day_disabled: "text-muted-foreground/40",
+                    day_hidden: "invisible",
+                  }}
+                />
+                <style>{`
+                  .rdp-day_selected { background-color: #6600ff !important; color: white !important; }
+                  .rdp-day_today { background-color: #6600ff !important; color: white !important; }
+                  ${Array.from(eventDays).map(day => `
+                    .rdp-cell:has([aria-label*="November ${day}"]) .rdp-day:not(.rdp-day_selected):not(.rdp-day_today) {
+                      position: relative;
                     }
-                    .custom-calendar [aria-current="date"]::after {
-                      content: '';
+                    .rdp-cell:has([aria-label*="November ${day}"]) .rdp-day:not(.rdp-day_selected):not(.rdp-day_today)::after {
+                      content: '•';
                       position: absolute;
-                      display: none;
+                      bottom: 2px;
+                      font-size: 10px;
+                      color: #6600ff;
+                      font-weight: bold;
                     }
-                    ${Array.from(eventDays).map(day => `
-                      .custom-calendar [aria-label*="November ${day}"] {
-                        position: relative;
-                      }
-                      .custom-calendar [aria-label*="November ${day}"]::after {
-                        content: '•';
-                        position: absolute;
-                        bottom: 1px;
-                        font-size: 12px;
-                        color: #6600ff;
-                        font-weight: bold;
-                      }
-                    `).join('')}
-                  `}</style>
-                </div>
+                  `).join('')}
+                `}</style>
                 <div className="mt-4 pt-4 border-t flex justify-end">
-                  <Button size="sm" className="text-xs h-7 rounded-md bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold px-6" data-testid="button-today">Today</Button>
+                  <Button size="sm" className="text-xs h-7 rounded-md bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold px-6" data-testid="button-today" onClick={() => setSelectedDate(new Date(2025, 10, 27))}>Today</Button>
                 </div>
               </CardContent>
             </Card>
