@@ -86,7 +86,7 @@ export default function Events() {
                     cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
                     day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-purple-500/10 hover:text-purple-500 rounded-full transition-colors",
                     day_selected: "bg-[#6600ff] text-white hover:bg-[#5500dd] hover:text-white focus:bg-[#6600ff] focus:text-white shadow-md",
-                    day_today: "bg-accent text-accent-foreground",
+                    day_today: "bg-[#6600ff] text-white",
                     day_outside: "text-muted-foreground opacity-50",
                     day_disabled: "text-muted-foreground opacity-50",
                     day_hidden: "invisible",
