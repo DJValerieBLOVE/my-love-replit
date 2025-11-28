@@ -61,11 +61,11 @@ export default function Events() {
         {/* Filters & Search */}
         <div className="flex flex-col md:flex-row gap-4 mb-8 items-center justify-between">
           <Tabs defaultValue="upcoming" className="w-full md:w-auto">
-            <TabsList className="bg-muted/50">
-              <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-              <TabsTrigger value="nearby">Nearby</TabsTrigger>
-              <TabsTrigger value="past">Past</TabsTrigger>
-              <TabsTrigger value="yours">Yours</TabsTrigger>
+            <TabsList className="bg-muted/50 h-8">
+              <TabsTrigger value="upcoming" className="px-6 py-1.5 h-8 rounded-md font-bold data-[state=active]:bg-[#6600ff] data-[state=active]:hover:bg-[#5500dd]">Upcoming</TabsTrigger>
+              <TabsTrigger value="nearby" className="px-6 py-1.5 h-8 rounded-md font-bold data-[state=active]:bg-[#6600ff] data-[state=active]:hover:bg-[#5500dd]">Nearby</TabsTrigger>
+              <TabsTrigger value="past" className="px-6 py-1.5 h-8 rounded-md font-bold data-[state=active]:bg-[#6600ff] data-[state=active]:hover:bg-[#5500dd]">Past</TabsTrigger>
+              <TabsTrigger value="yours" className="px-6 py-1.5 h-8 rounded-md font-bold data-[state=active]:bg-[#6600ff] data-[state=active]:hover:bg-[#5500dd]">Yours</TabsTrigger>
             </TabsList>
           </Tabs>
           
