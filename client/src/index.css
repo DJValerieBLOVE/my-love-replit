@@ -52,8 +52,8 @@
   --color-sidebar-border: hsl(var(--sidebar-border));
   --color-sidebar-ring: hsl(var(--sidebar-ring));
 
-  --font-sans: 'Optima', 'Candara', Georgia, sans-serif;
-  --font-serif: 'Optima', 'Candara', Georgia, serif;
+  --font-sans: 'Marcellus', Georgia, sans-serif;
+  --font-serif: 'Marcellus', Georgia, serif;
   
   --radius: 1.5rem;
 }
