@@ -33,16 +33,16 @@ export const CURRENT_USER = {
 // Body: #6600ff | Mind: #9900ff | Soul: #cc00ff
 export const LOVE_CODE_AREAS = [
   { id: "god-love", name: "GOD/LOVE", color: "bg-[#eb00a8]", progress: 85 },
-  { id: "romance", name: "Romance", color: "bg-[#e60023]", progress: 60 },
-  { id: "family", name: "Family", color: "bg-[#ff6600]", progress: 75 },
-  { id: "community", name: "Community", color: "bg-[#ffdf00]", progress: 90 },
-  { id: "mission", name: "Mission", color: "bg-[#a2f005]", progress: 40 },
-  { id: "money", name: "Money", color: "bg-[#00d81c]", progress: 55 },
-  { id: "time", name: "Time", color: "bg-[#00ccff]", progress: 30 },
-  { id: "environment", name: "Environment", color: "bg-[#0033ff]", progress: 70 },
-  { id: "body", name: "Body", color: "bg-[#6600ff]", progress: 65 },
-  { id: "mind", name: "Mind", color: "bg-[#9900ff]", progress: 80 },
   { id: "soul", name: "Soul", color: "bg-[#cc00ff]", progress: 95 },
+  { id: "mind", name: "Mind", color: "bg-[#9900ff]", progress: 80 },
+  { id: "body", name: "Body", color: "bg-[#6600ff]", progress: 65 },
+  { id: "environment", name: "Environment", color: "bg-[#0033ff]", progress: 70 },
+  { id: "time", name: "Time", color: "bg-[#00ccff]", progress: 30 },
+  { id: "money", name: "Money", color: "bg-[#00d81c]", progress: 55 },
+  { id: "mission", name: "Mission", color: "bg-[#a2f005]", progress: 40 },
+  { id: "community", name: "Community", color: "bg-[#ffdf00]", progress: 90 },
+  { id: "family", name: "Family", color: "bg-[#ff6600]", progress: 75 },
+  { id: "romance", name: "Romance", color: "bg-[#e60023]", progress: 60 },
 ];
 
 export const CLUBS = [
