@@ -50,17 +50,6 @@ export default function Community() {
           ))}
         </div>
 
-        <div className="mt-12">
-          <h2 className="text-xl font-bold mb-4">Upcoming Events</h2>
-          <Card className="p-6 border-dashed border-2 flex flex-col items-center justify-center text-center py-12 bg-muted/30">
-            <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mb-3">
-              <Users className="w-6 h-6 text-muted-foreground" />
-            </div>
-            <h3 className="font-bold">Live Q&A with Dr. Maya</h3>
-            <p className="text-sm text-muted-foreground mt-1 mb-4">Friday, 2:00 PM EST • Zoom</p>
-            <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold rounded-lg px-6 py-1.5 h-8" data-testid="button-rsvp">RSVP Now</Button>
-          </Card>
-        </div>
       </div>
     </Layout>
   );
