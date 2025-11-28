@@ -9,6 +9,7 @@ import Community from "@/pages/community";
 import Experiments from "@/pages/experiments";
 import ExperimentDetail from "@/pages/experiment-detail";
 import BigDreams from "@/pages/big-dreams";
+import Journal from "@/pages/journal";
 import Toolbox from "@/pages/toolbox";
 import Resources from "@/pages/resources";
 import Wallet from "@/pages/wallet";
@@ -25,7 +26,7 @@ function Router() {
       <Route path="/experiments" component={Experiments} />
       <Route path="/experiments/:id" component={ExperimentDetail} />
       <Route path="/big-dreams" component={BigDreams} />
-      <Route path="/journal" component={BigDreams} /> {/* Redirect/Alias old route */}
+      <Route path="/journal" component={Journal} />
       <Route path="/toolbox" component={Toolbox} />
       <Route path="/resources" component={Resources} />
       <Route path="/wallet" component={Wallet} />

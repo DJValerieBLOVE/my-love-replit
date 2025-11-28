@@ -7,8 +7,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { EqVisualizer } from "@/components/eq-visualizer";
 import { Link } from "wouter";
 import WhiteLogo from "@assets/white transparent vector and png art  11x LOVE logo _1764365495719.png";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { FiveVsWizard } from "@/components/daily-practice/five-vs-wizard";
+import { useState } from "react";
 
 export default function Home() {
+  const [isDailyOpen, setIsDailyOpen] = useState(false);
+
   return (
     <Layout>
       <div className="max-w-5xl mx-auto p-4 lg:p-8 space-y-8">
@@ -26,11 +31,17 @@ export default function Home() {
             <Button variant="outline" className="gap-2 font-bold text-muted-foreground border-muted hover:border-primary/50 hover:text-primary shadow-sm bg-background">
               <HelpCircle className="w-4 h-4" /> How it works
             </Button>
-            <Link href="/big-dreams">
-              <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold px-6 gap-2">
-                <img src={WhiteLogo} alt="Logo" className="w-4 h-4" /> Daily 5 V's
-              </Button>
-            </Link>
+            
+            <Dialog open={isDailyOpen} onOpenChange={setIsDailyOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold px-6 gap-2">
+                  <img src={WhiteLogo} alt="Logo" className="w-4 h-4" /> Daily 5 V's
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-2xl bg-transparent border-none shadow-none p-0">
+                 <FiveVsWizard onComplete={() => setIsDailyOpen(false)} />
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
 
