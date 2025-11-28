@@ -85,29 +85,30 @@ export function FeedPost({ post }: FeedPostProps) {
               </div>
             )}
 
-            <div className="flex items-center justify-between mt-4 pt-2 border-t border-border/30 px-2">
+            <div className="flex items-center justify-between mt-4 pt-2 border-t border-border/30 px-2 h-12">
               {/* 1. Comment */}
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-blue-500 hover:bg-blue-500/10 px-2 h-8 gap-1.5 min-w-[60px]">
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-blue-500 hover:bg-blue-500/10 px-2 h-10 gap-1.5 min-w-[60px]">
                 <MessageSquare className="w-[18px] h-[18px]" strokeWidth={1.5} />
                 <span className="text-[13px] font-medium">{post.comments > 0 ? post.comments : ""}</span>
               </Button>
 
-              {/* 2. Repost (Placeholder) */}
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-green-500 hover:bg-green-500/10 px-2 h-8 gap-1.5 min-w-[60px]">
+              {/* 2. Repost */}
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-green-500 hover:bg-green-500/10 px-2 h-10 gap-1.5 min-w-[60px]">
                 <Repeat2 className="w-[20px] h-[20px]" strokeWidth={1.5} />
                 <span className="text-[13px] font-medium"></span>
               </Button>
 
-              {/* 3. Zap (Center, Larger) */}
+              {/* 3. Zap (Center, Largest) */}
               <Button 
                 variant="ghost" 
                 size="sm" 
                 onClick={handleZap}
-                className={`px-2 h-9 rounded-full transition-all group min-w-[60px] ${isZapped || zaps > 0 ? 'text-orange-500 hover:bg-orange-500/10' : 'text-muted-foreground hover:text-orange-500 hover:bg-orange-500/10'}`}
+                className={`px-2 h-10 rounded-full transition-all group min-w-[60px] ${isZapped || zaps > 0 ? 'text-orange-500 hover:bg-orange-500/10' : 'text-muted-foreground hover:text-orange-500 hover:bg-orange-500/10'}`}
               >
                 <Zap 
-                  className={`mr-1.5 transition-all ${isZapped || zaps > 0 ? 'fill-orange-500 text-orange-500 w-[24px] h-[24px]' : 'w-[24px] h-[24px] fill-transparent group-hover:scale-110'}`} 
+                  className={`mr-1.5 transition-all ${isZapped || zaps > 0 ? 'text-orange-500 w-[28px] h-[28px]' : 'w-[28px] h-[28px] group-hover:scale-110'}`} 
                   strokeWidth={1.5}
+                  fill="none" // Explicitly no fill
                 />
                 <span className={`text-[13px] font-medium ${isZapped || zaps > 0 ? 'font-bold' : ''}`}>
                   {zaps > 0 ? zaps.toLocaleString() : ""}
@@ -115,14 +116,14 @@ export function FeedPost({ post }: FeedPostProps) {
               </Button>
 
               {/* 4. Like */}
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-red-500 hover:bg-red-500/10 px-2 h-8 gap-1.5 min-w-[60px]">
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-red-500 hover:bg-red-500/10 px-2 h-10 gap-1.5 min-w-[60px]">
                 <Heart className="w-[18px] h-[18px]" strokeWidth={1.5} />
                 <span className="text-[13px] font-medium">{post.likes > 0 ? post.likes : ""}</span>
               </Button>
 
-              {/* 5. Share/Bookmark (Placeholder) */}
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary hover:bg-primary/10 px-2 h-8 gap-1.5 min-w-[60px]">
-                <Bookmark className="w-[18px] h-[18px]" strokeWidth={1.5} />
+              {/* 5. Share/Bookmark */}
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary hover:bg-primary/10 px-2 h-10 gap-1.5 min-w-[60px]">
+                <Bookmark className="w-[20px] h-[20px]" strokeWidth={1.5} />
               </Button>
             </div>
           </div>
