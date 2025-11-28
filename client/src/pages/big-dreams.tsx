@@ -89,7 +89,7 @@ export default function BigDreams() {
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <Progress value={area.progress} className="h-2" />
+                      <Progress value={area.progress} className="h-2" indicatorClassName={area.color} />
                       
                       <div className="space-y-2">
                         <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">My Vision</label>
