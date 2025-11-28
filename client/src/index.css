@@ -230,7 +230,7 @@
   button[data-selected-single="true"],
   button[data-range-start="true"],
   button[data-range-end="true"] {
-    background-color: red !important;
+    background-color: #6600ff !important;
     color: white !important;
   }
 

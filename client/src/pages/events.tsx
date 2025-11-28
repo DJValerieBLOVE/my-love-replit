@@ -123,7 +123,7 @@ export default function Events() {
                   button[data-selected-single="true"],
                   button[data-range-start="true"],
                   button[data-range-end="true"] {
-                    background-color: red !important;
+                    background-color: #6600ff !important;
                     border-radius: 50% !important;
                   }
                   ${Array.from(eventDays).map(day => `
