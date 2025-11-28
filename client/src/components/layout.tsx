@@ -59,7 +59,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { icon: Wrench, label: "Toolbox", href: "/toolbox" },
     { icon: Music, label: "Resources", href: "/resources" },
     { icon: LayoutGrid, label: "Community", href: "/community" },
-    { icon: User, label: "Profile", href: "/profile" },
   ];
 
   return (
