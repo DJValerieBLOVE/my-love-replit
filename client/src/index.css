@@ -227,13 +227,11 @@
   }
 
   /* Calendar selected day override */
-  .rdp-day_selected,
-  .rdp-day_today,
-  button[aria-selected="true"],
-  button[aria-current="date"] {
+  button[data-selected-single="true"],
+  button[data-range-start="true"],
+  button[data-range-end="true"] {
     background-color: red !important;
     color: white !important;
-    border-radius: 50% !important;
   }
 
 }

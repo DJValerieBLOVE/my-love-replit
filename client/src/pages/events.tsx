@@ -120,26 +120,15 @@ export default function Events() {
                   }}
                 />
                 <style>{`
-                  .rdp-day {
-                    border-radius: 50% !important;
-                  }
-                  .rdp-day_selected,
-                  .rdp-day_selected:hover,
-                  .rdp-day_today,
-                  .rdp-day_today:hover,
-                  [aria-selected="true"],
-                  [aria-current="date"] {
+                  button[data-selected-single="true"],
+                  button[data-range-start="true"],
+                  button[data-range-end="true"] {
                     background-color: red !important;
-                    color: white !important;
                     border-radius: 50% !important;
-                    font-weight: bold !important;
-                  }
-                  .rdp-button[aria-selected]:focus,
-                  .rdp-button[aria-current]:focus {
-                    background-color: red !important;
                   }
                   ${Array.from(eventDays).map(day => `
-                    .rdp-cell:nth-child(${(day - 1) % 7 + 1}) .rdp-day:not(.rdp-day_selected):not(.rdp-day_today)::after {
+                    .rdp-cell:nth-child(${(day - 1) % 7 + 1}) button[data-selected-single="true"]::after,
+                    .rdp-cell:nth-child(${(day - 1) % 7 + 1}) button:not([data-selected-single])::after {
                       content: '•';
                       position: absolute;
                       bottom: 0;
