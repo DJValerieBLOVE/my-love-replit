@@ -233,16 +233,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Widget 3: Current Focus */}
-          <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow bg-card" data-testid="widget-focus">
-            <div className="p-4">
-              <h4 className="font-bold text-[13px] uppercase text-muted-foreground mb-2">Current Focus</h4>
-              <p className="text-[15px] font-medium text-muted-foreground mb-1">Finance Sovereignty</p>
-              <div className="flex items-center justify-between">
-                <p className="text-xs text-muted-foreground">80%</p>
-                <div className="w-16 bg-muted rounded-full h-1.5">
-                  <div className="bg-[#00d81c] h-1.5 rounded-full w-4/5"></div>
-                </div>
+          <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow bg-card relative" data-testid="widget-focus">
+            <div className="p-4 pb-5">
+              <h4 className="font-bold text-[13px] uppercase text-muted-foreground mb-3">Current Focus</h4>
+              <div className="flex justify-between items-center">
+                <p className="text-[15px] font-medium text-muted-foreground">Finance Sovereignty</p>
+                <span className="font-bold text-[#00d81c]">80%</span>
               </div>
+            </div>
+            <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-muted">
+              <div className="bg-[#00d81c] h-full" style={{ width: '80%' }}></div>
             </div>
           </Card>
 
