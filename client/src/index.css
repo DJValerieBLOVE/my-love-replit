@@ -53,7 +53,7 @@
   --color-sidebar-ring: hsl(var(--sidebar-ring));
 
   --font-sans: 'Plus Jakarta Sans', sans-serif;
-  --font-serif: 'Lora', serif;
+  --font-serif: 'Optima', 'Candara', Georgia, serif;
   
   --radius: 1rem;
 }
