@@ -138,7 +138,7 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
               <div className="mt-8 flex justify-end">
                 <Button 
                   size="lg" 
-                  className="gap-2 px-8 rounded-full"
+                  className="gap-2 px-8 rounded-full bg-[#6600ff] hover:bg-[#5500dd] text-white shadow-lg shadow-primary/20"
                   onClick={step < 5 ? nextStep : onComplete}
                 >
                   {step < 5 ? (
