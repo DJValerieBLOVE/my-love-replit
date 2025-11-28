@@ -29,9 +29,9 @@ const buttonVariants = cva(
       },
       size: {
         // @replit changed sizes
-        default: "h-8 px-4 py-1.5 text-xs",
-        sm: "h-8 rounded-lg px-3 text-xs",
-        lg: "h-8 rounded-lg px-8 text-xs",
+        default: "h-8 px-4 py-1.5 text-base",
+        sm: "h-8 rounded-lg px-3 text-base",
+        lg: "h-8 rounded-lg px-8 text-base",
         icon: "h-8 w-8 rounded-lg",
       },
     },
