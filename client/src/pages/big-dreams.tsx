@@ -50,7 +50,7 @@ export default function BigDreams() {
                     <p className="text-muted-foreground mb-6">Set your vibe, vision, and victory for the day.</p>
                     <Button 
                       size="lg" 
-                      className="bg-primary hover:bg-primary/90 text-white gap-2 shadow-lg shadow-primary/20"
+                      className="bg-primary hover:bg-primary/90 text-white gap-2"
                       onClick={() => setIsPracticing(true)}
                     >
                       <img src={WhiteLogo} alt="Logo" className="w-4 h-4" /> Start Daily Practice

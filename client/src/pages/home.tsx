@@ -27,7 +27,7 @@ export default function Home() {
               <HelpCircle className="w-4 h-4" /> How it works
             </Button>
             <Link href="/big-dreams">
-              <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold px-6 shadow-lg shadow-primary/20 gap-2">
+              <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold px-6 gap-2">
                 <img src={WhiteLogo} alt="Logo" className="w-4 h-4" /> Daily 5 V's
               </Button>
             </Link>

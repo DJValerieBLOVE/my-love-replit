@@ -53,7 +53,7 @@ export default function Events() {
             <h1 className="text-3xl font-serif font-bold text-foreground mb-2">Meetings & Gatherings</h1>
             <p className="text-muted-foreground">Connect with the community in real-time.</p>
           </div>
-          <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white shadow-lg rounded-lg font-bold px-6 py-1.5 h-8" data-testid="button-create-event">
+          <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white rounded-lg font-bold px-6 py-1.5 h-8" data-testid="button-create-event">
             <Plus className="w-4 h-4 mr-2" /> Create Event
           </Button>
         </div>

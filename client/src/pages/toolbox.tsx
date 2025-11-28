@@ -105,7 +105,7 @@ export default function Toolbox() {
               Your personalized collection of bookmarks, worksheets, and resources.
             </p>
           </div>
-          <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold px-6 gap-2 shadow-lg shadow-primary/20">
+          <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold px-6 gap-2">
             <Plus className="w-4 h-4" /> Add New Item
           </Button>
         </div>
