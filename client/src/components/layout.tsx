@@ -164,7 +164,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </main>
 
         {/* Right Sidebar (Gamification) */}
-        <aside className="hidden xl:flex flex-col w-[300px] border-l bg-card/50 p-4 gap-4 overflow-y-auto">
+        <aside className="hidden lg:flex flex-col w-[280px] border-l bg-card/50 p-4 gap-4 overflow-y-auto">
           {/* Widget 1: Magic Mentor */}
           <div className="bg-gradient-to-br from-purple-900/50 via-purple-800/40 to-pink-900/30 rounded-xs border border-purple-500/40 p-4 overflow-hidden relative group cursor-pointer hover:border-purple-500/60 transition-all shadow-md" data-testid="widget-mentor">
             <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-purple-500/40 to-pink-500/30 rounded-full -mr-12 -mt-12 blur-2xl group-hover:from-purple-500/50 group-hover:to-pink-500/40 transition-all" />
