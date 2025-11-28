@@ -132,7 +132,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             return (
               <Link key={item.href} href={item.href}>
                 <div className={cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer group font-medium sidebar-menu",
+                  "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer group font-medium sidebar-menu text-base",
                   isActive 
                     ? "bg-primary/10 text-primary shadow-sm" 
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
