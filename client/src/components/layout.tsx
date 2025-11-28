@@ -189,7 +189,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               {/* Ask Mentor Button */}
               <Button 
                 onClick={() => setIsAiOpen(true)}
-                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold rounded-lg transition-all hover:shadow-lg border-0 text-xs py-1 h-7"
+                className="w-full bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold rounded-lg transition-all hover:shadow-lg border-0 text-xs py-1 h-7"
                 data-testid="button-ask-mentor"
               >
                 <Sparkles className="w-3 h-3 mr-1.5" /> Ask Mentor

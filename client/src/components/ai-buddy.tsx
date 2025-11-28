@@ -54,7 +54,7 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
               />
               <Button 
                 size="icon" 
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg h-10 w-10"
+                className="bg-[#6600ff] hover:bg-[#5500dd] text-white rounded-lg h-10 w-10"
                 data-testid="button-send-message"
               >
                 <Send className="w-4 h-4" />
@@ -72,7 +72,7 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
                 <Button variant="ghost" size="sm" className="text-xs h-6 px-2">Edit Goals</Button>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 {LOVE_CODE_AREAS.map((area) => (
                   <div key={area.id} className="space-y-1">
                     <div className="flex justify-between text-xs">
