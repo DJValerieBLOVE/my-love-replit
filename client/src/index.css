@@ -104,13 +104,18 @@
   --ring: 270 100% 50%; /* #6600ff */
 
   --sidebar: 0 0% 100%;
-  --sidebar-foreground: 0 0% 2%; /* darker gray */
+  --sidebar-foreground: 0 0% 0%; /* darkest */
   --sidebar-primary: 270 100% 50%; /* #6600ff */
   --sidebar-primary-foreground: 0 0% 100%;
   --sidebar-accent: 270 20% 96%;
   --sidebar-accent-foreground: 270 100% 50%; /* #6600ff */
   --sidebar-border: 270 20% 90%;
   --sidebar-ring: 270 90% 60%;
+}
+
+/* Sidebar Menu Styling */
+.sidebar-menu {
+  font-size: calc(1em + 1pt);
 }
 
 /* Dark Mode: Cyber Goddess, Deep Space */
