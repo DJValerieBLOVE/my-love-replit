@@ -169,21 +169,25 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="bg-gradient-to-br from-purple-900/50 via-purple-800/40 to-pink-900/30 rounded-xs border border-purple-500/40 p-4 overflow-hidden relative group cursor-pointer hover:border-purple-500/60 transition-all shadow-md" data-testid="widget-mentor">
             <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-purple-500/40 to-pink-500/30 rounded-full -mr-12 -mt-12 blur-2xl group-hover:from-purple-500/50 group-hover:to-pink-500/40 transition-all" />
             
-            <div className="relative z-10 flex flex-col items-center">
-              {/* VIP Level Badge */}
-              <div className="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 rounded-full px-2 py-0.5 mb-3">
-                <Sparkles className="w-3 h-3 text-yellow-300" />
-                <span className="text-[10px] font-bold text-white">Level 12</span>
-              </div>
-
-              {/* Mentor Image - Aligned with badge */}
-              <div className="relative mb-3">
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-pink-500 blur-xl opacity-40 rounded-full" />
-                <img src={MagicMentor} alt="Magic Mentor" className="w-20 h-20 rounded-full border-3 border-purple-300 relative z-10 shadow-lg" />
+            <div className="relative z-10 flex flex-col">
+              {/* Image and Badge on same line */}
+              <div className="flex items-center justify-center gap-2 mb-3">
+                {/* Mentor Image */}
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-pink-500 blur-xl opacity-40 rounded-full" />
+                  <img src={MagicMentor} alt="Magic Mentor" className="w-16 h-16 rounded-full border-3 border-purple-300 relative z-10 shadow-lg" />
+                </div>
+                
+                {/* VIP Level Badge */}
+                <div className="inline-flex flex-col items-center gap-1 bg-white/10 border border-white/20 rounded-lg px-2 py-1">
+                  <Sparkles className="w-3 h-3 text-yellow-300" />
+                  <span className="text-[9px] font-bold text-white">Level</span>
+                  <span className="text-[10px] font-black text-yellow-300">12</span>
+                </div>
               </div>
 
               {/* Tagline */}
-              <p className="text-base text-purple-50 mb-4 italic font-bold">"Rock Your Dreams!"</p>
+              <p className="text-base text-purple-50 mb-3 italic font-bold text-center">"Rock Your Dreams!"</p>
 
               {/* Ask Magic Mentor Button */}
               <Button 
