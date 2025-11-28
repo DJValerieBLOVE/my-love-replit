@@ -43,13 +43,13 @@ export default function Home() {
           <CardContent className="p-5 relative z-10">
             <div className="flex justify-between items-center mb-3">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-yellow-300 animate-pulse" />
+                <Sparkles className="w-5 h-5 text-yellow-400 animate-pulse" />
                 <h3 className="font-bold font-serif">Daily Goal: Connect</h3>
               </div>
               <span className="text-xs font-bold bg-white/20 px-2 py-1 rounded-full border border-white/10">2/3</span>
             </div>
-            <p className="text-sm opacity-90 mb-4 font-medium text-purple-100">Reply to 2 community members to complete today's goal and earn <span className="text-yellow-300 font-bold">50 Sats</span>.</p>
-            <Progress value={66} className="h-2 bg-black/30 [&>div]:bg-primary" />
+            <p className="text-sm opacity-90 mb-4 font-medium text-purple-100">Reply to 2 community members to complete today's goal and earn <span className="text-orange-500 font-bold">50 Sats</span>.</p>
+            <Progress value={66} className="h-2 bg-primary/10 [&>div]:bg-primary" />
           </CardContent>
         </Card>
 
