@@ -137,7 +137,7 @@ export default function Toolbox() {
                     <div className="h-40 bg-gray-100 relative overflow-hidden">
                       <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                      <Badge className="absolute top-3 left-3 bg-white/20 hover:bg-white/30 text-white border-none backdrop-blur-md">
+                      <Badge className="absolute top-3 right-3 z-20 bg-white/90 text-black hover:bg-white">
                         {item.category}
                       </Badge>
                     </div>
@@ -225,7 +225,7 @@ export default function Toolbox() {
                   <div className="h-48 bg-gray-100 relative overflow-hidden">
                     <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <Badge className="absolute top-3 left-3 bg-white/20 hover:bg-white/30 text-white border-none backdrop-blur-md">
+                    <Badge className="absolute top-3 right-3 z-20 bg-white/90 text-black hover:bg-white">
                       {item.category}
                     </Badge>
                   </div>
