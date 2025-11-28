@@ -107,7 +107,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Tooltip key={area.id}>
                 <TooltipTrigger asChild>
                   <div 
-                    className={cn("w-full rounded-t-lg opacity-80 hover:opacity-100 transition-all cursor-pointer hover:scale-y-110", area.color)}
+                    className={cn("w-full rounded-t-lg transition-all cursor-pointer hover:shadow-lg hover:shadow-current", area.color)}
                     style={{ height: `${20 + (area.progress / 100) * 80}%` }}
                     data-testid={`eq-bar-${area.id}`}
                   />
