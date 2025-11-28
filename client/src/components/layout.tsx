@@ -238,7 +238,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <h4 className="font-bold text-[13px] uppercase text-muted-foreground mb-3">Current Focus</h4>
               <div className="flex justify-between items-center">
                 <p className="text-[15px] font-medium text-muted-foreground">Finance Sovereignty</p>
-                <span className="font-bold text-[#00d81c]">80%</span>
+                <span className="font-bold text-[#00d81c] text-sm">80%</span>
               </div>
             </div>
             <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-muted">
