@@ -34,7 +34,7 @@ export default function Home() {
         </div>
 
         {/* EQ Visualizer Section */}
-        <section className="space-y-4">
+        {/* <section className="space-y-4">
           <div className="flex items-center justify-between px-1">
             <h2 className="text-xl font-bold flex items-center gap-2">
               <span className="text-2xl">🎚️</span> Your EQ Visualizer
@@ -42,7 +42,7 @@ export default function Home() {
             <span className="text-sm text-muted-foreground">Level 12 • Guide</span>
           </div>
           <EqVisualizer />
-        </section>
+        </section> */}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column: Actions & Wonder */}
