@@ -19,7 +19,8 @@ export default function Experiments() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {EXPERIMENTS.map((experiment) => (
             <Link key={experiment.id} href={`/experiments/${experiment.id}`}>
-              <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 group border-none shadow-sm bg-card cursor-pointer">
+              <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 group border-none shadow-sm bg-card cursor-pointer flex flex-col">
+                <div className="h-[2px] w-full bg-primary" />
                 <div className="relative h-48 overflow-hidden">
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors z-10" />
                   <img 
