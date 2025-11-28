@@ -99,8 +99,7 @@ export default function Home() {
           {/* Feed Section - Centered Single Column */}
           <div className="space-y-6 max-w-2xl mx-auto w-full">
             <div className="flex items-center justify-between border-b pb-4">
-              <h2 className="text-xl font-bold">Lab Community</h2>
-              <Button variant="ghost" size="sm">View All</Button>
+              <h2 className="text-xl font-bold">Feed</h2>
             </div>
             <div className="space-y-4">
               {FEED_POSTS.map((post) => (
