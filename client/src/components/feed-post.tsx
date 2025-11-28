@@ -60,15 +60,15 @@ export function FeedPost({ post }: FeedPostProps) {
           <div className="flex-1 min-w-0">
             <div className="flex justify-between items-start">
               <div>
-                <h3 className="font-bold text-foreground text-sm">{post.author.name}</h3>
-                <p className="text-muted-foreground text-xs">{post.author.handle} • {post.timestamp}</p>
+                <h3 className="font-bold text-foreground text-[15px]">{post.author.name}</h3>
+                <p className="text-muted-foreground text-[15px]">{post.author.handle} • {post.timestamp}</p>
               </div>
               <Button variant="ghost" size="icon" className="h-8 w-8 -mr-2 text-muted-foreground">
                 <MoreHorizontal className="w-4 h-4" />
               </Button>
             </div>
             
-            <p className="mt-2 text-base leading-relaxed text-foreground/90 whitespace-pre-wrap">
+            <p className="mt-2 text-[17px] leading-relaxed text-foreground/90 whitespace-pre-wrap">
               {post.content}
             </p>
             
