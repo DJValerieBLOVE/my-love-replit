@@ -224,58 +224,70 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Widget 3: Current Focus */}
-          <div className="bg-black/40 rounded-xs border border-white/20 hover:border-white/40 transition-colors p-4" data-testid="widget-focus">
-            <h4 className="font-bold text-xs uppercase text-white/60 mb-2">Current Focus</h4>
-            <p className="text-sm font-semibold text-white mb-1">Finance Sovereignty</p>
-            <div className="flex items-center justify-between">
-              <p className="text-xs text-white/70">80%</p>
-              <div className="w-16 bg-white/20 rounded-full h-1.5">
-                <div className="bg-white/60 h-1.5 rounded-full w-4/5"></div>
+          <div className="rounded-xs overflow-hidden hover:shadow-md transition-all border-none bg-card/50 shadow-sm group cursor-pointer" data-testid="widget-focus">
+            <div className="h-1 w-full bg-gradient-to-r from-cyan-500/20 to-cyan-500/5 group-hover:from-cyan-500 group-hover:to-blue-500 transition-all" />
+            <div className="p-4">
+              <h4 className="font-bold text-xs uppercase text-muted-foreground mb-2">Current Focus</h4>
+              <p className="text-sm font-semibold text-foreground mb-1">Finance Sovereignty</p>
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-muted-foreground">80%</p>
+                <div className="w-16 bg-muted rounded-full h-1.5">
+                  <div className="bg-foreground/40 h-1.5 rounded-full w-4/5"></div>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Widget 4: Upcoming Event */}
-          <div className="bg-black/40 rounded-xs border border-white/20 hover:border-white/40 transition-colors p-4" data-testid="widget-event">
-            <h4 className="font-bold text-xs uppercase text-white/60 mb-2">Upcoming Event</h4>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-semibold text-white">Full Moon Ceremony</p>
-                <p className="text-xs text-white/70">Nov 30</p>
+          <div className="rounded-xs overflow-hidden hover:shadow-md transition-all border-none bg-card/50 shadow-sm group cursor-pointer" data-testid="widget-event">
+            <div className="h-1 w-full bg-gradient-to-r from-pink-500/20 to-pink-500/5 group-hover:from-pink-500 group-hover:to-rose-500 transition-all" />
+            <div className="p-4">
+              <h4 className="font-bold text-xs uppercase text-muted-foreground mb-2">Upcoming Event</h4>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-foreground">Full Moon Ceremony</p>
+                  <p className="text-xs text-muted-foreground">Nov 30</p>
+                </div>
+                <span className="text-lg">🌙</span>
               </div>
-              <span className="text-lg">🌙</span>
             </div>
           </div>
 
           {/* Widget 5: Poll of the Day */}
-          <div className="bg-black/40 rounded-xs border border-white/20 hover:border-white/40 transition-colors p-4" data-testid="widget-poll">
-            <h4 className="font-bold text-xs uppercase text-white/60 mb-2">Poll of the Day</h4>
-            <p className="text-xs text-white/80 mb-2">What area needs focus?</p>
-            <div className="space-y-1">
-              {['Health', 'Relationships', 'Career'].map((option, i) => (
-                <button key={i} className="w-full text-left text-xs py-1.5 px-2 rounded-xs bg-white/10 hover:bg-white/20 transition-colors text-white/70 hover:text-white font-medium">
-                  {option}
-                </button>
-              ))}
+          <div className="rounded-xs overflow-hidden hover:shadow-md transition-all border-none bg-card/50 shadow-sm group cursor-pointer" data-testid="widget-poll">
+            <div className="h-1 w-full bg-gradient-to-r from-indigo-500/20 to-indigo-500/5 group-hover:from-indigo-500 group-hover:to-purple-500 transition-all" />
+            <div className="p-4">
+              <h4 className="font-bold text-xs uppercase text-muted-foreground mb-2">Poll of the Day</h4>
+              <p className="text-xs text-foreground mb-3">What area needs focus?</p>
+              <div className="space-y-1.5">
+                {['Health', 'Relationships', 'Career'].map((option, i) => (
+                  <button key={i} className="w-full text-left text-xs py-1 px-2 rounded-xs bg-muted hover:bg-muted/80 transition-colors text-foreground hover:text-primary font-medium">
+                    {option}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
           {/* Widget 6: Who to Follow */}
-          <div className="bg-black/40 rounded-xs border border-white/20 hover:border-white/40 transition-colors p-4" data-testid="widget-follow">
-            <h4 className="font-bold text-xs uppercase text-white/60 mb-3">Who to Follow</h4>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-9 h-9 rounded-full bg-white/20 border border-white/40 flex items-center justify-center text-xs">
-                  👤
+          <div className="rounded-xs overflow-hidden hover:shadow-md transition-all border-none bg-card/50 shadow-sm group cursor-pointer" data-testid="widget-follow">
+            <div className="h-1 w-full bg-gradient-to-r from-emerald-500/20 to-emerald-500/5 group-hover:from-emerald-500 group-hover:to-green-500 transition-all" />
+            <div className="p-4">
+              <h4 className="font-bold text-xs uppercase text-muted-foreground mb-3">Who to Follow</h4>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs">
+                    👤
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-foreground">Alex Luna</p>
+                    <p className="text-[10px] text-muted-foreground">@alexluna</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs font-bold text-white">Alex Luna</p>
-                  <p className="text-[10px] text-white/70">@alexluna</p>
-                </div>
+                <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold text-xs rounded-lg px-2 py-1 h-7 border-0" data-testid="button-follow">
+                  Follow
+                </Button>
               </div>
-              <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold text-xs rounded-lg px-2 py-1 h-7 border-0" data-testid="button-follow">
-                Follow
-              </Button>
             </div>
           </div>
         </aside>
