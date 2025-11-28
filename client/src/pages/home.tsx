@@ -44,13 +44,13 @@ export default function Home() {
           <EqVisualizer />
         </section> */}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column: Actions & Wonder */}
-          <div className="lg:col-span-2 space-y-8">
+        <div className="space-y-8">
+          {/* Top Section: Wonder & Experiment */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Daily Wonder Card */}
-            <Card className="bg-gradient-to-br from-purple-50 to-white border-none shadow-md overflow-hidden relative">
+            <Card className="bg-gradient-to-br from-purple-50 to-white border-none shadow-md overflow-hidden relative h-full">
               <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-full -mr-20 -mt-20 blur-3xl pointer-events-none" />
-              <CardContent className="p-8 relative z-10">
+              <CardContent className="p-8 relative z-10 flex flex-col justify-between h-full">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm text-2xl flex-shrink-0">
                     ✨
@@ -68,25 +68,9 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            {/* Recent Activity / Feed */}
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold">Lab Community</h2>
-                <Button variant="ghost" size="sm">View All</Button>
-              </div>
-              <div className="space-y-4">
-                {FEED_POSTS.map((post) => (
-                  <FeedPost key={post.id} post={post} />
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column: Sidebar Widgets (Mobile only usually, but here reinforcing) */}
-          <div className="space-y-6">
-             {/* Current Experiment */}
-            <Card className="border-none shadow-md overflow-hidden group cursor-pointer hover:shadow-lg transition-all">
-              <div className="h-32 bg-gray-900 relative">
+            {/* Current Experiment */}
+            <Card className="border-none shadow-md overflow-hidden group cursor-pointer hover:shadow-lg transition-all h-full flex flex-col">
+              <div className="h-32 bg-gray-900 relative shrink-0">
                 <img 
                   src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=200&fit=crop" 
                   alt="Experiment"
@@ -97,32 +81,32 @@ export default function Home() {
                   <h3 className="font-bold text-lg leading-tight">Morning Miracle</h3>
                 </div>
               </div>
-              <CardContent className="p-4">
-                <div className="flex justify-between text-sm mb-2">
-                  <span className="text-muted-foreground">Day 3 of 7</span>
-                  <span className="font-bold text-primary">42%</span>
-                </div>
-                <div className="w-full bg-muted rounded-full h-2 mb-4">
-                  <div className="bg-primary h-2 rounded-full w-[42%]" />
+              <CardContent className="p-4 flex flex-col justify-between flex-1">
+                <div>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="text-muted-foreground">Day 3 of 7</span>
+                    <span className="font-bold text-primary">42%</span>
+                  </div>
+                  <div className="w-full bg-muted rounded-full h-2 mb-4">
+                    <div className="bg-primary h-2 rounded-full w-[42%]" />
+                  </div>
                 </div>
                 <Button className="w-full" variant="outline">Continue</Button>
               </CardContent>
             </Card>
+          </div>
 
-            {/* Toolbox Quick Access */}
-            <Card className="border-none shadow-md">
-              <CardContent className="p-6">
-                <h3 className="font-bold text-lg mb-4">Your Toolbox</h3>
-                <div className="space-y-2">
-                  {['Snap! Breath', 'Vibe Check', 'Morning Dance'].map((tool, i) => (
-                    <div key={i} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition-colors cursor-pointer group">
-                      <span className="text-sm font-medium">{tool}</span>
-                      <Play className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+          {/* Feed Section - Full Width */}
+          <div className="space-y-6">
+            <div className="flex items-center justify-between border-b pb-4">
+              <h2 className="text-xl font-bold">Lab Community</h2>
+              <Button variant="ghost" size="sm">View All</Button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {FEED_POSTS.map((post) => (
+                <FeedPost key={post.id} post={post} />
+              ))}
+            </div>
           </div>
         </div>
       </div>
