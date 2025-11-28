@@ -35,11 +35,11 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
       title: "Vision",
       subtitle: "What is your focus today?",
       component: (
-        <div className="space-y-4">
-          <p className="text-lg text-muted-foreground italic">"Where attention goes, energy flows."</p>
+        <div className="space-y-6">
+          <p className="text-lg text-muted-foreground italic font-serif">"Where attention goes, energy flows."</p>
           <Textarea 
             placeholder="I am creating..." 
-            className="text-xl p-4 min-h-[150px]"
+            className="text-xl p-6 min-h-[180px] rounded-xl border-primary/10 focus-visible:ring-primary/20 bg-white/50 font-serif resize-none"
             value={data.vision}
             onChange={e => setData({...data, vision: e.target.value})}
           />
@@ -51,15 +51,15 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
       title: "Villain",
       subtitle: "Who is trying to stop you?",
       component: (
-        <div className="space-y-4">
-          <p className="text-lg text-muted-foreground italic">Name it to tame it. (CLADDD)</p>
-          <div className="grid grid-cols-2 gap-2 mb-4">
+        <div className="space-y-6">
+          <p className="text-lg text-muted-foreground italic font-serif">Name it to tame it. (CLADDD)</p>
+          <div className="flex flex-wrap gap-3 mb-6">
             {['Confusion', 'Lies', 'Apathy', 'Distraction', 'Drifting', 'Disconnection'].map(v => (
               <Button 
                 key={v} 
                 variant={data.villain === v ? "default" : "outline"}
                 onClick={() => setData({...data, villain: v})}
-                className="justify-start"
+                className={`rounded-full px-6 h-10 transition-all text-base border-primary/20 ${data.villain === v ? 'bg-primary text-white shadow-md shadow-primary/30' : 'hover:border-primary/50 hover:text-primary hover:bg-primary/5'}`}
               >
                 {v}
               </Button>
@@ -67,6 +67,7 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
           </div>
           <Input 
             placeholder="Or name your specific resistance..." 
+            className="text-xl p-6 h-14 rounded-xl border-primary/10 focus-visible:ring-primary/20 bg-white/50"
             value={data.villain}
             onChange={e => setData({...data, villain: e.target.value})}
           />
@@ -78,11 +79,11 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
       title: "Value",
       subtitle: "What matters most today?",
       component: (
-        <div className="space-y-4">
-          <p className="text-lg text-muted-foreground italic">Anchor to your core values.</p>
+        <div className="space-y-6">
+          <p className="text-lg text-muted-foreground italic font-serif">Anchor to your core values.</p>
           <Input 
             placeholder="Today I value..." 
-            className="text-xl p-6"
+            className="text-xl p-6 h-16 rounded-xl border-primary/10 focus-visible:ring-primary/20 bg-white/50 font-serif"
             value={data.value}
             onChange={e => setData({...data, value: e.target.value})}
           />
@@ -94,11 +95,11 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
       title: "Victory",
       subtitle: "Define your VIP (Victory In Progress)",
       component: (
-        <div className="space-y-4">
-          <p className="text-lg text-muted-foreground italic">What is one small win you commit to?</p>
+        <div className="space-y-6">
+          <p className="text-lg text-muted-foreground italic font-serif">What is one small win you commit to?</p>
           <Input 
             placeholder="I will..." 
-            className="text-xl p-6"
+            className="text-xl p-6 h-16 rounded-xl border-primary/10 focus-visible:ring-primary/20 bg-white/50 font-serif"
             value={data.victory}
             onChange={e => setData({...data, victory: e.target.value})}
           />

@@ -32,13 +32,13 @@ export function VibeRater({ value, onChange }: VibeRaterProps) {
           key={value}
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className={cn("text-6xl font-black mb-2", info.color)}
+          className={cn("text-7xl font-serif font-bold mb-4 drop-shadow-sm", info.color)}
         >
           {value}
         </motion.div>
-        <h3 className={cn("text-3xl font-serif font-bold", info.color)}>{info.label}</h3>
-        <p className="text-lg font-medium text-muted-foreground">{info.desc}</p>
-        <div className="inline-block px-3 py-1 rounded-full bg-muted text-xs font-bold uppercase tracking-widest mt-2">
+        <h3 className={cn("text-4xl font-serif font-bold tracking-tight", info.color)}>{info.label}</h3>
+        <p className="text-xl font-serif text-muted-foreground italic">{info.desc}</p>
+        <div className="inline-block px-4 py-1.5 rounded-full bg-muted/50 border border-border text-xs font-bold uppercase tracking-[0.2em] mt-4 text-muted-foreground">
           {info.zone}
         </div>
       </div>
