@@ -153,7 +153,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     ? "bg-primary/10 text-primary shadow-md shadow-primary/10 border border-primary/10" 
                     : "text-muted-foreground hover:bg-primary/5 hover:text-primary hover:shadow-sm hover:translate-x-1"
                 )}>
-                  <item.icon className={cn("w-5 h-5 transition-transform group-hover:scale-110", isActive && "opacity-100")} />
+                  <item.icon strokeWidth={1.5} className={cn("w-5 h-5 transition-transform group-hover:scale-110", isActive && "opacity-100")} />
                   <span>{item.label}</span>
                 </div>
               </Link>
