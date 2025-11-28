@@ -125,6 +125,12 @@ export default function Events() {
                   .rdp-day {
                     border-radius: 50% !important;
                   }
+                  [aria-selected="true"] {
+                    background-color: #6600ff !important;
+                    color: white !important;
+                    border-radius: 50% !important;
+                    font-weight: bold !important;
+                  }
                   .rdp-day_selected {
                     background-color: #6600ff !important;
                     color: white !important;
@@ -132,6 +138,12 @@ export default function Events() {
                     font-weight: bold !important;
                   }
                   .rdp-day_today {
+                    background-color: #6600ff !important;
+                    color: white !important;
+                    border-radius: 50% !important;
+                    font-weight: bold !important;
+                  }
+                  button[aria-current="date"] {
                     background-color: #6600ff !important;
                     color: white !important;
                     border-radius: 50% !important;
