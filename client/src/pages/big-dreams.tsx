@@ -82,7 +82,7 @@ export default function BigDreams() {
               <div className="grid gap-6 md:grid-cols-2">
                 {LOVE_CODE_AREAS.map((area) => (
                   <Card key={area.id} className="overflow-hidden border-none shadow-sm hover:shadow-md transition-all group">
-                    <div className={cn("h-1 w-full", area.color)} />
+                    <div className={cn("h-1.5 w-full", area.color)} />
                     <CardHeader className="pb-2">
                       <div className="flex justify-between items-center">
                         <CardTitle className="text-lg font-serif">{area.name}</CardTitle>
