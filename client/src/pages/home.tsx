@@ -60,7 +60,7 @@ export default function Home() {
                     <p className="text-xl font-medium text-foreground italic mb-6">
                       "What if life isn't a test you can fail... but an experiment you get to play?"
                     </p>
-                    <Button variant="secondary" className="bg-white hover:bg-purple-50 text-primary border border-purple-100">
+                    <Button variant="secondary" className="bg-white hover:bg-primary/5 text-primary border border-primary/20">
                       Capture Reflection
                     </Button>
                   </div>
