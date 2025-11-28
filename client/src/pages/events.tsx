@@ -8,8 +8,24 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import EventHeader from "@assets/generated_images/zoom_meeting_event.png";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
+import { useState, useMemo } from "react";
 
 export default function Events() {
+  const [currentDate] = useState(new Date());
+  
+  // Map event dates to check which days have events
+  const eventDays = useMemo(() => {
+    const days = new Set<string>();
+    EVENTS.forEach(event => {
+      if (event.date === "Today") {
+        days.add("27"); // Today is Nov 27
+      } else if (event.date === "Tomorrow") {
+        days.add("28"); // Tomorrow is Nov 28
+      }
+    });
+    return days;
+  }, []);
+
   return (
     <Layout>
       <div className="max-w-7xl mx-auto p-4 lg:p-8">
@@ -75,8 +91,48 @@ export default function Events() {
                     <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md"><ChevronRight className="w-4 h-4" /></Button>
                   </div>
                 </div>
-                <div className="text-center p-4 bg-yellow-100 text-yellow-900 rounded-lg">
-                  Calendar styling being rebuilt - please ignore for now
+                <div className="custom-calendar">
+                  <Calendar
+                    mode="single"
+                    selected={currentDate}
+                    disabled={() => false}
+                    className="rounded-xs border-none w-full flex justify-center pointer-events-none"
+                    classNames={{
+                      head_row: "flex w-full justify-between mb-2",
+                      head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.75rem] uppercase font-bold",
+                      row: "flex w-full mt-2 justify-between",
+                      cell: "h-10 w-10 text-center text-xs p-0 relative",
+                      day: "h-10 w-10 p-0 font-medium flex flex-col items-center justify-center rounded-full relative transition-colors",
+                      day_outside: "text-muted-foreground/40 opacity-50",
+                      day_disabled: "text-muted-foreground/40",
+                      day_hidden: "invisible",
+                    }}
+                  />
+                  <style>{`
+                    .custom-calendar [aria-current="date"] {
+                      background-color: #6600ff !important;
+                      color: white !important;
+                      font-weight: bold !important;
+                    }
+                    .custom-calendar [aria-current="date"]::after {
+                      content: '';
+                      position: absolute;
+                      display: none;
+                    }
+                    ${Array.from(eventDays).map(day => `
+                      .custom-calendar [aria-label*="November ${day}"] {
+                        position: relative;
+                      }
+                      .custom-calendar [aria-label*="November ${day}"]::after {
+                        content: '•';
+                        position: absolute;
+                        bottom: 1px;
+                        font-size: 12px;
+                        color: #6600ff;
+                        font-weight: bold;
+                      }
+                    `).join('')}
+                  `}</style>
                 </div>
                 <div className="mt-4 pt-4 border-t flex justify-end">
                   <Button size="sm" className="text-xs h-7 rounded-md bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold px-6" data-testid="button-today">Today</Button>
