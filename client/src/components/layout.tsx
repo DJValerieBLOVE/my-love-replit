@@ -78,11 +78,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <span className="font-bold text-sm text-secondary-foreground">{CURRENT_USER.walletBalance.toLocaleString()}</span>
             </div>
 
-            {/* VIP Status Widget */}
-            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-gradient-to-br from-purple-900/20 to-pink-900/20 rounded-full border border-white/10">
-              <Sparkles className="w-4 h-4 text-yellow-400" />
-              <span className="font-bold text-xs text-muted-foreground">Level 12</span>
-            </div>
 
             <Button variant="ghost" size="icon" className="rounded-full">
               <Bell className="w-5 h-5" />
@@ -160,21 +155,44 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
         {/* Right Sidebar (Gamification) */}
         <aside className="hidden xl:flex flex-col w-[300px] border-l bg-card/50 p-6 gap-6 overflow-y-auto">
-          {/* Magic Mentor Widget */}
-          <div className="text-center">
-            <div className="relative inline-block mb-3">
-              <div className="absolute inset-0 bg-purple-500 blur-xl opacity-30 rounded-full" />
-              <img src={MagicMentor} alt="Magic Mentor" className="w-20 h-20 rounded-full border-2 border-purple-400 relative z-10" />
+          {/* Mentor Hub - Combined VIP Status + Magic Mentor */}
+          <div className="bg-gradient-to-br from-purple-900/30 to-pink-900/20 rounded-2xl border border-purple-500/20 p-6 text-center overflow-hidden relative group cursor-pointer hover:border-purple-500/40 transition-all">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/20 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-purple-500/30 transition-colors" />
+            
+            <div className="relative z-10">
+              {/* VIP Level Badge */}
+              <div className="inline-flex items-center gap-2 bg-yellow-400/20 border border-yellow-400/40 rounded-full px-3 py-1 mb-4">
+                <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
+                <span className="text-xs font-bold text-yellow-300">Level 12 Guide</span>
+              </div>
+
+              {/* Mentor Image */}
+              <div className="relative inline-block mb-4 mt-2">
+                <div className="absolute inset-0 bg-purple-500 blur-2xl opacity-40 rounded-full" />
+                <img src={MagicMentor} alt="Magic Mentor" className="w-24 h-24 rounded-full border-2 border-purple-400 relative z-10 shadow-lg" />
+              </div>
+
+              {/* Mentor Info */}
+              <h3 className="font-bold text-lg font-serif mb-1">Your Magic Mentor</h3>
+              <p className="text-xs text-purple-200 mb-1 italic">"You're crushing your Soul mission, Sarah!"</p>
+              
+              {/* Level Progress */}
+              <div className="mt-4 space-y-1.5">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-muted-foreground">Progress to Guide Master</span>
+                  <span className="font-bold text-yellow-300">65%</span>
+                </div>
+                <Progress value={65} className="h-1.5" />
+              </div>
+
+              {/* Ask Mentor Button */}
               <Button 
-                size="sm" 
-                className="absolute -bottom-2 left-1/2 -translate-x-1/2 z-20 rounded-full h-7 text-xs bg-purple-600 hover:bg-purple-700"
                 onClick={() => setIsAiOpen(true)}
+                className="w-full mt-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold rounded-xl transition-all hover:shadow-lg"
               >
-                Ask Mentor
+                <Sparkles className="w-4 h-4 mr-2" /> Ask Mentor
               </Button>
             </div>
-            <h3 className="font-bold text-lg">Magic Mentor</h3>
-            <p className="text-xs text-muted-foreground">"Focus on your Soul mission today, Sarah!"</p>
           </div>
 
           {/* Streak Widget */}
