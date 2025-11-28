@@ -75,23 +75,9 @@ export default function Events() {
                     <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md"><ChevronRight className="w-4 h-4" /></Button>
                   </div>
                 </div>
-                <Calendar
-                  mode="single"
-                  selected={new Date()}
-                  className="rounded-xs border-none w-full flex justify-center pointer-events-none"
-                  classNames={{
-                    head_row: "flex w-full justify-between",
-                    head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
-                    row: "flex w-full mt-2 justify-between",
-                    cell: "h-9 w-9 text-center text-sm p-0 relative",
-                    day: "h-9 w-9 p-0 font-normal flex items-center justify-center rounded-full",
-                    day_selected: "",
-                    day_today: "",
-                    day_outside: "text-muted-foreground opacity-50",
-                    day_disabled: "text-muted-foreground opacity-50",
-                    day_hidden: "invisible",
-                  }}
-                />
+                <div className="text-center p-4 bg-yellow-100 text-yellow-900 rounded-lg">
+                  Calendar styling being rebuilt - please ignore for now
+                </div>
                 <div className="mt-4 pt-4 border-t flex justify-end">
                   <Button size="sm" className="text-xs h-7 rounded-md bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold px-6" data-testid="button-today">Today</Button>
                 </div>
