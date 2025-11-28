@@ -38,6 +38,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Progress } from "@/components/ui/progress";
+import { Card } from "@/components/ui/card";
 import {
   Tooltip,
   TooltipContent,
