@@ -56,7 +56,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { icon: Home, label: "Home", href: "/" },
     { icon: Target, label: "Big Dreams", href: "/big-dreams" },
     { icon: FlaskConical, label: "Experiments", href: "/experiments" },
-    { icon: Wrench, label: "Toolbox", href: "/toolbox" },
+    { icon: Wrench, label: "My Toolbox", href: "/toolbox" },
     { icon: Calendar, label: "Events", href: "/events" },
     { icon: LayoutGrid, label: "Community", href: "/community" },
     { icon: Music, label: "Resources", href: "/resources" },
