@@ -36,7 +36,7 @@ export default function Home() {
         </div>
 
         {/* Daily Goal */}
-        <Card className="bg-gradient-to-r from-purple-900 to-pink-900 text-white border-none shadow-lg relative overflow-hidden group cursor-pointer">
+        <Card className="bg-gradient-to-br from-purple-900/50 via-purple-800/40 to-pink-900/30 text-white border-none shadow-lg relative overflow-hidden group cursor-pointer">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-2xl group-hover:bg-white/20 transition-colors" />
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-cyan-500/20 rounded-full -ml-10 -mb-10 blur-xl" />
           
