@@ -83,26 +83,30 @@ export function FeedPost({ post }: FeedPostProps) {
             )}
 
             <div className="flex items-center justify-between mt-4 pt-2 border-t border-border/30">
-              {/* Lightning Tip Button */}
+              {/* Lightning Tip Button - Primal Style */}
               <Button 
                 variant="ghost" 
                 size="sm" 
                 onClick={handleZap}
-                className={`px-3 h-8 rounded-full transition-all group ${isZapped ? 'bg-orange-500/20 text-orange-600' : 'text-orange-500 bg-orange-500/10 hover:bg-orange-500/20'}`}
+                className={`px-2 h-8 rounded-full transition-all group hover:bg-orange-500/10 ${isZapped || zaps > 0 ? 'text-orange-500' : 'text-muted-foreground hover:text-orange-500'}`}
               >
-                <img src={SatsIcon} alt="Zap" className={`w-4 h-4 mr-1.5 ${isZapped ? 'scale-125' : 'animate-pulse'}`} />
-                <span className="text-xs font-bold">{zaps.toLocaleString()} sats</span>
+                <Zap 
+                  className={`w-5 h-5 mr-1.5 transition-all ${isZapped || zaps > 0 ? 'fill-orange-500 text-orange-500' : 'fill-transparent group-hover:scale-110'}`} 
+                  strokeWidth={1.5}
+                />
+                {zaps > 0 && <span className="text-[13px] font-bold font-mono">{zaps.toLocaleString()}</span>}
+                {zaps === 0 && <span className="text-[13px] font-medium group-hover:font-bold transition-all">Zap</span>}
               </Button>
               
               <div className="flex gap-2">
                 <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-red-500 hover:bg-red-500/10 px-2 h-8">
                   <Users className="w-4 h-4 mr-1.5" />
-                  <span className="text-xs font-medium">{post.likes}</span>
+                  <span className="text-xs font-medium">{post.likes > 0 ? post.likes : "Like"}</span>
                 </Button>
                 
                 <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-blue-500 hover:bg-blue-500/10 px-2 h-8">
                   <MessageSquare className="w-4 h-4 mr-1.5" />
-                  <span className="text-xs font-medium">{post.comments}</span>
+                  <span className="text-xs font-medium">{post.comments > 0 ? post.comments : "Reply"}</span>
                 </Button>
               </div>
             </div>

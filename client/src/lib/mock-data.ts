@@ -110,6 +110,19 @@ export const FEED_POSTS = [
     zaps: 500,
     timestamp: "5h ago",
   },
+  {
+    id: "post-4",
+    author: {
+      name: "Marcus Stone",
+      handle: "@mstone",
+      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=faces",
+    },
+    content: "Testing out the new 11x LOVE Lab features. This platform feels different... in a good way. 🚀",
+    likes: 0,
+    comments: 0,
+    zaps: 0,
+    timestamp: "Just now",
+  },
 ];
 
 export const EXPERIMENTS = [
