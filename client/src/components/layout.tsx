@@ -180,7 +180,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 
                 {/* VIP Level Badge */}
                 <div className="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 rounded-lg px-2 py-1">
-                  <Sparkles className="w-3 h-3 text-yellow-300" />
+                  <Sparkles className="w-4 h-4 text-yellow-300 flex-shrink-0" />
                   <span className="text-[10px] font-bold text-white">Level <span className="text-yellow-300 font-black">12</span></span>
                 </div>
               </div>
