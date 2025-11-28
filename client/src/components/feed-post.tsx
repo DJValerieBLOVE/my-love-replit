@@ -7,7 +7,10 @@ import {
   ArrowRight,
   Calendar as CalendarIcon,
   Zap,
-  MessageSquare
+  MessageSquare,
+  Repeat2,
+  Share,
+  Bookmark
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -82,29 +85,45 @@ export function FeedPost({ post }: FeedPostProps) {
               </div>
             )}
 
-            <div className="flex items-center justify-between mt-4 pt-2 border-t border-border/30">
-              {/* Lightning Tip Button */}
+            <div className="flex items-center justify-between mt-4 pt-2 border-t border-border/30 px-2">
+              {/* 1. Comment */}
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-blue-500 hover:bg-blue-500/10 px-2 h-8 gap-1.5 min-w-[60px]">
+                <MessageSquare className="w-[18px] h-[18px]" strokeWidth={1.5} />
+                <span className="text-[13px] font-medium">{post.comments > 0 ? post.comments : ""}</span>
+              </Button>
+
+              {/* 2. Repost (Placeholder) */}
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-green-500 hover:bg-green-500/10 px-2 h-8 gap-1.5 min-w-[60px]">
+                <Repeat2 className="w-[20px] h-[20px]" strokeWidth={1.5} />
+                <span className="text-[13px] font-medium"></span>
+              </Button>
+
+              {/* 3. Zap (Center, Larger) */}
               <Button 
                 variant="ghost" 
                 size="sm" 
                 onClick={handleZap}
-                className={`px-3 h-8 rounded-full transition-all group ${isZapped ? 'bg-orange-500/20 text-orange-600' : 'text-orange-500 bg-orange-500/10 hover:bg-orange-500/20'}`}
+                className={`px-2 h-9 rounded-full transition-all group min-w-[60px] ${isZapped || zaps > 0 ? 'text-orange-500 hover:bg-orange-500/10' : 'text-muted-foreground hover:text-orange-500 hover:bg-orange-500/10'}`}
               >
-                <img src={SatsIcon} alt="Zap" className={`w-4 h-4 mr-1.5 ${isZapped ? 'scale-125' : 'animate-pulse'}`} />
-                <span className="text-xs font-bold">{zaps.toLocaleString()} sats</span>
+                <Zap 
+                  className={`mr-1.5 transition-all ${isZapped || zaps > 0 ? 'fill-orange-500 text-orange-500 w-[24px] h-[24px]' : 'w-[24px] h-[24px] fill-transparent group-hover:scale-110'}`} 
+                  strokeWidth={1.5}
+                />
+                <span className={`text-[13px] font-medium ${isZapped || zaps > 0 ? 'font-bold' : ''}`}>
+                  {zaps > 0 ? zaps.toLocaleString() : ""}
+                </span>
               </Button>
-              
-              <div className="flex gap-2">
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-red-500 hover:bg-red-500/10 px-2 h-8">
-                  <Heart className="w-4 h-4 mr-1.5" />
-                  <span className="text-xs font-medium">{post.likes}</span>
-                </Button>
-                
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-blue-500 hover:bg-blue-500/10 px-2 h-8">
-                  <MessageSquare className="w-4 h-4 mr-1.5" />
-                  <span className="text-xs font-medium">{post.comments}</span>
-                </Button>
-              </div>
+
+              {/* 4. Like */}
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-red-500 hover:bg-red-500/10 px-2 h-8 gap-1.5 min-w-[60px]">
+                <Heart className="w-[18px] h-[18px]" strokeWidth={1.5} />
+                <span className="text-[13px] font-medium">{post.likes > 0 ? post.likes : ""}</span>
+              </Button>
+
+              {/* 5. Share/Bookmark (Placeholder) */}
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary hover:bg-primary/10 px-2 h-8 gap-1.5 min-w-[60px]">
+                <Bookmark className="w-[18px] h-[18px]" strokeWidth={1.5} />
+              </Button>
             </div>
           </div>
         </div>
