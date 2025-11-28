@@ -165,40 +165,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
         {/* Right Sidebar (Gamification) */}
         <aside className="hidden xl:flex flex-col w-[300px] border-l bg-card/50 p-4 gap-4 overflow-y-auto">
-          {/* Widget 1: Magic Mentor */}
-          <div className="bg-gradient-to-br from-purple-900/50 via-purple-800/40 to-pink-900/30 rounded-sm border border-purple-500/40 p-3 text-center overflow-hidden relative group cursor-pointer hover:border-purple-500/60 transition-all shadow-md" data-testid="widget-mentor">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-purple-500/40 to-pink-500/30 rounded-full -mr-12 -mt-12 blur-2xl group-hover:from-purple-500/50 group-hover:to-pink-500/40 transition-all" />
-            
-            <div className="relative z-10">
-              {/* VIP Level Badge */}
-              <div className="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 rounded-full px-2 py-0.5 mb-2">
-                <Sparkles className="w-3 h-3 text-yellow-300" />
-                <span className="text-[10px] font-bold text-white">Level 12</span>
-              </div>
-
-              {/* Mentor Image */}
-              <div className="relative inline-block mb-2 mt-1">
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-pink-500 blur-lg opacity-40 rounded-full" />
-                <img src={MagicMentor} alt="Magic Mentor" className="w-16 h-16 rounded-full border-2 border-purple-400 relative z-10 shadow-lg" />
-              </div>
-
-              {/* Mentor Info */}
-              <h3 className="font-bold text-sm font-serif mb-0.5 text-white">Your Magic Mentor</h3>
-              <p className="text-[11px] text-purple-100 mb-2 italic">"Crush your goals!"</p>
-
-              {/* Ask Mentor Button */}
-              <Button 
-                onClick={() => setIsAiOpen(true)}
-                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold rounded-lg transition-all hover:shadow-lg border-0 text-xs py-1 h-7"
-                data-testid="button-ask-mentor"
-              >
-                <Sparkles className="w-3 h-3 mr-1.5" /> Ask Mentor
-              </Button>
-            </div>
-          </div>
-
-          {/* Widget 2: Streaks */}
-          <div className="bg-gradient-to-r from-orange-500/20 to-yellow-500/20 rounded-sm border border-orange-400/40 hover:border-orange-400/60 transition-colors p-4" data-testid="widget-streaks">
+          {/* Widget: Streaks */}
+          <div className="bg-gradient-to-r from-orange-500/20 to-yellow-500/20 rounded-xs border border-orange-400/40 hover:border-orange-400/60 transition-colors p-4" data-testid="widget-streaks">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <Zap className="w-5 h-5 text-orange-500 fill-current" />
@@ -209,7 +177,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="flex justify-between gap-1">
               {['M','T','W','T','F','S','S'].map((d, i) => (
                 <div key={i} className={cn(
-                  "flex-1 h-6 rounded-sm flex items-center justify-center text-xs font-bold transition-all",
+                  "flex-1 h-6 rounded-xs flex items-center justify-center text-xs font-bold transition-all",
                   i < 5 ? "bg-orange-500 text-white shadow-md" : "bg-white/20 text-white/50"
                 )}>
                   {d}

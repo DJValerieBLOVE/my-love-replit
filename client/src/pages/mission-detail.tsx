@@ -317,7 +317,7 @@ export default function MissionDetail() {
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                     placeholder="Share your thoughts, questions, or insights with the community..."
-                    className="w-full p-3 rounded-sm bg-muted text-foreground placeholder-muted-foreground border border-border focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
+                    className="w-full p-3 rounded-xs bg-muted text-foreground placeholder-muted-foreground border border-border focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
                     rows={3}
                     data-testid="textarea-discussion"
                   />
