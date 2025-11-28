@@ -226,4 +226,14 @@
     @apply bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 text-transparent bg-clip-text;
   }
 
+  /* Calendar selected day override */
+  .rdp-day_selected,
+  .rdp-day_today,
+  button[aria-selected="true"],
+  button[aria-current="date"] {
+    background-color: red !important;
+    color: white !important;
+    border-radius: 50% !important;
+  }
+
 }
