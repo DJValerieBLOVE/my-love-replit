@@ -43,6 +43,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { RainbowLoveIcon } from "@/components/love-icons";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
@@ -66,7 +67,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-4">
             <Link href="/">
               <div className="flex items-center gap-2 cursor-pointer">
-                <img src={Logo} alt="11x LOVE LaB" className="w-8 h-8 rounded-full shadow-lg" />
+                <RainbowLoveIcon size={32} />
                 <span className="font-serif font-bold text-xl tracking-tight hidden md:block text-gradient-cyber">11x LOVE LaB</span>
               </div>
             </Link>
