@@ -125,11 +125,12 @@ export function EqVisualizer({ className, size = 120 }: EqVisualizerProps) {
              {/* Rainbow Gradient for the Ring - REMOVED in favor of segmented colored ring */}
           </defs>
 
-          {/* 1. Logo Center (Larger) */}
+          {/* 1. Logo Center (Larger & Centered) */}
+          {/* Using full logoRadius to maximize size within the ring */}
           <circle cx={center} cy={center} r={logoRadius} fill="white" stroke="none" />
-          <foreignObject x={center - (logoRadius - 4)} y={center - (logoRadius - 4)} width={(logoRadius - 4) * 2} height={(logoRadius - 4) * 2}>
+          <foreignObject x={center - logoRadius} y={center - logoRadius} width={logoRadius * 2} height={logoRadius * 2}>
             <div className="w-full h-full flex items-center justify-center rounded-full overflow-hidden bg-white">
-              <img src={Logo} alt="11x Logo" className="w-full h-full object-contain p-1" />
+              <img src={Logo} alt="11x Logo" className="w-full h-full object-contain scale-110" />
             </div>
           </foreignObject>
           
