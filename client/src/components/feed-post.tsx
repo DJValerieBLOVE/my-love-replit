@@ -10,7 +10,9 @@ import {
   MessageSquare,
   Repeat2,
   Share,
-  Bookmark
+  Bookmark,
+  Minus,
+  Plus
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,6 +20,18 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import SatsIcon from "@assets/generated_images/sats_icon.png";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+  DialogClose
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface FeedPostProps {
   post: {
@@ -39,18 +53,29 @@ interface FeedPostProps {
 export function FeedPost({ post }: FeedPostProps) {
   const [zaps, setZaps] = useState(post.zaps);
   const [isZapped, setIsZapped] = useState(false);
+  const [zapAmount, setZapAmount] = useState(21);
+  const [zapComment, setZapComment] = useState("");
+  const [isZapOpen, setIsZapOpen] = useState(false);
 
   const handleZap = () => {
-    setZaps(prev => prev + 100);
+    setZaps(prev => prev + zapAmount);
     setIsZapped(true);
+    setIsZapOpen(false);
+    
     toast("Zap Sent! ⚡", {
-      description: `You sent 100 sats to ${post.author.name}`,
+      description: `You sent ${zapAmount} sats to ${post.author.name}`,
       action: {
         label: "Undo",
-        onClick: () => setZaps(prev => prev - 100),
+        onClick: () => setZaps(prev => prev - zapAmount),
       },
     });
+    
+    // Reset for next time
+    setZapComment("");
+    setZapAmount(21);
   };
+
+  const ZAP_PRESETS = [21, 50, 100, 500, 1000, 5000];
 
   return (
     <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow bg-card mb-4">
@@ -98,22 +123,95 @@ export function FeedPost({ post }: FeedPostProps) {
                 <span className="text-[13px] font-medium"></span>
               </Button>
 
-              {/* 3. Zap (Center, Largest) */}
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={handleZap}
-                className={`px-2 h-10 rounded-full transition-all group min-w-[60px] ${isZapped || zaps > 0 ? 'text-orange-500 hover:bg-orange-500/10' : 'text-muted-foreground hover:text-orange-500 hover:bg-orange-500/10'}`}
-              >
-                <Zap 
-                  className={`mr-1.5 transition-all ${isZapped || zaps > 0 ? 'text-orange-500 w-[28px] h-[28px]' : 'w-[28px] h-[28px] group-hover:scale-110'}`} 
-                  strokeWidth={1.5}
-                  fill="none" // Explicitly no fill
-                />
-                <span className={`text-[13px] font-medium ${isZapped || zaps > 0 ? 'font-bold' : ''}`}>
-                  {zaps > 0 ? zaps.toLocaleString() : ""}
-                </span>
-              </Button>
+              {/* 3. Zap (Center, Largest) - Now with Dialog */}
+              <Dialog open={isZapOpen} onOpenChange={setIsZapOpen}>
+                <DialogTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className={`px-2 h-10 rounded-full transition-all group min-w-[60px] ${isZapped || zaps > 0 ? 'text-orange-500 hover:bg-orange-500/10' : 'text-muted-foreground hover:text-orange-500 hover:bg-orange-500/10'}`}
+                  >
+                    <Zap 
+                      className={`mr-1.5 transition-all ${isZapped || zaps > 0 ? 'text-orange-500 w-[28px] h-[28px]' : 'w-[28px] h-[28px] group-hover:scale-110'}`} 
+                      strokeWidth={1.5}
+                      fill={isZapped ? "currentColor" : "none"}
+                    />
+                    <span className={`text-[13px] font-medium ${isZapped || zaps > 0 ? 'font-bold' : ''}`}>
+                      {zaps > 0 ? zaps.toLocaleString() : ""}
+                    </span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md border-orange-500/20">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2 font-serif text-2xl">
+                      <span className="text-orange-500">⚡</span> Zap {post.author.name}
+                    </DialogTitle>
+                    <DialogDescription>
+                      Send sats directly to their Lightning Address.
+                    </DialogDescription>
+                  </DialogHeader>
+                  
+                  <div className="flex flex-col gap-6 py-4">
+                    {/* Presets */}
+                    <div className="grid grid-cols-3 gap-3">
+                      {ZAP_PRESETS.map((amount) => (
+                        <Button
+                          key={amount}
+                          variant={zapAmount === amount ? "default" : "outline"}
+                          className={`h-12 text-lg font-bold ${
+                            zapAmount === amount 
+                              ? "bg-orange-500 hover:bg-orange-600 text-white border-orange-600" 
+                              : "border-muted-foreground/20 hover:border-orange-500/50 hover:bg-orange-500/5 text-muted-foreground"
+                          }`}
+                          onClick={() => setZapAmount(amount)}
+                        >
+                          ⚡ {amount}
+                        </Button>
+                      ))}
+                    </div>
+
+                    {/* Custom Amount */}
+                    <div className="space-y-2">
+                      <Label htmlFor="custom-amount" className="text-muted-foreground font-serif">Custom Amount (Sats)</Label>
+                      <div className="relative">
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-orange-500 font-bold">⚡</div>
+                        <Input 
+                          id="custom-amount" 
+                          type="number" 
+                          value={zapAmount}
+                          onChange={(e) => setZapAmount(Number(e.target.value))}
+                          className="pl-9 text-lg font-bold bg-muted/30 border-muted" 
+                        />
+                      </div>
+                    </div>
+
+                    {/* Comment */}
+                    <div className="space-y-2">
+                      <Label htmlFor="zap-comment" className="text-muted-foreground font-serif">Comment (Optional)</Label>
+                      <Input 
+                        id="zap-comment" 
+                        placeholder="Great post! 🔥" 
+                        value={zapComment}
+                        onChange={(e) => setZapComment(e.target.value)}
+                        className="bg-muted/30 border-muted"
+                      />
+                    </div>
+                  </div>
+
+                  <DialogFooter className="sm:justify-between gap-2">
+                    <DialogClose asChild>
+                      <Button type="button" variant="ghost">Cancel</Button>
+                    </DialogClose>
+                    <Button 
+                      type="submit" 
+                      onClick={handleZap}
+                      className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-8 w-full sm:w-auto"
+                    >
+                      Zap {zapAmount} Sats ⚡
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
 
               {/* 4. Like */}
               <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-red-500 hover:bg-red-500/10 px-2 h-10 gap-1.5 min-w-[60px]">
