@@ -24,8 +24,7 @@ export function VerticalEqVisualizer({ className, height = 60 }: VerticalEqProps
   };
 
   // Number of segments for the "VU Meter" look
-  // "This one goes to 11 baby!" 🎸
-  const totalSegments = 11; 
+  const totalSegments = 10; 
 
   return (
     <div className={cn("flex items-end gap-[2px] md:gap-1", className)} style={{ height }}>
