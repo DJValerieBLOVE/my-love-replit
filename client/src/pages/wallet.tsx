@@ -1,9 +1,13 @@
 import Layout from "@/components/layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowUpRight, ArrowDownLeft, Zap, History, QrCode } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ArrowUpRight, ArrowDownLeft, Zap, History, QrCode, Link as LinkIcon, Check } from "lucide-react";
 import { CURRENT_USER } from "@/lib/mock-data";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const data = [
   { name: 'Mon', sats: 4000 },
@@ -16,6 +20,17 @@ const data = [
 ];
 
 export default function Wallet() {
+  const [zbdGamertag, setZbdGamertag] = useState("");
+  const [isConnected, setIsConnected] = useState(false);
+
+  const handleConnectZBD = () => {
+    if (!zbdGamertag) return;
+    setIsConnected(true);
+    toast.success("ZBD Gamertag Connected!", {
+      description: `You can now receive automated rewards to ${zbdGamertag}`
+    });
+  };
+
   return (
     <Layout>
       <div className="max-w-3xl mx-auto p-4 lg:p-8 space-y-6">
@@ -47,6 +62,65 @@ export default function Wallet() {
               <Button className="flex-1 bg-white text-orange-600 hover:bg-white/90 border-none shadow-lg">
                 <ArrowUpRight className="w-4 h-4 mr-2" /> Send
               </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Connect ZBD Gamertag Section */}
+        <Card className="border-none shadow-sm bg-card overflow-hidden">
+          <CardHeader className="bg-muted/30 pb-4">
+            <CardTitle className="text-lg font-bold flex items-center gap-2">
+              <span className="bg-orange-500/10 p-1.5 rounded-lg">
+                <Zap className="w-5 h-5 text-orange-500 fill-orange-500" />
+              </span>
+              Connect ZBD Gamertag
+            </CardTitle>
+            <p className="text-sm text-muted-foreground mt-1">
+              Connect your ZBD gamertag to receive automated rewards and peer-to-peer zaps instantly.
+            </p>
+          </CardHeader>
+          <CardContent className="p-6">
+            {!isConnected ? (
+              <div className="flex gap-3 items-end">
+                <div className="flex-1 space-y-2">
+                  <Label htmlFor="gamertag" className="text-xs font-bold text-muted-foreground uppercase">ZBD Gamertag</Label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-bold">@</span>
+                    <Input 
+                      id="gamertag" 
+                      placeholder="gamertag" 
+                      className="pl-8 font-medium"
+                      value={zbdGamertag}
+                      onChange={(e) => setZbdGamertag(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <Button 
+                  onClick={handleConnectZBD}
+                  className="bg-orange-500 hover:bg-orange-600 text-white font-bold min-w-[120px]"
+                  disabled={!zbdGamertag}
+                >
+                  <LinkIcon className="w-4 h-4 mr-2" /> Connect
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between bg-green-500/10 border border-green-500/20 rounded-lg p-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+                    <Check className="w-6 h-6 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-green-700">Connected</p>
+                    <p className="text-sm text-green-600/80">@{zbdGamertag}</p>
+                  </div>
+                </div>
+                <Button variant="ghost" size="sm" onClick={() => setIsConnected(false)} className="text-muted-foreground hover:text-destructive">
+                  Disconnect
+                </Button>
+              </div>
+            )}
+            <div className="mt-4 text-xs text-muted-foreground text-center">
+              Don't have a gamertag? <a href="https://zbd.gg" target="_blank" rel="noreferrer" className="text-orange-500 hover:underline font-bold">Get the ZBD App</a>
             </div>
           </CardContent>
         </Card>
