@@ -23,28 +23,52 @@ export function VerticalEqVisualizer({ className, height = 60 }: VerticalEqProps
     "soul": "#cc00ff"
   };
 
+  // Number of segments for the "VU Meter" look
+  const totalSegments = 16; 
+
   return (
-    <div className={cn("flex items-end gap-[2px] md:gap-1", className)} style={{ height }}>
+    <div className={cn("flex items-end gap-[3px] md:gap-1.5", className)} style={{ height }}>
       <TooltipProvider delayDuration={0}>
         {LOVE_CODE_AREAS.map((area) => {
           // @ts-ignore
           const color = area.hex || brandColors[area.id] || "#ffffff";
-          const heightPercent = `${Math.max(area.progress, 5)}%`;
+          // Calculate active segments
+          // Ensure at least 1 segment is lit if progress > 0
+          const activeSegments = Math.max(1, Math.round((area.progress / 100) * totalSegments));
           
           return (
             <Tooltip key={area.id}>
               <TooltipTrigger asChild>
                 <div 
-                  className="relative w-3 md:w-5 bg-muted/20 hover:bg-muted/30 transition-colors cursor-pointer group h-full flex items-end"
+                  className="relative w-3 md:w-6 h-full flex flex-col-reverse gap-[1px] cursor-pointer group"
                 >
-                  {/* The Bar - Sharp Corners (no rounded) */}
+                  {/* Segments */}
+                  {Array.from({ length: totalSegments }).map((_, i) => {
+                    const isActive = i < activeSegments;
+                    // Opacity gradient: Higher segments are slightly brighter/more opaque when active
+                    // Inactive segments are very faint
+                    return (
+                      <div
+                        key={i}
+                        className="w-full flex-1 transition-all duration-300"
+                        style={{
+                          backgroundColor: color,
+                          opacity: isActive ? 0.8 + (i / totalSegments) * 0.2 : 0.15,
+                          // Add a subtle glow to active segments
+                          boxShadow: isActive ? `0 0 4px ${color}60` : 'none',
+                          borderRadius: 0 // Sharp corners
+                        }}
+                      />
+                    );
+                  })}
+                  
+                  {/* Peak Indicator (Floating Dot) - "Ghost" of potential */}
                   <div 
-                    className="w-full transition-all duration-500 ease-out group-hover:brightness-110"
-                    style={{ 
-                      height: heightPercent, 
-                      backgroundColor: color,
-                      // Sharp corners explicitly requested
-                      borderRadius: 0 
+                    className="absolute w-full h-[2px] bg-white/50"
+                    style={{
+                      bottom: `${Math.min(100, area.progress + 5)}%`,
+                      opacity: 0.5,
+                      transition: "bottom 0.5s ease-out"
                     }}
                   />
                 </div>
