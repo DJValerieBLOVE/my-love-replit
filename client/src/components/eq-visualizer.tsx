@@ -20,8 +20,21 @@ export function EqVisualizer({ className, size = 120 }: EqVisualizerProps) {
 
   // Configuration
   const center = size / 2;
-  const innerRadius = size * 0.25; // Central hole/logo area
+  
+  // New Geometry based on "Nano Banana" inspired request
+  // 1. Logo Center (Larger)
+  // 2. Gradient Ring
+  // 3. White Ring (Spacer)
+  // 4. EQ Wedges
+  
+  const logoRadius = size * 0.28; // Increased from 0.25 to 0.28 (approx 56% diameter)
+  const gradientRingInner = logoRadius + 2;
+  const gradientRingOuter = logoRadius + (size * 0.04); // Thin colored ring
+  const whiteRingOuter = gradientRingOuter + (size * 0.03); // White gap
+  
+  const wedgeInnerRadius = whiteRingOuter; // Wedges start here
   const maxRadius = size * 0.48;   // Max extent of the bars
+  
   const gap = 2; // Gap between segments in degrees
   
   // 11 Segments
@@ -29,9 +42,8 @@ export function EqVisualizer({ className, size = 120 }: EqVisualizerProps) {
   const angleStep = 360 / totalSegments;
 
   // Helper to generate SVG paths for arcs
-  const createArc = (index: number, radius: number, startRadius: number = innerRadius) => {
-    // Rotate so top is -90deg, PLUS offset to align colors with logo if needed
-    // Currently assuming standard rainbow alignment (Magenta/Red at top)
+  const createArc = (index: number, radius: number, startRadius: number) => {
+    // Rotate so top is -90deg
     const startAngle = (index * angleStep) - 90;
     const endAngle = startAngle + angleStep - gap;
 
@@ -50,6 +62,31 @@ export function EqVisualizer({ className, size = 120 }: EqVisualizerProps) {
     return `M ${x1} ${y1} L ${x2} ${y2} A ${radius} ${radius} 0 0 1 ${x3} ${y3} L ${x4} ${y4} A ${startRadius} ${startRadius} 0 0 0 ${x1} ${y1} Z`;
   };
 
+  // Helper for full rings (no gaps)
+  const createRing = (innerR: number, outerR: number) => {
+     return `M ${center} ${center - outerR} 
+             A ${outerR} ${outerR} 0 1 1 ${center} ${center + outerR} 
+             A ${outerR} ${outerR} 0 1 1 ${center} ${center - outerR} 
+             M ${center} ${center - innerR} 
+             A ${innerR} ${innerR} 0 1 0 ${center} ${center + innerR} 
+             A ${innerR} ${innerR} 0 1 0 ${center} ${center - innerR} Z`;
+  };
+
+  // Brand Colors Map
+  const brandColors: Record<string, string> = {
+    "god-love": "#eb00a8",
+    "romance": "#e60023",
+    "family": "#ff6600",
+    "community": "#ffdf00",
+    "mission": "#a2f005",
+    "money": "#00d81c",
+    "time": "#00ccff",
+    "environment": "#0033ff",
+    "body": "#6600ff",
+    "mind": "#9900ff",
+    "soul": "#cc00ff"
+  };
+
   return (
     <div className={cn("relative flex items-center justify-center", className)} style={{ width: size, height: size }}>
       <TooltipProvider delayDuration={0}>
@@ -64,35 +101,45 @@ export function EqVisualizer({ className, size = 120 }: EqVisualizerProps) {
               </feMerge>
             </filter>
             
-            {/* Individual Color Glows */}
-            {LOVE_CODE_AREAS.map((area) => (
-               <filter key={`glow-${area.id}`} id={`glow-${area.id}`} x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="6" result="coloredBlur" />
-                 <feComposite operator="in" in="coloredBlur" in2="SourceAlpha" result="softGlow" />
-                <feMerge>
-                  <feMergeNode in="softGlow" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            ))}
+             {/* Rainbow Gradient for the Ring */}
+            <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#eb00a8" />
+                <stop offset="20%" stopColor="#ffdf00" />
+                <stop offset="40%" stopColor="#00d81c" />
+                <stop offset="60%" stopColor="#00ccff" />
+                <stop offset="80%" stopColor="#6600ff" />
+                <stop offset="100%" stopColor="#eb00a8" />
+            </linearGradient>
           </defs>
 
-          {/* Central Core Background - Pure White for Logo Contrast */}
-          <circle cx={center} cy={center} r={innerRadius - 2} fill="white" stroke="none" />
-          
-          {/* The Logo Image in Center */}
-          <foreignObject x={center - (innerRadius - 4)} y={center - (innerRadius - 4)} width={(innerRadius - 4) * 2} height={(innerRadius - 4) * 2}>
+          {/* 1. Logo Center (Larger) */}
+          <circle cx={center} cy={center} r={logoRadius} fill="white" stroke="none" />
+          <foreignObject x={center - (logoRadius - 4)} y={center - (logoRadius - 4)} width={(logoRadius - 4) * 2} height={(logoRadius - 4) * 2}>
             <div className="w-full h-full flex items-center justify-center rounded-full overflow-hidden bg-white">
               <img src={Logo} alt="11x Logo" className="w-full h-full object-contain p-1" />
             </div>
           </foreignObject>
+          
+          {/* 2. Gradient Ring */}
+          <path 
+            d={createRing(gradientRingInner, gradientRingOuter)} 
+            fill="url(#ringGradient)" 
+            className="opacity-90"
+          />
+          
+          {/* 3. White Ring (Spacer) */}
+          <path 
+            d={createRing(gradientRingOuter, whiteRingOuter)} 
+            fill="white" 
+            className="opacity-100"
+          />
 
-          {/* 11 Segments */}
+          {/* 4. EQ Wedges */}
           {LOVE_CODE_AREAS.map((area, index) => {
-            // Use the hex color from data (or fallback to known brand colors if mock data update hasn't propagated)
-            // @ts-ignore - hex property added to mock data
+            // Use the hex color from data (or fallback to known brand colors)
+            // @ts-ignore
             const color = area.hex || brandColors[area.id] || "#ffffff";
-            const progressRadius = innerRadius + ((maxRadius - innerRadius) * (area.progress / 100));
+            const progressRadius = wedgeInnerRadius + ((maxRadius - wedgeInnerRadius) * (area.progress / 100));
             const isHovered = hoveredArea === area.id;
             
             return (
@@ -104,21 +151,19 @@ export function EqVisualizer({ className, size = 120 }: EqVisualizerProps) {
                     className="cursor-pointer"
                     style={{ transformOrigin: `${center}px ${center}px` }}
                   >
-                    {/* "Unrealized Potential" Track - Muted but Visible Color */}
+                    {/* "Unrealized Potential" Track - White/Invisible as requested ("white looks better") */}
+                    {/* We'll make it very faint white just to catch hover events if empty, or just transparent */}
                     <path 
-                      d={createArc(index, maxRadius)} 
-                      fill={color} 
-                      fillOpacity="0.2" 
-                      stroke={color}
-                      strokeWidth="0.5"
-                      strokeOpacity="0.3"
+                      d={createArc(index, maxRadius, wedgeInnerRadius)} 
+                      fill="white" 
+                      fillOpacity="0.05" 
+                      stroke="none"
                       className="transition-all duration-500"
-                      style={{ filter: isHovered ? `drop-shadow(0 0 5px ${color})` : 'none' }}
                     />
 
                     {/* Active Progress Wedge - "Realized Power" */}
                     <motion.path 
-                      d={createArc(index, progressRadius)}
+                      d={createArc(index, progressRadius, wedgeInnerRadius)}
                       fill={color}
                       stroke="none"
                       initial={{ scale: 0, opacity: 0 }}
