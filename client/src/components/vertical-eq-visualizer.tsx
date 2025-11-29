@@ -24,10 +24,10 @@ export function VerticalEqVisualizer({ className, height = 60 }: VerticalEqProps
   };
 
   // Number of segments for the "VU Meter" look
-  const totalSegments = 16; 
+  const totalSegments = 20; 
 
   return (
-    <div className={cn("flex items-end gap-[3px] md:gap-1.5", className)} style={{ height }}>
+    <div className={cn("flex items-end gap-[2px] md:gap-1 p-2 bg-black/90 rounded-lg shadow-2xl border border-white/10", className)} style={{ height: height + 16 }}>
       <TooltipProvider delayDuration={0}>
         {LOVE_CODE_AREAS.map((area) => {
           // @ts-ignore
@@ -40,45 +40,51 @@ export function VerticalEqVisualizer({ className, height = 60 }: VerticalEqProps
             <Tooltip key={area.id}>
               <TooltipTrigger asChild>
                 <div 
-                  className="relative w-3 md:w-6 h-full flex flex-col-reverse gap-[1px] cursor-pointer group"
+                  className="relative w-2.5 md:w-5 h-full flex flex-col-reverse gap-[1px] cursor-pointer group"
                 >
                   {/* Segments */}
                   {Array.from({ length: totalSegments }).map((_, i) => {
                     const isActive = i < activeSegments;
-                    // Opacity gradient: Higher segments are slightly brighter/more opaque when active
-                    // Inactive segments are very faint
+                    
                     return (
                       <div
                         key={i}
-                        className="w-full flex-1 transition-all duration-300"
+                        className="w-full flex-1 transition-all duration-200"
                         style={{
-                          backgroundColor: color,
-                          opacity: isActive ? 0.8 + (i / totalSegments) * 0.2 : 0.15,
-                          // Add a subtle glow to active segments
-                          boxShadow: isActive ? `0 0 4px ${color}60` : 'none',
-                          borderRadius: 0 // Sharp corners
+                          // Use pure color for active, very dark gray for inactive (screen look)
+                          backgroundColor: isActive ? color : '#1a1a1a',
+                          
+                          // Active: High opacity + glow
+                          // Inactive: Low opacity
+                          opacity: isActive ? 1 : 0.8,
+                          
+                          // Strong glow for active segments
+                          boxShadow: isActive ? `0 0 8px ${color}` : 'none',
+                          
+                          // Clean sharp corners
+                          borderRadius: 0 
                         }}
                       />
                     );
                   })}
                   
-                  {/* Peak Indicator (Floating Dot) - "Ghost" of potential */}
+                  {/* Peak Indicator (Floating Dot) - Bright White "Ghost" */}
                   <div 
-                    className="absolute w-full h-[2px] bg-white/50"
+                    className="absolute w-full h-[2px] bg-white box-shadow-[0_0_4px_white]"
                     style={{
-                      bottom: `${Math.min(100, area.progress + 5)}%`,
-                      opacity: 0.5,
-                      transition: "bottom 0.5s ease-out"
+                      bottom: `${Math.min(100, area.progress + 3)}%`,
+                      opacity: 0.9,
+                      transition: "bottom 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)" // Bouncy spring
                     }}
                   />
                 </div>
               </TooltipTrigger>
-              <TooltipContent side="bottom" className="bg-white/90 border-black/10 backdrop-blur-xl z-50 shadow-[0_0_30px_rgba(0,0,0,0.1)]">
+              <TooltipContent side="bottom" className="bg-black/90 border-white/20 backdrop-blur-xl z-50 shadow-[0_0_30px_rgba(255,255,255,0.1)] text-white">
                 <div className="text-center">
                   <p className="font-serif font-bold text-sm tracking-wider uppercase" style={{ color }}>{area.name}</p>
                   <div className="flex items-center justify-center gap-2 mt-0.5">
-                    <span className="text-[9px] uppercase tracking-widest text-gray-500">Progress</span>
-                    <span className="font-medium text-muted-foreground text-sm">{area.progress}%</span>
+                    <span className="text-[9px] uppercase tracking-widest text-gray-400">Progress</span>
+                    <span className="font-medium text-white text-sm">{area.progress}%</span>
                   </div>
                 </div>
               </TooltipContent>
