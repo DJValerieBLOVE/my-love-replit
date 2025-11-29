@@ -70,7 +70,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <ThemeCustomizer />
       
       {/* Top Navigation Bar */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl px-4 h-20 md:h-24 flex items-center justify-between">
+      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl px-4 h-28 md:h-40 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/">
               <div className="flex items-center gap-3 cursor-pointer">
@@ -82,7 +82,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
           {/* Center EQ Visualizer (The Sacred Core) */}
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-            <EqVisualizer size={80} className="md:w-[100px] md:h-[100px]" />
+            <EqVisualizer size={150} className="md:w-[160px] md:h-[160px]" />
           </div>
 
           <div className="flex items-center gap-2 md:gap-4">
