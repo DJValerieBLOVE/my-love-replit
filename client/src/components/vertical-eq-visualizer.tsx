@@ -27,7 +27,7 @@ export function VerticalEqVisualizer({ className, height = 60 }: VerticalEqProps
   const totalSegments = 20; 
 
   return (
-    <div className={cn("flex items-end gap-[2px] md:gap-1 p-2 bg-black/90 rounded-lg shadow-2xl border border-white/10", className)} style={{ height: height + 16 }}>
+    <div className={cn("flex items-end gap-[2px] md:gap-1", className)} style={{ height }}>
       <TooltipProvider delayDuration={0}>
         {LOVE_CODE_AREAS.map((area) => {
           // @ts-ignore
@@ -51,15 +51,14 @@ export function VerticalEqVisualizer({ className, height = 60 }: VerticalEqProps
                         key={i}
                         className="w-full flex-1 transition-all duration-200"
                         style={{
-                          // Use pure color for active, very dark gray for inactive (screen look)
-                          backgroundColor: isActive ? color : '#1a1a1a',
+                          // Active: Pure Color. Inactive: Faint Color (Ghost) to keep it vivid
+                          backgroundColor: color,
                           
-                          // Active: High opacity + glow
-                          // Inactive: Low opacity
-                          opacity: isActive ? 1 : 0.8,
+                          // Active: Full opacity. Inactive: Very low opacity
+                          opacity: isActive ? 1 : 0.15,
                           
                           // Strong glow for active segments
-                          boxShadow: isActive ? `0 0 8px ${color}` : 'none',
+                          boxShadow: isActive ? `0 0 4px ${color}` : 'none',
                           
                           // Clean sharp corners
                           borderRadius: 0 
@@ -68,23 +67,25 @@ export function VerticalEqVisualizer({ className, height = 60 }: VerticalEqProps
                     );
                   })}
                   
-                  {/* Peak Indicator (Floating Dot) - Bright White "Ghost" */}
+                  {/* Peak Indicator (Floating Dot) - Colored Ghost */}
                   <div 
-                    className="absolute w-full h-[2px] bg-white box-shadow-[0_0_4px_white]"
+                    className="absolute w-full h-[2px]"
                     style={{
+                      backgroundColor: color,
                       bottom: `${Math.min(100, area.progress + 3)}%`,
-                      opacity: 0.9,
-                      transition: "bottom 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)" // Bouncy spring
+                      opacity: 0.8,
+                      transition: "bottom 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                      boxShadow: `0 0 4px ${color}`
                     }}
                   />
                 </div>
               </TooltipTrigger>
-              <TooltipContent side="bottom" className="bg-black/90 border-white/20 backdrop-blur-xl z-50 shadow-[0_0_30px_rgba(255,255,255,0.1)] text-white">
+              <TooltipContent side="bottom" className="bg-white/90 border-black/10 backdrop-blur-xl z-50 shadow-[0_0_30px_rgba(0,0,0,0.1)]">
                 <div className="text-center">
                   <p className="font-serif font-bold text-sm tracking-wider uppercase" style={{ color }}>{area.name}</p>
                   <div className="flex items-center justify-center gap-2 mt-0.5">
-                    <span className="text-[9px] uppercase tracking-widest text-gray-400">Progress</span>
-                    <span className="font-medium text-white text-sm">{area.progress}%</span>
+                    <span className="text-[9px] uppercase tracking-widest text-gray-500">Progress</span>
+                    <span className="font-medium text-muted-foreground text-sm">{area.progress}%</span>
                   </div>
                 </div>
               </TooltipContent>
