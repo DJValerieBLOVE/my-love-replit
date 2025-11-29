@@ -54,12 +54,10 @@ export function VerticalEqVisualizer({ className, height = 60 }: VerticalEqProps
                           // Active: Pure Color. Inactive: Faint Color (Ghost) to keep it vivid
                           backgroundColor: color,
                           
-                          // Active: Full opacity. Inactive: Very low opacity
-                          opacity: isActive ? 1 : 0.15,
+                          // Active: Full opacity. Inactive: Low opacity but crisp
+                          opacity: isActive ? 1 : 0.2,
                           
-                          // Strong glow for active segments
-                          boxShadow: isActive ? `0 0 4px ${color}` : 'none',
-                          
+                          // Removed glow/box-shadow to fix "fuzzy" look
                           // Clean sharp corners
                           borderRadius: 0 
                         }}
@@ -67,15 +65,16 @@ export function VerticalEqVisualizer({ className, height = 60 }: VerticalEqProps
                     );
                   })}
                   
-                  {/* Peak Indicator (Floating Dot) - Colored Ghost */}
+                  {/* Peak Indicator (Floating Dot) - Crisp Line */}
                   <div 
                     className="absolute w-full h-[2px]"
                     style={{
                       backgroundColor: color,
                       bottom: `${Math.min(100, area.progress + 3)}%`,
-                      opacity: 0.8,
+                      opacity: 1, // Full opacity for crispness
                       transition: "bottom 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                      boxShadow: `0 0 4px ${color}`
+                      // Removed box-shadow for crisp look
+                      boxShadow: 'none'
                     }}
                   />
                 </div>
