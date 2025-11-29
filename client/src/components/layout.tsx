@@ -49,6 +49,7 @@ import {
 } from "@/components/ui/tooltip";
 
 import { EqVisualizer } from "@/components/eq-visualizer";
+import { VerticalEqVisualizer } from "@/components/vertical-eq-visualizer";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
@@ -74,15 +75,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-4">
             <Link href="/">
               <div className="flex items-center gap-3 cursor-pointer">
-                <img src={Logo} alt="11x LOVE LaB" className="w-10 h-10" />
+                {/* Replaced Image Logo with Circular EQ Visualizer */}
+                <div className="relative flex items-center justify-center">
+                  <EqVisualizer size={60} className="" />
+                </div>
                 <span className="font-serif font-bold text-lg tracking-tight hidden md:block" style={{ color: '#0a0a0a' }}>11x LOVE LaB</span>
               </div>
             </Link>
           </div>
 
-          {/* Center EQ Visualizer (The Sacred Core) */}
+          {/* Center: Vertical EQ Visualizer (Sharper Corners) */}
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-            <EqVisualizer size={150} className="md:w-[160px] md:h-[160px]" />
+            <VerticalEqVisualizer height={80} />
           </div>
 
           <div className="flex items-center gap-2 md:gap-4">
