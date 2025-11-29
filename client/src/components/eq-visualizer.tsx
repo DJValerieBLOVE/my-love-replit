@@ -61,6 +61,27 @@ export function EqVisualizer({ className, size = 120 }: EqVisualizerProps) {
 
     return `M ${x1} ${y1} L ${x2} ${y2} A ${radius} ${radius} 0 0 1 ${x3} ${y3} L ${x4} ${y4} A ${startRadius} ${startRadius} 0 0 0 ${x1} ${y1} Z`;
   };
+  
+  // Helper for full arc segments (ring pieces) without gaps if desired, or matching gaps
+  // To make the ring look like a continuous gradient but matching positions, we can use small gaps or no gaps.
+  // Let's match the wedge alignment exactly but perhaps with smaller gaps to look like a ring.
+  const createRingSegment = (index: number, innerR: number, outerR: number) => {
+     const startAngle = (index * angleStep) - 90;
+     const endAngle = startAngle + angleStep; // No gap for continuous ring look
+     
+     const toRad = (deg: number) => (deg * Math.PI) / 180;
+     
+    const x1 = center + innerR * Math.cos(toRad(startAngle));
+    const y1 = center + innerR * Math.sin(toRad(startAngle));
+    const x2 = center + outerR * Math.cos(toRad(startAngle));
+    const y2 = center + outerR * Math.sin(toRad(startAngle));
+    const x3 = center + outerR * Math.cos(toRad(endAngle));
+    const y3 = center + outerR * Math.sin(toRad(endAngle));
+    const x4 = center + innerR * Math.cos(toRad(endAngle));
+    const y4 = center + innerR * Math.sin(toRad(endAngle));
+
+    return `M ${x1} ${y1} L ${x2} ${y2} A ${outerR} ${outerR} 0 0 1 ${x3} ${y3} L ${x4} ${y4} A ${innerR} ${innerR} 0 0 0 ${x1} ${y1} Z`;
+  };
 
   // Helper for full rings (no gaps)
   const createRing = (innerR: number, outerR: number) => {
@@ -101,15 +122,7 @@ export function EqVisualizer({ className, size = 120 }: EqVisualizerProps) {
               </feMerge>
             </filter>
             
-             {/* Rainbow Gradient for the Ring */}
-            <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#eb00a8" />
-                <stop offset="20%" stopColor="#ffdf00" />
-                <stop offset="40%" stopColor="#00d81c" />
-                <stop offset="60%" stopColor="#00ccff" />
-                <stop offset="80%" stopColor="#6600ff" />
-                <stop offset="100%" stopColor="#eb00a8" />
-            </linearGradient>
+             {/* Rainbow Gradient for the Ring - REMOVED in favor of segmented colored ring */}
           </defs>
 
           {/* 1. Logo Center (Larger) */}
@@ -120,12 +133,19 @@ export function EqVisualizer({ className, size = 120 }: EqVisualizerProps) {
             </div>
           </foreignObject>
           
-          {/* 2. Gradient Ring */}
-          <path 
-            d={createRing(gradientRingInner, gradientRingOuter)} 
-            fill="url(#ringGradient)" 
-            className="opacity-90"
-          />
+          {/* 2. Gradient Ring (Now segmented to match wedges) */}
+          {LOVE_CODE_AREAS.map((area, index) => {
+             // @ts-ignore
+             const color = area.hex || brandColors[area.id] || "#ffffff";
+             return (
+               <path 
+                 key={`ring-${area.id}`}
+                 d={createRingSegment(index, gradientRingInner, gradientRingOuter)}
+                 fill={color}
+                 className="opacity-90"
+               />
+             );
+          })}
           
           {/* 3. White Ring (Spacer) */}
           <path 
