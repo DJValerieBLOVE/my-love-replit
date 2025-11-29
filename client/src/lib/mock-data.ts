@@ -32,17 +32,17 @@ export const CURRENT_USER = {
 // Mission: #a2f005 | Money: #00d81c | Time: #00ccff | Environment: #0033ff
 // Body: #6600ff | Mind: #9900ff | Soul: #cc00ff
 export const LOVE_CODE_AREAS = [
-  { id: "god-love", name: "GOD/LOVE", color: "bg-[#eb00a8]", hex: "#eb00a8", progress: 85 },
-  { id: "romance", name: "Romance", color: "bg-[#e60023]", hex: "#e60023", progress: 60 },
-  { id: "family", name: "Family", color: "bg-[#ff6600]", hex: "#ff6600", progress: 75 },
-  { id: "community", name: "Community", color: "bg-[#ffdf00]", hex: "#ffdf00", progress: 90 },
-  { id: "mission", name: "Mission", color: "bg-[#a2f005]", hex: "#a2f005", progress: 60 },
-  { id: "money", name: "Money", color: "bg-[#00d81c]", hex: "#00d81c", progress: 55 },
-  { id: "time", name: "Time", color: "bg-[#00ccff]", hex: "#00ccff", progress: 80 },
-  { id: "environment", name: "Environment", color: "bg-[#0033ff]", hex: "#0033ff", progress: 70 },
-  { id: "body", name: "Body", color: "bg-[#6600ff]", hex: "#6600ff", progress: 65 },
-  { id: "mind", name: "Mind", color: "bg-[#9900ff]", hex: "#9900ff", progress: 80 },
-  { id: "soul", name: "Soul", color: "bg-[#cc00ff]", hex: "#cc00ff", progress: 95 },
+  { id: "god-love", name: "GOD/LOVE", color: "bg-[#eb00a8]", hex: "#eb00a8", progress: 85, dream: "To feel universally connected and lead with unconditional love in every interaction." },
+  { id: "romance", name: "Romance", color: "bg-[#e60023]", hex: "#e60023", progress: 60, dream: "To build a partnership based on deep trust, wild passion, and shared growth." },
+  { id: "family", name: "Family", color: "bg-[#ff6600]", hex: "#ff6600", progress: 75, dream: "To create a legacy of laughter, support, and freedom for my children." },
+  { id: "community", name: "Community", color: "bg-[#ffdf00]", hex: "#ffdf00", progress: 90, dream: "To spark a movement where every member feels seen, heard, and valued." },
+  { id: "mission", name: "Mission", color: "bg-[#a2f005]", hex: "#a2f005", progress: 60, dream: "To build the 11x LOVE Lab into a global force for consciousness evolution." },
+  { id: "money", name: "Money", color: "bg-[#00d81c]", hex: "#00d81c", progress: 55, dream: "To achieve financial sovereignty and circulate abundance to fuel my mission." },
+  { id: "time", name: "Time", color: "bg-[#00ccff]", hex: "#00ccff", progress: 80, dream: "To master my flow state and own my calendar, not let it own me." },
+  { id: "environment", name: "Environment", color: "bg-[#0033ff]", hex: "#0033ff", progress: 70, dream: "To live in a space that rejuvenates my spirit and reflects my inner clarity." },
+  { id: "body", name: "Body", color: "bg-[#6600ff]", hex: "#6600ff", progress: 65, dream: "To inhabit a vessel that is strong, flexible, and vibrant with energy." },
+  { id: "mind", name: "Mind", color: "bg-[#9900ff]", hex: "#9900ff", progress: 80, dream: "To cultivate a mind that is sharp, curious, and peaceful amidst chaos." },
+  { id: "soul", name: "Soul", color: "bg-[#cc00ff]", hex: "#cc00ff", progress: 95, dream: "To live in complete alignment with my highest truth and soul's purpose." },
 ];
 
 export const CLUBS = [

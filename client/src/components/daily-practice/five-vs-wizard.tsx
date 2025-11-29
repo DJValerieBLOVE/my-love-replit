@@ -3,9 +3,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { VibeRater } from "./vibe-rater";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Check, Sparkles } from "lucide-react";
+import { LOVE_CODE_AREAS } from "@/lib/mock-data";
 
 interface FiveVsWizardProps {
   onComplete: () => void;
@@ -15,13 +17,29 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
   const [step, setStep] = useState(1);
   const [data, setData] = useState({
     vibe: 5,
+    selectedAreaId: "",
     vision: "",
-    villain: "",
-    value: "",
+    values: ["", "", ""],
     victory: ""
   });
 
   const nextStep = () => setStep(s => s + 1);
+  
+  const handleAreaSelect = (areaId: string) => {
+    const area = LOVE_CODE_AREAS.find(a => a.id === areaId);
+    setData({
+      ...data, 
+      selectedAreaId: areaId,
+      // Optional: pre-fill vision with the dream if empty
+      vision: data.vision || (area?.dream || "")
+    });
+  };
+
+  const updateValue = (index: number, text: string) => {
+    const newValues = [...data.values];
+    newValues[index] = text;
+    setData({...data, values: newValues});
+  };
   
   const steps = [
     {
@@ -35,65 +53,63 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
       title: "Vision",
       subtitle: "What is your focus today?",
       component: (
-        <div className="space-y-4">
-          <label className="text-xs font-serif text-muted-foreground uppercase tracking-wider">My Vision</label>
-          <Textarea 
-            placeholder="I am creating..." 
-            className="min-h-[120px] bg-muted/30 border-muted focus:bg-background resize-none text-base md:text-base font-serif"
-            value={data.vision}
-            onChange={e => setData({...data, vision: e.target.value})}
-          />
-        </div>
-      )
-    },
-    {
-      id: 3,
-      title: "Villain",
-      subtitle: "Who is trying to stop you?",
-      component: (
         <div className="space-y-6">
-          <div className="flex flex-wrap gap-2 mb-6">
-            {['Confusion', 'Lies', 'Apathy', 'Distraction', 'Drifting', 'Disconnection'].map(v => (
-              <Button 
-                key={v} 
-                variant={data.villain === v ? "default" : "ghost"}
-                onClick={() => setData({...data, villain: v})}
-                className={`rounded-full px-4 h-8 text-xs font-serif uppercase tracking-wide ${data.villain === v ? 'bg-primary text-white' : 'text-muted-foreground hover:text-primary bg-muted/30'}`}
-              >
-                {v}
-              </Button>
-            ))}
-          </div>
           <div className="space-y-2">
-            <label className="text-xs font-serif text-muted-foreground uppercase tracking-wider">Specific Resistance</label>
-            <Input 
-              placeholder="Name your villain..." 
-              className="h-12 bg-muted/30 border-muted focus:bg-background text-base md:text-base font-serif"
-              value={data.villain}
-              onChange={e => setData({...data, villain: e.target.value})}
+            <label className="text-xs font-serif text-muted-foreground uppercase tracking-wider">Select a Big Dream</label>
+            <Select value={data.selectedAreaId} onValueChange={handleAreaSelect}>
+              <SelectTrigger className="w-full h-12 bg-muted/30 border-muted focus:bg-background font-serif">
+                <SelectValue placeholder="Choose an area to focus on..." />
+              </SelectTrigger>
+              <SelectContent>
+                {LOVE_CODE_AREAS.map((area) => (
+                  <SelectItem key={area.id} value={area.id}>
+                    <span className="flex items-center gap-2">
+                      <span className={`w-2 h-2 rounded-full ${area.color}`} />
+                      {area.name}
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-xs font-serif text-muted-foreground uppercase tracking-wider">Visualize the Outcome</label>
+            <Textarea 
+              placeholder="What are you visualizing for this outcome today? Describe it in detail..." 
+              className="min-h-[120px] bg-muted/30 border-muted focus:bg-background resize-none text-base md:text-base font-serif"
+              value={data.vision}
+              onChange={e => setData({...data, vision: e.target.value})}
             />
           </div>
         </div>
       )
     },
     {
-      id: 4,
+      id: 3,
       title: "Value",
-      subtitle: "What matters most today?",
+      subtitle: "3 things you will do today to achieve the vision",
       component: (
         <div className="space-y-4">
-          <label className="text-xs font-serif text-muted-foreground uppercase tracking-wider">Core Value</label>
-          <Input 
-            placeholder="Today I value..." 
-            className="h-12 bg-muted/30 border-muted focus:bg-background text-base md:text-base font-serif"
-            value={data.value}
-            onChange={e => setData({...data, value: e.target.value})}
-          />
+          <label className="text-xs font-serif text-muted-foreground uppercase tracking-wider">My Action Steps</label>
+          {data.values.map((val, idx) => (
+            <div key={idx} className="relative">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs font-serif font-bold">
+                {idx + 1}.
+              </div>
+              <Input 
+                placeholder={`Action step ${idx + 1}...`}
+                className="h-12 pl-8 bg-muted/30 border-muted focus:bg-background text-base md:text-base font-serif"
+                value={val}
+                onChange={e => updateValue(idx, e.target.value)}
+              />
+            </div>
+          ))}
         </div>
       )
     },
     {
-      id: 5,
+      id: 4,
       title: "Victory",
       subtitle: "Define your VIP (Victory In Progress)",
       component: (
@@ -116,7 +132,7 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
     <div className="max-w-2xl mx-auto">
       <div className="mb-8 flex justify-between items-center">
         <h2 className="text-3xl font-serif text-foreground">Morning 5 V's</h2>
-        <span className="text-sm font-serif text-muted-foreground">Step {step} of 5</span>
+        <span className="text-sm font-serif text-muted-foreground">Step {step} of 4</span>
       </div>
 
       <AnimatePresence mode="wait">
@@ -143,9 +159,9 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
                 <Button 
                   size="lg" 
                   className="gap-2 px-8 bg-[#6600ff] hover:bg-[#5500dd] text-white font-serif shadow-sm hover:shadow-md transition-all"
-                  onClick={step < 5 ? nextStep : onComplete}
+                  onClick={step < 4 ? nextStep : onComplete}
                 >
-                  {step < 5 ? (
+                  {step < 4 ? (
                     <>Next Step <ArrowRight className="w-4 h-4" /></>
                   ) : (
                     <>Complete Practice <Sparkles className="w-4 h-4" /></>
