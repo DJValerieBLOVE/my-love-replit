@@ -20,6 +20,8 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
     selectedAreaId: "",
     vision: "",
     values: ["", "", ""],
+    villain: "",
+    villainSolution: "",
     victory: ""
   });
 
@@ -110,6 +112,33 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
     },
     {
       id: 4,
+      title: "Villain",
+      subtitle: "Identify resistance & choose your weapon",
+      component: (
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <label className="text-xs font-serif text-muted-foreground uppercase tracking-wider">The Problem (Villain)</label>
+            <Input 
+              placeholder="What resistance might show up? (e.g. Distraction, Doubt...)" 
+              className="h-12 bg-muted/30 border-muted focus:bg-background text-base md:text-base font-serif"
+              value={data.villain}
+              onChange={e => setData({...data, villain: e.target.value})}
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs font-serif text-muted-foreground uppercase tracking-wider">The Solution (Hero Move)</label>
+            <Input 
+              placeholder="How will you overcome it? (e.g. Deep breath, 5 min break...)" 
+              className="h-12 bg-muted/30 border-muted focus:bg-background text-base md:text-base font-serif"
+              value={data.villainSolution}
+              onChange={e => setData({...data, villainSolution: e.target.value})}
+            />
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 5,
       title: "Victory",
       subtitle: "Define your VIP (Victory In Progress)",
       component: (
@@ -132,7 +161,7 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
     <div className="max-w-2xl mx-auto">
       <div className="mb-8 flex justify-between items-center">
         <h2 className="text-3xl font-serif text-foreground">Morning 5 V's</h2>
-        <span className="text-sm font-serif text-muted-foreground">Step {step} of 4</span>
+        <span className="text-sm font-serif text-muted-foreground">Step {step} of 5</span>
       </div>
 
       <AnimatePresence mode="wait">
@@ -159,9 +188,9 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
                 <Button 
                   size="lg" 
                   className="gap-2 px-8 bg-[#6600ff] hover:bg-[#5500dd] text-white font-serif shadow-sm hover:shadow-md transition-all"
-                  onClick={step < 4 ? nextStep : onComplete}
+                  onClick={step < 5 ? nextStep : onComplete}
                 >
-                  {step < 4 ? (
+                  {step < 5 ? (
                     <>Next Step <ArrowRight className="w-4 h-4" /></>
                   ) : (
                     <>Complete Practice <Sparkles className="w-4 h-4" /></>
