@@ -218,7 +218,7 @@ export function EqVisualizer({ className, size = 120 }: EqVisualizerProps) {
                     <p className="font-serif font-bold text-lg tracking-wider uppercase" style={{ color }}>{area.name}</p>
                     <div className="flex items-center justify-center gap-2 mt-1">
                       <span className="text-[10px] uppercase tracking-widest text-gray-500">Progress</span>
-                      <span className="font-mono font-bold text-black text-lg">{area.progress}%</span>
+                      <span className="font-medium text-muted-foreground text-lg">{area.progress}%</span>
                     </div>
                   </div>
                 </TooltipContent>
