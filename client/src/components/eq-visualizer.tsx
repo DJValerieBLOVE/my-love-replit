@@ -130,7 +130,13 @@ export function EqVisualizer({ className, size = 120 }: EqVisualizerProps) {
           <circle cx={center} cy={center} r={logoRadius} fill="white" stroke="none" />
           <foreignObject x={center - logoRadius} y={center - logoRadius} width={logoRadius * 2} height={logoRadius * 2}>
             <div className="w-full h-full flex items-center justify-center bg-white">
-              <img src={Logo} alt="11x Logo" className="w-full h-full object-contain" />
+              {/* Nudging image down to visual center (fixing "more white at bottom") */}
+              <img 
+                src={Logo} 
+                alt="11x Logo" 
+                className="w-full h-full object-contain" 
+                style={{ transform: 'translateY(8%)' }}
+              />
             </div>
           </foreignObject>
           
