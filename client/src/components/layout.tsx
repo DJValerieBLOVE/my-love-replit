@@ -86,7 +86,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
           {/* Center: Vertical EQ Visualizer (Sharper Corners) */}
           {/* Added explicit padding-top to container to push it down slightly per request */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pt-2">
+          <div className="absolute left-1/2 bottom-0 -translate-x-1/2 pt-2">
             <VerticalEqVisualizer height={80} />
           </div>
 
