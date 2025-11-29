@@ -40,7 +40,7 @@ export function VerticalEqVisualizer({ className, height = 60 }: VerticalEqProps
             <Tooltip key={area.id}>
               <TooltipTrigger asChild>
                 <div 
-                  className="relative w-3 md:w-[6.9px] h-full flex flex-col-reverse gap-[1px] cursor-pointer group"
+                  className="relative w-2.5 md:w-5 h-full flex flex-col-reverse gap-[1px] cursor-pointer group"
                 >
                   {/* Segments */}
                   {Array.from({ length: totalSegments }).map((_, i) => {
