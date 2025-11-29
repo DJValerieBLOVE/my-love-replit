@@ -175,18 +175,18 @@ export function EqVisualizer({ className, size = 120, isLogo = false }: EqVisual
             
             if (isLogo) {
               // A fixed "Ideal but Human" profile for the logo
-              // Variations between 85% and 100% to show "ripples" without deep gaps
+              // Deeper variations (60-100%) to make the "imperfect" vibe intentional and obvious
               const humanProfile: Record<string, number> = {
                 "god-love": 100,
-                "romance": 92,
-                "family": 96,
-                "community": 88,
-                "mission": 94,
-                "money": 85,  // A little lower to show "focus here"
-                "time": 90,
-                "environment": 95,
-                "body": 89,
-                "mind": 93,
+                "romance": 75,
+                "family": 90,
+                "community": 65, 
+                "mission": 95,
+                "money": 55,  // Significant dip to show "work needed"
+                "time": 82,
+                "environment": 70,
+                "body": 92,
+                "mind": 78,
                 "soul": 98
               };
               progressValue = humanProfile[area.id] || 90;
