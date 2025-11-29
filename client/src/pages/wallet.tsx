@@ -122,6 +122,11 @@ export default function Wallet() {
             <div className="mt-4 text-xs text-muted-foreground text-center">
               Don't have a gamertag? <a href="https://zbd.gg" target="_blank" rel="noreferrer" className="text-orange-500 hover:underline font-bold">Get the ZBD App</a>
             </div>
+            <div className="mt-6 pt-4 border-t border-border/40 text-center">
+              <p className="text-[10px] text-muted-foreground/60 uppercase tracking-wider font-medium">
+                Wallet services powered by <span className="font-bold">ZBD</span>. We do not hold user funds.
+              </p>
+            </div>
           </CardContent>
         </Card>
 
