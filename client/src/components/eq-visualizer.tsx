@@ -129,8 +129,8 @@ export function EqVisualizer({ className, size = 120 }: EqVisualizerProps) {
           {/* Using full logoRadius to maximize size within the ring */}
           <circle cx={center} cy={center} r={logoRadius} fill="white" stroke="none" />
           <foreignObject x={center - logoRadius} y={center - logoRadius} width={logoRadius * 2} height={logoRadius * 2}>
-            <div className="w-full h-full flex items-center justify-center rounded-full overflow-hidden bg-white">
-              <img src={Logo} alt="11x Logo" className="w-full h-full object-contain scale-110" />
+            <div className="w-full h-full flex items-center justify-center bg-white">
+              <img src={Logo} alt="11x Logo" className="w-full h-full object-contain" />
             </div>
           </foreignObject>
           
