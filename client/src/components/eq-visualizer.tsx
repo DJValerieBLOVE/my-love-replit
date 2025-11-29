@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { LOVE_CODE_AREAS } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import Logo from "@/assets/11x_love_logo.png"; // Import Logo directly
+import Logo from "@/assets/11x_logo_gradient.png"; // Import Logo directly
 
 interface EqVisualizerProps {
   className?: string;
