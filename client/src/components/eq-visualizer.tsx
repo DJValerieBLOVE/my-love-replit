@@ -30,7 +30,8 @@ export function EqVisualizer({ className, size = 120 }: EqVisualizerProps) {
 
   // Helper to generate SVG paths for arcs
   const createArc = (index: number, radius: number, startRadius: number = innerRadius) => {
-    // Rotate so top is -90deg
+    // Rotate so top is -90deg, PLUS offset to align colors with logo if needed
+    // Currently assuming standard rainbow alignment (Magenta/Red at top)
     const startAngle = (index * angleStep) - 90;
     const endAngle = startAngle + angleStep - gap;
 
@@ -47,21 +48,6 @@ export function EqVisualizer({ className, size = 120 }: EqVisualizerProps) {
     const y4 = center + startRadius * Math.sin(toRad(endAngle));
 
     return `M ${x1} ${y1} L ${x2} ${y2} A ${radius} ${radius} 0 0 1 ${x3} ${y3} L ${x4} ${y4} A ${startRadius} ${startRadius} 0 0 0 ${x1} ${y1} Z`;
-  };
-
-  // Brand Colors Map (matching mock-data classes to hex)
-  const brandColors: Record<string, string> = {
-    "god-love": "#eb00a8",
-    "romance": "#e60023",
-    "family": "#ff6600",
-    "community": "#ffdf00",
-    "mission": "#a2f005",
-    "money": "#00d81c",
-    "time": "#00ccff",
-    "environment": "#0033ff",
-    "body": "#6600ff",
-    "mind": "#9900ff",
-    "soul": "#cc00ff"
   };
 
   return (
@@ -103,7 +89,9 @@ export function EqVisualizer({ className, size = 120 }: EqVisualizerProps) {
 
           {/* 11 Segments */}
           {LOVE_CODE_AREAS.map((area, index) => {
-            const color = brandColors[area.id] || "#ffffff";
+            // Use the hex color from data (or fallback to known brand colors if mock data update hasn't propagated)
+            // @ts-ignore - hex property added to mock data
+            const color = area.hex || brandColors[area.id] || "#ffffff";
             const progressRadius = innerRadius + ((maxRadius - innerRadius) * (area.progress / 100));
             const isHovered = hoveredArea === area.id;
             
