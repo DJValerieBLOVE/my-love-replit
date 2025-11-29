@@ -35,7 +35,7 @@ export function VerticalEqVisualizer({ className, height = 60 }: VerticalEqProps
             <Tooltip key={area.id}>
               <TooltipTrigger asChild>
                 <div 
-                  className="relative w-1.5 md:w-2.5 bg-muted/20 hover:bg-muted/30 transition-colors cursor-pointer group h-full flex items-end"
+                  className="relative w-3 md:w-5 bg-muted/20 hover:bg-muted/30 transition-colors cursor-pointer group h-full flex items-end"
                 >
                   {/* The Bar - Sharp Corners (no rounded) */}
                   <div 

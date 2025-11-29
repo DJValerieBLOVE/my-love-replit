@@ -71,13 +71,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <ThemeCustomizer />
       
       {/* Top Navigation Bar */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl px-4 h-28 md:h-40 flex items-center justify-between">
+      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl px-4 h-20 md:h-24 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/">
               <div className="flex items-center gap-3 cursor-pointer">
                 {/* Replaced Image Logo with Circular EQ Visualizer */}
                 <div className="relative flex items-center justify-center">
-                  <EqVisualizer size={60} className="" />
+                  <EqVisualizer size={60} className="" isLogo={true} />
                 </div>
                 <span className="font-serif font-bold text-lg tracking-tight hidden md:block" style={{ color: '#0a0a0a' }}>11x LOVE LaB</span>
               </div>

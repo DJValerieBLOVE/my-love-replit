@@ -8,9 +8,10 @@ import Logo from "@/assets/11x_logo_gradient.png"; // Import Logo directly
 interface EqVisualizerProps {
   className?: string;
   size?: number;
+  isLogo?: boolean; // New prop to force balanced/symmetrical look
 }
 
-export function EqVisualizer({ className, size = 120 }: EqVisualizerProps) {
+export function EqVisualizer({ className, size = 120, isLogo = false }: EqVisualizerProps) {
   const [hoveredArea, setHoveredArea] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
 
@@ -166,7 +167,11 @@ export function EqVisualizer({ className, size = 120 }: EqVisualizerProps) {
             // Use the hex color from data (or fallback to known brand colors)
             // @ts-ignore
             const color = area.hex || brandColors[area.id] || "#ffffff";
-            const progressRadius = wedgeInnerRadius + ((maxRadius - wedgeInnerRadius) * (area.progress / 100));
+            
+            // Use 100% progress if isLogo is true, otherwise use actual data
+            const progressValue = isLogo ? 100 : area.progress;
+            const progressRadius = wedgeInnerRadius + ((maxRadius - wedgeInnerRadius) * (progressValue / 100));
+            
             const isHovered = hoveredArea === area.id;
             
             return (
