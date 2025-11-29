@@ -71,7 +71,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <ThemeCustomizer />
       
       {/* Top Navigation Bar */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl px-4 h-22 md:h-28 flex items-center justify-between">
+      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl px-4 h-20 md:h-24 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/">
               <div className="flex items-center gap-3 cursor-pointer">
