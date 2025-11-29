@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { LOVE_CODE_AREAS } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import Logo from "@/assets/11x_love_logo.png"; // Import Logo directly
 
 interface EqVisualizerProps {
   className?: string;
@@ -66,45 +67,45 @@ export function EqVisualizer({ className, size = 120 }: EqVisualizerProps) {
   return (
     <div className={cn("relative flex items-center justify-center", className)} style={{ width: size, height: size }}>
       <TooltipProvider delayDuration={0}>
-        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="overflow-visible">
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="overflow-visible drop-shadow-2xl">
           <defs>
-            {/* Glow Filters */}
+            {/* Strong Cyber Glow */}
+            <filter id="cyber-glow" x="-100%" y="-100%" width="300%" height="300%">
+              <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
+              <feMerge>
+                <feMergeNode in="coloredBlur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+            
+            {/* Individual Color Glows */}
             {LOVE_CODE_AREAS.map((area) => (
-              <filter key={`glow-${area.id}`} id={`glow-${area.id}`} x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="4" result="coloredBlur" />
+               <filter key={`glow-${area.id}`} id={`glow-${area.id}`} x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="6" result="coloredBlur" />
+                 <feComposite operator="in" in="coloredBlur" in2="SourceAlpha" result="softGlow" />
                 <feMerge>
-                  <feMergeNode in="coloredBlur" />
+                  <feMergeNode in="softGlow" />
                   <feMergeNode in="SourceGraphic" />
                 </feMerge>
               </filter>
             ))}
           </defs>
 
-          {/* Central Core - The "Sacred Center" */}
-          <circle cx={center} cy={center} r={innerRadius - 4} fill="#0a0a0a" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+          {/* Central Core Background - Pure White for Logo Contrast */}
+          <circle cx={center} cy={center} r={innerRadius - 2} fill="white" stroke="none" />
           
-          {/* Central Triangle (Logo Motif) */}
-          <path 
-            d={`M ${center} ${center - (innerRadius * 0.6)} L ${center + (innerRadius * 0.5)} ${center + (innerRadius * 0.3)} L ${center - (innerRadius * 0.5)} ${center + (innerRadius * 0.3)} Z`}
-            fill="none"
-            stroke="url(#rainbowGradient)"
-            strokeWidth="1.5"
-            className="opacity-80"
-          />
-          
-          {/* Rainbow Gradient Definition */}
-          <linearGradient id="rainbowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#eb00a8" />
-            <stop offset="50%" stopColor="#ffdf00" />
-            <stop offset="100%" stopColor="#00ccff" />
-          </linearGradient>
+          {/* The Logo Image in Center */}
+          <foreignObject x={center - (innerRadius - 4)} y={center - (innerRadius - 4)} width={(innerRadius - 4) * 2} height={(innerRadius - 4) * 2}>
+            <div className="w-full h-full flex items-center justify-center rounded-full overflow-hidden bg-white">
+              <img src={Logo} alt="11x Logo" className="w-full h-full object-contain p-1" />
+            </div>
+          </foreignObject>
 
-
+          {/* 11 Segments */}
           {LOVE_CODE_AREAS.map((area, index) => {
             const color = brandColors[area.id] || "#ffffff";
-            // Calculate visual radius based on progress (min innerRadius, max maxRadius)
-            // If progress is 0, we show a tiny sliver or just the track
             const progressRadius = innerRadius + ((maxRadius - innerRadius) * (area.progress / 100));
+            const isHovered = hoveredArea === area.id;
             
             return (
               <Tooltip key={area.id}>
@@ -115,54 +116,55 @@ export function EqVisualizer({ className, size = 120 }: EqVisualizerProps) {
                     className="cursor-pointer"
                     style={{ transformOrigin: `${center}px ${center}px` }}
                   >
-                    {/* Track (Background - The "Empty" Container) */}
+                    {/* "Unrealized Potential" Track - Muted but Visible Color */}
                     <path 
                       d={createArc(index, maxRadius)} 
                       fill={color} 
-                      fillOpacity="0.1" 
-                      stroke="none"
-                      className="transition-opacity duration-300"
+                      fillOpacity="0.2" 
+                      stroke={color}
+                      strokeWidth="0.5"
+                      strokeOpacity="0.3"
+                      className="transition-all duration-500"
+                      style={{ filter: isHovered ? `drop-shadow(0 0 5px ${color})` : 'none' }}
                     />
 
-                    {/* Active Progress Wedge */}
+                    {/* Active Progress Wedge - "Realized Power" */}
                     <motion.path 
                       d={createArc(index, progressRadius)}
                       fill={color}
                       stroke="none"
                       initial={{ scale: 0, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 0.8 }}
-                      whileHover={{ opacity: 1, scale: 1.05, filter: `url(#glow-${area.id})` }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      whileHover={{ scale: 1.05, filter: "url(#cyber-glow)" }}
                       transition={{ 
                         duration: 0.8, 
                         delay: index * 0.05,
                         type: "spring",
-                        stiffness: 100
+                        stiffness: 120,
+                        damping: 10
                       }}
                     />
                     
-                    {/* EQ Segment Lines (The "Graphic Equalizer" look) */}
-                    {/* We overlay thin black lines to create the segmented look */}
-                    {[0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9].map((segmentPerc) => {
-                       const segRadius = innerRadius + ((maxRadius - innerRadius) * segmentPerc);
-                       if (segRadius > progressRadius) return null; // Don't draw lines outside filled area
-                       return (
-                         <path 
-                           key={segmentPerc}
-                           d={createArc(index, segRadius + 0.5, segRadius)}
-                           fill="rgba(0,0,0,0.3)"
-                           stroke="none"
-                         />
-                       );
-                    })}
+                    {/* Shiny Tip / Cap for the "Cyber" Look */}
+                    {area.progress > 5 && (
+                      <motion.path
+                        d={createArc(index, progressRadius, progressRadius - 2)}
+                        fill="white"
+                        fillOpacity="0.4"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 0.4 }}
+                        transition={{ delay: 1 + (index * 0.05) }}
+                      />
+                    )}
 
                   </g>
                 </TooltipTrigger>
-                <TooltipContent side="bottom" className="bg-black/90 border-white/10 backdrop-blur-xl z-50">
+                <TooltipContent side="bottom" className="bg-black/90 border-white/10 backdrop-blur-xl z-50 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
                   <div className="text-center">
-                    <p className="font-serif font-bold text-lg" style={{ color }}>{area.name}</p>
-                    <div className="flex items-center justify-center gap-2">
-                      <span className="text-xs text-muted-foreground">Mastery</span>
-                      <span className="font-mono font-bold text-white">{area.progress}%</span>
+                    <p className="font-serif font-bold text-lg tracking-wider uppercase" style={{ color, textShadow: `0 0 10px ${color}` }}>{area.name}</p>
+                    <div className="flex items-center justify-center gap-2 mt-1">
+                      <span className="text-[10px] uppercase tracking-widest text-muted-foreground">Mastery</span>
+                      <span className="font-mono font-bold text-white text-lg">{area.progress}%</span>
                     </div>
                   </div>
                 </TooltipContent>
