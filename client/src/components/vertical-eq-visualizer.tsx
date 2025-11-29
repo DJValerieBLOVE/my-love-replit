@@ -54,8 +54,8 @@ export function VerticalEqVisualizer({ className, height = 60 }: VerticalEqProps
                           // Active: Pure Color. Inactive: Faint Color (Ghost) to keep it vivid
                           backgroundColor: color,
                           
-                          // Active: Full opacity. Inactive: Low opacity but crisp
-                          opacity: isActive ? 1 : 0.2,
+                          // Active: Full opacity. Inactive: Even lighter (10%) per request
+                          opacity: isActive ? 1 : 0.1,
                           
                           // Removed glow/box-shadow to fix "fuzzy" look
                           // Clean sharp corners
