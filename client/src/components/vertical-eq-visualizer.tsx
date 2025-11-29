@@ -64,19 +64,6 @@ export function VerticalEqVisualizer({ className, height = 60 }: VerticalEqProps
                       />
                     );
                   })}
-                  
-                  {/* Peak Indicator (Floating Dot) - Crisp Line */}
-                  <div 
-                    className="absolute w-full h-[2px]"
-                    style={{
-                      backgroundColor: color,
-                      bottom: `${Math.min(100, area.progress + 3)}%`,
-                      opacity: 1, // Full opacity for crispness
-                      transition: "bottom 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                      // Removed box-shadow for crisp look
-                      boxShadow: 'none'
-                    }}
-                  />
                 </div>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="bg-white/90 border-black/10 backdrop-blur-xl z-50 shadow-[0_0_30px_rgba(0,0,0,0.1)]">
