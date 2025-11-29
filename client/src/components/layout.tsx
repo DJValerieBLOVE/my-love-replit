@@ -48,6 +48,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+import { EqVisualizer } from "@/components/eq-visualizer";
+
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [isAiOpen, setIsAiOpen] = useState(false);
@@ -68,8 +70,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <ThemeCustomizer />
       
       {/* Top Navigation Bar */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl px-4 h-32 flex flex-col items-center justify-center">
-        <div className="w-full flex items-center justify-between h-16">
+      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl px-4 h-20 md:h-24 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/">
               <div className="flex items-center gap-3 cursor-pointer">
@@ -77,6 +78,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <span className="font-serif font-bold text-lg tracking-tight hidden md:block" style={{ color: '#0a0a0a' }}>11x LOVE LaB</span>
               </div>
             </Link>
+          </div>
+
+          {/* Center EQ Visualizer (The Sacred Core) */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+            <EqVisualizer size={80} className="md:w-[100px] md:h-[100px]" />
           </div>
 
           <div className="flex items-center gap-2 md:gap-4">
@@ -115,30 +121,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-        </div>
-
-        {/* Center EQ Visualizer (Hidden on mobile) */}
-        <TooltipProvider>
-          <div className="hidden md:flex items-end justify-center gap-1 flex-1 w-full max-w-2xl h-16 px-4">
-            {LOVE_CODE_AREAS.map((area) => (
-              <Tooltip key={area.id}>
-                <TooltipTrigger asChild>
-                  <div 
-                    className={cn("w-full rounded-t-lg transition-all cursor-pointer hover:shadow-lg hover:shadow-current", area.color)}
-                    style={{ height: `${20 + (area.progress / 100) * 80}%` }}
-                    data-testid={`eq-bar-${area.id}`}
-                  />
-                </TooltipTrigger>
-                <TooltipContent side="top" className="backdrop-blur-sm border border-white/20" style={{ backgroundColor: '#0a0a0a' }}>
-                  <div className="text-center">
-                    <p className="font-semibold text-white">{area.name}</p>
-                    <p className="text-sm font-bold" style={{ color: '#a2f005' }}>{area.progress}% Complete</p>
-                  </div>
-                </TooltipContent>
-              </Tooltip>
-            ))}
-          </div>
-        </TooltipProvider>
       </header>
 
       <div className="flex-1 flex overflow-hidden">
