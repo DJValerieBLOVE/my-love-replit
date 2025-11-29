@@ -168,8 +168,30 @@ export function EqVisualizer({ className, size = 120, isLogo = false }: EqVisual
             // @ts-ignore
             const color = area.hex || brandColors[area.id] || "#ffffff";
             
-            // Use 100% progress if isLogo is true, otherwise use actual data
-            const progressValue = isLogo ? 100 : area.progress;
+            // For Logo: Use "Imperfectly Balanced" values (Human Vibe)
+            // Instead of 100% (boring) or User Data (potentially too lopsided),
+            // we use a curated set that looks "human" - mostly high but with variation.
+            let progressValue = area.progress;
+            
+            if (isLogo) {
+              // A fixed "Ideal but Human" profile for the logo
+              // Variations between 85% and 100% to show "ripples" without deep gaps
+              const humanProfile: Record<string, number> = {
+                "god-love": 100,
+                "romance": 92,
+                "family": 96,
+                "community": 88,
+                "mission": 94,
+                "money": 85,  // A little lower to show "focus here"
+                "time": 90,
+                "environment": 95,
+                "body": 89,
+                "mind": 93,
+                "soul": 98
+              };
+              progressValue = humanProfile[area.id] || 90;
+            }
+
             const progressRadius = wedgeInnerRadius + ((maxRadius - wedgeInnerRadius) * (progressValue / 100));
             
             const isHovered = hoveredArea === area.id;
