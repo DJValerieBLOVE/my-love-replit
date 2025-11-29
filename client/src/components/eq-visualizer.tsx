@@ -27,7 +27,7 @@ export function EqVisualizer({ className, size = 120 }: EqVisualizerProps) {
   // 3. White Ring (Spacer)
   // 4. EQ Wedges
   
-  const logoRadius = size * 0.35; // Increased significantly to reduce white space (70% diameter)
+  const logoRadius = size * 0.18; // Logo 50% smaller (was 0.35)
   const gradientRingInner = logoRadius + 1; // Very tight to logo
   const gradientRingOuter = logoRadius + (size * 0.03); // Thin colored ring
   const whiteRingOuter = gradientRingOuter + (size * 0.015); // Minimal white gap
