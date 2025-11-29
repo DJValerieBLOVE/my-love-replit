@@ -24,8 +24,8 @@ export function VerticalEqVisualizer({ className, height = 60 }: VerticalEqProps
   };
 
   // Number of segments for the "VU Meter" look
-  // Reduced to 10 (was 20) to remove 50% of the dividing lines
-  const totalSegments = 10; 
+  // "This one goes to 11 baby!" 🎸
+  const totalSegments = 11; 
 
   return (
     <div className={cn("flex items-end gap-[2px] md:gap-1", className)} style={{ height }}>
