@@ -180,9 +180,9 @@ export function EqVisualizer({ className, size = 120, isLogo = false }: EqVisual
                 "god-love": 100,
                 "romance": 75,
                 "family": 90,
-                "community": 65, 
+                "community": 80, // Increased by 15%
                 "mission": 95,
-                "money": 55,  // Significant dip to show "work needed"
+                "money": 70,  // Increased by 15%
                 "time": 82,
                 "environment": 70,
                 "body": 92,
