@@ -10,7 +10,7 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { LOVE_CODE_AREAS } from "@/lib/mock-data";
+import { LOVE_CODE_AREAS, CURRENT_USER } from "@/lib/mock-data";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState } from "react";
 
@@ -48,7 +48,7 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
             <div className="flex gap-2 pt-2">
               <input 
                 type="text" 
-                placeholder="Ask me anything..." 
+                placeholder={`Aloha ${CURRENT_USER.name.split(' ')[0]} ~ Ask me anything...`}
                 value={chatMessage}
                 onChange={(e) => setChatMessage(e.target.value)}
                 className="flex-1 px-4 py-3 rounded-xl border border-white bg-[#F4F4F5] text-sm text-foreground placeholder:text-[#A1A1AA] focus:outline-none focus:ring-2 focus:ring-white shadow-[0_0_30px_rgba(255,255,255,0.6),0_4px_12px_rgba(0,0,0,0.1)] transition-all"
