@@ -115,8 +115,8 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                         type="number" 
                         min="1" 
                         max="11"
-                        placeholder="-"
-                        className="w-12 h-8 text-right p-0 border-none bg-transparent text-lg font-medium font-serif focus-visible:ring-0 placeholder:text-muted-foreground/50 shadow-none"
+                        placeholder="?/11"
+                        className="w-16 h-8 text-right p-0 border-none bg-transparent text-lg font-medium font-serif focus-visible:ring-0 placeholder:text-muted-foreground/50 shadow-none"
                         value={morningVibe}
                         onChange={(e) => setMorningVibe(e.target.value)}
                     />
@@ -267,7 +267,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
 
                  {/* Villain Input - Bottom */}
                 <div className="space-y-2 pt-4 border-t border-border/10 mt-auto">
-                    <label className="text-[15px] font-bold text-muted-foreground pl-3">Villain (Obstacle)</label>
+                    <label className="text-[15px] font-bold text-muted-foreground pl-3 mb-1 block">Villain (Obstacle)</label>
                     <Input 
                         placeholder="What stands in the way?" 
                         className="h-9 bg-white border-muted/50 focus:border-primary/30 text-sm font-serif text-muted-foreground placeholder:text-muted-foreground/50"
@@ -291,8 +291,8 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                         type="number" 
                         min="1" 
                         max="11"
-                        placeholder="-"
-                        className="w-12 h-8 text-right p-0 border-none bg-transparent text-lg font-medium font-serif text-muted-foreground focus-visible:ring-0 placeholder:text-muted-foreground/50 shadow-none"
+                        placeholder="?/11"
+                        className="w-16 h-8 text-right p-0 border-none bg-transparent text-lg font-medium font-serif text-muted-foreground focus-visible:ring-0 placeholder:text-muted-foreground/50 shadow-none"
                         value={eveningVibe}
                         onChange={(e) => setEveningVibe(e.target.value)}
                     />
