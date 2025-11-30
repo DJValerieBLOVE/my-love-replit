@@ -13,7 +13,8 @@ import {
   MessageSquare,
   ArrowLeft,
   Video,
-  CheckCircle2
+  CheckCircle2,
+  Repeat
 } from "lucide-react";
 import { Link, useRoute } from "wouter";
 import { EVENTS } from "@/lib/mock-data";
@@ -121,7 +122,17 @@ export default function EventDetail() {
                       <p className="font-bold text-foreground">
                         {event.date === "Today" ? "Today, November 28" : "Tomorrow, November 29"}
                       </p>
-                      <p className="text-sm text-muted-foreground">Friday</p>
+                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                        <span>Friday</span>
+                        {event.recurrence && (
+                          <>
+                            <span>•</span>
+                            <span className="flex items-center gap-1 text-primary font-medium">
+                              <Repeat className="w-3 h-3" /> {event.recurrence}
+                            </span>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
                   
