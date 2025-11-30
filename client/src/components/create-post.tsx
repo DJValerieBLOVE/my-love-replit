@@ -24,20 +24,20 @@ export function CreatePost({ placeholder = "Share something with the community..
           />
           <div className="flex items-center justify-between mt-3 px-1">
             <div className="flex items-center gap-1">
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full">
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full">
                 <ImageIcon className="w-4 h-4" strokeWidth={1.5} />
               </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full">
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full">
                 <Sparkles className="w-4 h-4" strokeWidth={1.5} />
               </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full">
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full">
                 <Smile className="w-4 h-4" strokeWidth={1.5} />
               </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full">
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full">
                 <Calendar className="w-4 h-4" strokeWidth={1.5} />
               </Button>
             </div>
-            <Button className="rounded-full px-6 font-bold h-10 bg-love-body text-white border border-transparent transition-all">Post</Button>
+            <Button className="rounded-full px-6 font-bold bg-love-body text-white border border-transparent transition-all">Post</Button>
           </div>
         </div>
       </CardContent>

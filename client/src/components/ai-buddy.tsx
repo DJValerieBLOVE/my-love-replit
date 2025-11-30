@@ -54,7 +54,7 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
               />
               <Button 
                 size="icon" 
-                className="bg-[#6600ff] hover:bg-[#5500dd] text-white rounded-lg h-10 w-10"
+                className="bg-[#6600ff] hover:bg-[#5500dd] text-white rounded-lg"
                 data-testid="button-send-message"
               >
                 <Send className="w-4 h-4" />
@@ -69,7 +69,7 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
                 <h3 className="font-bold text-sm flex items-center gap-2">
                   <Target className="w-3 h-3" /> Your 11x LOVE Code
                 </h3>
-                <Button variant="ghost" size="sm" className="text-xs h-6 px-2">Edit Goals</Button>
+                <Button variant="ghost" className="px-2">Edit Goals</Button>
               </div>
 
               <div className="space-y-2.5">

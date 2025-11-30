@@ -77,7 +77,7 @@ export default function MentorStudio() {
                     <p className="text-sm text-muted-foreground mb-4">
                       Drag & drop PDF, DOCX, or TXT files here
                     </p>
-                    <Button variant="outline" size="sm" className="gap-2">Select Files</Button>
+                    <Button variant="outline" className="gap-2">Select Files</Button>
                   </div>
 
                   <div className="space-y-3">
@@ -96,7 +96,7 @@ export default function MentorStudio() {
                               <p className="text-xs text-muted-foreground">{file.size} • {file.status}</p>
                             </div>
                           </div>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive">
+                          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive">
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>

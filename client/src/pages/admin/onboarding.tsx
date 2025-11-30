@@ -44,7 +44,7 @@ export default function AdminOnboarding() {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <Label>Steps</Label>
-                      <Button variant="ghost" size="sm" className="text-primary h-8"><Plus className="w-3 h-3 mr-1" /> Add Step</Button>
+                      <Button variant="ghost" className="text-primary"><Plus className="w-3 h-3 mr-1" /> Add Step</Button>
                     </div>
                     
                     <div className="space-y-2">
@@ -55,7 +55,7 @@ export default function AdminOnboarding() {
                             {index + 1}
                           </div>
                           <Input defaultValue={step.label} className="h-9 bg-transparent border-none shadow-none focus-visible:ring-0 px-0" />
-                          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity">
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>

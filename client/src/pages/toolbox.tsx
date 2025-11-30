@@ -178,7 +178,7 @@ export default function Toolbox() {
                         <h4 className="font-bold text-sm truncate">{file.title}</h4>
                         <p className="text-xs text-muted-foreground">{file.type} • {file.size}</p>
                       </div>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary">
+                      <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
                         <Download className="w-4 h-4" />
                       </Button>
                     </CardContent>
@@ -212,10 +212,10 @@ export default function Toolbox() {
                           <p className="text-xs text-muted-foreground">{item.author}</p>
                         </div>
                         <div className="flex justify-end gap-2">
-                          <Button variant="ghost" size="icon" className="h-7 w-7">
+                          <Button variant="ghost" size="icon">
                             <Trash2 className="w-3.5 h-3.5 text-muted-foreground hover:text-red-500" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7">
+                          <Button variant="ghost" size="icon">
                             <ExternalLink className="w-3.5 h-3.5" />
                           </Button>
                         </div>
@@ -245,7 +245,7 @@ export default function Toolbox() {
                     </div>
                     <div className="flex justify-between items-center mt-4">
                        <span className="text-sm text-muted-foreground">{item.progress}% Complete</span>
-                       <Button size="sm">Continue</Button>
+                       <Button>Continue</Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -282,7 +282,7 @@ export default function Toolbox() {
                     </div>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Button variant="ghost" size="icon">
                           <MoreHorizontal className="w-4 h-4" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -311,7 +311,7 @@ export default function Toolbox() {
                       </div>
                     )}
                     <div className="absolute top-2 right-2">
-                      <Button size="icon" variant="secondary" className="h-8 w-8 rounded-full bg-white/90 shadow-sm backdrop-blur-sm">
+                      <Button size="icon" variant="secondary" className="rounded-full bg-white/90 shadow-sm backdrop-blur-sm">
                         <ExternalLink className="w-4 h-4" />
                       </Button>
                     </div>
@@ -322,7 +322,7 @@ export default function Toolbox() {
                     <p className="text-sm text-muted-foreground mb-4">{item.author}</p>
                     <div className="mt-auto pt-2 border-t flex justify-between items-center">
                        <span className="text-xs text-muted-foreground">Added 2d ago</span>
-                       <Button variant="ghost" size="sm" className="h-8 text-red-500 hover:text-red-600 hover:bg-red-50 px-2">Remove</Button>
+                       <Button variant="ghost" className="text-red-500 hover:text-red-600 hover:bg-red-50 px-2">Remove</Button>
                     </div>
                   </CardContent>
                 </Card>
