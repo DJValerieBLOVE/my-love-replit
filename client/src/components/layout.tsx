@@ -175,9 +175,11 @@ export default function Layout({ children, showRightSidebar = true }: { children
                 </div>
                 
                 {/* VIP Level Badge */}
-                <div className="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 rounded-lg px-2 py-1">
+                <div className="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 rounded-lg px-2 py-1 cursor-pointer hover:bg-white/20 transition-colors">
                   <Sparkles className="w-4 h-4 text-yellow-300 flex-shrink-0" />
-                  <span className="text-[10px] font-bold text-white">Level <span className="text-yellow-300 font-black">12</span></span>
+                  <Link href="/profile">
+                    <span className="text-[10px] font-bold text-white">Level <span className="text-yellow-300 font-black">12</span></span>
+                  </Link>
                 </div>
               </div>
 
