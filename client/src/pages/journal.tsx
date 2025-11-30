@@ -324,14 +324,20 @@ export default function LabNotes() {
                               </div>
                               
                               {entry.type === 'daily-practice' && (
-                                <div className="space-y-2">
-                                  <div className="bg-primary/5 rounded-lg p-2 text-center border border-primary/10 flex justify-between items-center px-3">
-                                    <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif">Morning Vibe</div>
-                                    <div className="text-lg font-medium text-primary font-serif">{entry.morningVibe || entry.vibe}<span className="text-[10px] text-muted-foreground font-medium">/10</span></div>
+                                <div className="space-y-3">
+                                  <div className="bg-muted/10 rounded-lg p-3 border border-border/40 flex justify-between items-center">
+                                    <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif flex items-center gap-2">
+                                        <Moon className="w-4 h-4 text-muted-foreground stroke-[1.5]" /> 
+                                        Morning Vibe
+                                    </div>
+                                    <div className="text-lg font-medium text-muted-foreground font-serif">{entry.morningVibe || entry.vibe}<span className="text-[10px] text-muted-foreground font-medium">/11</span></div>
                                   </div>
-                                  <div className="bg-primary/5 rounded-lg p-2 text-center border border-primary/10 flex justify-between items-center px-3">
-                                    <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif">Evening Vibe</div>
-                                    <div className="text-lg font-medium text-primary font-serif">{entry.eveningVibe || "-"}<span className="text-[10px] text-muted-foreground font-medium">/10</span></div>
+                                  <div className="bg-muted/10 rounded-lg p-3 border border-border/40 flex justify-between items-center">
+                                    <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif flex items-center gap-2">
+                                        <Moon className="w-4 h-4 text-muted-foreground stroke-[1.5]" /> 
+                                        Evening Vibe
+                                    </div>
+                                    <div className="text-lg font-medium text-[#6600ff] font-serif">{entry.eveningVibe || "-"}<span className="text-[10px] text-muted-foreground font-medium">/11</span></div>
                                   </div>
                                   
                                   {entry.focusArea && (
@@ -374,8 +380,11 @@ export default function LabNotes() {
                                 </>
                               ) : (
                                 <>
-                                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">My Reflection</label>
-                                  <p className="text-base leading-relaxed text-muted-foreground font-serif italic line-clamp-4">
+                                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                                    <Quote className="w-3 h-3 text-muted-foreground stroke-[1.5]" />
+                                    My Reflection
+                                  </label>
+                                  <p className="text-base leading-relaxed text-muted-foreground font-serif italic line-clamp-6">
                                     "{entry.content}"
                                   </p>
                                 </>
@@ -388,21 +397,45 @@ export default function LabNotes() {
                                 <>
                                   <div>
                                     <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Vision</div>
-                                    <div className="text-sm font-serif text-muted-foreground whitespace-normal">{entry.vision}</div>
+                                    <div className="text-sm font-serif text-muted-foreground whitespace-normal italic">"{entry.vision}"</div>
                                   </div>
 
                                   <div>
-                                    <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Value</div>
-                                    <div className="text-sm font-serif text-muted-foreground whitespace-normal">{entry.value}</div>
+                                    <div className="text-[10px] font-bold text-muted-foreground uppercase mb-2 flex justify-between">
+                                      <span>Action Steps</span>
+                                      <span className="text-[9px] opacity-50">Done</span>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <div className="flex gap-2 items-center opacity-70">
+                                            <div className="w-4 h-4 rounded-full bg-green-500 border border-green-500 flex items-center justify-center shrink-0">
+                                                <CheckCircle className="w-3 h-3 text-white" strokeWidth={3} />
+                                            </div>
+                                            <span className="text-xs font-serif text-green-700 line-through">{entry.value || "Action 1"}</span>
+                                        </div>
+                                        <div className="flex gap-2 items-center opacity-70">
+                                            <div className="w-4 h-4 rounded-full bg-green-500 border border-green-500 flex items-center justify-center shrink-0">
+                                                <CheckCircle className="w-3 h-3 text-white" strokeWidth={3} />
+                                            </div>
+                                            <span className="text-xs font-serif text-green-700 line-through">Review goals</span>
+                                        </div>
+                                        <div className="flex gap-2 items-center opacity-70">
+                                            <div className="w-4 h-4 rounded-full bg-green-500 border border-green-500 flex items-center justify-center shrink-0">
+                                                <CheckCircle className="w-3 h-3 text-white" strokeWidth={3} />
+                                            </div>
+                                            <span className="text-xs font-serif text-green-700 line-through">Meditate 10m</span>
+                                        </div>
+                                    </div>
                                   </div>
 
                                   <div>
                                     <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Villain</div>
-                                    <div className="text-sm font-serif text-red-500 whitespace-normal">{entry.villain}</div>
+                                    <div className="text-sm font-serif text-red-500/80 whitespace-normal">{entry.villain}</div>
                                   </div>
 
                                   <div>
-                                    <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Victory</div>
+                                    <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1 flex items-center gap-1">
+                                        <Sparkles className="w-3 h-3 text-yellow-500" /> Victory
+                                    </div>
                                     <div className="text-sm font-serif text-green-600 whitespace-normal">{entry.victory}</div>
                                   </div>
                                 </>
