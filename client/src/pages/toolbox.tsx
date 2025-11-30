@@ -171,10 +171,8 @@ export default function Toolbox() {
                 {WORKSHEETS.map((file) => (
                   <div key={file.id} className="flex items-start justify-between p-3 bg-[#FAFAFA] rounded-md border border-[#E5E5E5]">
                     <div className="flex items-start gap-3">
-                      <div className="bg-background p-2 rounded shadow-sm mt-0.5">
-                        {file.type === 'PDF' ? <FileText className="w-5 h-5 text-red-500" /> : 
-                         file.type === 'Excel' ? <FileText className="w-5 h-5 text-green-500" /> :
-                         <FileText className="w-5 h-5 text-blue-500" />}
+                      <div className="mt-0.5">
+                        <FileText className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
                       </div>
                       <div>
                         <p className="font-medium text-sm leading-tight mb-1">{file.title}</p>
@@ -198,9 +196,9 @@ export default function Toolbox() {
                 {BOOKMARKS.map((item) => (
                   <div key={item.id} className="flex items-start justify-between p-3 bg-[#FAFAFA] rounded-md border border-[#E5E5E5]">
                     <div className="flex items-start gap-3">
-                      <div className="bg-background p-2 rounded shadow-sm shrink-0 mt-0.5">
-                         {item.type === 'Book' ? <BookOpen className="w-5 h-5 text-purple-500" /> : 
-                          <LinkIcon className="w-5 h-5 text-blue-400" />}
+                      <div className="mt-0.5">
+                         {item.type === 'Book' ? <BookOpen className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} /> : 
+                          <LinkIcon className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />}
                       </div>
                       <div className="min-w-0">
                         <p className="font-medium text-sm leading-tight mb-1 pr-2">{item.title}</p>
@@ -267,10 +265,8 @@ export default function Toolbox() {
               {WORKSHEETS.map((file) => (
                 <div key={file.id} className="flex items-start justify-between p-3 bg-[#FAFAFA] rounded-md border border-[#E5E5E5]">
                   <div className="flex items-start gap-3">
-                    <div className="bg-background p-2 rounded shadow-sm mt-0.5">
-                      {file.type === 'PDF' ? <FileText className="w-5 h-5 text-red-500" /> : 
-                       file.type === 'Excel' ? <FileText className="w-5 h-5 text-green-500" /> :
-                       <FileText className="w-5 h-5 text-blue-500" />}
+                    <div className="mt-0.5">
+                      <FileText className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
                     </div>
                     <div>
                       <p className="font-medium text-sm leading-tight mb-1">{file.title}</p>
