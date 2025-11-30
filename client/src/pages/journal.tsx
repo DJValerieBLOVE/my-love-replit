@@ -1,7 +1,7 @@
 import Layout from "@/components/layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PenLine, Calendar, Search, Filter, Heart, CheckCircle, FlaskConical, Lightbulb, Plus, Sparkles, Beaker, Quote, Play, X, Moon, Sun, BookOpen, Trophy } from "lucide-react";
+import { PenLine, Calendar, Search, Filter, Heart, CheckCircle, FlaskConical, Lightbulb, Plus, Sparkles, Beaker, Quote, Play, X, Moon, Sun, BookOpen, Trophy, Eye } from "lucide-react";
 import confetti from "canvas-confetti";
 import { getPlaylistForToday } from "@/lib/playlists";
 import { Input } from "@/components/ui/input";
@@ -356,8 +356,8 @@ export default function LabNotes() {
                                {entry.type === 'daily-practice' ? (
                                  <>
                                    <div className="flex items-center gap-2 mb-2">
-                                      <CheckCircle className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-                                      {/* User requested removing the text "The Mission", keeping just icon or leaving blank? User said "get rid of the word the mission" */}
+                                      <Eye className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+                                      <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Vision</span>
                                    </div>
 
                                    <div className="flex flex-col h-full justify-between">
@@ -378,16 +378,10 @@ export default function LabNotes() {
                                             </div>
                                           )}
 
-                                          {/* Vision */}
-                                          <div>
-                                              <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Vision</div>
-                                              <div className="text-sm font-serif text-muted-foreground whitespace-normal italic">"{entry.vision}"</div>
-                                          </div>
-
                                           {/* Values */}
                                           <div>
                                             <div className="text-[10px] font-bold text-muted-foreground uppercase mb-2 flex justify-between">
-                                              <span>Values (Actions)</span>
+                                              <span>Value (3 Actions)</span>
                                               <span className="text-[9px] opacity-50">Done</span>
                                             </div>
                                             <div className="space-y-2">

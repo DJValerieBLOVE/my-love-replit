@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { CheckCircle, Heart, Moon, Sun, Trophy, BookOpen, ChevronDown, Award, Image as ImageIcon, Plus } from "lucide-react";
+import { CheckCircle, Heart, Moon, Sun, Trophy, BookOpen, ChevronDown, Award, Image as ImageIcon, Plus, Eye } from "lucide-react";
 import confetti from "canvas-confetti";
 import { cn } from "@/lib/utils";
 import { LOVE_CODE_AREAS } from "@/lib/mock-data";
@@ -170,7 +170,8 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
             {/* Col 2: Focus & Action (Middle) */}
             <div className="flex flex-col space-y-6 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full">
                 <div className="flex items-center gap-2 mb-1">
-                    <CheckCircle className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+                    <Eye className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+                    <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Vision</span>
                 </div>
 
                 {/* Focus Area */}
@@ -207,21 +208,10 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                     )}
                 </div>
 
-                {/* Vision Input */}
-                <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-muted-foreground uppercase">Vision / Mantra</label>
-                    <Input 
-                        placeholder="My intention today..." 
-                        className="h-9 bg-white border-muted/50 focus:border-primary/30 text-sm font-serif italic placeholder:not-italic shadow-sm"
-                        value={vision}
-                        onChange={(e) => setVision(e.target.value)}
-                    />
-                </div>
-
                 {/* Values (Action Steps) */}
                 <div className="space-y-3 flex-1">
                      <div className="text-[10px] font-bold text-muted-foreground uppercase flex justify-between">
-                        <span>Values (3 Steps)</span>
+                        <span>Value (3 Actions)</span>
                         <span className="text-[9px] opacity-50">Check when done</span>
                      </div>
                      <div className="space-y-3">
