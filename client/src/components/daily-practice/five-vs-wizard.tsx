@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { VibeRater } from "./vibe-rater";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Check, Sparkles } from "lucide-react";
+import { ArrowRight, Check, Sparkles, ArrowLeft } from "lucide-react";
 import { LOVE_CODE_AREAS } from "@/lib/mock-data";
 
 interface FiveVsWizardProps {
@@ -26,6 +26,7 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
   });
 
   const nextStep = () => setStep(s => s + 1);
+  const prevStep = () => setStep(s => s - 1);
   
   const handleAreaSelect = (areaId: string) => {
     const area = LOVE_CODE_AREAS.find(a => a.id === areaId);
@@ -207,7 +208,20 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
                 {currentStep.component}
               </div>
 
-              <div className="mt-8 flex justify-end">
+              <div className="mt-8 flex justify-between">
+                {step > 1 ? (
+                  <Button
+                    variant="ghost"
+                    size="lg"
+                    className="gap-2 px-4 text-muted-foreground hover:text-foreground font-serif"
+                    onClick={prevStep}
+                  >
+                    <ArrowLeft className="w-4 h-4" /> Back
+                  </Button>
+                ) : (
+                  <div /> /* Spacer for layout */
+                )}
+                
                 <Button 
                   size="lg" 
                   className="gap-2 px-8 bg-[#6600ff] hover:bg-[#5500dd] text-white font-serif shadow-sm hover:shadow-md transition-all"
