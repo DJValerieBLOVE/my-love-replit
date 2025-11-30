@@ -163,7 +163,7 @@ export default function Layout({ children, showRightSidebar = true }: { children
         {showRightSidebar && (
           <aside className="hidden lg:flex flex-col w-[320px] border-l bg-card/50 p-4 gap-4 overflow-y-auto">
             {/* Widget 1: Magic Mentor */}
-            <div className="bg-gradient-to-br from-[#6600ff] via-[#cc00ff] to-fuchsia-600 rounded-xs border border-white/10 p-4 overflow-hidden relative group cursor-pointer hover:shadow-lg transition-all shadow-md" data-testid="widget-mentor">
+            <div className="bg-gradient-to-br from-[#6600ff] via-[#7000ff] to-[#8F00FF] rounded-xs border border-white/10 p-4 overflow-hidden relative group cursor-pointer hover:shadow-lg transition-all shadow-md" data-testid="widget-mentor">
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-12 -mt-12 blur-3xl transition-all" />
             
             <div className="relative z-10 flex flex-col">
