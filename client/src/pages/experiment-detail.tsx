@@ -226,7 +226,7 @@ export default function ExperimentDetail() {
                   <div className="mt-3 flex justify-end">
                     <Button 
                       onClick={handleAddComment}
-                      className="gap-2 bg-primary hover:bg-primary/90 rounded-md"
+                      className="gap-2 rounded-md"
                       data-testid="button-post-comment"
                     >
                       <Send className="w-4 h-4" /> Share Findings
