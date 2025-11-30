@@ -199,7 +199,13 @@ export function Quiz({ questions, onComplete, rewardAmount }: QuizProps) {
                          onClick={handleSubmit}
                          disabled={currentQuestion.type === 'multiple-choice' ? !selectedOption : !textAnswer}
                          variant="default"
-                         className="!disabled:opacity-100 !disabled:bg-[#6600ff] !disabled:text-white !disabled:pointer-events-none !disabled:cursor-not-allowed"
+                         style={{
+                           opacity: 1,
+                           backgroundColor: '#6600ff',
+                           color: 'white',
+                           pointerEvents: currentQuestion.type === 'multiple-choice' ? (!selectedOption ? 'none' : 'auto') : (!textAnswer ? 'none' : 'auto'),
+                           cursor: currentQuestion.type === 'multiple-choice' ? (!selectedOption ? 'not-allowed' : 'pointer') : (!textAnswer ? 'not-allowed' : 'pointer')
+                         }}
                       >
                          Check Answer
                       </Button>
