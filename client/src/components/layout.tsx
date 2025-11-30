@@ -117,7 +117,7 @@ export default function Layout({ children, showRightSidebar = true }: { children
                 <DropdownMenuSeparator />
                 <div className="max-h-[300px] overflow-y-auto">
                    {/* Mock Messages */}
-                   <DropdownMenuItem className="cursor-pointer items-start gap-3 p-3 focus:bg-muted/50">
+                   <DropdownMenuItem className="cursor-pointer items-start gap-3 p-3 focus:bg-love-body/5 focus:text-love-body focus:shadow-sm focus:translate-x-1 transition-all duration-300">
                       <Avatar className="w-8 h-8 mt-0.5">
                         <AvatarImage src={MagicMentor} />
                         <AvatarFallback>MM</AvatarFallback>
@@ -130,7 +130,7 @@ export default function Layout({ children, showRightSidebar = true }: { children
                         <p className="text-xs text-muted-foreground line-clamp-2 leading-snug">Keep up the great work! Your consistency is inspiring. Remember to take a moment for yourself today.</p>
                       </div>
                    </DropdownMenuItem>
-                   <DropdownMenuItem className="cursor-pointer items-start gap-3 p-3 focus:bg-muted/50">
+                   <DropdownMenuItem className="cursor-pointer items-start gap-3 p-3 focus:bg-love-body/5 focus:text-love-body focus:shadow-sm focus:translate-x-1 transition-all duration-300">
                       <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground font-bold text-xs mt-0.5 shrink-0">SJ</div>
                       <div className="flex flex-col gap-1">
                          <div className="flex justify-between items-center w-full">
@@ -161,7 +161,7 @@ export default function Layout({ children, showRightSidebar = true }: { children
                 <DropdownMenuSeparator />
                 <div className="max-h-[300px] overflow-y-auto">
                    {/* Mock Notifications */}
-                   <DropdownMenuItem className="cursor-pointer gap-3 p-3 focus:bg-muted/50">
+                   <DropdownMenuItem className="cursor-pointer gap-3 p-3 focus:bg-love-body/5 focus:text-love-body focus:shadow-sm focus:translate-x-1 transition-all duration-300">
                       <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground mt-0.5 shrink-0">
                         <Flame className="w-4 h-4" />
                       </div>
@@ -170,7 +170,7 @@ export default function Layout({ children, showRightSidebar = true }: { children
                         <span className="text-[10px] text-muted-foreground">Just now</span>
                       </div>
                    </DropdownMenuItem>
-                   <DropdownMenuItem className="cursor-pointer gap-3 p-3 focus:bg-muted/50">
+                   <DropdownMenuItem className="cursor-pointer gap-3 p-3 focus:bg-love-body/5 focus:text-love-body focus:shadow-sm focus:translate-x-1 transition-all duration-300">
                       <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground mt-0.5 shrink-0">
                         <Heart className="w-4 h-4" />
                       </div>
@@ -179,7 +179,7 @@ export default function Layout({ children, showRightSidebar = true }: { children
                         <span className="text-[10px] text-muted-foreground">2h ago</span>
                       </div>
                    </DropdownMenuItem>
-                   <DropdownMenuItem className="cursor-pointer gap-3 p-3 focus:bg-muted/50">
+                   <DropdownMenuItem className="cursor-pointer gap-3 p-3 focus:bg-love-body/5 focus:text-love-body focus:shadow-sm focus:translate-x-1 transition-all duration-300">
                       <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground mt-0.5 shrink-0">
                         <Trophy className="w-4 h-4" />
                       </div>
