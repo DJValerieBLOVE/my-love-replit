@@ -27,7 +27,7 @@ export default function Home() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="outline" className="gap-2 text-muted-foreground border-muted hover:border-primary/50 hover:text-primary shadow-sm bg-background font-serif font-normal text-base">
+            <Button variant="outline" className="gap-2 text-muted-foreground border-muted hover:border-primary/50 hover:text-primary shadow-sm bg-card/50 font-serif font-normal text-base">
               <HelpCircle className="w-4 h-4" /> How it works
             </Button>
             
@@ -66,7 +66,7 @@ export default function Home() {
                     <p className="text-xl font-medium text-foreground italic mb-6">
                       "What if life isn't a test you can fail... but an experiment you get to play?"
                     </p>
-                    <Button variant="secondary" className="bg-background hover:bg-primary/5 text-muted-foreground border border-muted hover:border-primary/50 hover:text-primary font-normal shadow-sm">
+                    <Button variant="outline" className="bg-card/50 hover:bg-primary/5 text-muted-foreground border-muted hover:border-primary/50 hover:text-primary font-normal shadow-sm font-serif text-base">
                       Capture Reflection
                     </Button>
                   </div>
@@ -97,7 +97,7 @@ export default function Home() {
                     <div className="bg-primary h-2 rounded-full w-[42%]" />
                   </div>
                 </div>
-                <Button className="w-full font-normal text-muted-foreground border-muted hover:border-primary/50 hover:text-primary shadow-sm bg-background" variant="outline">Continue</Button>
+                <Button className="w-full font-normal text-muted-foreground border-muted hover:border-primary/50 hover:text-primary shadow-sm bg-card/50 font-serif text-base" variant="outline">Continue</Button>
               </CardContent>
             </Card>
           </div>
