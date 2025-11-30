@@ -123,54 +123,61 @@ export default function LabNotes() {
               {entries.map((entry) => (
                 <Card key={entry.id} className="border-none shadow-sm hover:shadow-md transition-all group bg-card">
                   <CardContent className="p-6">
-                    <div className="flex flex-col md:flex-row gap-6">
-                      {/* Left Column: Meta Data */}
-                      <div className="md:w-48 flex-shrink-0 space-y-4 border-r border-border/50 pr-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                      {/* Col 1: As Is (Meta Data) */}
+                      <div className="flex flex-col justify-between space-y-4">
                         <div>
-                          <div className="font-bold text-lg text-muted-foreground">{entry.date}</div>
-                          <div className="text-xs text-muted-foreground uppercase tracking-wider font-bold mt-1">10:42 AM</div>
+                          <div className="font-bold text-lg text-muted-foreground font-serif">{entry.date}</div>
+                          <div className="text-xs text-muted-foreground uppercase tracking-wider font-bold mt-1 font-serif">10:42 AM</div>
                         </div>
                         
                         <div className="bg-primary/5 rounded-lg p-3 text-center border border-primary/10">
-                          <div className="text-xs font-bold text-muted-foreground uppercase mb-1">Vibe</div>
-                          <div className="text-2xl font-black text-primary">{entry.vibe}<span className="text-sm text-muted-foreground font-medium">/10</span></div>
+                          <div className="text-xs font-bold text-muted-foreground uppercase mb-1 font-serif">Vibe</div>
+                          <div className="text-2xl font-black text-primary font-serif">{entry.vibe}<span className="text-sm text-muted-foreground font-medium">/10</span></div>
                         </div>
 
                         <div className="flex flex-wrap gap-2">
                           {entry.tags.map(tag => (
-                            <Badge key={tag} variant="secondary" className="bg-muted text-muted-foreground hover:bg-muted/80 text-[10px]">
+                            <Badge key={tag} variant="secondary" className="bg-muted text-muted-foreground hover:bg-muted/80 text-[10px] font-serif">
                               {tag}
                             </Badge>
                           ))}
                         </div>
                       </div>
 
-                      {/* Right Column: Content */}
-                      <div className="flex-1 space-y-4">
-                        {/* 5 V's Summary Grid */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 bg-muted/20 p-4 rounded-lg">
+                      {/* Col 2: Input Prompt (Content) */}
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">My Reflection</label>
+                        <p className="text-base leading-relaxed text-muted-foreground font-serif italic">
+                          "{entry.content}"
+                        </p>
+                      </div>
+
+                      {/* Col 3: 5 V's Stacked Summary */}
+                      <div className="space-y-3 bg-muted/20 p-4 rounded-lg border border-border/50 h-fit">
+                        <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">5 V's Summary</h4>
+                        
+                        <div className="space-y-3">
                           <div>
                             <div className="text-[10px] font-bold text-muted-foreground uppercase">Vision</div>
-                            <div className="text-sm font-medium truncate" title={entry.vision}>{entry.vision}</div>
+                            <div className="text-sm font-serif text-muted-foreground line-clamp-2">{entry.vision}</div>
                           </div>
+                          
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <div className="text-[10px] font-bold text-muted-foreground uppercase">Value</div>
+                              <div className="text-sm font-serif text-muted-foreground truncate">{entry.value}</div>
+                            </div>
+                            <div>
+                              <div className="text-[10px] font-bold text-muted-foreground uppercase">Victory</div>
+                              <div className="text-sm font-serif text-green-600 truncate">{entry.victory}</div>
+                            </div>
+                          </div>
+
                           <div>
                             <div className="text-[10px] font-bold text-muted-foreground uppercase">Villain</div>
-                            <div className="text-sm font-medium text-red-500 truncate" title={entry.villain}>{entry.villain}</div>
+                            <div className="text-sm font-serif text-red-500 truncate">{entry.villain}</div>
                           </div>
-                          <div>
-                            <div className="text-[10px] font-bold text-muted-foreground uppercase">Value</div>
-                            <div className="text-sm font-medium truncate" title={entry.value}>{entry.value}</div>
-                          </div>
-                          <div>
-                            <div className="text-[10px] font-bold text-muted-foreground uppercase">Victory</div>
-                            <div className="text-sm font-medium text-green-600 truncate" title={entry.victory}>{entry.victory}</div>
-                          </div>
-                        </div>
-
-                        <div className="prose prose-sm dark:prose-invert max-w-none">
-                          <p className="text-base leading-relaxed text-muted-foreground">
-                            {entry.content}
-                          </p>
                         </div>
                       </div>
                     </div>
