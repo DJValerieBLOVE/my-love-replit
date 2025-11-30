@@ -371,11 +371,19 @@ export default function LabNotes() {
                                         </div>
                                     </div>
 
-                                    {/* Villain Input - Bottom */}
-                                    <div className="space-y-2 pt-4 border-t border-border/10 mt-auto">
-                                        <label className="text-[15px] font-bold text-muted-foreground pl-3 mb-1 block">Villain (Obstacle)</label>
-                                        <div className="h-9 flex items-center bg-white border border-muted/50 rounded-md px-3 text-sm font-serif text-muted-foreground shadow-sm">
-                                            {entry.villain}
+                                    {/* Villain & Tool Inputs - Bottom */}
+                                    <div className="space-y-3 pt-4 border-t border-border/10 mt-auto">
+                                        <div className="space-y-1">
+                                            <label className="text-[15px] font-bold text-muted-foreground pl-3 block">Villain (Obstacle)</label>
+                                            <div className="min-h-[2.25rem] flex items-center bg-white border border-muted/50 rounded-md px-3 text-sm font-serif text-muted-foreground shadow-sm py-1">
+                                                {entry.villain}
+                                            </div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[15px] font-bold text-muted-foreground pl-3 block">Tool (Solution)</label>
+                                            <div className="min-h-[2.25rem] flex items-center bg-white border border-muted/50 rounded-md px-3 text-sm font-serif text-muted-foreground shadow-sm py-1">
+                                                {entry.tool || "Breathwork"}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -401,7 +409,7 @@ export default function LabNotes() {
                                             <Trophy className="w-3 h-3 text-muted-foreground stroke-[1.5]" /> 
                                             Victory
                                         </label>
-                                        <div className="h-9 flex items-center bg-white border border-muted/50 rounded-md px-3 shadow-sm text-sm font-serif text-muted-foreground">
+                                        <div className="min-h-[2.25rem] flex items-center bg-white border border-muted/50 rounded-md px-3 shadow-sm text-sm font-serif text-muted-foreground py-2 whitespace-pre-wrap h-auto">
                                             {entry.victory}
                                         </div>
                                     </div>

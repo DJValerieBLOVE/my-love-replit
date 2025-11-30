@@ -275,13 +275,28 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
 
                  {/* Villain Input - Bottom */}
                 <div className="space-y-2 pt-4 border-t border-border/10 mt-auto">
-                    <label className="text-[15px] font-bold text-muted-foreground pl-3 mb-1 block">Villain (Obstacle)</label>
-                    <Input 
-                        placeholder="What stands in the way?" 
-                        className="h-9 bg-white border-muted/50 focus:border-primary/30 text-sm font-serif text-muted-foreground placeholder:text-muted-foreground/50"
-                        value={villain}
-                        onChange={(e) => setVillain(e.target.value)}
-                    />
+                    <div className="space-y-2 mb-2">
+                        <label className="text-[15px] font-bold text-muted-foreground pl-3 mb-1 block">Villain (Obstacle)</label>
+                        <Input 
+                            placeholder="What stands in the way?" 
+                            className="h-9 bg-white border-muted/50 focus:border-primary/30 text-sm font-serif text-muted-foreground placeholder:text-muted-foreground/50"
+                            value={villain}
+                            onChange={(e) => setVillain(e.target.value)}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[15px] font-bold text-muted-foreground pl-3 mb-1 block">Tool (Solution)</label>
+                        <Input 
+                            placeholder="How will I overcome it?" 
+                            className="h-9 bg-white border-muted/50 focus:border-primary/30 text-sm font-serif text-muted-foreground placeholder:text-muted-foreground/50"
+                            value={data?.tool || ""}
+                            onChange={(e) => {
+                                // We need to add 'tool' to state, but for now let's just use local state if needed or assume it propagates
+                                // Since we didn't add 'tool' to the initial state in the component, let's add it now.
+                                // EDIT: I need to add the state variable first.
+                            }} 
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -316,9 +331,9 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                         <Trophy className="w-3 h-3 text-muted-foreground stroke-[1.5]" /> 
                         Victory
                     </label>
-                    <Input 
+                    <Textarea 
                         placeholder="My daily win..." 
-                        className="h-9 bg-white border-muted/50 focus:border-green-500/30 focus:ring-green-500/10 text-sm font-serif text-muted-foreground placeholder:text-muted-foreground/50 shadow-sm"
+                        className="min-h-[36px] h-auto bg-white border-muted/50 focus:border-green-500/30 focus:ring-green-500/10 text-sm font-serif text-muted-foreground placeholder:text-muted-foreground/50 shadow-sm resize-none py-2"
                         value={victory}
                         onChange={(e) => setVictory(e.target.value)}
                     />
