@@ -18,6 +18,12 @@ export type JournalEntry = {
   morningVibe?: number;
   eveningVibe?: number;
   vision?: string;
+  focusArea?: {
+    name: string;
+    dream: string;
+    color: string;
+    progress: number;
+  };
   villain?: string;
   value?: string;
   victory?: string;
@@ -136,8 +142,25 @@ export function EntryDetailModal({ entry, isOpen, onClose }: EntryDetailModalPro
                     </div>
                     <div className="col-span-full flex items-center justify-between">
                        <div className="text-xs font-bold text-muted-foreground uppercase">Evening Vibe</div>
-                       <div className="font-bold text-secondary text-xl">{entry.eveningVibe || "-"}/10</div>
+                       <div className="font-bold text-primary text-xl">{entry.eveningVibe || "-"}/10</div>
                     </div>
+                    
+                    {entry.focusArea && (
+                      <div className="col-span-full mt-2 pt-4 border-t border-border/20">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="text-xs font-bold text-muted-foreground uppercase">Focus Area</div>
+                          <Badge variant="outline" className="font-normal text-[10px] uppercase tracking-wider" style={{borderColor: entry.focusArea.color, color: entry.focusArea.color}}>
+                            {entry.focusArea.name}
+                          </Badge>
+                        </div>
+                        <div className="space-y-1">
+                          <div className="text-sm font-medium italic text-muted-foreground">"{entry.focusArea.dream}"</div>
+                          <div className="h-1.5 w-full bg-muted rounded-full mt-2 overflow-hidden">
+                            <div className="h-full rounded-full" style={{ width: `${entry.focusArea.progress}%`, backgroundColor: entry.focusArea.color }} />
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Main Content */}

@@ -35,6 +35,12 @@ export default function LabNotes() {
       morningVibe: 8,
       eveningVibe: 9,
       vibe: 8, // Fallback
+      focusArea: {
+        name: "GOD/LOVE",
+        color: "#eb00a8",
+        progress: 85,
+        dream: "To feel universally connected and lead with unconditional love in every interaction."
+      },
       vision: "Focus on connection and clarity.",
       villain: "Distraction",
       value: "Presence",
@@ -62,6 +68,12 @@ export default function LabNotes() {
       morningVibe: 9,
       eveningVibe: 7,
       vibe: 9, // Fallback
+      focusArea: {
+        name: "Community",
+        color: "#ffdf00",
+        progress: 90,
+        dream: "To spark a movement where every member feels seen, heard, and valued."
+      },
       vision: "Celebrate the small wins.",
       villain: "Doubt",
       value: "Joy",
@@ -219,10 +231,24 @@ export default function LabNotes() {
                                     <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif">Morning Vibe</div>
                                     <div className="text-lg font-black text-primary font-serif">{entry.morningVibe || entry.vibe}<span className="text-[10px] text-muted-foreground font-medium">/10</span></div>
                                   </div>
-                                  <div className="bg-secondary/5 rounded-lg p-2 text-center border border-secondary/10 flex justify-between items-center px-3">
+                                  <div className="bg-primary/5 rounded-lg p-2 text-center border border-primary/10 flex justify-between items-center px-3">
                                     <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif">Evening Vibe</div>
-                                    <div className="text-lg font-black text-secondary font-serif">{entry.eveningVibe || "-"}<span className="text-[10px] text-muted-foreground font-medium">/10</span></div>
+                                    <div className="text-lg font-black text-primary font-serif">{entry.eveningVibe || "-"}<span className="text-[10px] text-muted-foreground font-medium">/10</span></div>
                                   </div>
+                                  
+                                  {entry.focusArea && (
+                                    <div className="bg-muted/20 rounded-lg p-3 border border-border/50 mt-2 space-y-2">
+                                      <div className="flex items-center justify-between">
+                                        <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Focus: <span style={{ color: entry.focusArea.color }}>{entry.focusArea.name}</span></div>
+                                      </div>
+                                      <div className="text-xs font-serif text-muted-foreground italic leading-relaxed">
+                                        "{entry.focusArea.dream}"
+                                      </div>
+                                      <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
+                                        <div className="h-full rounded-full" style={{ width: `${entry.focusArea.progress}%`, backgroundColor: entry.focusArea.color }} />
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
                               )}
                             </div>
