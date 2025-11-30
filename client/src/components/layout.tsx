@@ -263,7 +263,7 @@ export default function Layout({ children, showRightSidebar = true }: { children
                     <p className="text-[17px] font-medium text-muted-foreground">Alex Luna</p>
                   </div>
                 </div>
-                <Button className="text-xs rounded-lg px-6 py-1 h-7" data-testid="button-follow">
+                <Button className="text-base rounded-lg px-6 py-1 h-7" data-testid="button-follow">
                   Follow
                 </Button>
               </div>

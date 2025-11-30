@@ -61,10 +61,10 @@ export default function Events() {
         {/* Filters & Search */}
         <div className="flex flex-col md:flex-row gap-4 mb-8 items-center justify-between">
           <div className="flex gap-2">
-            <Button className="px-6 py-1.5 h-8 rounded-lg">Upcoming</Button>
-            <Button variant="outline" className="text-muted-foreground font-bold px-6 py-1.5 h-8 rounded-lg">Nearby</Button>
-            <Button variant="outline" className="text-muted-foreground font-bold px-6 py-1.5 h-8 rounded-lg">Past</Button>
-            <Button variant="outline" className="text-muted-foreground font-bold px-6 py-1.5 h-8 rounded-lg">Yours</Button>
+            <Button className="px-6 py-1.5 h-8 rounded-lg text-base">Upcoming</Button>
+            <Button variant="outline" className="text-muted-foreground font-bold px-6 py-1.5 h-8 rounded-lg text-base">Nearby</Button>
+            <Button variant="outline" className="text-muted-foreground font-bold px-6 py-1.5 h-8 rounded-lg text-base">Past</Button>
+            <Button variant="outline" className="text-muted-foreground font-bold px-6 py-1.5 h-8 rounded-lg text-base">Yours</Button>
           </div>
           
           <div className="flex gap-2 w-full md:w-auto">
@@ -139,7 +139,7 @@ export default function Events() {
                   `).join('')}
                 `}</style>
                 <div className="mt-4 pt-4 border-t flex justify-end">
-                  <Button size="sm" className="text-xs h-7 rounded-md px-6" data-testid="button-today" onClick={() => setSelectedDate(new Date())}>Today</Button>
+                  <Button size="sm" className="h-7 rounded-md px-6 text-base" data-testid="button-today" onClick={() => setSelectedDate(new Date())}>Today</Button>
                 </div>
               </CardContent>
             </Card>
@@ -157,7 +157,7 @@ export default function Events() {
                 </div>
                 <h3 className="font-bold">Live Q&A with Dr. Maya</h3>
                 <p className="text-sm text-muted-foreground mt-1 mb-4">Friday, 2:00 PM EST • Zoom</p>
-                <Button className="rounded-lg px-6 py-1.5 h-8 w-full" data-testid="button-rsvp-sidebar">RSVP Now</Button>
+                <Button className="rounded-lg px-6 py-1.5 h-8 w-full text-base" data-testid="button-rsvp-sidebar">RSVP Now</Button>
               </Card>
             </div>
           </div>
