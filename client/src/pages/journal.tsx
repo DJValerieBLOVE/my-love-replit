@@ -364,17 +364,20 @@ export default function LabNotes() {
                                       <div className="space-y-6">
                                           {/* Focus Area */}
                                           {entry.focusArea && (
-                                            <div className="bg-white/30 rounded-lg p-3 border border-border/20 space-y-2">
-                                              <div className="flex items-center justify-between mb-1">
-                                                <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider font-serif">Big Dream: <span style={{ color: entry.focusArea.color }}>{entry.focusArea.name}</span></div>
-                                                <div className="text-[10px] font-bold text-muted-foreground font-serif">{entry.focusArea.progress}%</div>
-                                              </div>
-                                              <div className="h-1 w-full bg-muted rounded-full overflow-hidden mb-2">
-                                                <div className="h-full rounded-full" style={{ width: `${entry.focusArea.progress}%`, backgroundColor: entry.focusArea.color }} />
-                                              </div>
-                                              <div className="text-xs font-serif text-muted-foreground italic leading-relaxed opacity-80">
-                                                "{entry.focusArea.dream}"
-                                              </div>
+                                            <div className="space-y-2">
+                                                <div className="bg-white/30 rounded-xl h-10 px-3 border border-border/20 flex justify-between items-center">
+                                                    <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif">Big Dream</div>
+                                                    <div className="text-sm font-bold font-serif" style={{ color: entry.focusArea.color }}>{entry.focusArea.name}</div>
+                                                </div>
+                                                
+                                                <div className="px-1 space-y-2">
+                                                    <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
+                                                        <div className="h-full rounded-full" style={{ width: `${entry.focusArea.progress}%`, backgroundColor: entry.focusArea.color }} />
+                                                    </div>
+                                                    <div className="text-xs font-serif text-muted-foreground italic leading-relaxed opacity-80">
+                                                        "{entry.focusArea.dream}"
+                                                    </div>
+                                                </div>
                                             </div>
                                           )}
 
