@@ -115,7 +115,7 @@ export default function LabNotes() {
     {
       id: 4,
       type: "discovery",
-      date: "Nov 25",
+      date: "Thursday Nov 25th",
       time: "2:00 PM",
       ahaMoment: "Lightning Network is just an abacus for energy.",
       context: "Reading the Bitcoin Standard while hiking.",
