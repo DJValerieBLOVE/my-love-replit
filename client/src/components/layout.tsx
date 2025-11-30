@@ -115,8 +115,8 @@ export default function Layout({ children, showRightSidebar = true }: { children
             <DropdownMenu open={inboxOpen} onOpenChange={setInboxOpen} modal={false}>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className={cn(
-                    "rounded-full relative transition-colors",
-                    inboxOpen ? "bg-[#F0E6FF] text-love-body" : "text-muted-foreground hover:bg-[#F0E6FF] hover:text-love-body"
+                    "rounded-full relative transition-colors data-[state=open]:bg-love-body/10 data-[state=open]:text-love-body",
+                    inboxOpen ? "bg-love-body/10 text-love-body" : "text-muted-foreground hover:bg-love-body/10 hover:text-love-body"
                 )} data-testid="button-inbox">
                   <Mail className="w-5 h-5" />
                   <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" data-testid="notification-dot-inbox"></span>
@@ -168,8 +168,8 @@ export default function Layout({ children, showRightSidebar = true }: { children
             <DropdownMenu open={notificationsOpen} onOpenChange={setNotificationsOpen} modal={false}>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className={cn(
-                    "rounded-full relative transition-colors",
-                    notificationsOpen ? "bg-[#F0E6FF] text-love-body" : "text-muted-foreground hover:bg-[#F0E6FF] hover:text-love-body"
+                    "rounded-full relative transition-colors data-[state=open]:bg-love-body/10 data-[state=open]:text-love-body",
+                    notificationsOpen ? "bg-love-body/10 text-love-body" : "text-muted-foreground hover:bg-love-body/10 hover:text-love-body"
                 )} data-testid="button-notifications">
                   <Bell className="w-5 h-5" />
                   <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" data-testid="notification-dot-bell"></span>
