@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FiveVsWizard } from "@/components/daily-practice/five-vs-wizard";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import WhiteLogo from "@assets/white transparent vector and png art  11x LOVE logo _1764365495719.png";
 import { EntryDetailModal, JournalEntry } from "@/components/journal/entry-detail-modal";
 import {
@@ -20,6 +20,13 @@ import {
 
 export default function LabNotes() {
   const [isPracticing, setIsPracticing] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('startPractice') === 'true') {
+      setIsPracticing(true);
+    }
+  }, []);
   const [isCompleted, setIsCompleted] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
 

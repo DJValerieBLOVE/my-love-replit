@@ -32,9 +32,9 @@ export default function Home() {
               <HelpCircle className="w-4 h-4" /> How it works
             </Button>
             
-            <Link href="/journal">
+            <Link href="/journal?startPractice=true">
               <Button className="px-6 gap-2 font-bold h-10 bg-love-body text-white border border-transparent transition-all">
-                <img src={WhiteLogo} alt="Logo" className="w-4 h-4 group-hover:invert" /> Daily 5 V's
+                <img src={WhiteLogo} alt="Logo" className="w-4 h-4 group-hover:invert" /> Daily LOVE Practice
               </Button>
             </Link>
           </div>
