@@ -112,13 +112,17 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                 <div className="bg-white/50 rounded-xl px-3 h-10 border border-border/40 flex justify-between items-center transition-all hover:shadow-sm">
                     <div className="text-[15px] font-bold text-muted-foreground">Morning Vibe</div>
                     <Input 
-                        type="number" 
-                        min="1" 
-                        max="11"
-                        placeholder="?/11"
+                        type="text" 
+                        placeholder="1-11"
+                        maxLength={2}
                         className="w-16 h-8 text-right p-0 border-none bg-transparent text-lg font-medium font-serif focus-visible:ring-0 placeholder:text-muted-foreground/50 shadow-none"
                         value={morningVibe}
-                        onChange={(e) => setMorningVibe(e.target.value)}
+                        onChange={(e) => {
+                            const val = e.target.value;
+                            if (val === '' || (/^\d+$/.test(val) && parseInt(val) >= 1 && parseInt(val) <= 11)) {
+                                setMorningVibe(val);
+                            }
+                        }}
                     />
                 </div>
 
@@ -183,7 +187,10 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                 <div className="space-y-2">
                     <label className="text-[15px] font-bold text-muted-foreground block mt-2.5 pl-3">Big Dream</label>
                     <Select value={selectedAreaId} onValueChange={setSelectedAreaId}>
-                        <SelectTrigger className="w-full h-auto min-h-[3rem] py-3 bg-white border-muted/50 focus:ring-primary/20 font-serif shadow-sm text-left whitespace-normal">
+                        <SelectTrigger className={cn(
+                            "w-full bg-white border-muted/50 focus:ring-primary/20 font-serif shadow-sm text-left whitespace-normal transition-all",
+                            selectedArea ? "h-auto min-h-[3rem] py-3" : "h-10"
+                        )}>
                             {selectedArea ? (
                                 <div className="flex flex-col gap-2 w-full text-left">
                                     <div className="flex items-center justify-between">
@@ -288,13 +295,17 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                 <div className="bg-white/50 rounded-xl px-3 h-10 border border-border/40 flex justify-between items-center transition-all hover:shadow-sm">
                     <div className="text-[15px] font-bold text-muted-foreground">Evening Vibe</div>
                     <Input 
-                        type="number" 
-                        min="1" 
-                        max="11"
-                        placeholder="?/11"
+                        type="text" 
+                        placeholder="1-11"
+                        maxLength={2}
                         className="w-16 h-8 text-right p-0 border-none bg-transparent text-lg font-medium font-serif text-muted-foreground focus-visible:ring-0 placeholder:text-muted-foreground/50 shadow-none"
                         value={eveningVibe}
-                        onChange={(e) => setEveningVibe(e.target.value)}
+                        onChange={(e) => {
+                            const val = e.target.value;
+                            if (val === '' || (/^\d+$/.test(val) && parseInt(val) >= 1 && parseInt(val) <= 11)) {
+                                setEveningVibe(val);
+                            }
+                        }}
                     />
                 </div>
 

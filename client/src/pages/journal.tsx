@@ -139,7 +139,7 @@ export default function LabNotes() {
         {/* Action Buttons */}
         <div className="flex gap-3">
             <Button 
-                className="gap-2 bg-primary text-white hover:bg-primary/90 shadow-md"
+                className="gap-2 bg-primary text-white hover:bg-primary/80 shadow-md transition-colors"
                 onClick={() => setIsPracticing(true)}
             >
               <Heart className="w-4 h-4" /> Daily LOVE Practice
