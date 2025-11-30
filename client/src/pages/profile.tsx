@@ -116,7 +116,7 @@ export default function Profile() {
                {/* Left Col: Big Dreams Progress */}
                <div className="lg:col-span-2 space-y-6">
                  <h3 className="font-serif text-xl font-bold text-muted-foreground flex items-center gap-2">
-                   <Star className="w-5 h-5" strokeWidth={1.5} /> 11 Big Dreams Progress
+                   <Target className="w-5 h-5" strokeWidth={1.5} /> 11 Big Dreams Progress
                  </h3>
                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                    {LOVE_CODE_AREAS.map((area) => (
