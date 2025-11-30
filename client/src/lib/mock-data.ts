@@ -9,7 +9,7 @@ import {
   Home 
 } from "lucide-react";
 
-import HeroBg from "@assets/djvalerieblove_sheet_luminescent_goddess_colorful_psychedelic_l_70244038-1ba5-4c5a-a614-ccefc6881453_1764334269116.PNG";
+import HeroBg from "@assets/generated_images/hero_background.png";
 import Course1 from "@assets/generated_images/missions_header.png";
 import Course2 from "@assets/generated_images/bitcoin_course_cover.png";
 import CommunityCover from "@assets/djvalerieblove_god_bless_bitcoin_colorful_psychedelic_radiant_dc9f44e7-c040-42ca-90d3-2004a003d993_2_1764334319902.png";
