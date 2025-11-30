@@ -19,7 +19,8 @@ import {
   Wrench, // Added
   Music,   // Added
   HelpCircle, // Added
-  Flame // Added
+  Flame, // Added
+  Heart // Added
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -104,16 +105,96 @@ export default function Layout({ children, showRightSidebar = true }: { children
             </Link>
 
             {/* Inbox */}
-            <Button variant="ghost" size="icon" className="rounded-full relative text-muted-foreground" data-testid="button-inbox">
-              <Mail className="w-5 h-5" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" data-testid="notification-dot-inbox"></span>
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="rounded-full relative text-muted-foreground" data-testid="button-inbox">
+                  <Mail className="w-5 h-5" />
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" data-testid="notification-dot-inbox"></span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-80">
+                <DropdownMenuLabel>Messages</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <div className="max-h-[300px] overflow-y-auto">
+                   {/* Mock Messages */}
+                   <DropdownMenuItem className="cursor-pointer items-start gap-3 p-3 focus:bg-muted/50">
+                      <Avatar className="w-8 h-8 mt-0.5">
+                        <AvatarImage src={MagicMentor} />
+                        <AvatarFallback>MM</AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col gap-1">
+                        <div className="flex justify-between items-center w-full">
+                            <span className="font-bold text-sm">Magic Mentor</span>
+                            <span className="text-[10px] text-muted-foreground">2m ago</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground line-clamp-2 leading-snug">Keep up the great work! Your consistency is inspiring. Remember to take a moment for yourself today.</p>
+                      </div>
+                   </DropdownMenuItem>
+                   <DropdownMenuItem className="cursor-pointer items-start gap-3 p-3 focus:bg-muted/50">
+                      <div className="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-pink-600 font-bold text-xs mt-0.5 shrink-0">SJ</div>
+                      <div className="flex flex-col gap-1">
+                         <div className="flex justify-between items-center w-full">
+                            <span className="font-bold text-sm">Sarah J.</span>
+                            <span className="text-[10px] text-muted-foreground">1h ago</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground line-clamp-2 leading-snug">Are you going to the Full Moon event? I was thinking we could carpool.</p>
+                      </div>
+                   </DropdownMenuItem>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="justify-center text-primary font-medium cursor-pointer focus:bg-primary/5 focus:text-primary">
+                  View All Messages
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
             {/* Notifications */}
-            <Button variant="ghost" size="icon" className="rounded-full relative text-muted-foreground" data-testid="button-notifications">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" data-testid="notification-dot-bell"></span>
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="rounded-full relative text-muted-foreground" data-testid="button-notifications">
+                  <Bell className="w-5 h-5" />
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" data-testid="notification-dot-bell"></span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-80">
+                <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <div className="max-h-[300px] overflow-y-auto">
+                   {/* Mock Notifications */}
+                   <DropdownMenuItem className="cursor-pointer gap-3 p-3 focus:bg-muted/50">
+                      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mt-0.5 shrink-0">
+                        <Flame className="w-4 h-4" />
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <p className="text-xs leading-snug"><span className="font-bold">Streak Saved!</span> You completed your practice just in time.</p>
+                        <span className="text-[10px] text-muted-foreground">Just now</span>
+                      </div>
+                   </DropdownMenuItem>
+                   <DropdownMenuItem className="cursor-pointer gap-3 p-3 focus:bg-muted/50">
+                      <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 mt-0.5 shrink-0">
+                        <Heart className="w-4 h-4" />
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <p className="text-xs leading-snug"><span className="font-bold">Alex Luna</span> liked your discovery note.</p>
+                        <span className="text-[10px] text-muted-foreground">2h ago</span>
+                      </div>
+                   </DropdownMenuItem>
+                   <DropdownMenuItem className="cursor-pointer gap-3 p-3 focus:bg-muted/50">
+                      <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 mt-0.5 shrink-0">
+                        <Trophy className="w-4 h-4" />
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <p className="text-xs leading-snug"><span className="font-bold">Goal Met</span> You hit 80% on Finance Sovereignty!</p>
+                        <span className="text-[10px] text-muted-foreground">5h ago</span>
+                      </div>
+                   </DropdownMenuItem>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="justify-center text-primary font-medium cursor-pointer focus:bg-primary/5 focus:text-primary">
+                  View All Notifications
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
