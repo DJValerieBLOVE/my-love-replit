@@ -28,8 +28,8 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
           <div className="p-6 border-b bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-500 space-y-4">
             {/* Magic Mentor Header */}
             <div className="flex items-center gap-4">
-              <div className="relative flex items-center justify-center w-12 h-12 rounded-full bg-white/20 shadow-lg border border-white/20 shrink-0 backdrop-blur-sm">
-                <Sparkles className="w-6 h-6 text-white" strokeWidth={1.5} />
+              <div className="relative flex items-center justify-center w-12 h-12 shrink-0">
+                <Sparkles className="w-8 h-8 text-white" strokeWidth={1.5} />
               </div>
               <div>
                 <h3 className="font-bold text-lg font-serif text-white">Magic Mentor</h3>
@@ -49,12 +49,12 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
                 placeholder="Ask me anything..." 
                 value={chatMessage}
                 onChange={(e) => setChatMessage(e.target.value)}
-                className="flex-1 px-4 py-3 rounded-xl border bg-background/95 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-white/30 shadow-lg transition-all"
+                className="flex-1 px-4 py-3 rounded-xl border border-transparent bg-muted/50 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-white/30 shadow-lg transition-all"
                 data-testid="input-chat-message"
               />
               <Button 
                 size="icon" 
-                className="h-auto w-12 rounded-xl shadow-lg bg-background hover:bg-accent border text-purple-600"
+                className="h-auto w-12 rounded-xl shadow-lg bg-background hover:bg-accent border border-transparent text-[#cc00ff]"
                 data-testid="button-send-message"
               >
                 <Send className="w-5 h-5" strokeWidth={1.5} />
