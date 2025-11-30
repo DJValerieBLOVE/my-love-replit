@@ -30,12 +30,12 @@ export const DAILY_PLAYLISTS = [
   },
   {
     day: "Tuesday",
-    theme: "Trusting Tuesday",
+    theme: "Transformational Tuesday",
     icon: Sunrise,
     color: "text-orange-500",
     bg: "bg-orange-500/10",
     spotifyId: "37i9dQZF1DX4sWSpwq3LiO", // Peaceful piano placeholder
-    description: "Surrender to the flow and trust the process."
+    description: "Embrace the power of change and evolution."
   },
   {
     day: "Wednesday",
