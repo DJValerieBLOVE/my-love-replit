@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Calendar, Clock, Sparkles, Beaker, Lightbulb } from "lucide-react";
+import { Calendar, Clock, Sparkles, Beaker, Lightbulb, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
@@ -43,20 +43,20 @@ export function EntryDetailModal({ entry, isOpen, onClose }: EntryDetailModalPro
   const renderHeaderIcon = () => {
     switch (entry.type) {
       case "daily-practice":
-        return <Sparkles className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />;
+        return <Heart className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />;
       case "experiment":
         return <Beaker className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />;
       case "discovery":
         return <Lightbulb className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />;
       default:
-        return <Sparkles className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />;
+        return <Heart className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />;
     }
   };
 
   const renderHeaderTitle = () => {
     switch (entry.type) {
       case "daily-practice":
-        return "Daily 5 V's Practice";
+        return "Daily LOVE Practice";
       case "experiment":
         return entry.experimentTitle || "Experiment Log";
       case "discovery":

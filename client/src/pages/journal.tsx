@@ -1,7 +1,7 @@
 import Layout from "@/components/layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PenLine, Calendar, Search, Filter, Sparkles, CheckCircle, Beaker, Lightbulb, Plus } from "lucide-react";
+import { PenLine, Calendar, Search, Filter, Heart, CheckCircle, Beaker, Lightbulb, Plus, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -38,7 +38,7 @@ export default function LabNotes() {
       value: "Presence",
       victory: "Completed the team briefing early.",
       content: "My focus today was on connection. I noticed that when I paused to breathe before responding to emails, I felt much more grounded and capable. The experiment with the morning cold plunge is getting easier...",
-      tags: ["Daily 5 V's"]
+      tags: ["Daily LOVE Practice"]
     },
     {
       id: 2,
@@ -63,7 +63,7 @@ export default function LabNotes() {
       value: "Joy",
       victory: "Hosted a great dinner.",
       content: "Incredible energy today! The morning practice really set the tone. I felt a deep sense of gratitude for the community.",
-      tags: ["Daily 5 V's"]
+      tags: ["Daily LOVE Practice"]
     },
     {
       id: 4,
@@ -97,13 +97,16 @@ export default function LabNotes() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuItem onClick={() => setIsPracticing(true)}>
-                <Sparkles className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Daily 5 V's Practice
+                <Heart className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Daily LOVE Practice
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Beaker className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Log Experiment
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Lightbulb className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Note Discovery
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Sparkles className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Magic Mentor Session
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -115,12 +118,12 @@ export default function LabNotes() {
           <div className="space-y-8">
             {/* Daily Practice Prompt */}
             {!isCompleted && (
-              <Card className="border-none shadow-sm bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">
+              <Card className="border-none shadow-sm bg-muted/30">
                 <CardContent className="p-8 text-center">
-                  <div className="w-16 h-16 bg-muted/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Sparkles className="w-8 h-8 text-muted-foreground" strokeWidth={1.5} />
+                  <div className="w-16 h-16 bg-background rounded-full flex items-center justify-center mx-auto mb-4 border border-border/50">
+                    <Heart className="w-8 h-8 text-muted-foreground" strokeWidth={1.5} />
                   </div>
-                  <h2 className="text-xl font-bold mb-2 text-muted-foreground">Morning 5 V's</h2>
+                  <h2 className="text-xl font-bold mb-2 text-muted-foreground">Daily LOVE Practice</h2>
                   <p className="text-muted-foreground mb-6">Set your vibe, vision, and victory for the day.</p>
                   <Button 
                     className="gap-2"
@@ -149,7 +152,7 @@ export default function LabNotes() {
                 <TabsList className="bg-[#FAFAFA] p-1 h-auto flex-wrap justify-start">
                   <TabsTrigger value="all" className="px-4 py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">All Notes</TabsTrigger>
                   <TabsTrigger value="daily-practice" className="px-4 py-2 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                    <Sparkles className="w-3 h-3 text-muted-foreground" strokeWidth={1.5} /> Daily Practice
+                    <Heart className="w-3 h-3 text-muted-foreground" strokeWidth={1.5} /> Daily LOVE Practice
                   </TabsTrigger>
                   <TabsTrigger value="experiments" className="px-4 py-2 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
                     <Beaker className="w-3 h-3 text-muted-foreground" strokeWidth={1.5} /> Experiments
@@ -196,11 +199,11 @@ export default function LabNotes() {
                             <div className="flex flex-col justify-between space-y-4">
                               <div>
                                 <div className="flex items-center gap-2 mb-1">
-                                  {entry.type === 'daily-practice' && <Sparkles className="w-3 h-3 text-muted-foreground" strokeWidth={1.5} />}
+                                  {entry.type === 'daily-practice' && <Heart className="w-3 h-3 text-muted-foreground" strokeWidth={1.5} />}
                                   {entry.type === 'experiment' && <Beaker className="w-3 h-3 text-muted-foreground" strokeWidth={1.5} />}
                                   {entry.type === 'discovery' && <Lightbulb className="w-3 h-3 text-muted-foreground" strokeWidth={1.5} />}
                                   <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">
-                                    {entry.type === 'daily-practice' ? "Daily 5 V's" : entry.type.charAt(0).toUpperCase() + entry.type.slice(1)}
+                                    {entry.type === 'daily-practice' ? "Daily LOVE Practice" : entry.type.charAt(0).toUpperCase() + entry.type.slice(1)}
                                   </span>
                                 </div>
                                 <div className="font-bold text-lg text-muted-foreground font-serif">{entry.date}</div>
@@ -212,14 +215,6 @@ export default function LabNotes() {
                                   <div className="text-2xl font-black text-primary font-serif">{entry.vibe}<span className="text-sm text-muted-foreground font-medium">/10</span></div>
                                 </div>
                               )}
-
-                              <div className="flex flex-wrap gap-2">
-                                {entry.tags.map(tag => (
-                                  <Badge key={tag} variant="secondary" className="bg-muted text-muted-foreground hover:bg-muted/80 text-[10px] font-serif">
-                                    {tag}
-                                  </Badge>
-                                ))}
-                              </div>
                             </div>
 
                             {/* Col 2: Content Preview */}
