@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Users } from "lucide-react";
 import CommunityCover from "@assets/generated_images/community_cover.png";
+import { Link } from "wouter";
 
 export default function Community() {
   return (
@@ -24,29 +25,31 @@ export default function Community() {
       <div className="max-w-4xl mx-auto p-4 lg:p-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {CLUBS.map((space) => (
-            <Card key={space.id} className="hover:shadow-md transition-all border-none bg-card/50 shadow-sm group cursor-pointer overflow-hidden flex flex-col">
-              <div className="h-[2px] w-full bg-gradient-to-r from-primary/20 to-primary/5 group-hover:from-primary group-hover:to-purple-400 transition-all" />
-              <CardHeader className="pb-2">
-                <div className={`w-10 h-10 rounded-lg bg-muted flex items-center justify-center mb-2 group-hover:scale-110 transition-transform duration-300 ${space.color}`}>
-                  <space.icon className="w-6 h-6" />
-                </div>
-                <CardTitle className="text-lg font-bold text-muted-foreground group-hover:text-primary transition-colors">{space.name}</CardTitle>
-              </CardHeader>
-              <CardContent className="flex flex-col flex-1">
-                <p className="text-base text-muted-foreground mb-4 line-clamp-2">
-                  {space.description}
-                </p>
-                <div className="flex items-center gap-1 text-xs text-muted-foreground mb-4">
-                  <Users className="w-3 h-3" />
-                  <span>1.2k members</span>
-                </div>
-                <div className="flex-1 flex items-end justify-center">
-                  <Button size="sm" className="h-8 px-6 transition-all text-base" data-testid="button-join-club">
-                    Join <ArrowRight className="w-3 h-3 ml-1" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+            <Link key={space.id} href={`/community/${space.id}`}>
+              <Card className="hover:shadow-md transition-all border-none bg-card/50 shadow-sm group cursor-pointer overflow-hidden flex flex-col h-full">
+                <div className="h-[2px] w-full bg-gradient-to-r from-primary/20 to-primary/5 group-hover:from-primary group-hover:to-purple-400 transition-all" />
+                <CardHeader className="pb-2">
+                  <div className={`w-10 h-10 rounded-lg bg-muted flex items-center justify-center mb-2 group-hover:scale-110 transition-transform duration-300 ${space.color}`}>
+                    <space.icon className="w-6 h-6" />
+                  </div>
+                  <CardTitle className="text-lg font-bold text-muted-foreground group-hover:text-primary transition-colors">{space.name}</CardTitle>
+                </CardHeader>
+                <CardContent className="flex flex-col flex-1">
+                  <p className="text-base text-muted-foreground mb-4 line-clamp-2">
+                    {space.description}
+                  </p>
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground mb-4">
+                    <Users className="w-3 h-3" />
+                    <span>1.2k members</span>
+                  </div>
+                  <div className="flex-1 flex items-end justify-center">
+                    <Button size="sm" className="h-8 px-6 transition-all text-base" data-testid="button-join-club">
+                      Join <ArrowRight className="w-3 h-3 ml-1" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
 
