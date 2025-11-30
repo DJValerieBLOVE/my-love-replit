@@ -1,7 +1,7 @@
 import Layout from "@/components/layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PenLine, Calendar, Search, Filter, Heart, CheckCircle, Beaker, Lightbulb, Plus, Sparkles } from "lucide-react";
+import { PenLine, Calendar, Search, Filter, Heart, CheckCircle, FlaskConical, Lightbulb, Plus, Sparkles, Beaker } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -159,7 +159,7 @@ export default function LabNotes() {
                     <Heart className="w-3 h-3 text-muted-foreground" strokeWidth={1.5} /> Daily LOVE Practice
                   </TabsTrigger>
                   <TabsTrigger value="experiments" className="px-4 py-2 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                    <Beaker className="w-3 h-3 text-muted-foreground" strokeWidth={1.5} /> Experiments
+                    <FlaskConical className="w-3 h-3 text-muted-foreground" strokeWidth={1.5} /> Experiments
                   </TabsTrigger>
                   <TabsTrigger value="discoveries" className="px-4 py-2 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
                     <Lightbulb className="w-3 h-3 text-muted-foreground" strokeWidth={1.5} /> Discoveries
@@ -180,10 +180,10 @@ export default function LabNotes() {
                       <Heart className="w-4 h-4 mr-2 text-muted-foreground group-hover:text-love-body" strokeWidth={1.5} /> Daily LOVE Practice
                     </DropdownMenuItem>
                     <DropdownMenuItem className="focus:bg-love-body/10 focus:text-love-body cursor-pointer">
-                      <Beaker className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Log Experiment
+                      <FlaskConical className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Experiment Note
                     </DropdownMenuItem>
                     <DropdownMenuItem className="focus:bg-love-body/10 focus:text-love-body cursor-pointer">
-                      <Lightbulb className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Note Discovery
+                      <Lightbulb className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Discovery Note
                     </DropdownMenuItem>
                     <DropdownMenuItem className="focus:bg-love-body/10 focus:text-love-body cursor-pointer">
                       <Sparkles className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Magic Mentor Session
