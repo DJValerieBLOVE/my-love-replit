@@ -212,6 +212,24 @@ export default function ExperimentDetail() {
         <div className="w-full lg:w-[320px] border-l bg-card/30 flex-shrink-0 sticky top-0 h-fit lg:h-auto lg:min-h-[calc(100vh-64px)]">
            <div className="p-6 space-y-8">
               
+              {/* Stats (Minimalist) */}
+              <div className="grid grid-cols-2 gap-4 pb-6 border-b border-border/50">
+                 <div>
+                    <div className="flex items-center gap-1.5 mb-1 text-muted-foreground">
+                       <Clock className="w-3.5 h-3.5" />
+                       <span className="text-xs font-bold uppercase tracking-wider">Time</span>
+                    </div>
+                    <p className="font-medium text-sm">5 Days</p>
+                 </div>
+                 <div>
+                    <div className="flex items-center gap-1.5 mb-1 text-muted-foreground">
+                       <Award className="w-3.5 h-3.5" />
+                       <span className="text-xs font-bold uppercase tracking-wider">Reward</span>
+                    </div>
+                    <p className="font-medium text-sm text-yellow-600 dark:text-yellow-400">5000 Sats</p>
+                 </div>
+              </div>
+
               {/* Progress Block */}
               <div className="space-y-4">
                  <div className="flex items-center justify-between text-sm">
@@ -261,24 +279,8 @@ export default function ExperimentDetail() {
                  </div>
               </div>
 
-              {/* Stats (Minimalist) */}
-              <div className="grid grid-cols-2 gap-4 pt-6 border-t border-border/50">
-                 <div>
-                    <div className="flex items-center gap-1.5 mb-1 text-muted-foreground">
-                       <Clock className="w-3.5 h-3.5" />
-                       <span className="text-xs font-bold uppercase tracking-wider">Time</span>
-                    </div>
-                    <p className="font-medium text-sm">5 Days</p>
-                 </div>
-                 <div>
-                    <div className="flex items-center gap-1.5 mb-1 text-muted-foreground">
-                       <Award className="w-3.5 h-3.5" />
-                       <span className="text-xs font-bold uppercase tracking-wider">Reward</span>
-                    </div>
-                    <p className="font-medium text-sm text-yellow-600 dark:text-yellow-400">5000 Sats</p>
-                 </div>
-              </div>
-
+              {/* Stats (Minimalist) - Moved to Top */}
+              
            </div>
         </div>
       </div>
