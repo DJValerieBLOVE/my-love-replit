@@ -204,7 +204,6 @@ export default function LabNotes() {
                                   </span>
                                 </div>
                                 <div className="font-bold text-lg text-muted-foreground font-serif">{entry.date}</div>
-                                <div className="text-xs text-muted-foreground uppercase tracking-wider font-bold mt-1 font-serif">{entry.time}</div>
                               </div>
                               
                               {entry.type === 'daily-practice' && (

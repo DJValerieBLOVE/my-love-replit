@@ -92,12 +92,6 @@ export function EntryDetailModal({ entry, isOpen, onClose }: EntryDetailModalPro
                   <Calendar className="w-4 h-4" />
                   <span>{entry.date}</span>
                 </div>
-                {entry.time && (
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4" />
-                    <span>{entry.time}</span>
-                  </div>
-                )}
                 <div className="flex gap-2 ml-2">
                   {entry.tags.map(tag => (
                     <Badge key={tag} variant="outline" className="font-normal bg-muted/50">
