@@ -52,13 +52,12 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
                 className="flex-1 px-4 py-3 rounded-xl border border-transparent bg-[#F4F4F5] text-sm text-foreground placeholder:text-[#A1A1AA] focus:outline-none focus:ring-2 focus:ring-purple-500/30 shadow-lg transition-all"
                 data-testid="input-chat-message"
               />
-              <Button 
-                size="icon" 
-                className="h-auto w-12 rounded-xl shadow-lg bg-white hover:bg-white/90 border border-transparent text-[#cc00ff]"
+              <button 
+                className="flex items-center justify-center h-12 w-12 rounded-xl shadow-lg bg-white hover:bg-white/90 border border-transparent transition-all"
                 data-testid="button-send-message"
               >
-                <Send className="w-5 h-5" strokeWidth={1.5} />
-              </Button>
+                <Send className="w-5 h-5" style={{ color: '#cc00ff' }} strokeWidth={1.5} />
+              </button>
             </div>
           </div>
 
