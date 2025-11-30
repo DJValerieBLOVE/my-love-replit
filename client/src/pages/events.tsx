@@ -70,7 +70,7 @@ export default function Events() {
           <div className="flex gap-2 w-full md:w-auto">
             <div className="relative flex-1 md:w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input placeholder="Search events..." className="pl-9 bg-background" />
+              <Input placeholder="Search events..." className="pl-9 bg-background text-sm" />
             </div>
           </div>
         </div>
