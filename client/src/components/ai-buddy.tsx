@@ -25,7 +25,7 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
       <SheetContent side="right" className="w-full sm:max-w-[800px] sm:w-[800px] p-0 border-l shadow-2xl">
         <div className="h-full flex flex-col bg-background">
           {/* Consolidated Header + Suggestion + Chat Block */}
-          <div className="p-6 border-b bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-500 space-y-4">
+          <div className="p-6 border-b bg-gradient-to-br from-purple-700 via-[#cc00ff] to-fuchsia-600 space-y-4 shadow-sm">
             {/* Magic Mentor Header */}
             <div className="flex items-center gap-4">
               <div className="relative flex items-center justify-center w-12 h-12 shrink-0">
@@ -38,7 +38,7 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
             </div>
 
             {/* Suggestion Box */}
-            <div className="bg-background/95 border rounded-xl p-4 text-sm text-foreground shadow-lg backdrop-blur-sm">
+            <div className="bg-white border rounded-xl p-4 text-sm text-foreground shadow-lg">
               <p className="leading-relaxed italic text-muted-foreground">"You've been focusing a lot on <strong className="text-foreground font-bold">Community</strong> lately. Maybe spend some time on <strong className="text-foreground font-bold">Body</strong> today?"</p>
             </div>
 
@@ -49,12 +49,12 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
                 placeholder="Ask me anything..." 
                 value={chatMessage}
                 onChange={(e) => setChatMessage(e.target.value)}
-                className="flex-1 px-4 py-3 rounded-xl border border-transparent bg-muted/50 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-white/30 shadow-lg transition-all"
+                className="flex-1 px-4 py-3 rounded-xl border border-transparent bg-[#F4F4F5] text-sm text-foreground placeholder:text-[#A1A1AA] focus:outline-none focus:ring-2 focus:ring-purple-500/30 shadow-lg transition-all"
                 data-testid="input-chat-message"
               />
               <Button 
                 size="icon" 
-                className="h-auto w-12 rounded-xl shadow-lg bg-background hover:bg-accent border border-transparent text-[#cc00ff]"
+                className="h-auto w-12 rounded-xl shadow-lg bg-white hover:bg-white/90 border border-transparent text-[#cc00ff]"
                 data-testid="button-send-message"
               >
                 <Send className="w-5 h-5" strokeWidth={1.5} />

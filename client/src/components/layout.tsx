@@ -190,7 +190,7 @@ export default function Layout({ children, showRightSidebar = true }: { children
               {/* Ask Magic Mentor Button */}
               <Button 
                 onClick={() => setIsAiOpen(true)}
-                className="w-full rounded-lg h-10 font-bold text-sm bg-white/20 hover:bg-white/30 text-white border border-white/20 transition-all shadow-sm backdrop-blur-sm"
+                className="w-full rounded-lg h-10 font-bold text-sm bg-white/20 hover:bg-white text-white hover:text-[#cc00ff] border border-white/20 transition-all shadow-sm backdrop-blur-sm"
                 data-testid="button-ask-mentor"
               >
                 <Sparkles className="w-4 h-4 mr-1.5" strokeWidth={1.5} /> Ask Magic Mentor

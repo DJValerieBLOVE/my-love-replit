@@ -56,7 +56,7 @@ export default function Home() {
                   </p>
                 </div>
                 <Link href="/journal?startPractice=true" className="w-full">
-                  <Button className="w-full h-10 px-6 transition-all gap-2 bg-love-body text-white hover:bg-love-body/90">
+                  <Button className="w-full h-10 px-6 transition-all gap-2 bg-love-body text-white hover:bg-love-body/80 hover:shadow-md">
                     <img src={WhiteLogo} alt="Logo" className="w-4 h-4" /> Daily LOVE Practice
                   </Button>
                 </Link>
