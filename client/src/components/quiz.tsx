@@ -175,14 +175,14 @@ export function Quiz({ questions, onComplete, rewardAmount }: QuizProps) {
                          animate={{ height: 'auto', opacity: 1 }}
                          className="mt-6 overflow-hidden"
                       >
-                         <div className={`p-4 rounded-lg border-2 ${isCorrect ? 'bg-primary/10 border-primary/30 text-foreground' : 'bg-destructive/10 border-destructive/30 text-foreground'}`}>
-                            <div className="flex items-start gap-3">
-                               <div className={`p-1 rounded-full flex-shrink-0 ${isCorrect ? 'bg-primary/20' : 'bg-destructive/20'}`}>
-                                  {isCorrect ? <Check className="w-4 h-4 text-primary" /> : <HelpCircle className="w-4 h-4 text-destructive" />}
+                         <div className={`p-6 rounded-lg border-2 ${isCorrect ? 'bg-primary/10 border-primary/30 text-foreground' : 'bg-destructive/10 border-destructive/30 text-foreground'}`}>
+                            <div className="flex items-start gap-4">
+                               <div className={`p-2 rounded-full flex-shrink-0 ${isCorrect ? 'bg-primary/20' : 'bg-destructive/20'}`}>
+                                  {isCorrect ? <Check className="w-5 h-5 text-primary" /> : <HelpCircle className="w-5 h-5 text-destructive" />}
                                </div>
                                <div className="flex-1">
-                                  <p className={`font-bold text-sm mb-1 ${isCorrect ? 'text-primary' : 'text-destructive'}`}>{isCorrect ? 'Correct!' : 'Not quite right'}</p>
-                                  <p className="text-sm text-muted-foreground leading-relaxed">
+                                  <p className={`font-bold text-lg mb-2 ${isCorrect ? 'text-primary' : 'text-destructive'}`}>{isCorrect ? 'Correct!' : 'Not quite right'}</p>
+                                  <p className="text-base text-muted-foreground leading-relaxed">
                                      {currentQuestion.explanation || (isCorrect ? "Great job!" : `The correct answer is: ${currentQuestion.correctAnswer}`)}
                                   </p>
                                </div>
