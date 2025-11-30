@@ -34,14 +34,14 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
               </div>
               <div>
                 <h3 className="font-bold text-lg font-serif text-white">Magic Mentor</h3>
-                <p className="text-xs text-white/90">Your accountability partner</p>
+                <p className="text-xs text-[#E6E6FA]">Your accountability partner</p>
               </div>
             </div>
 
             {/* Quote of the Day Box */}
-            <div className="bg-white border rounded-xl p-5 text-sm text-foreground shadow-lg relative overflow-hidden">
-              <p className="leading-relaxed italic text-muted-foreground font-serif text-base">"Your task is not to seek for love, but merely to seek and find all the barriers within yourself that you have built against it."</p>
-              <p className="text-xs text-right mt-2 font-bold text-muted-foreground/60">— Rumi</p>
+            <div className="bg-white border rounded-xl p-5 text-sm text-[#4D3D5C] shadow-lg relative overflow-hidden">
+              <p className="leading-relaxed italic text-[#4D3D5C] font-serif text-base">"Your task is not to seek for love, but merely to seek and find all the barriers within yourself that you have built against it."</p>
+              <p className="text-xs text-right mt-2 font-bold text-[#4D3D5C]">— Rumi</p>
             </div>
 
             {/* Chat Input */}
@@ -82,7 +82,7 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
                           <div className={`w-2 h-2 rounded-full ${area.color}`} />
                           <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{area.name}</span>
                         </div>
-                        <p className="text-sm font-serif text-foreground/90 line-clamp-2 leading-relaxed">"{area.dream}"</p>
+                        <p className="text-sm font-serif text-[#4D3D5C] line-clamp-2 leading-relaxed">"{area.dream}"</p>
                       </div>
                       <span className="text-xs font-medium text-muted-foreground tabular-nums bg-muted/50 px-2 py-1 rounded-md">{area.progress}%</span>
                     </div>

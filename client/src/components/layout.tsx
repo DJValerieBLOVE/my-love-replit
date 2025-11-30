@@ -204,7 +204,7 @@ export default function Layout({ children, showRightSidebar = true }: { children
             <div className="flex items-center justify-between gap-2 mb-4">
               <div className="flex items-center gap-2">
                 <Flame className="w-5 h-5 text-blue-500 fill-blue-500" />
-                <h4 className="font-bold text-xs uppercase text-blue-600/80">Streak</h4>
+                <h4 className="font-bold text-xs uppercase text-[#2563EB]">Streak</h4>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="text-2xl font-black text-blue-500">{CURRENT_USER.streak}</span>
