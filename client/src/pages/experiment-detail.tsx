@@ -123,7 +123,7 @@ export default function ExperimentDetail() {
           {/* Header Info */}
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-2">
-               <Badge variant="outline" className="text-xs font-bold uppercase tracking-wider border-primary/20 text-primary bg-primary/5">
+               <Badge className="bg-white text-black hover:bg-white/90 font-normal border shadow-sm text-sm px-3 py-0.5">
                   {experiment.category}
                </Badge>
                <span className="text-sm text-muted-foreground">Guided by {experiment.guide}</span>
