@@ -201,7 +201,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                                 <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Big Dream</span>
                                 <span className="text-[10px] font-bold text-muted-foreground">{selectedArea.progress}%</span>
                             </div>
-                            <p className="text-xs font-serif text-muted-foreground italic leading-relaxed opacity-80 line-clamp-2">
+                            <p className="text-xs font-serif text-muted-foreground italic leading-relaxed opacity-80">
                                 "{selectedArea.dream}"
                             </p>
                         </div>
@@ -209,7 +209,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                 </div>
 
                 {/* Values (Action Steps) */}
-                <div className="space-y-3 flex-1">
+                <div className="space-y-3 flex-1 pt-2">
                      <div className="text-[10px] font-bold text-muted-foreground uppercase flex justify-between">
                         <span>Value (3 Actions)</span>
                         <span className="text-[9px] opacity-50">Check when done</span>

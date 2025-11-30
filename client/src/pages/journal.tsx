@@ -372,7 +372,7 @@ export default function LabNotes() {
                                               <div className="h-1 w-full bg-muted rounded-full overflow-hidden mb-2">
                                                 <div className="h-full rounded-full" style={{ width: `${entry.focusArea.progress}%`, backgroundColor: entry.focusArea.color }} />
                                               </div>
-                                              <div className="text-xs font-serif text-muted-foreground italic leading-relaxed opacity-80 line-clamp-2">
+                                              <div className="text-xs font-serif text-muted-foreground italic leading-relaxed opacity-80">
                                                 "{entry.focusArea.dream}"
                                               </div>
                                             </div>
