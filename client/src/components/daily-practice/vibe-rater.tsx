@@ -23,6 +23,8 @@ export function VibeRater({ value, onChange }: VibeRaterProps) {
     return { label: "Shame/Guilt", color: "text-red-700", zone: "Suffering Survival", desc: "Contracted, Hiding" };
   };
 
+  const info = getZoneInfo(value);
+
   return (
     <div className="space-y-8 py-4">
       <div className="text-center space-y-2">
@@ -30,14 +32,22 @@ export function VibeRater({ value, onChange }: VibeRaterProps) {
           key={value}
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className={cn("text-9xl font-serif mb-4 drop-shadow-sm text-primary")}
+          className={cn("text-9xl font-serif mb-4 drop-shadow-sm transition-colors duration-300", info.color)}
         >
           {value}
         </motion.div>
-        <p className="text-sm font-serif text-muted-foreground uppercase tracking-widest">Current Vibe</p>
+        <div className={cn("text-2xl font-bold font-serif uppercase tracking-widest transition-colors duration-300", info.color)}>
+          {info.label}
+        </div>
+        <div className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+          {info.zone}
+        </div>
+        <p className="text-lg font-serif italic text-muted-foreground/80">
+          "{info.desc}"
+        </p>
       </div>
 
-      <div className="px-4">
+      <div className="px-4 pt-4">
         <Slider
           defaultValue={[value]}
           max={11}
@@ -47,8 +57,8 @@ export function VibeRater({ value, onChange }: VibeRaterProps) {
           className="cursor-pointer"
         />
         <div className="flex justify-between mt-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">
-          <span>1</span>
-          <span>11</span>
+          <span>Low Vibe</span>
+          <span>High Vibe</span>
         </div>
       </div>
     </div>

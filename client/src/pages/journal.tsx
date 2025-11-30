@@ -1,7 +1,9 @@
 import Layout from "@/components/layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PenLine, Calendar, Search, Filter, Heart, CheckCircle, FlaskConical, Lightbulb, Plus, Sparkles, Beaker, Quote } from "lucide-react";
+import { PenLine, Calendar, Search, Filter, Heart, CheckCircle, FlaskConical, Lightbulb, Plus, Sparkles, Beaker, Quote, Play, X } from "lucide-react";
+import confetti from "canvas-confetti";
+import { getPlaylistForToday } from "@/lib/playlists";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -21,9 +23,18 @@ export default function LabNotes() {
   const [isCompleted, setIsCompleted] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
 
+  const [showMissedCheckinAlert, setShowMissedCheckinAlert] = useState(true); // Mock state
+  const todaysPlaylist = getPlaylistForToday();
+
   const handleComplete = () => {
     setIsPracticing(false);
     setIsCompleted(true);
+    // Trigger confetti
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
   };
 
   const entries: JournalEntry[] = [
@@ -120,7 +131,31 @@ export default function LabNotes() {
           <FiveVsWizard onComplete={handleComplete} />
         ) : (
           <div className="space-y-8">
-            {/* Daily Practice Prompt & Quote */}
+        {isPracticing ? (
+          <FiveVsWizard onComplete={handleComplete} />
+        ) : (
+          <div className="space-y-8">
+            {/* Missed Check-in Alert (Mock) */}
+            {showMissedCheckinAlert && (
+              <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-4 flex items-center justify-between relative overflow-hidden">
+                <div className="flex items-center gap-3 z-10">
+                   <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
+                     <Sparkles className="w-5 h-5 fill-current" />
+                   </div>
+                   <div>
+                     <h3 className="font-bold text-orange-700 text-sm">Missed your evening vibe check?</h3>
+                     <p className="text-orange-600 text-xs">It's okay! Tap here to reflect on yesterday's wins.</p>
+                   </div>
+                </div>
+                <Button variant="ghost" size="icon" className="h-6 w-6 text-orange-400 hover:text-orange-600 z-10" onClick={() => setShowMissedCheckinAlert(false)}>
+                  <X className="w-4 h-4" />
+                </Button>
+                {/* Background decoration */}
+                <div className="absolute -right-4 -top-4 w-24 h-24 bg-orange-500/5 rounded-full blur-xl" />
+              </div>
+            )}
+
+            {/* Daily Practice Prompt & Song of the Day */}
             {!isCompleted && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card className="border-none shadow-sm bg-muted/30 h-full flex flex-col justify-center">
@@ -139,23 +174,26 @@ export default function LabNotes() {
                   </CardContent>
                 </Card>
 
-                <Card className="border-none shadow-sm overflow-hidden relative h-64 md:h-auto group">
-                   {/* Image Background */}
-                   <img 
-                     src="https://images.unsplash.com/photo-1518531933037-9a61605450ee?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzR8fG5hdHVyZSUyMHB1cnBsZXxlbnwwfHwwfHx8MA%3D%3D" 
-                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                     alt="Quote Background"
-                   />
-                   <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors duration-500" />
-                   <CardContent className="relative z-10 h-full flex flex-col justify-center items-center text-center p-8 text-white">
-                      <Quote className="w-8 h-8 mb-4 opacity-80 fill-current" />
-                      <p className="font-serif text-xl md:text-2xl italic mb-4 leading-relaxed">
-                        "The only way to do great work is to love what you do."
-                      </p>
-                      <p className="text-xs font-bold uppercase tracking-widest opacity-80">
-                        — Steve Jobs
-                      </p>
+                <Card className={`border-none shadow-sm overflow-hidden relative h-64 md:h-auto group ${todaysPlaylist.bg}`}>
+                   <CardContent className="relative z-10 h-full flex flex-col justify-center items-center text-center p-8">
+                      <div className={`w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mb-4 ${todaysPlaylist.color}`}>
+                        <todaysPlaylist.icon className="w-6 h-6 fill-current" />
+                      </div>
+                      
+                      <div className="space-y-1 mb-6">
+                        <p className="text-xs font-bold uppercase tracking-widest opacity-60">Song of the Day</p>
+                        <h3 className="font-serif text-2xl font-bold">{todaysPlaylist.theme}</h3>
+                        <p className="text-sm opacity-80 max-w-[80%] mx-auto">{todaysPlaylist.description}</p>
+                      </div>
+
+                      <Button className="rounded-full w-12 h-12 p-0 bg-primary text-white hover:scale-105 transition-transform shadow-lg">
+                         <Play className="w-5 h-5 ml-1 fill-current" />
+                      </Button>
                    </CardContent>
+                   
+                   {/* Decorative circles */}
+                   <div className="absolute -top-10 -left-10 w-40 h-40 bg-white/5 rounded-full blur-3xl" />
+                   <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-3xl" />
                 </Card>
               </div>
             )}
