@@ -41,7 +41,7 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-import { SurprisePortal } from "@/components/surprise-portal";
+import { Quiz, Question } from "@/components/quiz";
 
 export default function ExperimentDetail() {
   const [, params] = useRoute("/experiments/:id");
@@ -49,6 +49,26 @@ export default function ExperimentDetail() {
   const [newComment, setNewComment] = useState("");
   const [localWalletBalance, setLocalWalletBalance] = useState(CURRENT_USER.walletBalance);
   const [showPortal, setShowPortal] = useState(false);
+  const [showQuiz, setShowQuiz] = useState(false);
+
+  // Sample Quiz Data (Mock)
+  const SAMPLE_QUIZ: Question[] = [
+    {
+      id: 'q1',
+      type: 'multiple-choice',
+      question: 'What is the first step in the 11x LOVE method?',
+      options: ['Hypothesis Formulation', 'Data Collection', 'Blind Guessing', 'Panic'],
+      correctAnswer: 'Hypothesis Formulation',
+      explanation: 'Every great experiment starts with a clear hypothesis.'
+    },
+    {
+      id: 'q2',
+      type: 'fill-blank',
+      question: 'Complete the phrase: "Life is a ______."',
+      correctAnswer: ['game', 'experiment'],
+      explanation: 'We view life as a game or an experiment to be played!'
+    }
+  ];
   
   // Local state for discoveries to handle unlocking/completing
   const [discoveries, setDiscoveries] = useState([
@@ -127,12 +147,19 @@ export default function ExperimentDetail() {
   const GRAND_REWARD = 2500; // 500 * 5 + bonus
   
   const handleCompleteDiscovery = (num: number) => {
+     // If it's the current discovery (Lesson 3), show quiz first instead of completing immediately
+     if (num === 3 && !showQuiz) {
+        setShowQuiz(true);
+        return;
+     }
+
      const newDiscoveries = [...discoveries];
      const index = newDiscoveries.findIndex(d => d.num === num);
      
      if (index !== -1 && !newDiscoveries[index].completed) {
         // 1. Mark Complete
         newDiscoveries[index].completed = true;
+        setShowQuiz(false); // Hide quiz if it was open
         
         // 2. Unlock Next if exists
         if (index + 1 < newDiscoveries.length) {
@@ -296,19 +323,36 @@ export default function ExperimentDetail() {
              const currentDiscovery = discoveries.find(d => !d.completed && !d.locked);
              if (currentDiscovery) {
                 return (
-                   <div className="mb-12 p-6 bg-card border border-border rounded-xl shadow-sm">
-                      <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                         <div>
-                            <h3 className="text-lg font-bold text-foreground">Ready to move on?</h3>
-                            <p className="text-muted-foreground text-sm">Complete "{currentDiscovery.title}" to unlock the next step.</p>
+                   <div className="mb-12 p-6 bg-card border border-border rounded-xl shadow-sm transition-all">
+                      {!showQuiz ? (
+                         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div>
+                               <h3 className="text-lg font-bold text-foreground">Ready to move on?</h3>
+                               <p className="text-muted-foreground text-sm">Complete "{currentDiscovery.title}" to unlock the next step.</p>
+                            </div>
+                            <Button 
+                               onClick={() => handleCompleteDiscovery(currentDiscovery.num)}
+                               className="w-full md:w-auto bg-primary hover:bg-primary/90 text-primary-foreground h-12 px-8 text-base font-bold shadow-md active:scale-95 transition-all"
+                            >
+                               Next Discovery <MoveRight className="w-5 h-5 ml-2" />
+                            </Button>
                          </div>
-                         <Button 
-                            onClick={() => handleCompleteDiscovery(currentDiscovery.num)}
-                            className="w-full md:w-auto bg-primary hover:bg-primary/90 text-primary-foreground h-12 px-8 text-base font-bold shadow-md active:scale-95 transition-all"
-                         >
-                            Next Discovery <MoveRight className="w-5 h-5 ml-2" />
-                         </Button>
-                      </div>
+                      ) : (
+                         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <div className="flex items-center justify-between mb-6 border-b border-border pb-4">
+                               <h3 className="text-xl font-serif font-bold text-foreground flex items-center gap-2">
+                                  <Lightbulb className="w-5 h-5 text-yellow-500" />
+                                  Knowledge Check
+                               </h3>
+                               <Button variant="ghost" size="sm" onClick={() => setShowQuiz(false)}>Cancel</Button>
+                            </div>
+                            <Quiz 
+                               questions={SAMPLE_QUIZ} 
+                               onComplete={(score) => handleCompleteDiscovery(currentDiscovery.num)} 
+                               rewardAmount={DISCOVERY_REWARD}
+                            />
+                         </div>
+                      )}
                    </div>
                 );
              }
