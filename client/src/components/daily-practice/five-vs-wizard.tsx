@@ -67,16 +67,18 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
                 {LOVE_CODE_AREAS.map((area) => (
                   <SelectItem key={area.id} value={area.id} className="">
                     <div className="flex flex-col gap-2 text-left w-full">
-                      <div className="flex justify-between items-center w-full">
-                        <span className="text-xs font-serif text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                          <span className={`w-2 h-2 rounded-full flex-shrink-0 ${area.color}`} />
-                          {area.name}
-                        </span>
-                        <span className="text-[10px] font-bold" style={{ color: area.hex }}>{area.progress}%</span>
+                      <div className="flex justify-between items-center w-full gap-3">
+                        <div className="flex-1 flex flex-col gap-1">
+                          <span className="text-xs font-serif text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                            <span className={`w-2 h-2 rounded-full flex-shrink-0 ${area.color}`} />
+                            {area.name}
+                          </span>
+                        </div>
+                        <span className="text-[10px] font-bold shrink-0 text-right" style={{ color: area.hex }}>{area.progress}%</span>
                       </div>
                       
-                      <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
-                        <div className="h-full rounded-full" style={{ width: `${area.progress}%`, backgroundColor: area.hex }} />
+                      <div className="h-1.5 w-full rounded-full overflow-hidden relative" style={{ backgroundColor: area.hex + '20' }}>
+                        <div className="h-full rounded-full absolute top-0 left-0" style={{ width: `${area.progress}%`, backgroundColor: area.hex }} />
                       </div>
 
                       <span className="text-sm line-clamp-2 text-muted-foreground font-serif whitespace-normal opacity-80">"{area.dream || "No dream defined yet..."}"</span>
