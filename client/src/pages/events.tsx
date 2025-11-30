@@ -53,7 +53,7 @@ export default function Events() {
             <h1 className="text-3xl font-serif font-bold text-foreground mb-2">Meetings & Gatherings</h1>
             <p className="text-muted-foreground">Connect with the community in real-time.</p>
           </div>
-          <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white rounded-lg font-bold px-6 py-1.5 h-8" data-testid="button-create-event">
+          <Button className="rounded-lg px-6 py-1.5 h-8" data-testid="button-create-event">
             <Plus className="w-4 h-4 mr-2" /> Create Event
           </Button>
         </div>
@@ -61,7 +61,7 @@ export default function Events() {
         {/* Filters & Search */}
         <div className="flex flex-col md:flex-row gap-4 mb-8 items-center justify-between">
           <div className="flex gap-2">
-            <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold px-6 py-1.5 h-8 rounded-lg">Upcoming</Button>
+            <Button className="px-6 py-1.5 h-8 rounded-lg">Upcoming</Button>
             <Button variant="outline" className="text-muted-foreground font-bold px-6 py-1.5 h-8 rounded-lg">Nearby</Button>
             <Button variant="outline" className="text-muted-foreground font-bold px-6 py-1.5 h-8 rounded-lg">Past</Button>
             <Button variant="outline" className="text-muted-foreground font-bold px-6 py-1.5 h-8 rounded-lg">Yours</Button>
@@ -139,7 +139,7 @@ export default function Events() {
                   `).join('')}
                 `}</style>
                 <div className="mt-4 pt-4 border-t flex justify-end">
-                  <Button size="sm" className="text-xs h-7 rounded-md bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold px-6" data-testid="button-today" onClick={() => setSelectedDate(new Date())}>Today</Button>
+                  <Button size="sm" className="text-xs h-7 rounded-md px-6" data-testid="button-today" onClick={() => setSelectedDate(new Date())}>Today</Button>
                 </div>
               </CardContent>
             </Card>
@@ -147,7 +147,7 @@ export default function Events() {
             <div className="mt-6 p-4 bg-primary/5 rounded-xs border border-primary/10">
               <h3 className="font-bold text-primary mb-2">Host an Event?</h3>
               <p className="text-base text-muted-foreground mb-3">Community members can host their own gatherings.</p>
-              <Button className="w-full rounded-lg bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold px-6 py-1.5 h-8" data-testid="button-learn-more">Learn More</Button>
+              <Button className="w-full rounded-lg px-6 py-1.5 h-8" data-testid="button-learn-more">Learn More</Button>
             </div>
 
             <div className="mt-6">
@@ -157,7 +157,7 @@ export default function Events() {
                 </div>
                 <h3 className="font-bold">Live Q&A with Dr. Maya</h3>
                 <p className="text-sm text-muted-foreground mt-1 mb-4">Friday, 2:00 PM EST • Zoom</p>
-                <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold rounded-lg px-6 py-1.5 h-8 w-full" data-testid="button-rsvp-sidebar">RSVP Now</Button>
+                <Button className="rounded-lg px-6 py-1.5 h-8 w-full" data-testid="button-rsvp-sidebar">RSVP Now</Button>
               </Card>
             </div>
           </div>

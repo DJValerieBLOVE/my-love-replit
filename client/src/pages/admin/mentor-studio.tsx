@@ -127,7 +127,7 @@ export default function MentorStudio() {
                     </div>
                     <Separator className="bg-primary/20" />
                     <div className="pt-2">
-                      <Button className="w-full bg-primary text-white shadow-sm">
+                      <Button className="w-full shadow-sm">
                         <Sparkles className="w-4 h-4 mr-2" /> Test Knowledge
                       </Button>
                     </div>

@@ -88,7 +88,7 @@ export function ThemeCustomizer() {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button size="icon" className="fixed bottom-20 right-4 lg:bottom-4 lg:right-4 h-12 w-12 rounded-full shadow-xl !bg-[#6600ff] !text-white hover:!bg-[#5500dd] z-50 border-2 border-white/20">
+        <Button size="icon" className="fixed bottom-20 right-4 lg:bottom-4 lg:right-4 h-12 w-12 rounded-full shadow-xl z-50 border-2 border-white/20">
           <Palette className="w-6 h-6" />
         </Button>
       </SheetTrigger>
