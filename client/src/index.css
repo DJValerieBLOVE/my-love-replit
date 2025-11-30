@@ -88,7 +88,7 @@
 
   /* Custom Font Sizes to match Design System */
   --text-xs: 14px;
-  --text-sm: 17px;
+  --text-sm: 16px;
   --text-base: 17px;
   --text-lg: 20px;
   --text-xl: 22px;
@@ -207,7 +207,7 @@
     font-size: var(--text-base) !important;
   }
   input, textarea, select {
-    font-size: var(--text-sm);
+    font-size: var(--text-base);
     color: var(--foreground);
   }
 }
