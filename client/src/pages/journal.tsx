@@ -166,17 +166,17 @@ export default function LabNotes() {
                           <div className="grid grid-cols-2 gap-2">
                             <div>
                               <div className="text-[10px] font-bold text-muted-foreground uppercase">Value</div>
-                              <div className="text-sm font-serif text-muted-foreground truncate">{entry.value}</div>
+                              <div className="text-sm font-serif text-muted-foreground whitespace-normal">{entry.value}</div>
                             </div>
                             <div>
                               <div className="text-[10px] font-bold text-muted-foreground uppercase">Victory</div>
-                              <div className="text-sm font-serif text-green-600 truncate">{entry.victory}</div>
+                              <div className="text-sm font-serif text-green-600 whitespace-normal">{entry.victory}</div>
                             </div>
                           </div>
 
                           <div>
                             <div className="text-[10px] font-bold text-muted-foreground uppercase">Villain</div>
-                            <div className="text-sm font-serif text-red-500 truncate">{entry.villain}</div>
+                            <div className="text-sm font-serif text-red-500 whitespace-normal">{entry.villain}</div>
                           </div>
                         </div>
                       </div>

@@ -77,17 +77,17 @@ export default function BigDreams() {
                             <div className="grid grid-cols-2 gap-2">
                               <div>
                                 <div className="text-[10px] font-bold text-muted-foreground uppercase">Value</div>
-                                <div className="text-sm font-serif text-muted-foreground">{area.value || "Define value..."}</div>
+                                <div className="text-sm font-serif text-muted-foreground whitespace-normal">{area.value || "Define value..."}</div>
                               </div>
                               <div>
                                 <div className="text-[10px] font-bold text-muted-foreground uppercase">Victory</div>
-                                <div className="text-sm font-serif text-green-600">{area.victory || "Define victory..."}</div>
+                                <div className="text-sm font-serif text-green-600 whitespace-normal">{area.victory || "Define victory..."}</div>
                               </div>
                             </div>
 
                             <div>
                               <div className="text-[10px] font-bold text-muted-foreground uppercase">Villain</div>
-                              <div className="text-sm font-serif text-red-500">{area.villain || "Identify obstacle..."}</div>
+                              <div className="text-sm font-serif text-red-500 whitespace-normal">{area.villain || "Identify obstacle..."}</div>
                             </div>
                           </div>
                         </div>
