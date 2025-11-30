@@ -8,14 +8,14 @@ export default function Resources() {
     <Layout>
       <div className="max-w-5xl mx-auto p-4 lg:p-8 space-y-8">
         <div>
-          <h1 className="text-2xl font-serif font-bold">Resources</h1>
+          <h1 className="text-2xl font-serif font-bold text-muted-foreground">Resources</h1>
           <p className="text-muted-foreground">Playlists, meditations, and vibes.</p>
         </div>
 
         <div className="grid gap-8">
           {/* Music Section */}
           <section>
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-muted-foreground">
               <Music className="w-5 h-5 text-primary" /> Music & Playlists
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -27,7 +27,7 @@ export default function Resources() {
                     </div>
                   </div>
                   <CardContent className="p-4">
-                    <h3 className="font-bold text-lg">High Vibe Mix {i}</h3>
+                    <h3 className="font-bold text-lg text-muted-foreground">High Vibe Mix {i}</h3>
                     <p className="text-xs text-muted-foreground">Curated for energy</p>
                   </CardContent>
                 </Card>
@@ -37,7 +37,7 @@ export default function Resources() {
 
           {/* Meditations Section */}
           <section>
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+            <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-muted-foreground">
               <Mic className="w-5 h-5 text-cyan-500" /> Meditations
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -49,7 +49,7 @@ export default function Resources() {
                     </div>
                   </div>
                   <CardContent className="p-4">
-                    <h3 className="font-bold text-lg">Morning Calm {i}</h3>
+                    <h3 className="font-bold text-lg text-muted-foreground">Morning Calm {i}</h3>
                     <p className="text-xs text-muted-foreground">10 min • Guided</p>
                   </CardContent>
                 </Card>

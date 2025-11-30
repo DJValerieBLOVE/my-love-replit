@@ -97,7 +97,7 @@ export default function Events() {
             <Card className="border-none shadow-md bg-card">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-4 px-2">
-                  <span className="font-bold text-lg">November 2025</span>
+                  <span className="font-bold text-lg text-muted-foreground">November 2025</span>
                   <div className="flex gap-1">
                     <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md"><ChevronLeft className="w-4 h-4" /></Button>
                     <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md"><ChevronRight className="w-4 h-4" /></Button>
@@ -145,7 +145,7 @@ export default function Events() {
             </Card>
             
             <div className="mt-6 p-4 bg-primary/5 rounded-xs border border-primary/10">
-              <h3 className="font-bold text-primary mb-2">Host an Event?</h3>
+              <h3 className="font-bold text-muted-foreground mb-2">Host an Event?</h3>
               <p className="text-base text-muted-foreground mb-3">Community members can host their own gatherings.</p>
               <Button className="w-full rounded-lg px-6 py-1.5 h-8" data-testid="button-learn-more">Learn More</Button>
             </div>
@@ -155,7 +155,7 @@ export default function Events() {
                 <div className="w-12 h-12 bg-background rounded-full flex items-center justify-center mb-3 shadow-sm">
                   <Users className="w-6 h-6 text-muted-foreground" />
                 </div>
-                <h3 className="font-bold">Live Q&A with Dr. Maya</h3>
+                <h3 className="font-bold text-muted-foreground">Live Q&A with Dr. Maya</h3>
                 <p className="text-sm text-muted-foreground mt-1 mb-4">Friday, 2:00 PM EST • Zoom</p>
                 <Button className="rounded-lg px-6 py-1.5 h-8 w-full text-base" data-testid="button-rsvp-sidebar">RSVP Now</Button>
               </Card>

@@ -31,7 +31,7 @@ export default function Leaderboard() {
         <div className="text-center space-y-3">
           <div className="flex items-center justify-center gap-3">
             <Trophy className="w-8 h-8 text-yellow-400" />
-            <h1 className="text-4xl font-serif font-bold text-foreground">Leaderboard</h1>
+            <h1 className="text-4xl font-serif font-bold text-muted-foreground">Leaderboard</h1>
             <Trophy className="w-8 h-8 text-yellow-400" />
           </div>
           <p className="text-muted-foreground text-lg">Compete with the community • Level up together</p>
@@ -71,7 +71,7 @@ export default function Leaderboard() {
 
         {/* Leaderboard Table */}
         <div className="space-y-2">
-          <h2 className="font-bold text-lg px-2">Top Guides</h2>
+          <h2 className="font-bold text-lg px-2 text-muted-foreground">Top Guides</h2>
           <div className="space-y-3">
             {LEADERBOARD_DATA.map((user, index) => {
               const rank = index + 1;
