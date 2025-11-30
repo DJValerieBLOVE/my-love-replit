@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { CURRENT_USER, CLUBS, EXPERIMENTS, LOVE_CODE_AREAS } from "@/lib/mock-data";
+import { CURRENT_USER, CLUBS, EXPERIMENTS, LOVE_CODE_AREAS, STREAK_DATA } from "@/lib/mock-data";
 import Logo from "../assets/11x_love_logo.png";
 import BitcoinIcon from "../assets/bitcoin_icon.png";
 import MagicMentor from "@assets/djvalerieblove_twirling_bitcoin_goddess_colorful_vivid_psyche_4e0fb7f6-b95b-488f-9d18-eb77e7dd0a60_1_1764334332945.png";
@@ -214,12 +214,12 @@ export default function Layout({ children, showRightSidebar = true }: { children
 
             {/* Day Circles */}
             <div className="flex justify-between gap-1.5">
-              {['M','T','W','T','F','S','S'].map((d, i) => (
+              {STREAK_DATA.map((d, i) => (
                 <div key={i} className={cn(
                   "w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all",
-                  i < 5 ? "bg-blue-500 text-white shadow-md" : "bg-blue-200 text-blue-400 font-bold"
+                  d.active ? "bg-blue-500 text-white shadow-md" : "bg-blue-200 text-blue-400 font-bold"
                 )}>
-                  {d}
+                  {d.day}
                 </div>
               ))}
             </div>
