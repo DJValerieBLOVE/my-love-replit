@@ -128,7 +128,7 @@ export default function LabNotes() {
                       {/* Left Column: Meta Data */}
                       <div className="md:w-48 flex-shrink-0 space-y-4 border-r border-border/50 pr-6">
                         <div>
-                          <div className="font-bold text-lg text-foreground">{entry.date}</div>
+                          <div className="font-bold text-lg text-muted-foreground">{entry.date}</div>
                           <div className="text-xs text-muted-foreground uppercase tracking-wider font-bold mt-1">10:42 AM</div>
                         </div>
                         

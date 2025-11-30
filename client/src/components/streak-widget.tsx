@@ -18,7 +18,7 @@ export function StreakWidget({ streak, data, className }: StreakWidgetProps) {
               <Zap className="w-5 h-5 text-orange-500" strokeWidth={1.5} />
             </div>
             <div>
-              <h3 className="font-bold text-foreground leading-none">Daily Streak</h3>
+              <h3 className="font-bold text-muted-foreground leading-none">Daily Streak</h3>
               <p className="text-xs text-muted-foreground mt-1">Zap in every day!</p>
             </div>
           </div>

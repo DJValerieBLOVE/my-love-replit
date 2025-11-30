@@ -328,7 +328,7 @@ export default function ExperimentDetail() {
                       {!showQuiz ? (
                          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                             <div>
-                               <h3 className="text-lg font-bold text-foreground">Ready to move on?</h3>
+                               <h3 className="text-lg font-bold text-muted-foreground">Ready to move on?</h3>
                                <p className="text-muted-foreground text-sm">Complete "{currentDiscovery.title}" to unlock the next step.</p>
                             </div>
                             <Button 
@@ -493,7 +493,7 @@ export default function ExperimentDetail() {
              <div className="mx-auto w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-4 animate-bounce">
                 <Trophy className="w-12 h-12 text-primary" />
              </div>
-            <DialogTitle className="text-3xl font-serif font-bold text-center text-foreground">Experiment Complete!</DialogTitle>
+            <DialogTitle className="text-3xl font-serif font-bold text-center text-muted-foreground">Experiment Complete!</DialogTitle>
             <DialogDescription className="text-center text-lg mt-2">
                You've unlocked the secrets of {experiment.category}!
             </DialogDescription>
