@@ -116,7 +116,7 @@ export default function Layout({ children, showRightSidebar = true }: { children
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className={cn(
                     "rounded-full relative transition-colors",
-                    inboxOpen ? "bg-love-body/10 text-love-body" : "text-muted-foreground hover:bg-love-body/10 hover:text-love-body"
+                    inboxOpen ? "bg-[#F0E6FF] text-love-body" : "text-muted-foreground hover:bg-[#F0E6FF] hover:text-love-body"
                 )} data-testid="button-inbox">
                   <Mail className="w-5 h-5" />
                   <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" data-testid="notification-dot-inbox"></span>
@@ -169,7 +169,7 @@ export default function Layout({ children, showRightSidebar = true }: { children
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className={cn(
                     "rounded-full relative transition-colors",
-                    notificationsOpen ? "bg-love-body/10 text-love-body" : "text-muted-foreground hover:bg-love-body/10 hover:text-love-body"
+                    notificationsOpen ? "bg-[#F0E6FF] text-love-body" : "text-muted-foreground hover:bg-[#F0E6FF] hover:text-love-body"
                 )} data-testid="button-notifications">
                   <Bell className="w-5 h-5" />
                   <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" data-testid="notification-dot-bell"></span>
