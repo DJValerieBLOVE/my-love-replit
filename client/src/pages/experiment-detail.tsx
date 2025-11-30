@@ -42,6 +42,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 import { Quiz, Question } from "@/components/quiz";
+import { SurprisePortal } from "@/components/surprise-portal";
 
 export default function ExperimentDetail() {
   const [, params] = useRoute("/experiments/:id");
