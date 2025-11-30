@@ -67,7 +67,7 @@ export default function Home() {
                     <p className="text-xl font-medium text-muted-foreground italic mb-6">
                       "What if life isn't a test you can fail... but an experiment you get to play?"
                     </p>
-                    <Button variant="outline">
+                    <Button variant="outline" className="h-10 px-6 font-bold hover:shadow-md transition-all hover:text-love-body hover:border-love-body">
                       Capture Reflection
                     </Button>
                   </div>
@@ -98,7 +98,7 @@ export default function Home() {
                     <div className="bg-love-body h-2 rounded-full w-[42%]" />
                   </div>
                 </div>
-                <Button className="w-full" variant="outline">Continue</Button>
+                <Button className="w-full h-10 font-bold hover:shadow-md transition-all hover:text-love-body hover:border-love-body" variant="outline">Continue</Button>
               </CardContent>
             </Card>
           </div>
