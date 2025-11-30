@@ -2,11 +2,13 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Circle, Trophy, Sparkles, Moon, Sun } from "lucide-react";
+import { CheckCircle, Circle, Trophy, Sparkles, Moon, Sun, Heart } from "lucide-react";
 import { VibeRater } from "./vibe-rater";
 import confetti from "canvas-confetti";
 import { cn } from "@/lib/utils";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface ActivePracticeCardProps {
   data: any;
@@ -16,8 +18,8 @@ interface ActivePracticeCardProps {
 export function ActivePracticeCard({ data, onComplete }: ActivePracticeCardProps) {
   const [checkedItems, setCheckedItems] = useState<boolean[]>([false, false, false]);
   const [victory, setVictory] = useState("");
-  const [eveningVibe, setEveningVibe] = useState(8);
-  const [isExpanded, setIsExpanded] = useState(false); // For evening section
+  const [eveningVibe, setEveningVibe] = useState<number | null>(null);
+  const [reflection, setReflection] = useState("");
 
   const handleCheck = (index: number) => {
     const newChecked = [...checkedItems];
@@ -25,18 +27,18 @@ export function ActivePracticeCard({ data, onComplete }: ActivePracticeCardProps
     setCheckedItems(newChecked);
     
     if (!checkedItems[index]) {
-        // Small confetti burst for satisfaction
         confetti({
             particleCount: 30,
             spread: 50,
             origin: { y: 0.7, x: 0.5 },
-            colors: ['#10B981', '#34D399'] // Green colors
+            colors: ['#10B981', '#34D399'] 
         });
     }
   };
 
   const handleComplete = () => {
-    // Celebration
+    if (!victory || !eveningVibe) return; // Simple validation
+
     confetti({
       particleCount: 150,
       spread: 100,
@@ -47,136 +49,164 @@ export function ActivePracticeCard({ data, onComplete }: ActivePracticeCardProps
     onComplete({
       checkedItems,
       victory,
-      eveningVibe
+      eveningVibe,
+      reflection
     });
   };
 
   return (
-    <Card className="border-none shadow-lg bg-[#F5F3FF] dark:bg-[#1A052E] border-white/20 relative overflow-hidden transition-all duration-500">
-      {/* Magical background effect */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
-      
-      <CardContent className="p-6 md:p-8 relative z-10 space-y-8">
-        
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-          <div>
-             <div className="flex items-center gap-2 mb-2">
-                <Badge variant="outline" className="bg-white/50 border-primary/20 text-primary uppercase tracking-wider text-[10px]">Today's Practice</Badge>
-                <span className="text-xs font-bold text-muted-foreground uppercase">{new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}</span>
-             </div>
-             <h2 className="text-3xl font-bold font-serif text-[#4D3D5C] dark:text-white leading-tight">"{data.vision}"</h2>
-             {data.focusArea && (
-               <div className="flex items-center gap-2 mt-2 text-sm font-medium text-muted-foreground">
-                 <span className="w-2 h-2 rounded-full" style={{ backgroundColor: data.focusArea.color || '#6600ff' }} />
-                 Focus: {data.focusArea.name || data.focusArea}
-               </div>
-             )}
-          </div>
-          
-          {/* Morning Vibe Badge */}
-          <div className="bg-white/60 dark:bg-white/10 p-3 rounded-xl border border-white/50 backdrop-blur-sm text-center min-w-[100px]">
-             <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1 flex items-center justify-center gap-1">
-               <Sun className="w-3 h-3" /> Morning
-             </div>
-             <div className="text-2xl font-bold text-[#6600ff] dark:text-white font-serif">{data.morningVibe || data.vibe}/11</div>
-          </div>
-        </div>
-
-        {/* Interactive Action Steps */}
-        <div className="space-y-4">
-           <h3 className="text-xs font-bold text-[#4D3D5C] uppercase tracking-wider opacity-70 ml-1">Daily Actions</h3>
-           <div className="grid grid-cols-1 gap-3">
-              {data.values.map((val: string, idx: number) => (
-                 <div 
-                    key={idx} 
-                    className={cn(
-                        "flex items-center gap-4 p-4 rounded-xl border transition-all cursor-pointer duration-300 group",
-                        checkedItems[idx] 
-                        ? 'bg-green-50/80 border-green-200 shadow-inner' 
-                        : 'bg-white/80 border-white/50 hover:bg-white hover:shadow-md hover:-translate-y-0.5'
-                    )}
-                    onClick={() => handleCheck(idx)}
-                 >
-                    <div className={cn(
-                        "w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-300 shrink-0",
-                        checkedItems[idx] 
-                        ? 'bg-green-500 border-green-500 scale-110' 
-                        : 'border-gray-300 bg-transparent group-hover:border-[#6600ff]/50'
-                    )}>
-                        {checkedItems[idx] && <CheckCircle className="w-5 h-5 text-white" strokeWidth={3} />}
+    <Card className="border-none shadow-lg bg-[#F5F3FF] dark:bg-[#1A052E] border-white/20 relative overflow-visible transition-all duration-500 group">
+       {/* Subtle highlight effect */}
+       <div className="absolute -inset-0.5 bg-gradient-to-r from-pink-500/20 to-purple-500/20 rounded-xl opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 blur-sm -z-10"></div>
+       <CardContent className="p-6 bg-white/50 dark:bg-[#1A052E]/90 backdrop-blur-sm rounded-xl relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr_1fr] gap-8">
+            
+            {/* Col 1: Meta Data (Vibes, Focus) */}
+            <div className="flex flex-col justify-between space-y-4">
+                <div>
+                    <div className="flex items-center gap-2 mb-1">
+                        <Heart className="w-3 h-3 text-muted-foreground" strokeWidth={1.5} />
+                        <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider mt-[1px]">Daily LOVE Practice</span>
                     </div>
-                    <span className={cn(
-                        "text-lg font-serif transition-all duration-300",
-                        checkedItems[idx] 
-                        ? 'text-green-700 line-through opacity-60 decoration-green-500/50 decoration-2' 
-                        : 'text-[#4D3D5C]'
-                    )}>
-                        {val}
-                    </span>
-                 </div>
-              ))}
-           </div>
-        </div>
+                    <div className="text-lg text-muted-foreground font-serif">Today, {new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</div>
+                </div>
 
-        <div className="w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+                <div className="space-y-2">
+                    {/* Morning Vibe (Read-only) */}
+                    <div className="bg-primary/5 rounded-lg p-2 text-center border border-primary/10 flex justify-between items-center px-3">
+                        <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif">Morning Vibe</div>
+                        <div className="text-lg font-medium text-primary font-serif">{data.morningVibe || data.vibe}<span className="text-[10px] text-muted-foreground font-medium">/11</span></div>
+                    </div>
 
-        {/* Evening Reflection Section */}
-        <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold text-[#4D3D5C] font-serif flex items-center gap-2">
-                    <Moon className="w-5 h-5 text-[#6600ff]" /> Evening Reflection
-                </h3>
-                {!isExpanded && (
-                    <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="text-[#6600ff] hover:text-[#5500dd] hover:bg-[#6600ff]/10"
-                        onClick={() => setIsExpanded(true)}
-                    >
-                        Ready to complete day?
-                    </Button>
-                )}
+                    {/* Evening Vibe (Interactive) */}
+                    <Popover>
+                        <PopoverTrigger asChild>
+                             <div className="bg-white/80 dark:bg-white/5 rounded-lg p-2 text-center border border-dashed border-primary/30 hover:border-primary/60 cursor-pointer transition-colors flex justify-between items-center px-3 group/vibe">
+                                <div className="text-[10px] font-bold text-[#6600ff] uppercase font-serif flex items-center gap-1">
+                                    <Moon className="w-3 h-3" /> Evening Vibe
+                                </div>
+                                <div className={cn("text-lg font-medium font-serif", eveningVibe ? "text-[#6600ff]" : "text-muted-foreground/40")}>
+                                    {eveningVibe || "?"}<span className="text-[10px] text-muted-foreground font-medium">/11</span>
+                                </div>
+                             </div>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-64 p-4 bg-white dark:bg-[#1A052E] border-[#6600ff]/20">
+                            <div className="space-y-2 text-center">
+                                <h4 className="font-serif text-[#4D3D5C]">Rate your Evening Vibe</h4>
+                                <VibeRater value={eveningVibe || 5} onChange={setEveningVibe} />
+                            </div>
+                        </PopoverContent>
+                    </Popover>
+
+                    {/* Focus Area */}
+                    {data.focusArea && (
+                        <div className="bg-muted/20 rounded-lg p-3 border border-border/50 mt-2 space-y-3 opacity-80 hover:opacity-100 transition-opacity">
+                            <div className="text-xs font-serif text-muted-foreground italic leading-relaxed">
+                            "{data.focusArea.dream || "To live fully."}"
+                            </div>
+                            <div className="space-y-1">
+                                <div className="flex items-center justify-between">
+                                    <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Big Dream: <span style={{ color: data.focusArea.color }}>{data.focusArea.name || data.focusArea}</span></div>
+                                </div>
+                                <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
+                                    <div className="h-full rounded-full" style={{ width: '85%', backgroundColor: data.focusArea.color || '#6600ff' }} />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
             </div>
 
-            {/* Content - Always visible but maybe greyed out if not expanded? No, let's just show it. User wants it "fillable". */}
-            {/* Actually, let's make it fully interactive always. No "expand" needed really, but maybe "Complete Day" button is the focus. */}
-            
-            <div className="space-y-6 bg-white/40 dark:bg-black/20 rounded-2xl p-6 border border-white/30">
-                 {/* Victory Input */}
-                <div className="space-y-3">
-                    <label className="flex items-center gap-2 text-xs font-bold text-[#4D3D5C] uppercase tracking-wider opacity-70">
-                        <Trophy className="w-4 h-4 text-yellow-500" />
-                        Your Daily Victory
+            {/* Col 2: Content (Vision & Reflection Input) */}
+            <div className="space-y-6 pt-[3px] flex flex-col">
+                <div>
+                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1 block">My Vision</label>
+                    <p className="text-xl font-bold font-serif text-[#4D3D5C] leading-tight">
+                        "{data.vision}"
+                    </p>
+                </div>
+
+                <div className="flex-1 flex flex-col">
+                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-2">
+                        <Sparkles className="w-3 h-3 text-[#6600ff]" /> 
+                        My Reflection (Optional)
+                    </label>
+                    <Textarea 
+                        placeholder="How did today go? Any magic moments?" 
+                        className="flex-1 min-h-[120px] bg-white/60 border-primary/10 focus:border-primary/30 focus:ring-primary/20 resize-none font-serif text-muted-foreground"
+                        value={reflection}
+                        onChange={(e) => setReflection(e.target.value)}
+                    />
+                </div>
+            </div>
+
+            {/* Col 3: Details (Action Steps & Victory Input) */}
+            <div className="space-y-4 bg-muted/20 p-4 rounded-lg border border-border/50 h-full flex flex-col">
+                
+                {/* 3 Daily Actions */}
+                <div className="space-y-2">
+                     <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Daily Actions</div>
+                     <div className="space-y-2">
+                        {data.values.map((val: string, idx: number) => (
+                            <div 
+                                key={idx} 
+                                className={cn(
+                                    "flex items-start gap-2 p-2 rounded-md border transition-all cursor-pointer hover:bg-white/50",
+                                    checkedItems[idx] ? "bg-green-50/50 border-green-100" : "border-transparent"
+                                )}
+                                onClick={() => handleCheck(idx)}
+                            >
+                                <div className={cn(
+                                    "mt-0.5 w-4 h-4 rounded-full border flex items-center justify-center transition-colors shrink-0",
+                                    checkedItems[idx] ? "bg-green-500 border-green-500" : "border-muted-foreground/30"
+                                )}>
+                                    {checkedItems[idx] && <CheckCircle className="w-3 h-3 text-white" strokeWidth={3} />}
+                                </div>
+                                <span className={cn(
+                                    "text-xs font-medium leading-tight transition-all",
+                                    checkedItems[idx] ? "text-green-700 line-through opacity-60" : "text-[#4D3D5C]"
+                                )}>{val}</span>
+                            </div>
+                        ))}
+                     </div>
+                </div>
+
+                <div className="w-full h-px bg-border/50 my-2" />
+
+                {/* Villain (Read-only) */}
+                <div>
+                    <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Villain to Defeat</div>
+                    <div className="text-sm font-serif text-red-500/80 whitespace-normal">{data.villain || "Distraction"}</div>
+                </div>
+
+                {/* Victory (Input) */}
+                <div className="flex-1 flex flex-col justify-end mt-auto pt-4">
+                    <label className="text-[10px] font-bold text-muted-foreground uppercase mb-2 flex items-center gap-1">
+                        <Trophy className="w-3 h-3 text-yellow-500" /> Victory
                     </label>
                     <Input 
-                        placeholder="What was your biggest win today? Celebrate it!" 
-                        className="h-12 bg-white/80 border-white/50 focus:ring-2 focus:ring-[#6600ff]/20 text-base font-serif shadow-sm rounded-xl transition-all focus:scale-[1.01]"
+                        placeholder="Type your win here..." 
+                        className="h-10 bg-white/80 border-green-200/50 focus:border-green-500/50 focus:ring-green-500/20 text-sm font-serif text-green-700 placeholder:text-green-700/30"
                         value={victory}
                         onChange={(e) => setVictory(e.target.value)}
                     />
-                </div>
-
-                {/* Vibe Rater */}
-                <div className="space-y-3">
-                    <label className="text-xs font-bold text-[#4D3D5C] uppercase tracking-wider opacity-70 block mb-4">
-                        Evening Vibe Check
-                    </label>
-                    <VibeRater value={eveningVibe} onChange={setEveningVibe} />
+                    
+                    {/* Complete Button - Only shows when victory is typed */}
+                    {victory && (
+                        <Button 
+                            size="sm" 
+                            className="w-full mt-3 bg-[#6600ff] hover:bg-[#5500dd] text-white animate-in fade-in slide-in-from-bottom-2"
+                            onClick={handleComplete}
+                            disabled={!eveningVibe}
+                        >
+                            <Sparkles className="w-3 h-3 mr-2" /> Save Day
+                        </Button>
+                    )}
                 </div>
             </div>
 
-            {/* Complete Button */}
-            <Button 
-                size="lg" 
-                className="w-full bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold py-6 text-lg rounded-xl shadow-[0_4px_14px_0_rgba(102,0,255,0.39)] hover:shadow-[0_6px_20px_rgba(102,0,255,0.23)] hover:scale-[1.01] transition-all duration-200 active:scale-95"
-                onClick={handleComplete}
-            >
-                <Sparkles className="w-5 h-5 mr-2" /> Complete Day & Save
-            </Button>
-        </div>
-
-      </CardContent>
+          </div>
+       </CardContent>
     </Card>
   );
 }
