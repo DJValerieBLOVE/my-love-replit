@@ -121,22 +121,22 @@ export function Quiz({ questions, onComplete, rewardAmount }: QuizProps) {
                             w-full text-left p-4 rounded-xl border-2 transition-all flex items-center justify-between group
                             ${isAnswered 
                                ? option === currentQuestion.correctAnswer 
-                                  ? 'bg-green-500/10 border-green-500 text-green-700 dark:text-green-300'
+                                  ? 'bg-primary/10 border-primary text-foreground'
                                   : selectedOption === option 
-                                     ? 'bg-red-500/10 border-red-500 text-red-700 dark:text-red-300'
-                                     : 'bg-muted/30 border-transparent opacity-50'
+                                     ? 'bg-destructive/10 border-destructive text-foreground'
+                                     : 'bg-muted/20 border-transparent opacity-50 text-muted-foreground'
                                : selectedOption === option
-                                  ? 'bg-primary/5 border-primary shadow-[0_0_0_1px_rgba(0,0,0,0)] shadow-primary'
-                                  : 'bg-muted/30 border-transparent hover:bg-muted/50 hover:border-muted-foreground/30'
+                                  ? 'bg-primary/15 border-primary text-foreground font-medium'
+                                  : 'bg-muted/20 border-border hover:bg-muted/30 hover:border-muted-foreground/40 text-foreground'
                             }
                          `}
                       >
-                         <span className="font-medium text-lg">{option}</span>
+                         <span className="font-medium text-base">{option}</span>
                          {isAnswered && option === currentQuestion.correctAnswer && (
-                            <Check className="w-5 h-5 text-green-500" />
+                            <Check className="w-5 h-5 text-primary" />
                          )}
                          {isAnswered && selectedOption === option && option !== currentQuestion.correctAnswer && (
-                            <X className="w-5 h-5 text-red-500" />
+                            <X className="w-5 h-5 text-destructive" />
                          )}
                       </button>
                    ))}
@@ -149,18 +149,18 @@ export function Quiz({ questions, onComplete, rewardAmount }: QuizProps) {
                             disabled={isAnswered}
                             placeholder="Type your answer here..."
                             className={`
-                               text-lg p-6 h-16 bg-muted/30 border-2 transition-all
+                               text-base p-4 h-12 bg-muted/20 border-2 transition-all rounded-lg
                                ${isAnswered
                                   ? isCorrect
-                                     ? 'border-green-500 bg-green-500/5'
-                                     : 'border-red-500 bg-red-500/5'
-                                  : 'border-transparent focus:border-primary'
+                                     ? 'border-primary bg-primary/10'
+                                     : 'border-destructive bg-destructive/10'
+                                  : 'border-border focus:border-primary focus:ring-0'
                                }
                             `}
                          />
                          {isAnswered && (
                             <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                               {isCorrect ? <Check className="w-6 h-6 text-green-500" /> : <X className="w-6 h-6 text-red-500" />}
+                               {isCorrect ? <Check className="w-5 h-5 text-primary" /> : <X className="w-5 h-5 text-destructive" />}
                             </div>
                          )}
                       </div>
@@ -175,14 +175,14 @@ export function Quiz({ questions, onComplete, rewardAmount }: QuizProps) {
                          animate={{ height: 'auto', opacity: 1 }}
                          className="mt-6 overflow-hidden"
                       >
-                         <div className={`p-4 rounded-lg ${isCorrect ? 'bg-green-500/10 text-green-800 dark:text-green-200' : 'bg-red-500/10 text-red-800 dark:text-red-200'}`}>
+                         <div className={`p-4 rounded-lg border-2 ${isCorrect ? 'bg-primary/10 border-primary/30 text-foreground' : 'bg-destructive/10 border-destructive/30 text-foreground'}`}>
                             <div className="flex items-start gap-3">
-                               <div className={`p-1 rounded-full ${isCorrect ? 'bg-green-500/20' : 'bg-red-500/20'}`}>
-                                  {isCorrect ? <Check className="w-4 h-4" /> : <HelpCircle className="w-4 h-4" />}
+                               <div className={`p-1 rounded-full flex-shrink-0 ${isCorrect ? 'bg-primary/20' : 'bg-destructive/20'}`}>
+                                  {isCorrect ? <Check className="w-4 h-4 text-primary" /> : <HelpCircle className="w-4 h-4 text-destructive" />}
                                </div>
-                               <div>
-                                  <p className="font-bold text-sm mb-1">{isCorrect ? 'Correct!' : 'Not quite right'}</p>
-                                  <p className="text-sm opacity-90 leading-relaxed">
+                               <div className="flex-1">
+                                  <p className={`font-bold text-sm mb-1 ${isCorrect ? 'text-primary' : 'text-destructive'}`}>{isCorrect ? 'Correct!' : 'Not quite right'}</p>
+                                  <p className="text-sm text-muted-foreground leading-relaxed">
                                      {currentQuestion.explanation || (isCorrect ? "Great job!" : `The correct answer is: ${currentQuestion.correctAnswer}`)}
                                   </p>
                                </div>
