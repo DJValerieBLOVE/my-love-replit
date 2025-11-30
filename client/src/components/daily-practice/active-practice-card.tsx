@@ -36,7 +36,15 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
   const [victory, setVictory] = useState(initialData?.victory || "");
   const [gratitudeImage, setGratitudeImage] = useState<string | null>(null);
   
-  const [isShared, setIsShared] = useState(initialData?.isShared || false);
+  const [sharedClubId, setSharedClubId] = useState<string>(initialData?.sharedClubId || "private");
+
+  // Mock Clubs Data
+  const USER_CLUBS = [
+    { id: "private", name: "Private Note (Only Me)" },
+    { id: "club-1", name: "Wellness Warriors" },
+    { id: "club-2", name: "Manifestation Circle" },
+    { id: "club-3", name: "Design Club" }
+  ];
 
   const selectedArea = LOVE_CODE_AREAS.find(a => a.id === selectedAreaId);
 
@@ -97,7 +105,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
       villain,
       tool,
       victory,
-      isShared
+      sharedClubId
     });
   };
 
@@ -106,7 +114,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
        <CardContent className="p-6">
           <div className="mb-6 flex items-center gap-2">
               <Heart className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-              <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Daily LOVE Practice</h2>
+              <h2 className="text-sm font-bold tracking-wider text-muted-foreground">Daily LOVE Practice</h2>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 h-full">
@@ -353,23 +361,27 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                         value={reflection}
                         onChange={(e) => setReflection(e.target.value)}
                     />
-                    <div className="flex items-center justify-between pt-4 pb-1">
-                         <div className="flex items-center gap-2">
-                             {isShared ? (
-                                 <Users className="w-4 h-4 text-primary" />
-                             ) : (
-                                 <Lock className="w-4 h-4 text-muted-foreground" />
-                             )}
-                             <Label htmlFor="share-mode" className="text-xs font-medium text-muted-foreground uppercase tracking-wide cursor-pointer">
-                                 {isShared ? "Shared to Club" : "Private Note"}
-                             </Label>
-                         </div>
-                         <Switch 
-                             id="share-mode" 
-                             checked={isShared}
-                             onCheckedChange={setIsShared}
-                             className="scale-90 data-[state=checked]:bg-primary"
-                         />
+                    <div className="pt-4 pb-1 space-y-2">
+                        <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wide pl-1">Optional: Share with Club</Label>
+                        <Select value={sharedClubId} onValueChange={setSharedClubId}>
+                            <SelectTrigger className="w-full h-9 bg-white border-muted/50 text-xs font-medium">
+                                <div className="flex items-center gap-2">
+                                    {sharedClubId === 'private' ? (
+                                        <Lock className="w-3.5 h-3.5 text-muted-foreground" />
+                                    ) : (
+                                        <Users className="w-3.5 h-3.5 text-primary" />
+                                    )}
+                                    <SelectValue />
+                                </div>
+                            </SelectTrigger>
+                            <SelectContent align="end">
+                                {USER_CLUBS.map((club) => (
+                                    <SelectItem key={club.id} value={club.id} className="text-xs cursor-pointer">
+                                        {club.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
 
                     <Button 
