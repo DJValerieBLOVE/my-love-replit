@@ -333,9 +333,9 @@ export default function ExperimentDetail() {
                             </div>
                             <Button 
                                onClick={() => handleCompleteDiscovery(currentDiscovery.num)}
-                               className="w-full md:w-auto bg-primary hover:bg-primary/90 text-primary-foreground h-12 px-8 text-base font-bold shadow-md active:scale-95 transition-all"
+                               className="gap-2 rounded-full px-8 text-base"
                             >
-                               Next Discovery <MoveRight className="w-5 h-5 ml-2" />
+                               Next Discovery <MoveRight className="w-5 h-5" />
                             </Button>
                          </div>
                       ) : (
@@ -386,8 +386,7 @@ export default function ExperimentDetail() {
                 <div className="mt-2 flex justify-end">
                   <Button 
                     onClick={handleAddComment}
-                    size="sm"
-                    className="gap-2 rounded-full px-6 text-base"
+                    className="gap-2 rounded-full px-8 text-base"
                     data-testid="button-post-comment"
                   >
                     <Send className="w-3 h-3" /> Post

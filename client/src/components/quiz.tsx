@@ -198,14 +198,14 @@ export function Quiz({ questions, onComplete, rewardAmount }: QuizProps) {
                       <Button 
                          onClick={handleSubmit}
                          disabled={currentQuestion.type === 'multiple-choice' ? !selectedOption : !textAnswer}
-                         className="h-12 px-8 text-base font-bold rounded-full"
+                         className="gap-2 rounded-full px-8 text-base"
                       >
                          Check Answer
                       </Button>
                    ) : (
                       <Button 
                          onClick={handleNext}
-                         className="h-12 px-8 text-base font-bold rounded-full gap-2"
+                         className="gap-2 rounded-full px-8 text-base"
                       >
                          {currentQuestionIndex < questions.length - 1 ? (
                             <>Next Question <ArrowRight className="w-4 h-4" /></>
