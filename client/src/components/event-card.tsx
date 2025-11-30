@@ -40,12 +40,6 @@ export function EventCard({ event }: EventProps) {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
           />
           
-          {/* Category Badge - Top Left */}
-          <div className="absolute top-0 left-0 p-2 z-20">
-             <Badge variant="secondary" className="bg-white/90 text-black text-[10px] font-bold shadow-sm backdrop-blur-sm hover:bg-white">
-              {event.category}
-            </Badge>
-          </div>
 
           {/* Date Block - Bottom Left overlay */}
           <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent z-20">
