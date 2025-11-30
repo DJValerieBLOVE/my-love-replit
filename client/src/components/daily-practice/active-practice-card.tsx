@@ -16,8 +16,9 @@ interface ActivePracticeCardProps {
 
 export function ActivePracticeCard({ data: initialData, onComplete }: ActivePracticeCardProps) {
   // Initialize state with existing data OR defaults
-  const [morningVibe, setMorningVibe] = useState<string>(initialData?.morningVibe || "");
-  const [eveningVibe, setEveningVibe] = useState<string>(initialData?.eveningVibe || "");
+  // Ensure numbers are converted to strings for Inputs
+  const [morningVibe, setMorningVibe] = useState<string>(initialData?.morningVibe ? String(initialData.morningVibe) : "");
+  const [eveningVibe, setEveningVibe] = useState<string>(initialData?.eveningVibe ? String(initialData.eveningVibe) : "");
   const [selectedAreaId, setSelectedAreaId] = useState<string>(initialData?.focusArea?.id || "");
   
   const [vision, setVision] = useState(initialData?.vision || "");
