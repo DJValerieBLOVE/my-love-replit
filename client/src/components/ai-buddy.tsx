@@ -25,21 +25,21 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
       <SheetContent side="right" className="w-full sm:max-w-[800px] sm:w-[800px] p-0 border-l shadow-2xl">
         <div className="h-full flex flex-col bg-background">
           {/* Consolidated Header + Suggestion + Chat Block */}
-          <div className="p-6 border-b bg-gradient-to-br from-purple-900/50 via-purple-800/40 to-pink-900/30 space-y-4">
+          <div className="p-6 border-b bg-muted/30 space-y-4">
             {/* Magic Mentor Header */}
             <div className="flex items-center gap-4">
-              <div className="relative flex items-center justify-center w-12 h-12 rounded-full bg-purple-100 shadow-lg shrink-0">
-                <Sparkles className="w-6 h-6 text-purple-600 fill-purple-200" strokeWidth={1.5} />
+              <div className="relative flex items-center justify-center w-12 h-12 rounded-full bg-background shadow-sm border shrink-0">
+                <Sparkles className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />
               </div>
               <div>
-                <h3 className="font-bold text-lg font-serif text-white">Magic Mentor</h3>
-                <p className="text-xs text-purple-100/90">Your accountability partner</p>
+                <h3 className="font-bold text-lg font-serif text-foreground">Magic Mentor</h3>
+                <p className="text-xs text-muted-foreground">Your accountability partner</p>
               </div>
             </div>
 
             {/* Suggestion Box */}
-            <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4 text-sm text-white shadow-sm">
-              <p className="leading-relaxed italic">"You've been focusing a lot on <strong>Community</strong> lately. Maybe spend some time on <strong>Body</strong> today?"</p>
+            <div className="bg-background border rounded-xl p-4 text-sm text-foreground shadow-sm">
+              <p className="leading-relaxed italic text-muted-foreground">"You've been focusing a lot on <strong className="text-foreground">Community</strong> lately. Maybe spend some time on <strong className="text-foreground">Body</strong> today?"</p>
             </div>
 
             {/* Chat Input */}
@@ -49,12 +49,12 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
                 placeholder="Ask me anything..." 
                 value={chatMessage}
                 onChange={(e) => setChatMessage(e.target.value)}
-                className="flex-1 px-4 py-3 rounded-xl border border-white/20 bg-white/10 text-sm text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-purple-400/50 focus:bg-white/20 transition-all"
+                className="flex-1 px-4 py-3 rounded-xl border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                 data-testid="input-chat-message"
               />
               <Button 
                 size="icon" 
-                className="h-auto w-12 bg-[#6600ff] hover:bg-[#5500dd] text-white rounded-xl shadow-lg"
+                className="h-auto w-12 rounded-xl shadow-sm"
                 data-testid="button-send-message"
               >
                 <Send className="w-5 h-5" strokeWidth={1.5} />
