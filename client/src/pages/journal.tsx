@@ -1,7 +1,7 @@
 import Layout from "@/components/layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PenLine, Calendar, Search, Filter, Heart, CheckCircle, FlaskConical, Lightbulb, Plus, Sparkles, Beaker, Quote, Play, X, Moon, Sun, BookOpen, Trophy, Eye } from "lucide-react";
+import { PenLine, Calendar, Search, Filter, Heart, CheckCircle, FlaskConical, Lightbulb, Plus, Sparkles, Beaker, Quote, Play, X, Moon, Sun, BookOpen, Trophy, Eye, ChevronLeft } from "lucide-react";
 import confetti from "canvas-confetti";
 import { getPlaylistForToday } from "@/lib/playlists";
 import { Input } from "@/components/ui/input";
@@ -150,6 +150,11 @@ export default function LabNotes() {
         {isPracticing ? (
           // Show the blank/new card when practicing
           <div className="space-y-8">
+             <div className="flex items-center justify-between">
+                <Button variant="ghost" onClick={() => setIsPracticing(false)} className="gap-2 pl-0 hover:bg-transparent hover:text-primary">
+                    <ChevronLeft className="w-4 h-4" /> Back to Notes
+                </Button>
+             </div>
              <ActivePracticeCard 
                onComplete={handlePracticeComplete} 
              />
@@ -161,12 +166,13 @@ export default function LabNotes() {
                <ActivePracticeCard 
                  data={practiceData} 
                  onComplete={handleEveningComplete} 
+                 isEveningCheckin={true}
                />
             )}
 
             {/* Day Fully Completed Success Card */}
             {dayCompleted && (
-               <Card className="border-none shadow-sm bg-green-50 dark:bg-green-900/10 border-green-200">
+               <Card className="border-none shadow-sm bg-green-50 dark:bg-green-900/10 border-green-200 mb-8">
                 <CardContent className="p-8 text-center">
                   <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <CheckCircle className="w-8 h-8 text-green-600" strokeWidth={1.5} />
@@ -182,71 +188,6 @@ export default function LabNotes() {
               </Card>
             )}
 
-            {/* Missed Check-in Alert (Mock) - Only show if we haven't done practice yet */}
-            {showMissedCheckinAlert && !practiceData && !dayCompleted && (
-              <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-4 flex items-center justify-between relative overflow-hidden">
-                <div className="flex items-center gap-3 z-10">
-                   <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-muted-foreground">
-                     <Moon className="w-5 h-5" />
-                   </div>
-                   <div>
-                     <h3 className="font-bold text-orange-700 text-sm">Missed your evening vibe check?</h3>
-                     <p className="text-orange-600 text-xs">It's okay! Tap here to reflect on yesterday's wins.</p>
-                   </div>
-                </div>
-                <Button variant="ghost" size="icon" className="h-6 w-6 text-orange-400 hover:text-orange-600 z-10" onClick={() => setShowMissedCheckinAlert(false)}>
-                  <X className="w-4 h-4" />
-                </Button>
-                {/* Background decoration */}
-                <div className="absolute -right-4 -top-4 w-24 h-24 bg-orange-500/5 rounded-full blur-xl" />
-              </div>
-            )}
-
-            {/* Daily Practice Prompt & Song of the Day - Only show if we haven't started practice */}
-            {!practiceData && !dayCompleted && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card className="border-none shadow-sm bg-muted/30 h-full flex flex-col justify-center">
-                  <CardContent className="p-8 text-center">
-                    <div className="w-16 h-16 bg-background rounded-full flex items-center justify-center mx-auto mb-4 border border-border/50">
-                      <Heart className="w-8 h-8 text-muted-foreground" strokeWidth={1.5} />
-                    </div>
-                    <h2 className="text-xl font-bold mb-2 text-muted-foreground">Daily LOVE Practice</h2>
-                    <p className="text-muted-foreground mb-6">Set your vibe, vision, and victory for the day.</p>
-                    <Button 
-                      className="gap-2"
-                      onClick={() => setIsPracticing(true)}
-                    >
-                      <img src={WhiteLogo} alt="Logo" className="w-4 h-4" /> Start Daily Practice
-                    </Button>
-                  </CardContent>
-                </Card>
-
-                <Card className={`border-none shadow-sm overflow-hidden relative h-64 md:h-auto group ${todaysPlaylist?.bg}`}>
-                   <CardContent className="relative z-10 h-full flex flex-col justify-center items-center text-center p-8">
-                      <div className={`w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mb-4 ${todaysPlaylist?.color}`}>
-                        {todaysPlaylist?.icon && <todaysPlaylist.icon className="w-6 h-6" />}
-                      </div>
-                      
-                      <div className="space-y-1 mb-6">
-                        <p className="text-xs font-bold uppercase tracking-widest opacity-60">Song of the Day</p>
-                        <h3 className="font-serif text-2xl font-bold">{todaysPlaylist?.theme}</h3>
-                        <p className="text-sm opacity-80 max-w-[80%] mx-auto">{todaysPlaylist?.description}</p>
-                      </div>
-
-                      <Button className="rounded-full w-12 h-12 p-0 bg-primary text-white hover:scale-105 transition-transform shadow-lg">
-                         <Play className="w-5 h-5 ml-1" />
-                      </Button>
-                   </CardContent>
-                   
-                   {/* Decorative circles */}
-                   <div className="absolute -top-10 -left-10 w-40 h-40 bg-white/5 rounded-full blur-3xl" />
-                   <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-3xl" />
-                </Card>
-              </div>
-            )}
-            
-            {/* Removed old isCompleted block since we have new cards above */}
-            
             <Tabs defaultValue="all" className="space-y-8">
               <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
                 <TabsList className="bg-[#FAFAFA] p-1 h-auto flex-wrap justify-start">
@@ -262,30 +203,33 @@ export default function LabNotes() {
                   </TabsTrigger>
                 </TabsList>
 
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button className="gap-2">
-                      <Plus className="w-4 h-4" /> New Entry
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuItem 
-                      onClick={() => setIsPracticing(true)}
-                      className="focus:bg-love-body/10 focus:text-love-body cursor-pointer"
+                <div className="flex gap-3">
+                    <Button 
+                        className="gap-2 bg-primary text-white hover:bg-primary/90 shadow-md"
+                        onClick={() => setIsPracticing(true)}
                     >
-                      <Heart className="w-4 h-4 mr-2 text-muted-foreground group-hover:text-love-body" strokeWidth={1.5} /> Daily LOVE Practice
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="focus:bg-love-body/10 focus:text-love-body cursor-pointer">
-                      <FlaskConical className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Experiment Note
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="focus:bg-love-body/10 focus:text-love-body cursor-pointer">
-                      <Lightbulb className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Discovery Note
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="focus:bg-love-body/10 focus:text-love-body cursor-pointer">
-                      <Sparkles className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Magic Mentor Session
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                      <Heart className="w-4 h-4 fill-current" /> Daily Practice
+                    </Button>
+
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="gap-2">
+                          <Plus className="w-4 h-4" /> New Note
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-56">
+                        <DropdownMenuItem className="focus:bg-love-body/10 focus:text-love-body cursor-pointer">
+                          <FlaskConical className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Experiment Note
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="focus:bg-love-body/10 focus:text-love-body cursor-pointer">
+                          <Lightbulb className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Discovery Note
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="focus:bg-love-body/10 focus:text-love-body cursor-pointer">
+                          <Sparkles className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Magic Mentor Session
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
               </div>
 
               {/* Helper to render entry list */}
