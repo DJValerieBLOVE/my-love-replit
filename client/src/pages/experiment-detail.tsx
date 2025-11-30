@@ -190,7 +190,7 @@ export default function ExperimentDetail() {
                   <Button 
                     onClick={handleAddComment}
                     size="sm"
-                    className="gap-2 rounded-full px-6"
+                    className="gap-2 rounded-full px-6 text-base"
                     data-testid="button-post-comment"
                   >
                     <Send className="w-3 h-3" /> Post
