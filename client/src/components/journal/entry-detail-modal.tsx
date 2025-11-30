@@ -15,6 +15,8 @@ export type JournalEntry = {
   content: string;
   // Daily Practice Fields
   vibe?: number;
+  morningVibe?: number;
+  eveningVibe?: number;
   vision?: string;
   villain?: string;
   value?: string;
@@ -129,8 +131,12 @@ export function EntryDetailModal({ entry, isOpen, onClose }: EntryDetailModalPro
                       <div className="font-medium text-red-500">{entry.villain}</div>
                     </div>
                     <div className="col-span-full pt-2 border-t border-border/20 mt-2 flex items-center justify-between">
-                       <div className="text-xs font-bold text-muted-foreground uppercase">Vibe Check</div>
-                       <div className="font-bold text-primary text-xl">{entry.vibe}/10</div>
+                       <div className="text-xs font-bold text-muted-foreground uppercase">Morning Vibe</div>
+                       <div className="font-bold text-primary text-xl">{entry.morningVibe || entry.vibe || "-"}/10</div>
+                    </div>
+                    <div className="col-span-full flex items-center justify-between">
+                       <div className="text-xs font-bold text-muted-foreground uppercase">Evening Vibe</div>
+                       <div className="font-bold text-secondary text-xl">{entry.eveningVibe || "-"}/10</div>
                     </div>
                   </div>
 

@@ -32,7 +32,9 @@ export default function LabNotes() {
       type: "daily-practice",
       date: "Today, Nov 28",
       time: "10:42 AM",
-      vibe: 8,
+      morningVibe: 8,
+      eveningVibe: 9,
+      vibe: 8, // Fallback
       vision: "Focus on connection and clarity.",
       villain: "Distraction",
       value: "Presence",
@@ -57,7 +59,9 @@ export default function LabNotes() {
       type: "daily-practice",
       date: "Nov 26",
       time: "9:30 AM",
-      vibe: 9,
+      morningVibe: 9,
+      eveningVibe: 7,
+      vibe: 9, // Fallback
       vision: "Celebrate the small wins.",
       villain: "Doubt",
       value: "Joy",
@@ -202,23 +206,29 @@ export default function LabNotes() {
                                   {entry.type === 'daily-practice' && <Heart className="w-3 h-3 text-muted-foreground" strokeWidth={1.5} />}
                                   {entry.type === 'experiment' && <Beaker className="w-3 h-3 text-muted-foreground" strokeWidth={1.5} />}
                                   {entry.type === 'discovery' && <Lightbulb className="w-3 h-3 text-muted-foreground" strokeWidth={1.5} />}
-                                  <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">
+                                  <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider mt-[1px]">
                                     {entry.type === 'daily-practice' ? "Daily LOVE Practice" : entry.type.charAt(0).toUpperCase() + entry.type.slice(1)}
                                   </span>
                                 </div>
-                                <div className="font-bold text-lg text-muted-foreground font-serif">{entry.date}</div>
+                                <div className="text-lg text-muted-foreground font-serif">{entry.date}</div>
                               </div>
                               
                               {entry.type === 'daily-practice' && (
-                                <div className="bg-primary/5 rounded-lg p-3 text-center border border-primary/10">
-                                  <div className="text-xs font-bold text-muted-foreground uppercase mb-1 font-serif">Vibe</div>
-                                  <div className="text-2xl font-black text-primary font-serif">{entry.vibe}<span className="text-sm text-muted-foreground font-medium">/10</span></div>
+                                <div className="space-y-2">
+                                  <div className="bg-primary/5 rounded-lg p-2 text-center border border-primary/10 flex justify-between items-center px-3">
+                                    <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif">Morning Vibe</div>
+                                    <div className="text-lg font-black text-primary font-serif">{entry.morningVibe || entry.vibe}<span className="text-[10px] text-muted-foreground font-medium">/10</span></div>
+                                  </div>
+                                  <div className="bg-secondary/5 rounded-lg p-2 text-center border border-secondary/10 flex justify-between items-center px-3">
+                                    <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif">Evening Vibe</div>
+                                    <div className="text-lg font-black text-secondary font-serif">{entry.eveningVibe || "-"}<span className="text-[10px] text-muted-foreground font-medium">/10</span></div>
+                                  </div>
                                 </div>
                               )}
                             </div>
 
                             {/* Col 2: Content Preview */}
-                            <div className="space-y-2">
+                            <div className="space-y-2 pt-[3px]">
                               {entry.type === 'experiment' ? (
                                 <>
                                   <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Hypothesis</label>
