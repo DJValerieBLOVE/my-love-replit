@@ -9,48 +9,49 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
+  /* Updated to use direct variables (Hex support) instead of HSL wrappers */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
   
-  --color-card: hsl(var(--card));
-  --color-card-foreground: hsl(var(--card-foreground));
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
   
-  --color-popover: hsl(var(--popover));
-  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
   
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
   
-  --color-secondary: hsl(var(--secondary));
-  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
   
-  --color-muted: hsl(var(--muted));
-  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
   
-  --color-accent: hsl(var(--accent));
-  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
   
-  --color-destructive: hsl(var(--destructive));
-  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   
-  --color-border: hsl(var(--border));
-  --color-input: hsl(var(--input));
-  --color-ring: hsl(var(--ring));
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
   
-  --color-chart-1: hsl(var(--chart-1));
-  --color-chart-2: hsl(var(--chart-2));
-  --color-chart-3: hsl(var(--chart-3));
-  --color-chart-4: hsl(var(--chart-4));
-  --color-chart-5: hsl(var(--chart-5));
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
   
-  --color-sidebar: hsl(var(--sidebar));
-  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
-  --color-sidebar-primary: hsl(var(--sidebar-primary));
-  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
-  --color-sidebar-accent: hsl(var(--sidebar-accent));
-  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
-  --color-sidebar-border: hsl(var(--sidebar-border));
-  --color-sidebar-ring: hsl(var(--sidebar-ring));
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 
   --font-sans: 'Marcellus', Georgia, sans-serif;
   --font-serif: 'Marcellus', Georgia, serif;
@@ -74,85 +75,85 @@
   --love-env: #0033ff;        /* Blue */
 
   /* Light Mode: Clean, Modern, High Energy */
-  --background: 0 0% 98%;
-  --foreground: 0 0% 4%; /* 95% black */
+  --background: #FAFAFA;
+  --foreground: #4D3D5C; /* Deep Muted Purple (Was Black) */
 
-  --card: 0 0% 100%;
-  --card-foreground: 0 0% 4%; /* 95% black */
+  --card: #FFFFFF;
+  --card-foreground: #4D3D5C;
 
-  --popover: 0 0% 100%;
-  --popover-foreground: 0 0% 4%; /* 95% black */
+  --popover: #FFFFFF;
+  --popover-foreground: #4D3D5C;
 
   /* Primary: Body Purple (Brand) */
-  --primary: 264 100% 50%; /* #6600ff */ 
-  --primary-foreground: 0 0% 100%;
+  --primary: #6600ff; 
+  --primary-foreground: #FFFFFF;
 
   /* Secondary: Cyber Gold/Orange (Sats) */
-  --secondary: 35 100% 60%;
-  --secondary-foreground: 0 0% 100%;
+  --secondary: #FF9900;
+  --secondary-foreground: #FFFFFF;
 
-  --muted: 270 20% 96%;
-  --muted-foreground: 270 20% 30%;
+  --muted: #F5F3FF;
+  --muted-foreground: #4D3D5C; /* Deep Muted Purple */
 
-  --accent: 180 80% 96%;
-  --accent-foreground: 180 100% 35%;
+  --accent: #E0F7FA;
+  --accent-foreground: #006064;
 
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 98%;
+  --destructive: #EF4444;
+  --destructive-foreground: #FAFAFA;
 
-  --border: 270 20% 90%;
-  --input: 270 20% 90%;
-  --ring: 270 100% 50%; /* #6600ff */
+  --border: #E5E5E5;
+  --input: #E5E5E5;
+  --ring: #6600ff;
 
-  --sidebar: 0 0% 100%;
-  --sidebar-foreground: 0 0% 0%; /* darkest */
-  --sidebar-primary: 270 100% 50%; /* #6600ff */
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 270 20% 96%;
-  --sidebar-accent-foreground: 270 100% 50%; /* #6600ff */
-  --sidebar-border: 270 20% 90%;
-  --sidebar-ring: 270 90% 60%;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #4D3D5C;
+  --sidebar-primary: #6600ff;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F5F3FF;
+  --sidebar-accent-foreground: #6600ff;
+  --sidebar-border: #E5E5E5;
+  --sidebar-ring: #6600ff;
 }
 
 
 /* Dark Mode: Cyber Goddess, Deep Space */
 .dark {
-  --background: 270 50% 5%; /* Deepest Purple Black */
-  --foreground: 270 10% 98%;
+  --background: #0D001A; /* Deepest Purple Black */
+  --foreground: #F3E8FF; /* Light Lavender */
 
-  --card: 270 40% 10%;
-  --card-foreground: 270 10% 98%;
+  --card: #1A052E;       /* Deep Purple Card */
+  --card-foreground: #F3E8FF;
 
-  --popover: 270 40% 10%;
-  --popover-foreground: 270 10% 98%;
+  --popover: #1A052E;
+  --popover-foreground: #F3E8FF;
 
-  --primary: 270 100% 70%; /* Glowing Purple */
-  --primary-foreground: 270 50% 10%;
+  --primary: #9D4DFF;    /* Lighter Glowing Purple */
+  --primary-foreground: #FFFFFF;
 
-  --secondary: 35 100% 60%;
-  --secondary-foreground: 0 0% 100%;
+  --secondary: #FFAA33;  /* Lighter Orange */
+  --secondary-foreground: #FFFFFF;
 
-  --muted: 270 30% 20%;
-  --muted-foreground: 270 20% 70%;
+  --muted: #2D1B4E;
+  --muted-foreground: #D8B4FE;
 
-  --accent: 180 100% 20%;
-  --accent-foreground: 180 100% 80%;
+  --accent: #006064;
+  --accent-foreground: #E0F7FA;
 
-  --destructive: 0 62% 30%;
-  --destructive-foreground: 0 0% 98%;
+  --destructive: #7F1D1D;
+  --destructive-foreground: #FAFAFA;
 
-  --border: 270 30% 20%;
-  --input: 270 30% 20%;
-  --ring: 270 100% 70%;
+  --border: #4D3D5C;
+  --input: #4D3D5C;
+  --ring: #9D4DFF;
 
-  --sidebar: 270 50% 7%;
-  --sidebar-foreground: 270 10% 98%;
-  --sidebar-primary: 270 100% 70%;
-  --sidebar-primary-foreground: 270 50% 10%;
-  --sidebar-accent: 270 30% 20%;
-  --sidebar-accent-foreground: 270 100% 80%;
-  --sidebar-border: 270 30% 20%;
-  --sidebar-ring: 270 100% 70%;
+  --sidebar: #0D001A;
+  --sidebar-foreground: #F3E8FF;
+  --sidebar-primary: #9D4DFF;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #2D1B4E;
+  --sidebar-accent-foreground: #9D4DFF;
+  --sidebar-border: #4D3D5C;
+  --sidebar-ring: #9D4DFF;
 }
 
 @layer base {
@@ -208,6 +209,7 @@
   }
   input, textarea, select {
     font-family: 'Marcellus', Georgia, serif;
+    color: var(--foreground);
   }
 }
 
