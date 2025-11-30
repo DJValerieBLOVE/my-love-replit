@@ -97,13 +97,13 @@ export default function LabNotes() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuItem onClick={() => setIsPracticing(true)}>
-                <Sparkles className="w-4 h-4 mr-2 text-primary" /> Daily 5 V's Practice
+                <Sparkles className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Daily 5 V's Practice
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Beaker className="w-4 h-4 mr-2 text-secondary" /> Log Experiment
+                <Beaker className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Log Experiment
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Lightbulb className="w-4 h-4 mr-2 text-yellow-500" /> Note Discovery
+                <Lightbulb className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Note Discovery
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -117,8 +117,8 @@ export default function LabNotes() {
             {!isCompleted && (
               <Card className="border-none shadow-sm bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">
                 <CardContent className="p-8 text-center">
-                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Sparkles className="w-8 h-8 text-primary" />
+                  <div className="w-16 h-16 bg-muted/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Sparkles className="w-8 h-8 text-muted-foreground" strokeWidth={1.5} />
                   </div>
                   <h2 className="text-xl font-bold mb-2 text-muted-foreground">Morning 5 V's</h2>
                   <p className="text-muted-foreground mb-6">Set your vibe, vision, and victory for the day.</p>
@@ -136,7 +136,7 @@ export default function LabNotes() {
                <Card className="border-none shadow-sm bg-green-50 dark:bg-green-900/10 border-green-200">
                 <CardContent className="p-8 text-center">
                   <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <CheckCircle className="w-8 h-8 text-green-600" />
+                    <CheckCircle className="w-8 h-8 text-muted-foreground" strokeWidth={1.5} />
                   </div>
                   <h2 className="text-xl font-bold mb-2 text-green-800">Practice Complete!</h2>
                   <p className="text-green-700 mb-0">Way to go, VIP! You've earned 100 Sats.</p>
@@ -149,13 +149,13 @@ export default function LabNotes() {
                 <TabsList className="bg-[#FAFAFA] p-1 h-auto flex-wrap justify-start">
                   <TabsTrigger value="all" className="px-4 py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">All Notes</TabsTrigger>
                   <TabsTrigger value="daily-practice" className="px-4 py-2 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                    <Sparkles className="w-3 h-3" /> Daily Practice
+                    <Sparkles className="w-3 h-3 text-muted-foreground" strokeWidth={1.5} /> Daily Practice
                   </TabsTrigger>
                   <TabsTrigger value="experiments" className="px-4 py-2 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                    <Beaker className="w-3 h-3" /> Experiments
+                    <Beaker className="w-3 h-3 text-muted-foreground" strokeWidth={1.5} /> Experiments
                   </TabsTrigger>
                   <TabsTrigger value="discoveries" className="px-4 py-2 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                    <Lightbulb className="w-3 h-3" /> Discoveries
+                    <Lightbulb className="w-3 h-3 text-muted-foreground" strokeWidth={1.5} /> Discoveries
                   </TabsTrigger>
                 </TabsList>
 
@@ -196,9 +196,9 @@ export default function LabNotes() {
                             <div className="flex flex-col justify-between space-y-4">
                               <div>
                                 <div className="flex items-center gap-2 mb-1">
-                                  {entry.type === 'daily-practice' && <Sparkles className="w-3 h-3 text-primary" />}
-                                  {entry.type === 'experiment' && <Beaker className="w-3 h-3 text-secondary" />}
-                                  {entry.type === 'discovery' && <Lightbulb className="w-3 h-3 text-yellow-500" />}
+                                  {entry.type === 'daily-practice' && <Sparkles className="w-3 h-3 text-muted-foreground" strokeWidth={1.5} />}
+                                  {entry.type === 'experiment' && <Beaker className="w-3 h-3 text-muted-foreground" strokeWidth={1.5} />}
+                                  {entry.type === 'discovery' && <Lightbulb className="w-3 h-3 text-muted-foreground" strokeWidth={1.5} />}
                                   <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">
                                     {entry.type === 'daily-practice' ? "Daily 5 V's" : entry.type.charAt(0).toUpperCase() + entry.type.slice(1)}
                                   </span>

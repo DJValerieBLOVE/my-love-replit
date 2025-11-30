@@ -43,13 +43,13 @@ export function EntryDetailModal({ entry, isOpen, onClose }: EntryDetailModalPro
   const renderHeaderIcon = () => {
     switch (entry.type) {
       case "daily-practice":
-        return <Sparkles className="w-6 h-6 text-primary" />;
+        return <Sparkles className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />;
       case "experiment":
-        return <Beaker className="w-6 h-6 text-secondary" />;
+        return <Beaker className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />;
       case "discovery":
-        return <Lightbulb className="w-6 h-6 text-yellow-500" />;
+        return <Lightbulb className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />;
       default:
-        return <Sparkles className="w-6 h-6" />;
+        return <Sparkles className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />;
     }
   };
 
@@ -178,7 +178,7 @@ export function EntryDetailModal({ entry, isOpen, onClose }: EntryDetailModalPro
               {entry.type === "discovery" && (
                 <>
                   <div className="flex items-start gap-4 bg-yellow-50 dark:bg-yellow-900/10 p-6 rounded-xl border border-yellow-200 dark:border-yellow-800">
-                    <Lightbulb className="w-8 h-8 text-yellow-500 shrink-0 mt-1" />
+                    <Lightbulb className="w-8 h-8 text-muted-foreground shrink-0 mt-1" strokeWidth={1.5} />
                     <div className="space-y-2">
                       <h3 className="text-xl font-bold text-yellow-700 dark:text-yellow-400">The "Aha!" Moment</h3>
                       <p className="text-xl font-medium italic leading-relaxed">"{entry.ahaMoment}"</p>
