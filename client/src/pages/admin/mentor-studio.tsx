@@ -37,7 +37,7 @@ export default function MentorStudio() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h1 className="text-3xl font-serif font-bold text-muted-foreground mb-2 flex items-center gap-2">
-              <Bot className="w-8 h-8 text-[#6600ff]" /> Magic Mentor Studio
+              <Bot className="w-8 h-8 text-muted-foreground" strokeWidth={1.5} /> Magic Mentor Studio
             </h1>
             <p className="text-muted-foreground">
               Train your AI companion and configure its personality.
@@ -62,7 +62,7 @@ export default function MentorStudio() {
               <Card className="md:col-span-2 border-none shadow-md">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <BrainCircuit className="w-5 h-5 text-primary" /> Core Knowledge
+                    <BrainCircuit className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} /> Core Knowledge
                   </CardTitle>
                   <CardDescription>
                     Upload your books, course materials, and guides. The Mentor will use these to answer questions.
@@ -71,7 +71,7 @@ export default function MentorStudio() {
                 <CardContent className="space-y-6">
                   <div className="border-2 border-dashed border-[#E5E5E5] rounded-lg p-8 text-center hover:bg-[#FAFAFA] transition-colors cursor-pointer group">
                     <div className="bg-primary-light p-4 rounded-full w-16 h-16 mx-auto mb-4 group-hover:scale-110 transition-transform flex items-center justify-center">
-                      <Upload className="w-8 h-8 text-primary" />
+                      <Upload className="w-8 h-8 text-muted-foreground" strokeWidth={1.5} />
                     </div>
                     <h3 className="font-medium text-lg mb-1">Upload Training Materials</h3>
                     <p className="text-sm text-muted-foreground mb-4">
@@ -140,7 +140,7 @@ export default function MentorStudio() {
             <Card className="border-none shadow-md">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Settings2 className="w-5 h-5 text-primary" /> Base Personality
+                  <Settings2 className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} /> Base Personality
                 </CardTitle>
                 <CardDescription>
                   Define how the Magic Mentor speaks and behaves by default.
@@ -205,7 +205,7 @@ export default function MentorStudio() {
              <Card className="border-none shadow-md">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <UserCog className="w-5 h-5 text-primary" /> User Personalization Options
+                  <UserCog className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} /> User Personalization Options
                 </CardTitle>
                 <CardDescription>
                   What can users customize about their own Mentor experience?
