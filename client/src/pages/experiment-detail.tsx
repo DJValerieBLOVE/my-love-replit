@@ -379,7 +379,7 @@ export default function ExperimentDetail() {
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   placeholder="Share your findings, questions, or ahas..."
-                  className="w-full p-3 rounded-lg bg-card text-foreground placeholder-muted-foreground border border-border focus:outline-none focus:ring-1 focus:ring-primary resize-none transition-all text-[17px]"
+                  className="w-full p-3 rounded-lg bg-card text-muted-foreground placeholder-muted-foreground border border-border focus:outline-none focus:ring-1 focus:ring-primary resize-none transition-all text-[17px]"
                   rows={2}
                   data-testid="textarea-discussion"
                 />
