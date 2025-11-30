@@ -287,24 +287,27 @@ export default function LabNotes() {
                                 <div className="space-y-2">
                                   <div className="bg-primary/5 rounded-lg p-2 text-center border border-primary/10 flex justify-between items-center px-3">
                                     <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif">Morning Vibe</div>
-                                    <div className="text-lg font-black text-primary font-serif">{entry.morningVibe || entry.vibe}<span className="text-[10px] text-muted-foreground font-medium">/10</span></div>
+                                    <div className="text-lg font-medium text-primary font-serif">{entry.morningVibe || entry.vibe}<span className="text-[10px] text-muted-foreground font-medium">/10</span></div>
                                   </div>
                                   <div className="bg-primary/5 rounded-lg p-2 text-center border border-primary/10 flex justify-between items-center px-3">
                                     <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif">Evening Vibe</div>
-                                    <div className="text-lg font-black text-primary font-serif">{entry.eveningVibe || "-"}<span className="text-[10px] text-muted-foreground font-medium">/10</span></div>
+                                    <div className="text-lg font-medium text-primary font-serif">{entry.eveningVibe || "-"}<span className="text-[10px] text-muted-foreground font-medium">/10</span></div>
                                   </div>
                                   
                                   {entry.focusArea && (
-                                    <div className="bg-muted/20 rounded-lg p-3 border border-border/50 mt-2 space-y-2">
-                                      <div className="flex items-center justify-between">
-                                        <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Focus: <span style={{ color: entry.focusArea.color }}>{entry.focusArea.name}</span></div>
-                                        <div className="text-[10px] font-bold" style={{ color: entry.focusArea.color }}>{entry.focusArea.progress}%</div>
-                                      </div>
+                                    <div className="bg-muted/20 rounded-lg p-3 border border-border/50 mt-2 space-y-3">
                                       <div className="text-xs font-serif text-muted-foreground italic leading-relaxed">
                                         "{entry.focusArea.dream}"
                                       </div>
-                                      <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
-                                        <div className="h-full rounded-full" style={{ width: `${entry.focusArea.progress}%`, backgroundColor: entry.focusArea.color }} />
+                                      
+                                      <div className="space-y-1">
+                                        <div className="flex items-center justify-between">
+                                          <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Big Dream: <span style={{ color: entry.focusArea.color }}>{entry.focusArea.name}</span></div>
+                                          <div className="text-[10px] font-medium" style={{ color: entry.focusArea.color }}>{entry.focusArea.progress}%</div>
+                                        </div>
+                                        <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
+                                          <div className="h-full rounded-full" style={{ width: `${entry.focusArea.progress}%`, backgroundColor: entry.focusArea.color }} />
+                                        </div>
                                       </div>
                                     </div>
                                   )}
