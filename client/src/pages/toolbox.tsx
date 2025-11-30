@@ -121,7 +121,7 @@ export default function Toolbox() {
 
         {/* Main Content */}
         <Tabs defaultValue="all" className="space-y-8">
-          <TabsList className="w-full md:w-auto bg-muted/50 p-1 h-auto flex-wrap justify-start">
+          <TabsList className="w-full md:w-auto bg-[#FAFAFA] p-1 h-auto flex-wrap justify-start">
             <TabsTrigger value="all" className="px-6 py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">All Items</TabsTrigger>
             <TabsTrigger value="experiments" className="px-6 py-2 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
               <Bookmark className="w-4 h-4" /> Saved Experiments
@@ -169,7 +169,7 @@ export default function Toolbox() {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {WORKSHEETS.map((file) => (
-                  <Card key={file.id} className="border-none shadow-sm hover:bg-muted/30 transition-colors group">
+                  <Card key={file.id} className="border-none shadow-sm hover:bg-[#FAFAFA] transition-colors group">
                     <CardContent className="p-4 flex items-start gap-4">
                       <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                         <FileText className="w-5 h-5" />
@@ -254,7 +254,7 @@ export default function Toolbox() {
           </TabsContent>
 
           <TabsContent value="worksheets">
-            <Card className="border-dashed border-2 border-muted bg-muted/30 mb-8">
+            <Card className="border-dashed border-2 border-muted bg-[#FAFAFA] mb-8">
               <CardContent className="p-12 flex flex-col items-center text-center">
                 <div className="w-12 h-12 bg-background rounded-full flex items-center justify-center shadow-sm mb-4">
                   <Download className="w-6 h-6 text-primary" />
@@ -271,7 +271,7 @@ export default function Toolbox() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {WORKSHEETS.map((file) => (
-                <Card key={file.id} className="border-none shadow-sm hover:bg-muted/30 transition-colors group">
+                <Card key={file.id} className="border-none shadow-sm hover:bg-[#FAFAFA] transition-colors group">
                   <CardContent className="p-4 flex items-start gap-4">
                     <div className="w-12 h-12 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                       <FileText className="w-6 h-6" />

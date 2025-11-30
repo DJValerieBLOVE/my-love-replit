@@ -66,6 +66,21 @@
   --color-love-mind: #9900ff;
   --color-love-soul: #cc00ff;
 
+  /* Solid Faint Variants (Replacement for Opacity) */
+  --color-love-god-light: #FDE6F6;
+  --color-love-romance-light: #FDE6E9;
+  --color-love-family-light: #FFF0E6;
+  --color-love-community-light: #FFFCE6;
+  --color-love-mission-light: #F6FDE6;
+  --color-love-money-light: #E6FDE8;
+  --color-love-time-light: #E6FAFF;
+  --color-love-environment-light: #E6EBFF;
+  --color-love-body-light: #F0E6FF;
+  --color-love-mind-light: #F5E6FF;
+  --color-love-soul-light: #FAE6FF;
+  
+  --color-primary-light: #F0E6FF; /* Solid hex for bg-primary/10 */
+
   --font-sans: 'Marcellus', Georgia, sans-serif;
   --font-serif: 'Marcellus', Georgia, serif;
   
@@ -172,7 +187,7 @@
     @apply border-border;
   }
   body {
-    @apply font-sans antialiased bg-background text-foreground selection:bg-primary/30 selection:text-primary;
+    @apply font-sans antialiased bg-background text-foreground selection:bg-primary-light selection:text-primary;
     font-size: var(--text-base);
   }
   h1, h2, h3, h4, h5, h6, p, button, input, textarea, select {
@@ -203,11 +218,11 @@
   }
   
   .glass-panel {
-    @apply bg-white/70 dark:bg-black/40 backdrop-blur-xl border border-white/40 dark:border-white/10 shadow-lg;
+    @apply bg-card border border-border shadow-lg;
   }
   
   .neon-border {
-    @apply border border-transparent hover:border-primary/50 transition-colors duration-300;
+    @apply border border-transparent hover:border-primary transition-colors duration-300;
   }
 
   .text-gradient-gold {

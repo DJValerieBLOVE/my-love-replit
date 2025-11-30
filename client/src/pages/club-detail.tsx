@@ -39,7 +39,7 @@ export default function ClubDetail() {
     <Layout>
       {/* Hero Header */}
       <div className="relative h-64 md:h-80 w-full overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent z-10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-[#FAFAFA] to-transparent z-10" />
         <img 
           src={CommunityCover} 
           alt={club.name} 
@@ -48,7 +48,7 @@ export default function ClubDetail() {
         
         <div className="absolute top-4 left-4 z-20">
           <Link href="/community">
-            <Button variant="secondary" className="gap-2 bg-background/50 backdrop-blur-md hover:bg-background/80 border-none text-foreground">
+            <Button variant="secondary" className="gap-2 bg-white hover:bg-[#F4F4F5] border-none text-foreground">
               <ArrowLeft className="w-4 h-4" /> Back to Clubs
             </Button>
           </Link>
@@ -74,11 +74,11 @@ export default function ClubDetail() {
           </div>
 
           <div className="flex items-center gap-3 mb-2">
-            <Button variant="outline" className="gap-2 bg-background/50 backdrop-blur-sm px-6">
+            <Button variant="outline" className="gap-2 bg-white px-6">
               <Share2 className="w-4 h-4" /> Share
             </Button>
             <Button 
-              className={`gap-2 font-bold px-6 shadow-lg shadow-primary/20 min-w-[140px] ${isJoined ? "bg-secondary hover:bg-secondary/90" : ""}`}
+              className={`gap-2 font-bold px-6 shadow-lg shadow-primary-light min-w-[140px] ${isJoined ? "bg-secondary hover:bg-[#FFB84D]" : ""}`}
               onClick={handleJoin}
             >
               {isJoined ? "Joined ✓" : "Join Club"}
@@ -123,7 +123,7 @@ export default function ClubDetail() {
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Club Stats/Info */}
-          <Card className="border-none shadow-lg bg-card/50 backdrop-blur-sm sticky top-24">
+          <Card className="border-none shadow-lg bg-card sticky top-24">
             <CardHeader>
               <CardTitle className="text-lg font-bold">About this Club</CardTitle>
             </CardHeader>
@@ -156,8 +156,8 @@ export default function ClubDetail() {
               <div className="pt-4 border-t border-border">
                 <h4 className="font-bold text-sm mb-3">Upcoming Events</h4>
                 <div className="space-y-3">
-                  <div className="flex gap-3 items-start p-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex flex-col items-center justify-center text-xs font-bold text-primary shrink-0">
+                  <div className="flex gap-3 items-start p-2 rounded-lg hover:bg-[#F4F4F5] transition-colors cursor-pointer">
+                    <div className="w-10 h-10 rounded-lg bg-primary-light flex flex-col items-center justify-center text-xs font-bold text-primary shrink-0">
                       <span>NOV</span>
                       <span>30</span>
                     </div>

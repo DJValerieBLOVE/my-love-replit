@@ -49,7 +49,7 @@ export default function MentorStudio() {
         </div>
 
         <Tabs defaultValue="knowledge" className="w-full">
-          <TabsList className="w-full md:w-auto grid grid-cols-3 h-12 bg-muted/50 p-1">
+          <TabsList className="w-full md:w-auto grid grid-cols-3 h-12 bg-[#FAFAFA] p-1">
             <TabsTrigger value="knowledge" className="font-serif">Knowledge Base</TabsTrigger>
             <TabsTrigger value="personality" className="font-serif">Personality & Tone</TabsTrigger>
             <TabsTrigger value="user-settings" className="font-serif">User Controls</TabsTrigger>
@@ -69,8 +69,8 @@ export default function MentorStudio() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center hover:bg-muted/30 transition-colors cursor-pointer group">
-                    <div className="bg-primary/10 p-4 rounded-full w-16 h-16 mx-auto mb-4 group-hover:scale-110 transition-transform flex items-center justify-center">
+                  <div className="border-2 border-dashed border-[#E5E5E5] rounded-lg p-8 text-center hover:bg-[#FAFAFA] transition-colors cursor-pointer group">
+                    <div className="bg-primary-light p-4 rounded-full w-16 h-16 mx-auto mb-4 group-hover:scale-110 transition-transform flex items-center justify-center">
                       <Upload className="w-8 h-8 text-primary" />
                     </div>
                     <h3 className="font-medium text-lg mb-1">Upload Training Materials</h3>
@@ -84,7 +84,7 @@ export default function MentorStudio() {
                     <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Active Knowledge Sources</h4>
                     <div className="space-y-2">
                       {files.map((file) => (
-                        <div key={file.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-md border border-muted/50">
+                        <div key={file.id} className="flex items-center justify-between p-3 bg-[#FAFAFA] rounded-md border border-[#E5E5E5]">
                           <div className="flex items-center gap-3">
                             <div className="bg-background p-2 rounded shadow-sm">
                               {file.type === "PDF" ? <FileText className="w-5 h-5 text-red-500" /> : 
@@ -108,7 +108,7 @@ export default function MentorStudio() {
 
               {/* Stats / Info */}
               <div className="space-y-6">
-                <Card className="border-none shadow-sm bg-primary/5">
+                <Card className="border-none shadow-sm bg-primary-light">
                   <CardHeader>
                     <CardTitle className="text-lg">Training Status</CardTitle>
                   </CardHeader>
@@ -190,7 +190,7 @@ export default function MentorStudio() {
                 <div className="space-y-2">
                   <label className="font-medium">System Prompt / Core Directive</label>
                   <p className="text-xs text-muted-foreground mb-2">The fundamental instructions for the AI.</p>
-                  <div className="bg-muted/30 p-4 rounded-md text-sm font-mono text-muted-foreground border border-muted">
+                  <div className="bg-[#FAFAFA] p-4 rounded-md text-sm font-mono text-muted-foreground border border-muted">
                     You are the Magic Mentor, a wise, loving, and slightly sassy guide for the 11x LOVE Lab. 
                     Your goal is to help users align with their highest timeline. 
                     Always reference the 11 Dimensions of Life. 

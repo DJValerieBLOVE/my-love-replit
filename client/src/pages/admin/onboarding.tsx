@@ -49,8 +49,8 @@ export default function AdminOnboarding() {
                     
                     <div className="space-y-2">
                       {ONBOARDING_STEPS[0].steps.map((step, index) => (
-                        <div key={step.id} className="flex items-center gap-3 bg-muted/30 p-2 rounded-lg group border border-transparent hover:border-border transition-all">
-                          <GripVertical className="w-4 h-4 text-muted-foreground cursor-grab opacity-50 group-hover:opacity-100" />
+                        <div key={step.id} className="flex items-center gap-3 bg-[#FAFAFA] p-2 rounded-lg group border border-transparent hover:border-border transition-all">
+                          <GripVertical className="w-4 h-4 text-muted-foreground cursor-grab group-hover:opacity-100" />
                           <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs font-mono text-muted-foreground">
                             {index + 1}
                           </div>
