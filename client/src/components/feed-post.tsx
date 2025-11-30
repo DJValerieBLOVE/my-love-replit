@@ -88,9 +88,9 @@ export function FeedPost({ post }: FeedPostProps) {
           <div className="flex-1 min-w-0">
             <div className="flex justify-between items-start">
               <div>
-                <h3 className="font-bold text-muted-foreground text-[15px] flex items-center gap-2">
+                <h3 className="font-bold text-muted-foreground text-sm flex items-center gap-2">
                   {post.author.name}
-                  <span className="text-muted-foreground font-normal text-[15px]">
+                  <span className="text-muted-foreground font-normal text-sm">
                     {post.timestamp.replace(" ago", "")}
                   </span>
                 </h3>
@@ -100,7 +100,7 @@ export function FeedPost({ post }: FeedPostProps) {
               </Button>
             </div>
             
-            <p className="mt-2 text-[17px] leading-relaxed text-foreground/90 whitespace-pre-wrap">
+            <p className="mt-2 text-base leading-relaxed text-foreground/90 whitespace-pre-wrap">
               {post.content}
             </p>
             
@@ -112,15 +112,15 @@ export function FeedPost({ post }: FeedPostProps) {
 
             <div className="flex items-center justify-between mt-4 pt-2 border-t border-border/30 px-2 h-12">
               {/* 1. Comment */}
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-blue-500 hover:bg-blue-500/10 px-2 h-10 gap-1.5 min-w-[60px]">
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-love-time hover:bg-love-time/10 px-2 h-10 gap-1.5 min-w-[60px]">
                 <MessageSquare className="w-[18px] h-[18px]" strokeWidth={1.5} />
-                <span className="text-[13px] font-medium">{post.comments > 0 ? post.comments : ""}</span>
+                <span className="text-sm font-medium">{post.comments > 0 ? post.comments : ""}</span>
               </Button>
 
               {/* 2. Repost */}
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-green-500 hover:bg-green-500/10 px-2 h-10 gap-1.5 min-w-[60px]">
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-love-mission hover:bg-love-mission/10 px-2 h-10 gap-1.5 min-w-[60px]">
                 <Repeat2 className="w-[22px] h-[22px]" strokeWidth={1.5} />
-                <span className="text-[13px] font-medium"></span>
+                <span className="text-sm font-medium"></span>
               </Button>
 
               {/* 3. Zap (Center, Largest) - Now with Dialog */}
@@ -129,22 +129,22 @@ export function FeedPost({ post }: FeedPostProps) {
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className={`px-2 h-10 rounded-full transition-all group min-w-[60px] ${isZapped || zaps > 0 ? 'text-orange-500 hover:bg-orange-500/10' : 'text-muted-foreground hover:text-orange-500 hover:bg-orange-500/10'}`}
+                    className={`px-2 h-10 rounded-full transition-all group min-w-[60px] ${isZapped || zaps > 0 ? 'text-love-family hover:bg-love-family/10' : 'text-muted-foreground hover:text-love-family hover:bg-love-family/10'}`}
                   >
                     <Zap 
-                      className={`mr-1.5 transition-all ${isZapped || zaps > 0 ? 'text-orange-500 w-[28px] h-[28px]' : 'w-[28px] h-[28px] group-hover:scale-110'}`} 
+                      className={`mr-1.5 transition-all ${isZapped || zaps > 0 ? 'text-love-family w-[28px] h-[28px]' : 'w-[28px] h-[28px] group-hover:scale-110'}`} 
                       strokeWidth={1.5}
                       fill={isZapped ? "currentColor" : "none"}
                     />
-                    <span className={`text-[13px] font-medium ${isZapped || zaps > 0 ? 'font-bold' : ''}`}>
+                    <span className={`text-sm font-medium ${isZapped || zaps > 0 ? 'font-bold' : ''}`}>
                       {zaps > 0 ? zaps.toLocaleString() : ""}
                     </span>
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-md border-orange-500/20">
+                <DialogContent className="sm:max-w-md border-love-family/20">
                   <DialogHeader>
                     <DialogTitle className="flex items-center gap-2 font-serif text-2xl">
-                      <span className="text-orange-500">⚡</span> Zap {post.author.name}
+                      <span className="text-love-family">⚡</span> Zap {post.author.name}
                     </DialogTitle>
                     <DialogDescription>
                       Send sats directly to their Lightning Address.
@@ -160,8 +160,8 @@ export function FeedPost({ post }: FeedPostProps) {
                           variant={zapAmount === amount ? "default" : "outline"}
                           className={`h-12 text-lg font-bold ${
                             zapAmount === amount 
-                              ? "bg-orange-500 hover:bg-orange-600 text-white border-orange-600" 
-                              : "border-muted-foreground/20 hover:border-orange-500/50 hover:bg-orange-500/5 text-muted-foreground"
+                              ? "bg-love-family hover:bg-love-family/90 text-white border-love-family" 
+                              : "border-muted-foreground/20 hover:border-love-family/50 hover:bg-love-family/5 text-muted-foreground"
                           }`}
                           onClick={() => setZapAmount(amount)}
                         >
@@ -174,7 +174,7 @@ export function FeedPost({ post }: FeedPostProps) {
                     <div className="space-y-2">
                       <Label htmlFor="custom-amount" className="text-muted-foreground font-serif">Custom Amount (Sats)</Label>
                       <div className="relative">
-                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-orange-500 font-bold">⚡</div>
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-love-family font-bold">⚡</div>
                         <Input 
                           id="custom-amount" 
                           type="number" 
@@ -205,7 +205,7 @@ export function FeedPost({ post }: FeedPostProps) {
                     <Button 
                       type="submit" 
                       onClick={handleZap}
-                      className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-8 w-full sm:w-auto"
+                      className="bg-love-family hover:bg-love-family/90 text-white font-bold px-8 w-full sm:w-auto"
                     >
                       Zap {zapAmount} Sats ⚡
                     </Button>
@@ -214,13 +214,13 @@ export function FeedPost({ post }: FeedPostProps) {
               </Dialog>
 
               {/* 4. Like */}
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-red-500 hover:bg-red-500/10 px-2 h-10 gap-1.5 min-w-[60px]">
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-love-romance hover:bg-love-romance/10 px-2 h-10 gap-1.5 min-w-[60px]">
                 <Heart className="w-[18px] h-[18px]" strokeWidth={1.5} />
-                <span className="text-[13px] font-medium">{post.likes > 0 ? post.likes : ""}</span>
+                <span className="text-sm font-medium">{post.likes > 0 ? post.likes : ""}</span>
               </Button>
 
               {/* 5. Share/Bookmark */}
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary hover:bg-primary/10 px-2 h-10 gap-1.5 min-w-[60px]">
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-love-body hover:bg-love-body/10 px-2 h-10 gap-1.5 min-w-[60px]">
                 <Bookmark className="w-[20px] h-[20px]" strokeWidth={1.5} />
               </Button>
             </div>

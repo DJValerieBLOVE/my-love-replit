@@ -53,27 +53,38 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
+  /* 11x LOVE Code Brand Colors */
+  --color-love-god: #eb00a8;
+  --color-love-romance: #e60023;
+  --color-love-family: #ff6600;
+  --color-love-community: #ffdf00;
+  --color-love-mission: #a2f005;
+  --color-love-money: #00d81c;
+  --color-love-time: #00ccff;
+  --color-love-environment: #0033ff;
+  --color-love-body: #6600ff;
+  --color-love-mind: #9900ff;
+  --color-love-soul: #cc00ff;
+
   --font-sans: 'Marcellus', Georgia, sans-serif;
   --font-serif: 'Marcellus', Georgia, serif;
   
   --radius: 1.5rem;
+
+  /* Custom Font Sizes to match Design System */
+  --text-xs: 14px;
+  --text-sm: 16px;
+  --text-base: 18px;
+  --text-lg: 20px;
+  --text-xl: 22px;
+  --text-2xl: 28px;
+  --text-3xl: 36px;
+  --text-4xl: 48px;
+  --text-5xl: 60px;
 }
 
 /* 11x LOVE Code Colors - Neon/Cyber Palette */
 :root {
-  /* Official Brand Colors */
-  --love-god: #eb00a8;        /* Hot Pink */
-  --love-soul: #cc00ff;       /* Magenta */
-  --love-mind: #9900ff;       /* Purple */
-  --love-body: #6600ff;       /* Purple - Primary Brand Color */
-  --love-romance: #e60023;    /* Red */
-  --love-family: #ff6600;     /* Orange */
-  --love-community: #ffdf00;  /* Yellow */
-  --love-mission: #a2f005;    /* Lime Green */
-  --love-money: #00d81c;      /* Matrix Green */
-  --love-time: #00ccff;       /* Cyan */
-  --love-env: #0033ff;        /* Blue */
-
   /* Light Mode: Clean, Modern, High Energy */
   --background: #FAFAFA;
   --foreground: #4D3D5C; /* Deep Muted Purple (Was Black) */
@@ -162,53 +173,26 @@
   }
   body {
     @apply font-sans antialiased bg-background text-foreground selection:bg-primary/30 selection:text-primary;
-    font-size: 18px;
+    font-size: var(--text-base);
   }
-  h1 {
+  h1, h2, h3, h4, h5, h6, p, button, input, textarea, select {
     font-family: 'Marcellus', Georgia, serif;
-    font-size: 48px;
-    font-weight: 400;
-    letter-spacing: -0.5px;
   }
-  h2 {
-    font-family: 'Marcellus', Georgia, serif;
-    font-size: 36px;
-    font-weight: 400;
-    letter-spacing: -0.3px;
-  }
-  h3 {
-    font-family: 'Marcellus', Georgia, serif;
-    font-size: 22px;
-    font-weight: 400;
-  }
-  h4 {
-    font-family: 'Marcellus', Georgia, serif;
-    font-size: 18px;
-    font-weight: 400;
-  }
-  h5 {
-    font-family: 'Marcellus', Georgia, serif;
-    font-size: 20px;
-    font-weight: 400;
-  }
-  h6 {
-    font-family: 'Marcellus', Georgia, serif;
-    font-size: 18px;
-    font-weight: 400;
-  }
-  p {
-    font-family: 'Marcellus', Georgia, serif;
-    font-size: 18px;
-  }
+  
+  /* Default heading sizes if no class is provided */
+  h1 { font-size: var(--text-4xl); font-weight: 400; letter-spacing: -0.5px; }
+  h2 { font-size: var(--text-3xl); font-weight: 400; letter-spacing: -0.3px; }
+  h3 { font-size: var(--text-xl); font-weight: 400; }
+  h4 { font-size: var(--text-base); font-weight: 400; }
+  
   button {
-    font-family: 'Marcellus', Georgia, serif;
-    font-size: 16px;
+    font-size: var(--text-sm);
   }
   button[size="lg"] {
-    font-size: 18px !important;
+    font-size: var(--text-base) !important;
   }
   input, textarea, select {
-    font-family: 'Marcellus', Georgia, serif;
+    font-size: var(--text-sm);
     color: var(--foreground);
   }
 }

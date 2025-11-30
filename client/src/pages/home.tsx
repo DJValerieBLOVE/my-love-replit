@@ -33,7 +33,7 @@ export default function Home() {
             </Button>
             
             <Link href="/journal">
-              <Button className="px-6 gap-2">
+              <Button className="px-6 gap-2 font-bold bg-love-body hover:bg-love-body/90 text-white shadow-lg hover:shadow-xl transition-all">
                 <img src={WhiteLogo} alt="Logo" className="w-4 h-4" /> Daily 5 V's
               </Button>
             </Link>
@@ -63,7 +63,7 @@ export default function Home() {
                     ✨
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold font-serif mb-2 text-primary">Daily Wonder</h3>
+                    <h3 className="text-lg font-bold font-serif mb-2 text-love-body">Daily Wonder</h3>
                     <p className="text-xl font-medium text-muted-foreground italic mb-6">
                       "What if life isn't a test you can fail... but an experiment you get to play?"
                     </p>
@@ -84,7 +84,7 @@ export default function Home() {
                   className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity"
                 />
                 <div className="absolute bottom-3 left-3 text-white">
-                  <span className="text-xs font-bold bg-primary px-2 py-0.5 rounded-full mb-1 inline-block">Active Experiment</span>
+                  <span className="text-xs font-bold bg-love-body px-2 py-0.5 rounded-full mb-1 inline-block">Active Experiment</span>
                   <h3 className="font-bold text-lg leading-tight">Morning Miracle</h3>
                 </div>
               </div>
@@ -92,10 +92,10 @@ export default function Home() {
                 <div>
                   <div className="flex justify-between text-sm mb-2">
                     <span className="text-muted-foreground">Day 3 of 7</span>
-                    <span className="font-bold text-primary">42%</span>
+                    <span className="font-bold text-love-body">42%</span>
                   </div>
                   <div className="w-full bg-muted rounded-full h-2 mb-4">
-                    <div className="bg-primary h-2 rounded-full w-[42%]" />
+                    <div className="bg-love-body h-2 rounded-full w-[42%]" />
                   </div>
                 </div>
                 <Button className="w-full" variant="outline">Continue</Button>

@@ -138,8 +138,8 @@ export default function Layout({ children, showRightSidebar = true }: { children
                 <div className={cn(
                   "flex items-center gap-3 px-4 py-1.5 rounded-lg transition-all duration-300 cursor-pointer group font-serif sidebar-menu text-base",
                   isActive 
-                    ? "bg-primary/10 text-[#6600ff] shadow-md shadow-primary/10 border border-primary/10" 
-                    : "text-muted-foreground hover:bg-primary/5 hover:text-primary hover:shadow-sm hover:translate-x-1"
+                    ? "bg-love-body/10 text-love-body shadow-md shadow-love-body/10 border border-love-body/10" 
+                    : "text-muted-foreground hover:bg-love-body/5 hover:text-love-body hover:shadow-sm hover:translate-x-1"
                 )}>
                   <item.icon strokeWidth={1.5} className={cn("w-5 h-5 transition-transform group-hover:scale-110", isActive && "opacity-100")} />
                   <span>{item.label}</span>
@@ -223,25 +223,25 @@ export default function Layout({ children, showRightSidebar = true }: { children
           {/* Widget 3: Current Focus */}
           <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow bg-card relative" data-testid="widget-focus">
             <div className="p-4 pb-5">
-              <h4 className="font-bold text-[13px] uppercase text-muted-foreground mb-3">Current Focus</h4>
+              <h4 className="font-bold text-xs uppercase text-muted-foreground mb-3">Current Focus</h4>
               <div className="flex justify-between items-center">
-                <p className="text-[15px] font-medium text-muted-foreground">Finance Sovereignty</p>
-                <span className="font-bold text-[#00d81c] text-sm">80%</span>
+                <p className="text-sm font-medium text-muted-foreground">Finance Sovereignty</p>
+                <span className="font-bold text-love-money text-sm">80%</span>
               </div>
             </div>
             <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-muted">
-              <div className="bg-[#00d81c] h-full" style={{ width: '80%' }}></div>
+              <div className="bg-love-money h-full" style={{ width: '80%' }}></div>
             </div>
           </Card>
 
           {/* Widget 4: Upcoming Event */}
           <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow bg-card" data-testid="widget-event">
             <div className="p-4">
-              <h4 className="font-bold text-[13px] uppercase text-muted-foreground mb-2">Upcoming Event</h4>
+              <h4 className="font-bold text-xs uppercase text-muted-foreground mb-2">Upcoming Event</h4>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[15px] font-medium text-muted-foreground">Full Moon Ceremony</p>
-                  <p className="text-[13px] text-muted-foreground">Nov 30</p>
+                  <p className="text-sm font-medium text-muted-foreground">Full Moon Ceremony</p>
+                  <p className="text-xs text-muted-foreground">Nov 30</p>
                 </div>
                 <span className="text-lg">🌙</span>
               </div>
@@ -253,17 +253,17 @@ export default function Layout({ children, showRightSidebar = true }: { children
           {/* Widget 6: Who to Follow */}
           <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow bg-card" data-testid="widget-follow">
             <div className="p-4">
-              <h4 className="font-bold text-[13px] uppercase text-muted-foreground mb-3">Who to Follow</h4>
+              <h4 className="font-bold text-xs uppercase text-muted-foreground mb-3">Who to Follow</h4>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-sm">
                     👤
                   </div>
                   <div>
-                    <p className="text-[17px] font-medium text-muted-foreground">Alex Luna</p>
+                    <p className="text-base font-medium text-muted-foreground">Alex Luna</p>
                   </div>
                 </div>
-                <Button className="text-base rounded-lg px-6 py-1 h-7" data-testid="button-follow">
+                <Button className="text-sm rounded-lg px-6 py-1 h-7" data-testid="button-follow">
                   Follow
                 </Button>
               </div>
@@ -282,13 +282,13 @@ export default function Layout({ children, showRightSidebar = true }: { children
               <div className="flex flex-col items-center justify-center w-16 h-full cursor-pointer">
                 <div className={cn(
                   "p-1.5 rounded-full transition-all duration-200 mb-1",
-                  isActive ? "bg-primary/10 text-primary" : "text-muted-foreground"
+                  isActive ? "bg-love-body/10 text-love-body" : "text-muted-foreground"
                 )}>
                   <item.icon className={cn("w-6 h-6", isActive && "fill-current")} />
                 </div>
                 <span className={cn(
-                  "text-[10px] font-medium transition-colors",
-                  isActive ? "text-primary" : "text-muted-foreground"
+                  "text-xs font-medium transition-colors",
+                  isActive ? "text-love-body" : "text-muted-foreground"
                 )}>{item.label}</span>
               </div>
             </Link>
