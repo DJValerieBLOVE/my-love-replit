@@ -79,7 +79,7 @@ export default function Layout({ children, showRightSidebar = true }: { children
                 <div className="relative flex items-center justify-center">
                   <EqVisualizer size={70} className="" isLogo={true} />
                 </div>
-                <span className="font-serif font-bold text-xl tracking-tight hidden md:block" style={{ color: '#0a0a0a' }}>11x LOVE LaB</span>
+                <span className="font-serif font-bold text-xl tracking-tight hidden md:block text-muted-foreground">11x LOVE LaB</span>
               </div>
             </Link>
           </div>

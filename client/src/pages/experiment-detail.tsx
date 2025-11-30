@@ -128,7 +128,7 @@ export default function ExperimentDetail() {
                </Badge>
                <span className="text-sm text-muted-foreground">Guided by {experiment.guide}</span>
             </div>
-            <h1 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-4">{experiment.title}</h1>
+            <h1 className="text-3xl md:text-4xl font-serif font-bold text-muted-foreground mb-4">{experiment.title}</h1>
             
             {/* About Toggle */}
             <div className="border-l-2 border-primary/20 pl-4 py-1 cursor-pointer hover:border-primary transition-colors" onClick={() => setIsAboutOpen(!isAboutOpen)}>

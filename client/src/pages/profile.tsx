@@ -24,7 +24,7 @@ export default function Profile() {
             </Avatar>
             
             <div className="flex-1 mb-2">
-              <h1 className="text-2xl font-bold font-serif">{CURRENT_USER.name}</h1>
+              <h1 className="text-2xl font-bold font-serif text-muted-foreground">{CURRENT_USER.name}</h1>
               <p className="text-muted-foreground">{CURRENT_USER.handle}</p>
               <div className="flex gap-2 mt-2">
                 <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs font-medium border border-primary/20">

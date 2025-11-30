@@ -19,7 +19,7 @@ export default function Home() {
         {/* Welcome Header */}
         <div className="flex flex-col md:flex-row justify-between items-end gap-4">
           <div>
-            <h1 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-2">
+            <h1 className="text-3xl md:text-4xl font-serif font-bold text-muted-foreground mb-2">
               Welcome to the LOVE Lab 🔬
             </h1>
             <p className="text-lg text-muted-foreground">

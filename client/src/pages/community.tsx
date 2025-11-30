@@ -16,7 +16,7 @@ export default function Community() {
           className="w-full h-full object-cover"
         />
         <div className="absolute bottom-0 left-0 p-6 z-20">
-          <h1 className="text-3xl font-serif font-medium text-foreground">Clubs</h1>
+          <h1 className="text-3xl font-serif font-medium text-muted-foreground">Clubs</h1>
           <p className="text-muted-foreground max-w-md">Intimate spaces to connect and grow.</p>
         </div>
       </div>

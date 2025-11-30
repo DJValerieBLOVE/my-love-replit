@@ -12,7 +12,7 @@ export default function Experiments() {
     <Layout>
       <div className="max-w-5xl mx-auto p-4 lg:p-8 space-y-8">
         <div>
-          <h1 className="text-2xl font-serif font-bold">My Experiments</h1>
+          <h1 className="text-2xl font-serif font-bold text-muted-foreground">My Experiments</h1>
           <p className="text-muted-foreground">Life is a game. Life is an experiment.</p>
         </div>
 
