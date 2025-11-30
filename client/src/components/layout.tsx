@@ -163,21 +163,21 @@ export default function Layout({ children, showRightSidebar = true }: { children
         {showRightSidebar && (
           <aside className="hidden lg:flex flex-col w-[320px] border-l bg-card/50 p-4 gap-4 overflow-y-auto">
             {/* Widget 1: Magic Mentor */}
-            <div className="bg-gradient-to-br from-purple-900/50 via-purple-800/40 to-pink-900/30 rounded-xs border border-purple-500/40 p-4 overflow-hidden relative group cursor-pointer hover:border-purple-500/60 transition-all shadow-md" data-testid="widget-mentor">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-purple-500/40 to-pink-500/30 rounded-full -mr-12 -mt-12 blur-2xl group-hover:from-purple-500/50 group-hover:to-pink-500/40 transition-all" />
+            <div className="bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-500 rounded-xs border border-white/10 p-4 overflow-hidden relative group cursor-pointer hover:shadow-lg transition-all shadow-md" data-testid="widget-mentor">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-12 -mt-12 blur-3xl transition-all" />
             
             <div className="relative z-10 flex flex-col">
               {/* Image and Badge on same line */}
               <div className="flex items-center justify-center gap-2 mb-3">
                 {/* Mentor Image */}
                 <div className="relative flex-shrink-0">
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-pink-500 blur-xl opacity-40 rounded-full" />
-                  <img src={MagicMentor} alt="Magic Mentor" className="w-16 h-16 rounded-full border-3 border-purple-300 relative z-10 shadow-lg object-cover" />
+                  <div className="absolute inset-0 bg-white/20 blur-xl rounded-full" />
+                  <img src={MagicMentor} alt="Magic Mentor" className="w-16 h-16 rounded-full border-2 border-white/30 relative z-10 shadow-lg object-cover" />
                 </div>
                 
                 {/* VIP Level Badge */}
-                <div className="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 rounded-lg px-2 py-1 cursor-pointer hover:bg-white/20 transition-colors">
-                  <Sparkles className="w-4 h-4 text-yellow-300 flex-shrink-0" />
+                <div className="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 rounded-lg px-2 py-1 cursor-pointer hover:bg-white/20 transition-colors backdrop-blur-sm">
+                  <Sparkles className="w-4 h-4 text-yellow-300 flex-shrink-0" strokeWidth={1.5} />
                   <Link href="/profile">
                     <span className="text-[10px] font-bold text-white">Level <span className="text-yellow-300 font-black">12</span></span>
                   </Link>
@@ -185,15 +185,15 @@ export default function Layout({ children, showRightSidebar = true }: { children
               </div>
 
               {/* Tagline */}
-              <p className="text-base text-white mb-3 italic font-bold text-center">"Rock Your Dreams!"</p>
+              <p className="text-base text-white mb-3 italic font-bold text-center drop-shadow-sm">"Rock Your Dreams!"</p>
 
               {/* Ask Magic Mentor Button */}
               <Button 
                 onClick={() => setIsAiOpen(true)}
-                className="w-full rounded-lg h-10 font-bold text-sm bg-love-body text-white border border-transparent transition-all"
+                className="w-full rounded-lg h-10 font-bold text-sm bg-white/20 hover:bg-white/30 text-white border border-white/20 transition-all shadow-sm backdrop-blur-sm"
                 data-testid="button-ask-mentor"
               >
-                <Sparkles className="w-4 h-4 mr-1.5" /> Ask Magic Mentor
+                <Sparkles className="w-4 h-4 mr-1.5" strokeWidth={1.5} /> Ask Magic Mentor
               </Button>
             </div>
           </div>
