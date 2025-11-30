@@ -99,7 +99,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
               <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Daily LOVE Practice</h2>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 h-full">
             
             {/* Col 1: Morning Alignment */}
             <div className="flex flex-col space-y-5 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full shadow-sm">
@@ -183,8 +183,28 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                 <div className="space-y-2">
                     <label className="text-[15px] font-bold text-muted-foreground block mt-2.5 pl-3">Big Dream</label>
                     <Select value={selectedAreaId} onValueChange={setSelectedAreaId}>
-                        <SelectTrigger className="w-full h-auto min-h-[3rem] py-3 bg-white border-muted/50 focus:ring-primary/20 font-serif shadow-sm text-left">
-                            <SelectValue placeholder="Select a Focus Area..." />
+                        <SelectTrigger className="w-full h-auto min-h-[3rem] py-3 bg-white border-muted/50 focus:ring-primary/20 font-serif shadow-sm text-left whitespace-normal">
+                            {selectedArea ? (
+                                <div className="flex flex-col gap-2 w-full text-left">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <span className={`w-2 h-2 rounded-full ${selectedArea.color}`} />
+                                            <span className="text-[11px] font-bold text-muted-foreground uppercase font-serif">{selectedArea.name}</span>
+                                        </div>
+                                        <span className="text-[10px] font-bold text-muted-foreground font-serif">{selectedArea.progress}%</span>
+                                    </div>
+                                    
+                                    <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
+                                        <div className="h-full rounded-full" style={{ width: `${selectedArea.progress}%`, backgroundColor: selectedArea.hex }} />
+                                    </div>
+                                    
+                                    <p className="text-xs font-serif text-muted-foreground italic leading-relaxed opacity-80 whitespace-normal">
+                                        "{selectedArea.dream}"
+                                    </p>
+                                </div>
+                            ) : (
+                                <SelectValue placeholder="Select a Focus Area..." />
+                            )}
                         </SelectTrigger>
                         <SelectContent className="max-h-[400px]">
                             {LOVE_CODE_AREAS.map((area) => (
