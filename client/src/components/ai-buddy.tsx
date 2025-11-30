@@ -38,8 +38,8 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
             </div>
 
             {/* Suggestion Box */}
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 text-sm text-white shadow-sm">
-              <p className="leading-relaxed italic text-white/90">"You've been focusing a lot on <strong className="text-white font-bold">Community</strong> lately. Maybe spend some time on <strong className="text-white font-bold">Body</strong> today?"</p>
+            <div className="bg-background/95 border rounded-xl p-4 text-sm text-foreground shadow-lg backdrop-blur-sm">
+              <p className="leading-relaxed italic text-muted-foreground">"You've been focusing a lot on <strong className="text-foreground font-bold">Community</strong> lately. Maybe spend some time on <strong className="text-foreground font-bold">Body</strong> today?"</p>
             </div>
 
             {/* Chat Input */}
@@ -49,12 +49,12 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
                 placeholder="Ask me anything..." 
                 value={chatMessage}
                 onChange={(e) => setChatMessage(e.target.value)}
-                className="flex-1 px-4 py-3 rounded-xl border border-white/20 bg-white/10 text-sm text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/30 focus:bg-white/20 transition-all"
+                className="flex-1 px-4 py-3 rounded-xl border bg-background/95 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-white/30 shadow-lg transition-all"
                 data-testid="input-chat-message"
               />
               <Button 
                 size="icon" 
-                className="h-auto w-12 rounded-xl shadow-lg bg-white/20 hover:bg-white/30 border border-white/20 text-white"
+                className="h-auto w-12 rounded-xl shadow-lg bg-background hover:bg-accent border text-purple-600"
                 data-testid="button-send-message"
               >
                 <Send className="w-5 h-5" strokeWidth={1.5} />
