@@ -62,7 +62,7 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
               <SelectTrigger className="w-full h-auto min-h-[3rem] py-2 bg-muted/30 border-muted focus:bg-background font-serif text-left">
                 <SelectValue placeholder="Select one of your 11 Big Dreams..." />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="max-h-[300px]">
                 {LOVE_CODE_AREAS.map((area) => (
                   <SelectItem key={area.id} value={area.id} className="py-3 cursor-pointer">
                     <div className="flex flex-col gap-1 text-left">
