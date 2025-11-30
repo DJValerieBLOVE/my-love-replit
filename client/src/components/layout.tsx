@@ -56,7 +56,8 @@ import { VerticalEqVisualizer } from "@/components/vertical-eq-visualizer";
 
 export default function Layout({ children, showRightSidebar = true }: { children: React.ReactNode, showRightSidebar?: boolean }) {
   const [location] = useLocation();
-  const [isAiOpen, setIsAiOpen] = useState(false);
+  const [inboxOpen, setInboxOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
 
   const navLinks = [
     { icon: Home, label: "Home", href: "/" },
@@ -105,14 +106,22 @@ export default function Layout({ children, showRightSidebar = true }: { children
             </Link>
 
             {/* Inbox */}
-            <DropdownMenu>
+            <div 
+                className="relative"
+                onMouseEnter={() => setInboxOpen(true)}
+                onMouseLeave={() => setInboxOpen(false)}
+            >
+            <DropdownMenu open={inboxOpen} onOpenChange={setInboxOpen} modal={false}>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full relative text-muted-foreground hover:bg-love-body/10 hover:text-love-body transition-colors" data-testid="button-inbox">
+                <Button variant="ghost" size="icon" className={cn(
+                    "rounded-full relative transition-colors",
+                    inboxOpen ? "bg-love-body/10 text-love-body" : "text-muted-foreground hover:bg-love-body/10 hover:text-love-body"
+                )} data-testid="button-inbox">
                   <Mail className="w-5 h-5" />
                   <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" data-testid="notification-dot-inbox"></span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80">
+              <DropdownMenuContent align="end" className="w-80" onMouseEnter={() => setInboxOpen(true)} onMouseLeave={() => setInboxOpen(false)}>
                 <DropdownMenuLabel>Messages</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <div className="max-h-[300px] overflow-y-auto">
@@ -147,16 +156,25 @@ export default function Layout({ children, showRightSidebar = true }: { children
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            </div>
 
             {/* Notifications */}
-            <DropdownMenu>
+            <div 
+                className="relative"
+                onMouseEnter={() => setNotificationsOpen(true)}
+                onMouseLeave={() => setNotificationsOpen(false)}
+            >
+            <DropdownMenu open={notificationsOpen} onOpenChange={setNotificationsOpen} modal={false}>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full relative text-muted-foreground hover:bg-love-body/10 hover:text-love-body transition-colors" data-testid="button-notifications">
+                <Button variant="ghost" size="icon" className={cn(
+                    "rounded-full relative transition-colors",
+                    notificationsOpen ? "bg-love-body/10 text-love-body" : "text-muted-foreground hover:bg-love-body/10 hover:text-love-body"
+                )} data-testid="button-notifications">
                   <Bell className="w-5 h-5" />
                   <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" data-testid="notification-dot-bell"></span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80">
+              <DropdownMenuContent align="end" className="w-80" onMouseEnter={() => setNotificationsOpen(true)} onMouseLeave={() => setNotificationsOpen(false)}>
                 <DropdownMenuLabel>Notifications</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <div className="max-h-[300px] overflow-y-auto">
@@ -195,6 +213,7 @@ export default function Layout({ children, showRightSidebar = true }: { children
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            </div>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -211,6 +230,7 @@ export default function Layout({ children, showRightSidebar = true }: { children
                 <DropdownMenuItem>Settings</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            </div>
           </div>
       </header>
 
