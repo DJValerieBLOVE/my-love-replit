@@ -88,7 +88,7 @@ export function FeedPost({ post }: FeedPostProps) {
           <div className="flex-1 min-w-0">
             <div className="flex justify-between items-start">
               <div>
-                <h3 className="font-bold text-foreground text-[15px] flex items-center gap-2">
+                <h3 className="font-bold text-muted-foreground text-[15px] flex items-center gap-2">
                   {post.author.name}
                   <span className="text-muted-foreground font-normal text-[15px]">
                     {post.timestamp.replace(" ago", "")}

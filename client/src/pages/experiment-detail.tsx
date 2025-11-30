@@ -165,7 +165,7 @@ export default function ExperimentDetail() {
 
           {/* Discussion Section */}
           <div className="mt-12 max-w-3xl">
-            <h2 className="text-2xl font-bold font-serif mb-6 flex items-center gap-2">
+            <h2 className="text-2xl font-bold font-serif mb-6 flex items-center gap-2 text-muted-foreground">
               <MessageCircle className="w-6 h-6 text-primary" />
               Lab Partners Discussion
             </h2>
