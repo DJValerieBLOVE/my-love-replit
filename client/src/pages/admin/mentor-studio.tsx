@@ -43,7 +43,7 @@ export default function MentorStudio() {
               Train your AI companion and configure its personality.
             </p>
           </div>
-          <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white gap-2">
+          <Button className="bg-[#6600ff] hover:bg-[#8844ff] text-white gap-2">
             <Save className="w-4 h-4" /> Save Changes
           </Button>
         </div>
@@ -77,7 +77,7 @@ export default function MentorStudio() {
                     <p className="text-sm text-muted-foreground mb-4">
                       Drag & drop PDF, DOCX, or TXT files here
                     </p>
-                    <Button variant="outline" size="sm" className="gap-2 text-muted-foreground border-muted hover:border-primary/50 hover:text-primary shadow-sm bg-card/50 font-serif text-base">Select Files</Button>
+                    <Button variant="outline" size="sm" className="gap-2 text-muted-foreground border-muted hover:border-primary/50 hover:text-primary hover:bg-primary/5 shadow-sm bg-card font-serif font-normal text-base">Select Files</Button>
                   </div>
 
                   <div className="space-y-3">
