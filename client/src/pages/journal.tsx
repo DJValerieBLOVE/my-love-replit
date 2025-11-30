@@ -291,13 +291,13 @@ export default function LabNotes() {
                                       <div className="space-y-6">
                                         {/* Morning Vibe */}
                                         <div className="bg-white/50 rounded-xl h-10 px-3 border border-border/40 flex justify-between items-center">
-                                          <div className="text-[13px] font-bold text-muted-foreground">Morning Vibe</div>
+                                          <div className="text-[15px] font-bold text-muted-foreground">Morning Vibe</div>
                                           <div className="text-lg font-medium text-muted-foreground font-serif">{entry.morningVibe || entry.vibe}<span className="text-[10px] text-muted-foreground font-medium">/11</span></div>
                                         </div>
 
                                         {/* Gratitude */}
                                          <div className="flex-1">
-                                            <div className="text-[13px] font-bold text-muted-foreground mb-2">Morning Gratitude</div>
+                                            <div className="text-[15px] font-bold text-muted-foreground mb-2">Morning Gratitude</div>
                                             <div className="text-sm font-serif text-muted-foreground whitespace-normal italic leading-relaxed">"{entry.gratitude || "Grateful for this day..."}"</div>
                                         </div>
                                       </div>
@@ -317,7 +317,7 @@ export default function LabNotes() {
                                               {entry.focusArea && (
                                                 <div className="bg-white/30 rounded-lg p-3 border border-border/20 space-y-2">
                                                   <div className="flex items-center justify-between mb-1 pt-1">
-                                                    <div className="text-[13px] font-bold text-muted-foreground font-serif">Big Dream: <span style={{ color: entry.focusArea.color }}>{entry.focusArea.name}</span></div>
+                                                    <div className="text-[15px] font-bold text-muted-foreground font-serif">Big Dream: <span style={{ color: entry.focusArea.color }}>{entry.focusArea.name}</span></div>
                                                     <div className="text-[10px] font-bold text-muted-foreground font-serif">{entry.focusArea.progress}%</div>
                                                   </div>
                                                   <div className="h-1 w-full bg-muted rounded-full overflow-hidden mb-2">
@@ -331,7 +331,7 @@ export default function LabNotes() {
 
                                               {/* Values */}
                                               <div>
-                                                <div className="text-[13px] font-bold text-muted-foreground mb-2 flex justify-between">
+                                                <div className="text-[15px] font-bold text-muted-foreground mb-2 flex justify-between">
                                                   <span>Value (3 Actions)</span>
                                                 </div>
                                                 <div className="space-y-2">
@@ -359,7 +359,7 @@ export default function LabNotes() {
 
                                           {/* Villain at the bottom */}
                                           <div className="mt-6 pt-4 border-t border-border/10">
-                                              <div className="text-[13px] font-bold text-red-900/60 mb-1">Villain (Obstacle)</div>
+                                              <div className="text-[15px] font-bold text-red-900/60 mb-1">Villain (Obstacle)</div>
                                               <div className="text-sm font-serif text-red-800/80 whitespace-normal">{entry.villain}</div>
                                           </div>
                                        </div>
@@ -375,13 +375,13 @@ export default function LabNotes() {
                                             <div className="flex flex-col h-full space-y-6">
                                                {/* Evening Vibe */}
                                               <div className="bg-white/50 rounded-xl h-10 px-3 border border-border/40 flex justify-between items-center">
-                                                <div className="text-[13px] font-bold text-muted-foreground">Evening Vibe</div>
+                                                <div className="text-[15px] font-bold text-muted-foreground">Evening Vibe</div>
                                                 <div className="text-lg font-medium text-muted-foreground font-serif">{entry.eveningVibe || "-"}<span className="text-[10px] text-muted-foreground font-medium">/11</span></div>
                                               </div>
 
                                                {/* Victory */}
                                               <div>
-                                                <div className="text-[13px] font-bold text-muted-foreground mb-1 flex items-center gap-1">
+                                                <div className="text-[15px] font-bold text-muted-foreground mb-1 flex items-center gap-1">
                                                     <Trophy className="w-3 h-3 text-muted-foreground" /> Victory
                                                 </div>
                                                 <div className="text-sm font-serif text-muted-foreground whitespace-normal">{entry.victory}</div>
@@ -389,7 +389,7 @@ export default function LabNotes() {
 
                                                {/* Lessons */}
                                                <div className="pt-2 border-t border-border/20 flex-1">
-                                                <div className="text-[13px] font-bold text-muted-foreground mb-1">Lessons & Blessings</div>
+                                                <div className="text-[15px] font-bold text-muted-foreground mb-1">Lessons & Blessings</div>
                                                 <p className="text-sm leading-relaxed text-muted-foreground font-serif italic whitespace-pre-wrap">
                                                   "{entry.content}"
                                                 </p>
