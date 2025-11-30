@@ -142,7 +142,7 @@ export default function LabNotes() {
                 className="gap-2 bg-primary text-white hover:bg-primary/90 shadow-md"
                 onClick={() => setIsPracticing(true)}
             >
-              <Heart className="w-4 h-4 fill-current" /> Daily Practice
+              <Heart className="w-4 h-4" /> Daily LOVE Practice
             </Button>
 
             <DropdownMenu>
@@ -234,9 +234,9 @@ export default function LabNotes() {
                   </TabsTrigger>
                 </TabsList>
 
-                <div className="flex items-center gap-2 pb-2 w-full sm:w-auto">
-                    <Search className="w-4 h-4 text-muted-foreground" />
-                    <Input placeholder="Search..." className="h-8 w-full sm:w-40 bg-transparent border-none focus-visible:ring-0 px-0 placeholder:text-muted-foreground/50" />
+                <div className="flex items-center gap-2 pb-2 w-full sm:w-auto relative">
+                    <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+                    <Input placeholder="Search..." className="h-8 w-full sm:w-40 bg-transparent border border-border/40 focus-visible:ring-0 pl-9 pr-3 placeholder:text-muted-foreground/50 rounded-md" />
                 </div>
               </div>
 
