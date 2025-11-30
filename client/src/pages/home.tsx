@@ -48,7 +48,7 @@ export default function Home() {
             {/* Daily Wonder Card */}
             <Card className="bg-gradient-to-br from-purple-50 to-white border-none shadow-md overflow-hidden relative h-full">
               <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-full -mr-20 -mt-20 blur-3xl pointer-events-none" />
-              <CardContent className="p-8 relative z-10 flex flex-col justify-between h-full">
+              <CardContent className="px-8 pt-8 pb-4 relative z-10 flex flex-col justify-between h-full">
                 <div className="flex-1">
                   <h3 className="text-lg font-bold font-serif mb-2 text-love-body">Daily Wonder</h3>
                   <p className="text-xl font-medium text-muted-foreground italic mb-6">
@@ -86,7 +86,7 @@ export default function Home() {
                     <div className="bg-love-body h-2 rounded-full w-[42%]" />
                   </div>
                 </div>
-                <Button className="w-full h-10 transition-all" variant="outline">Continue</Button>
+                <Button className="w-full h-10 transition-all mx-auto block max-w-[calc(100%-2rem)]" variant="outline">Continue</Button>
               </CardContent>
             </Card>
           </div>
