@@ -170,16 +170,16 @@ export default function LabNotes() {
                   </CardContent>
                 </Card>
 
-                <Card className={`border-none shadow-sm overflow-hidden relative h-64 md:h-auto group ${todaysPlaylist.bg}`}>
+                <Card className={`border-none shadow-sm overflow-hidden relative h-64 md:h-auto group ${todaysPlaylist?.bg}`}>
                    <CardContent className="relative z-10 h-full flex flex-col justify-center items-center text-center p-8">
-                      <div className={`w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mb-4 ${todaysPlaylist.color}`}>
-                        <todaysPlaylist.icon className="w-6 h-6 fill-current" />
+                      <div className={`w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mb-4 ${todaysPlaylist?.color}`}>
+                        {todaysPlaylist?.icon && <todaysPlaylist.icon className="w-6 h-6 fill-current" />}
                       </div>
                       
                       <div className="space-y-1 mb-6">
                         <p className="text-xs font-bold uppercase tracking-widest opacity-60">Song of the Day</p>
-                        <h3 className="font-serif text-2xl font-bold">{todaysPlaylist.theme}</h3>
-                        <p className="text-sm opacity-80 max-w-[80%] mx-auto">{todaysPlaylist.description}</p>
+                        <h3 className="font-serif text-2xl font-bold">{todaysPlaylist?.theme}</h3>
+                        <p className="text-sm opacity-80 max-w-[80%] mx-auto">{todaysPlaylist?.description}</p>
                       </div>
 
                       <Button className="rounded-full w-12 h-12 p-0 bg-primary text-white hover:scale-105 transition-transform shadow-lg">
