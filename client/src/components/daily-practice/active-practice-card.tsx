@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { CheckCircle, Heart, Moon, Sun, Trophy, BookOpen, ChevronDown } from "lucide-react";
+import { CheckCircle, Heart, Moon, Sun, Trophy, BookOpen, ChevronDown, Award } from "lucide-react";
 import confetti from "canvas-confetti";
 import { cn } from "@/lib/utils";
 import { LOVE_CODE_AREAS } from "@/lib/mock-data";
@@ -169,11 +169,11 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
             <div className="flex flex-col h-full pt-[3px]">
                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-2">
                     <BookOpen className="w-3 h-3 text-muted-foreground stroke-[1.5]" /> 
-                    My Reflection
+                    My Blessings
                 </label>
                 <div className="flex-1 relative">
                      <Textarea 
-                        placeholder="Journal your thoughts, discoveries, and feelings here..." 
+                        placeholder="Count your blessings... what are you grateful for?" 
                         className="w-full h-full min-h-[300px] bg-white/50 border-muted focus:border-primary/30 focus:ring-primary/10 resize-none font-serif text-muted-foreground text-base leading-7 p-4 rounded-xl transition-all"
                         value={reflection}
                         onChange={(e) => setReflection(e.target.value)}
@@ -252,7 +252,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                     </label>
                     <Input 
                         placeholder="Your win for the day..." 
-                        className="h-9 bg-white/80 border-muted/50 focus:border-green-500/50 focus:ring-green-500/10 text-sm font-serif text-green-700 placeholder:text-green-700/30"
+                        className="h-9 bg-white/80 border-muted/50 focus:border-green-500/50 focus:ring-green-500/10 text-sm font-serif text-muted-foreground placeholder:text-muted-foreground/50"
                         value={victory}
                         onChange={(e) => setVictory(e.target.value)}
                     />
@@ -274,3 +274,4 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
     </Card>
   );
 }
+

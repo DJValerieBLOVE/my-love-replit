@@ -1,7 +1,7 @@
 import Layout from "@/components/layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PenLine, Calendar, Search, Filter, Heart, CheckCircle, FlaskConical, Lightbulb, Plus, Sparkles, Beaker, Quote, Play, X, Moon } from "lucide-react";
+import { PenLine, Calendar, Search, Filter, Heart, CheckCircle, FlaskConical, Lightbulb, Plus, Sparkles, Beaker, Quote, Play, X, Moon, Sun, BookOpen, Trophy } from "lucide-react";
 import confetti from "canvas-confetti";
 import { getPlaylistForToday } from "@/lib/playlists";
 import { Input } from "@/components/ui/input";
@@ -327,7 +327,7 @@ export default function LabNotes() {
                                 <div className="space-y-3">
                                   <div className="bg-muted/10 rounded-lg p-3 border border-border/40 flex justify-between items-center">
                                     <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif flex items-center gap-2">
-                                        <Moon className="w-4 h-4 text-muted-foreground stroke-[1.5]" /> 
+                                        <Sun className="w-4 h-4 text-muted-foreground stroke-[1.5]" /> 
                                         Morning Vibe
                                     </div>
                                     <div className="text-lg font-medium text-muted-foreground font-serif">{entry.morningVibe || entry.vibe}<span className="text-[10px] text-muted-foreground font-medium">/11</span></div>
@@ -381,8 +381,8 @@ export default function LabNotes() {
                               ) : (
                                 <>
                                   <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                                    <Quote className="w-3 h-3 text-muted-foreground stroke-[1.5]" />
-                                    My Reflection
+                                    <BookOpen className="w-3 h-3 text-muted-foreground stroke-[1.5]" />
+                                    My Blessings
                                   </label>
                                   <p className="text-base leading-relaxed text-muted-foreground font-serif italic line-clamp-6">
                                     "{entry.content}"
@@ -434,9 +434,9 @@ export default function LabNotes() {
 
                                   <div>
                                     <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1 flex items-center gap-1">
-                                        <Sparkles className="w-3 h-3 text-yellow-500" /> Victory
+                                        <Trophy className="w-3 h-3 text-muted-foreground" /> Victory
                                     </div>
-                                    <div className="text-sm font-serif text-green-600 whitespace-normal">{entry.victory}</div>
+                                    <div className="text-sm font-serif text-muted-foreground whitespace-normal">{entry.victory}</div>
                                   </div>
                                 </>
                               )}
