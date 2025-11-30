@@ -419,7 +419,7 @@ export default function ExperimentDetail() {
                  </div>
                  <div>
                     <div className="flex items-center gap-1.5 mb-1 text-muted-foreground">
-                       <Award className="w-3.5 h-3.5" />
+                       <Zap className="w-3.5 h-3.5" strokeWidth={1.5} />
                        <span className="text-xs font-bold uppercase tracking-wider">Award</span>
                     </div>
                     <p className="font-medium text-sm text-orange-500">{localWalletBalance.toLocaleString()} Sats</p>
