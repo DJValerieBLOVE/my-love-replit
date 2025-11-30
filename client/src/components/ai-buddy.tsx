@@ -56,7 +56,7 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
                 className="flex items-center justify-center h-12 w-12 rounded-xl shadow-lg bg-white border border-transparent transition-all z-10 relative hover:scale-105 active:scale-95"
                 data-testid="button-send-message"
               >
-                <Send className="w-5 h-5" color="#cc00ff" strokeWidth={2} />
+                <Send className="w-5 h-5" color="#6600ff" strokeWidth={2} />
               </button>
             </div>
           </div>
