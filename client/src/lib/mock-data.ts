@@ -151,7 +151,7 @@ export const EXPERIMENTS = [
     totalDiscoveries: 20,
     completedDiscoveries: 6,
     image: Course2,
-    category: "Finance",
+    category: "Money",
   },
   {
     id: "exp-3",

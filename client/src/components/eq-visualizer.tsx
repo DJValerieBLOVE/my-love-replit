@@ -14,9 +14,33 @@ interface EqVisualizerProps {
 export function EqVisualizer({ className, size = 120, isLogo = false }: EqVisualizerProps) {
   const [hoveredArea, setHoveredArea] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [progressOverrides, setProgressOverrides] = useState<Record<string, number>>({});
 
   useEffect(() => {
     setMounted(true);
+
+    const handleEqUpdate = (e: CustomEvent) => {
+       const { category, progress } = e.detail;
+       const areaId = category.toLowerCase().replace('/', '-');
+       if (areaId) {
+          setProgressOverrides(prev => ({
+             ...prev,
+             [areaId]: progress
+          }));
+
+          // Reset animation after 2 seconds
+          setTimeout(() => {
+             setProgressOverrides(prev => {
+                const newPrev = { ...prev };
+                delete newPrev[areaId];
+                return newPrev;
+             });
+          }, 2000);
+       }
+    };
+
+    window.addEventListener('eq-update' as any, handleEqUpdate as any);
+    return () => window.removeEventListener('eq-update' as any, handleEqUpdate as any);
   }, []);
 
   // Configuration
@@ -190,6 +214,11 @@ export function EqVisualizer({ className, size = 120, isLogo = false }: EqVisual
                 "soul": 98
               };
               progressValue = humanProfile[area.id] || 90;
+            }
+
+            // Check for overrides (animation)
+            if (progressOverrides[area.id]) {
+               progressValue = progressOverrides[area.id];
             }
 
             const progressRadius = wedgeInnerRadius + ((maxRadius - wedgeInnerRadius) * (progressValue / 100));
