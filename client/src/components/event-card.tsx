@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Link } from "wouter";
 
 interface EventProps {
   event: {
@@ -27,9 +27,10 @@ interface EventProps {
 
 export function EventCard({ event }: EventProps) {
   return (
-    <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-all group bg-card">
-      <div className="flex flex-row h-40 sm:h-48">
-        {/* Date & Image Section - Compact on left */}
+    <Link href={`/events/${event.id}`}>
+      <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-all group bg-card cursor-pointer">
+        <div className="flex flex-row h-40 sm:h-48">
+          {/* Date & Image Section - Compact on left */}
         <div className="w-32 sm:w-48 relative shrink-0 overflow-hidden bg-muted">
           <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors z-10" />
           <img 
@@ -100,6 +101,7 @@ export function EventCard({ event }: EventProps) {
           </div>
         </CardContent>
       </div>
-    </Card>
+      </Card>
+    </Link>
   );
 }

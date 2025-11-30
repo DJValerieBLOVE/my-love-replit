@@ -15,6 +15,7 @@ import Resources from "@/pages/resources";
 import Wallet from "@/pages/wallet";
 import Profile from "@/pages/profile";
 import Events from "@/pages/events";
+import EventDetail from "@/pages/event-detail";
 import Leaderboard from "@/pages/leaderboard";
 import AdminOnboarding from "@/pages/admin/onboarding";
 import MentorStudio from "@/pages/admin/mentor-studio";
@@ -33,6 +34,7 @@ function Router() {
       <Route path="/wallet" component={Wallet} />
       <Route path="/profile" component={Profile} />
       <Route path="/events" component={Events} />
+      <Route path="/events/:id" component={EventDetail} />
       <Route path="/leaderboard" component={Leaderboard} />
       <Route path="/admin/onboarding" component={AdminOnboarding} />
       <Route path="/admin/mentor" component={MentorStudio} />
