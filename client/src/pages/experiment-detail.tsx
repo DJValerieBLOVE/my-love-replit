@@ -128,7 +128,7 @@ export default function ExperimentDetail() {
 
         {/* CTA Button */}
         <Button 
-          className="mb-8 px-8 py-3 font-semibold gap-2 bg-primary hover:bg-primary/90 rounded-full" 
+          className="mb-8 px-8 py-3 font-semibold gap-2 rounded-full" 
           data-testid={`button-${isCompleted ? 'review' : isInProgress ? 'resume' : 'start'}-experiment`}
         >
           {isCompleted ? (
