@@ -49,7 +49,7 @@ export default function Experiments() {
                     with {experiment.guide}
                   </p>
                   
-                  <Button className="w-full gap-2 h-8" data-testid={`button-experiment-${experiment.id}`}>
+                  <Button className="w-full gap-2" data-testid={`button-experiment-${experiment.id}`}>
                     {experiment.progress === 0 ? (
                       <><FlaskConical className="w-4 h-4" /> Begin Experiment</>
                     ) : experiment.progress === 100 ? (
@@ -71,7 +71,7 @@ export default function Experiments() {
             <CardContent className="p-5">
               <h3 className="font-bold text-lg leading-tight mb-1">Advanced Lab</h3>
               <p className="text-base text-muted-foreground mb-4">Coming Soon</p>
-              <Button disabled className="w-full h-8">Locked</Button>
+              <Button disabled className="w-full">Locked</Button>
             </CardContent>
           </Card>
         </div>

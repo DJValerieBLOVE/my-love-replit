@@ -55,7 +55,7 @@ export default function BigDreams() {
                         />
                       </div>
                       <div className="flex justify-end">
-                         <Button variant="ghost" size="sm" className="text-xs">
+                         <Button variant="ghost">
                            Save Vision
                          </Button>
                       </div>

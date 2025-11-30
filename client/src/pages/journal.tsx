@@ -85,7 +85,6 @@ export default function LabNotes() {
                   <h2 className="text-xl font-bold mb-2 text-muted-foreground">Morning 5 V's</h2>
                   <p className="text-muted-foreground mb-6">Set your vibe, vision, and victory for the day.</p>
                   <Button 
-                    size="lg" 
                     className="gap-2"
                     onClick={() => setIsPracticing(true)}
                   >

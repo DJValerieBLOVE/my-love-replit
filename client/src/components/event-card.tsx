@@ -63,7 +63,7 @@ export function EventCard({ event }: EventProps) {
               <h3 className="font-bold text-lg leading-tight text-muted-foreground group-hover:text-primary transition-colors line-clamp-1">
                 {event.title}
               </h3>
-              <Button variant="ghost" size="icon" className="h-6 w-6 -mt-1 -mr-1 text-muted-foreground shrink-0">
+              <Button variant="ghost" size="icon" className="text-muted-foreground shrink-0">
                 <MoreHorizontal className="w-4 h-4" />
               </Button>
             </div>
@@ -96,7 +96,7 @@ export function EventCard({ event }: EventProps) {
               <span className="text-xs text-muted-foreground font-medium">+{event.attendees} going</span>
             </div>
 
-            <Button size="sm" className="h-8 px-6 transition-colors text-base" data-testid="button-event-rsvp">
+            <Button className="px-6 transition-colors" data-testid="button-event-rsvp">
               RSVP
             </Button>
           </div>

@@ -40,7 +40,7 @@ export default function Community() {
                     <span>1.2k members</span>
                   </div>
                   <div className="flex-1 flex items-end justify-center">
-                    <Button size="sm" className="h-8 px-6 transition-all font-bold text-sm" data-testid="button-join-club">
+                    <Button className="px-6 transition-all" data-testid="button-join-club">
                       Join <ArrowRight className="w-3 h-3 ml-1" />
                     </Button>
                   </div>

@@ -95,7 +95,7 @@ export function FeedPost({ post }: FeedPostProps) {
                   </span>
                 </h3>
               </div>
-              <Button variant="ghost" size="icon" className="h-8 w-8 -mr-2 text-muted-foreground">
+              <Button variant="ghost" size="icon" className="text-muted-foreground">
                 <MoreHorizontal className="w-4 h-4" />
               </Button>
             </div>
@@ -112,13 +112,13 @@ export function FeedPost({ post }: FeedPostProps) {
 
             <div className="flex items-center justify-between mt-4 pt-2 border-t border-border/30 px-2 h-12">
               {/* 1. Comment */}
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-love-time hover:bg-love-time/10 px-2 h-10 gap-1.5 min-w-[60px]">
+              <Button variant="ghost" className="text-muted-foreground hover:text-love-time hover:bg-love-time/10 px-2 gap-1.5 min-w-[60px]">
                 <MessageSquare className="w-[18px] h-[18px]" strokeWidth={1.5} />
                 <span className="text-sm font-medium">{post.comments > 0 ? post.comments : ""}</span>
               </Button>
 
               {/* 2. Repost */}
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-love-mission hover:bg-love-mission/10 px-2 h-10 gap-1.5 min-w-[60px]">
+              <Button variant="ghost" className="text-muted-foreground hover:text-love-mission hover:bg-love-mission/10 px-2 gap-1.5 min-w-[60px]">
                 <Repeat2 className="w-[22px] h-[22px]" strokeWidth={1.5} />
                 <span className="text-sm font-medium"></span>
               </Button>
@@ -128,8 +128,7 @@ export function FeedPost({ post }: FeedPostProps) {
                 <DialogTrigger asChild>
                   <Button 
                     variant="ghost" 
-                    size="sm" 
-                    className={`px-2 h-10 rounded-full transition-all group min-w-[60px] ${isZapped || zaps > 0 ? 'text-love-family hover:bg-love-family/10' : 'text-muted-foreground hover:text-love-family hover:bg-love-family/10'}`}
+                    className={`px-2 rounded-full transition-all group min-w-[60px] ${isZapped || zaps > 0 ? 'text-love-family hover:bg-love-family/10' : 'text-muted-foreground hover:text-love-family hover:bg-love-family/10'}`}
                   >
                     <Zap 
                       className={`mr-1.5 transition-all ${isZapped || zaps > 0 ? 'text-love-family w-[28px] h-[28px]' : 'w-[28px] h-[28px] group-hover:scale-110'}`} 
@@ -158,7 +157,7 @@ export function FeedPost({ post }: FeedPostProps) {
                         <Button
                           key={amount}
                           variant={zapAmount === amount ? "default" : "outline"}
-                          className={`h-12 text-lg font-bold ${
+                          className={`text-lg font-bold ${
                             zapAmount === amount 
                               ? "bg-love-family hover:bg-love-family/90 text-white border-love-family" 
                               : "border-muted-foreground/20 hover:border-love-family/50 hover:bg-love-family/5 text-muted-foreground"
@@ -214,13 +213,13 @@ export function FeedPost({ post }: FeedPostProps) {
               </Dialog>
 
               {/* 4. Like */}
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-love-romance hover:bg-love-romance/10 px-2 h-10 gap-1.5 min-w-[60px]">
+              <Button variant="ghost" className="text-muted-foreground hover:text-love-romance hover:bg-love-romance/10 px-2 gap-1.5 min-w-[60px]">
                 <Heart className="w-[18px] h-[18px]" strokeWidth={1.5} />
                 <span className="text-sm font-medium">{post.likes > 0 ? post.likes : ""}</span>
               </Button>
 
               {/* 5. Share/Bookmark */}
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-love-body hover:bg-love-body/10 px-2 h-10 gap-1.5 min-w-[60px]">
+              <Button variant="ghost" className="text-muted-foreground hover:text-love-body hover:bg-love-body/10 px-2 gap-1.5 min-w-[60px]">
                 <Bookmark className="w-[20px] h-[20px]" strokeWidth={1.5} />
               </Button>
             </div>
