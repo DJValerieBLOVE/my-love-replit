@@ -176,10 +176,10 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
 
                 {/* Focus Area */}
                 <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block font-serif mt-2.5 ml-1">Big Dream</label>
                     <Select value={selectedAreaId} onValueChange={setSelectedAreaId}>
-                        <SelectTrigger className="w-full h-10 bg-white/50 border-border/40 focus:ring-primary/20 font-serif shadow-sm rounded-xl px-3 text-sm font-bold flex justify-between items-center">
-                            <span className="text-[10px] font-bold text-muted-foreground uppercase font-serif">Big Dream</span>
-                            <SelectValue placeholder="Select..." />
+                        <SelectTrigger className="w-full h-10 bg-white border-muted/50 focus:ring-primary/20 font-serif shadow-sm">
+                            <SelectValue placeholder="Select a Focus Area..." />
                         </SelectTrigger>
                         <SelectContent>
                             {LOVE_CODE_AREAS.map((area) => (
@@ -195,12 +195,10 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                     
                      {/* Selected Area Preview */}
                     {selectedArea && (
-                        <div className="mt-2 px-1 animate-in fade-in slide-in-from-top-2 space-y-2">
-                             <div className="flex items-center justify-between">
-                                <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
-                                    <div className="h-full rounded-full transition-all duration-1000" style={{ width: `${selectedArea.progress}%`, backgroundColor: selectedArea.color }} />
-                                </div>
-                                <span className="text-[10px] font-bold text-muted-foreground font-serif ml-2">{selectedArea.progress}%</span>
+                        <div className="mt-2 p-3 bg-white/30 rounded-lg border border-border/20 animate-in fade-in slide-in-from-top-2">
+                            <div className="flex items-center justify-between mb-1">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground font-serif">Big Dream</span>
+                                <span className="text-[10px] font-bold text-muted-foreground font-serif">{selectedArea.progress}%</span>
                             </div>
                             <p className="text-xs font-serif text-muted-foreground italic leading-relaxed opacity-80">
                                 "{selectedArea.dream}"
