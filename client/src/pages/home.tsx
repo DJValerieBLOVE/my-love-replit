@@ -27,7 +27,7 @@ export default function Home() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="outline" className="gap-2 text-muted-foreground border-muted hover:border-primary/50 hover:text-primary shadow-sm bg-white/80 font-serif font-normal text-base transition-all hover:shadow-md hover:-translate-y-0.5">
+            <Button variant="outline" className="gap-2 text-muted-foreground border-muted hover:border-primary/50 hover:text-primary shadow-sm bg-white font-serif font-normal text-base transition-all hover:shadow-md hover:-translate-y-0.5 hover:bg-[#F5F3FF]">
               <HelpCircle className="w-4 h-4" /> How it works
             </Button>
             
@@ -66,7 +66,7 @@ export default function Home() {
                     <p className="text-xl font-medium text-foreground italic mb-6">
                       "What if life isn't a test you can fail... but an experiment you get to play?"
                     </p>
-                    <Button variant="outline" className="bg-white/80 hover:bg-primary/5 text-muted-foreground border-muted hover:border-primary/50 hover:text-primary font-normal shadow-sm font-serif text-base transition-all hover:shadow-md hover:-translate-y-0.5">
+                    <Button variant="outline" className="bg-white hover:bg-[#F5F3FF] text-muted-foreground border-muted hover:border-primary/50 hover:text-primary font-normal shadow-sm font-serif text-base transition-all hover:shadow-md hover:-translate-y-0.5">
                       Capture Reflection
                     </Button>
                   </div>
@@ -97,7 +97,7 @@ export default function Home() {
                     <div className="bg-primary h-2 rounded-full w-[42%]" />
                   </div>
                 </div>
-                <Button className="w-full font-normal text-muted-foreground border-muted hover:border-primary/50 hover:text-primary shadow-sm bg-white/80 font-serif text-base transition-all hover:shadow-md hover:-translate-y-0.5" variant="outline">Continue</Button>
+                <Button className="w-full font-normal text-muted-foreground border-muted hover:border-primary/50 hover:text-primary shadow-sm bg-white font-serif text-base transition-all hover:shadow-md hover:-translate-y-0.5 hover:bg-[#F5F3FF]" variant="outline">Continue</Button>
               </CardContent>
             </Card>
           </div>

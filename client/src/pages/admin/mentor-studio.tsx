@@ -77,7 +77,7 @@ export default function MentorStudio() {
                     <p className="text-sm text-muted-foreground mb-4">
                       Drag & drop PDF, DOCX, or TXT files here
                     </p>
-                    <Button variant="outline" size="sm" className="gap-2 text-muted-foreground border-muted hover:border-primary/50 hover:text-primary hover:bg-primary/5 shadow-sm bg-white/80 font-serif font-normal text-base transition-all hover:shadow-md hover:-translate-y-0.5">Select Files</Button>
+                    <Button variant="outline" size="sm" className="gap-2 text-muted-foreground border-muted hover:border-primary/50 hover:text-primary hover:bg-[#F5F3FF] shadow-sm bg-white font-serif font-normal text-base transition-all hover:shadow-md hover:-translate-y-0.5">Select Files</Button>
                   </div>
 
                   <div className="space-y-3">
