@@ -298,6 +298,7 @@ export default function LabNotes() {
                                     <div className="bg-muted/20 rounded-lg p-3 border border-border/50 mt-2 space-y-2">
                                       <div className="flex items-center justify-between">
                                         <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Focus: <span style={{ color: entry.focusArea.color }}>{entry.focusArea.name}</span></div>
+                                        <div className="text-[10px] font-bold" style={{ color: entry.focusArea.color }}>{entry.focusArea.progress}%</div>
                                       </div>
                                       <div className="text-xs font-serif text-muted-foreground italic leading-relaxed">
                                         "{entry.focusArea.dream}"
