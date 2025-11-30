@@ -56,6 +56,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
     }
   };
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
