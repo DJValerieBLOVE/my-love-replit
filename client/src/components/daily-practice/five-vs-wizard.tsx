@@ -32,8 +32,8 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
     setData({
       ...data, 
       selectedAreaId: areaId,
-      // Optional: pre-fill vision with the dream if empty
-      vision: data.vision || (area?.dream || "")
+      // Clear the vision field so user can write fresh or ask mentor
+      vision: "" 
     });
   };
 
@@ -57,18 +57,21 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
       component: (
         <div className="space-y-6">
           <div className="space-y-2">
-            <label className="text-xs font-serif text-muted-foreground uppercase tracking-wider">Select a Big Dream</label>
+            <label className="text-xs font-serif text-muted-foreground uppercase tracking-wider">Focus on a Big Dream</label>
             <Select value={data.selectedAreaId} onValueChange={handleAreaSelect}>
-              <SelectTrigger className="w-full h-12 bg-muted/30 border-muted focus:bg-background font-serif">
-                <SelectValue placeholder="Choose an area to focus on..." />
+              <SelectTrigger className="w-full h-auto min-h-[3rem] py-2 bg-muted/30 border-muted focus:bg-background font-serif text-left">
+                <SelectValue placeholder="Select one of your 11 Big Dreams..." />
               </SelectTrigger>
               <SelectContent>
                 {LOVE_CODE_AREAS.map((area) => (
-                  <SelectItem key={area.id} value={area.id}>
-                    <span className="flex items-center gap-2">
-                      <span className={`w-2 h-2 rounded-full ${area.color}`} />
-                      {area.name}
-                    </span>
+                  <SelectItem key={area.id} value={area.id} className="py-3 cursor-pointer">
+                    <div className="flex flex-col gap-1 text-left">
+                      <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                        <span className={`w-2 h-2 rounded-full ${area.color}`} />
+                        {area.name}
+                      </span>
+                      <span className="text-sm line-clamp-2 text-foreground font-medium">{area.dream || "No dream defined yet..."}</span>
+                    </div>
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -76,9 +79,29 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs font-serif text-muted-foreground uppercase tracking-wider">Visualize the Outcome</label>
+            <div className="flex justify-between items-center">
+              <label className="text-xs font-serif text-muted-foreground uppercase tracking-wider">Visualize & Affirm</label>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-6 text-xs text-[#6600ff] hover:text-[#5500dd] hover:bg-[#6600ff]/10 px-2 gap-1.5"
+                onClick={() => {
+                   const mantras = [
+                     "I am aligning my actions with my highest truth.",
+                     "Every step I take brings this vision closer to reality.",
+                     "I embody the energy of this dream right now.",
+                     "The universe is conspiring to help me achieve this.",
+                     "I am worthy of this dream and I claim it today."
+                   ];
+                   const randomMantra = mantras[Math.floor(Math.random() * mantras.length)];
+                   setData({...data, vision: randomMantra});
+                }}
+              >
+                <Sparkles className="w-3 h-3" /> Ask Magic Mentor
+              </Button>
+            </div>
             <Textarea 
-              placeholder="What are you visualizing for this outcome today? Describe it in detail..." 
+              placeholder="Write a mantra or describe your visualization for today..." 
               className="min-h-[120px] bg-muted/30 border-muted focus:bg-background resize-none text-base md:text-base font-serif"
               value={data.vision}
               onChange={e => setData({...data, vision: e.target.value})}
