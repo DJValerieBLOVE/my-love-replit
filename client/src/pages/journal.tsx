@@ -18,12 +18,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { EveningCheckIn } from "@/components/daily-practice/evening-check-in";
+import { EveningModal } from "@/components/daily-practice/evening-modal";
 
 export default function LabNotes() {
   const [isPracticing, setIsPracticing] = useState(false);
   const [practiceData, setPracticeData] = useState<any>(null);
   const [dayCompleted, setDayCompleted] = useState(false);
+  const [isEveningModalOpen, setIsEveningModalOpen] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -148,10 +149,48 @@ export default function LabNotes() {
           <FiveVsWizard onComplete={handlePracticeComplete} />
         ) : (
           <div className="space-y-8">
-            {/* Evening Check-in (Shows if morning practice is done but day not fully completed) */}
+            {/* Today's Practice Snapshot (Active Day) */}
             {practiceData && !dayCompleted && (
-               <EveningCheckIn morningData={practiceData} onComplete={handleEveningComplete} />
+               <Card className="border-none shadow-lg bg-[#F5F3FF] dark:bg-[#1A052E] border-white/20 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
+                  <CardContent className="p-6 md:p-8 relative z-10">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+                      <div>
+                         <div className="flex items-center gap-2 mb-2">
+                            <Badge variant="outline" className="bg-white/50 border-primary/20 text-primary uppercase tracking-wider text-[10px]">Today's Practice</Badge>
+                            <span className="text-xs font-bold text-muted-foreground uppercase">{new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}</span>
+                         </div>
+                         <h2 className="text-2xl font-bold font-serif text-[#4D3D5C]">"{practiceData.vision}"</h2>
+                      </div>
+                      <Button 
+                        onClick={() => setIsEveningModalOpen(true)}
+                        className="bg-[#6600ff] text-white hover:bg-[#5500dd] shadow-lg shadow-primary/20"
+                      >
+                        <Moon className="w-4 h-4 mr-2" /> Evening Check-In
+                      </Button>
+                    </div>
+
+                    {/* 3 Action Steps Display */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {practiceData.values.map((val: string, idx: number) => (
+                        <div key={idx} className="bg-white/60 p-4 rounded-xl border border-white/50 flex items-center gap-3">
+                           <div className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">
+                             {idx + 1}
+                           </div>
+                           <span className="text-sm font-medium text-[#4D3D5C] line-clamp-2">{val}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+               </Card>
             )}
+
+            <EveningModal 
+              isOpen={isEveningModalOpen} 
+              onOpenChange={setIsEveningModalOpen}
+              morningData={practiceData} 
+              onComplete={handleEveningComplete} 
+            />
 
             {/* Day Fully Completed Success Card */}
             {dayCompleted && (
