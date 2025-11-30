@@ -5,9 +5,27 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, CheckCircle, PlayCircle, Award, Clock, BookOpen, Zap, MessageCircle, Send, Video, FlaskConical, Lightbulb } from "lucide-react";
+import { 
+  ArrowLeft, 
+  CheckCircle, 
+  PlayCircle, 
+  Award, 
+  Clock, 
+  BookOpen, 
+  Zap, 
+  MessageCircle, 
+  Send, 
+  Video, 
+  FlaskConical, 
+  Lightbulb,
+  Circle,
+  Check,
+  ChevronDown,
+  ChevronUp
+} from "lucide-react";
 import { Link } from "wouter";
 import { useState } from "react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function ExperimentDetail() {
   const [, params] = useRoute("/experiments/:id");
@@ -17,6 +35,8 @@ export default function ExperimentDetail() {
     { id: 1, author: "Alex Chen", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop", text: "This discovery really shifted my perspective! 🙌", time: "2h ago", likes: 12 },
     { id: 2, author: "Sarah M.", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop", text: "Anyone else testing this hypothesis?", time: "1h ago", likes: 5 },
   ]);
+  
+  const [isAboutOpen, setIsAboutOpen] = useState(true);
 
   if (!experiment) {
     return (
@@ -29,11 +49,11 @@ export default function ExperimentDetail() {
   }
 
   const discoveries = [
-    { num: 1, title: "Hypothesis", duration: "Day 1", locked: false },
-    { num: 2, title: "Method Setup", duration: "Day 2", locked: false },
-    { num: 3, title: "First Findings", duration: "Day 3", locked: false },
-    { num: 4, title: "Deep Dive Analysis", duration: "Day 4", locked: experiment.completedDiscoveries < 3 },
-    { num: 5, title: "Conclusion & Results", duration: "Day 5", locked: experiment.completedDiscoveries < 4 },
+    { num: 1, title: "Hypothesis Formulation", duration: "Day 1", locked: false, completed: true },
+    { num: 2, title: "Method Setup & Prep", duration: "Day 2", locked: false, completed: true },
+    { num: 3, title: "First Findings", duration: "Day 3", locked: false, completed: false },
+    { num: 4, title: "Deep Dive Analysis", duration: "Day 4", locked: experiment.completedDiscoveries < 3, completed: false },
+    { num: 5, title: "Conclusion & Results", duration: "Day 5", locked: experiment.completedDiscoveries < 4, completed: false },
   ];
 
   const isInProgress = experiment.progress > 0 && experiment.progress < 100;
@@ -54,222 +74,215 @@ export default function ExperimentDetail() {
   };
 
   return (
-    <Layout>
-      <div className="max-w-4xl mx-auto p-4 lg:p-8">
-        {/* Back Button */}
-        <Link href="/experiments">
-          <Button variant="ghost" className="mb-6 gap-2" data-testid="button-back">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Experiments
-          </Button>
-        </Link>
+    <Layout showRightSidebar={false}>
+      <div className="flex flex-col lg:flex-row h-full min-h-[calc(100vh-100px)]">
+        {/* Left Column: Main Content */}
+        <div className="flex-1 p-4 lg:p-8 lg:pr-12 overflow-y-auto">
+          {/* Breadcrumb / Back */}
+          <div className="mb-6">
+            <Link href="/experiments">
+              <Button variant="ghost" className="gap-2 pl-0 text-muted-foreground hover:text-foreground" data-testid="button-back">
+                <ArrowLeft className="w-4 h-4" />
+                Back to Experiments
+              </Button>
+            </Link>
+          </div>
 
-        {/* Hero Section */}
-        <div className="relative mb-8 rounded-md overflow-hidden h-80">
-          <div className="absolute inset-0 bg-black/30 z-10" />
-          <img 
-            src={experiment.image} 
-            alt={experiment.title}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 z-20 flex flex-col justify-end p-8">
-            <div className="flex items-start justify-between">
-              <div>
-                <Badge className="mb-3 bg-white/90 text-black hover:bg-white" data-testid={`badge-category-${experiment.id}`}>
+          {/* Header Info */}
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-2">
+               <Badge variant="outline" className="text-xs font-bold uppercase tracking-wider border-primary/20 text-primary bg-primary/5">
                   {experiment.category}
-                </Badge>
-                <h1 className="text-4xl font-serif font-bold text-white mb-2">{experiment.title}</h1>
-                <p className="text-white/90 text-lg">Guided by {experiment.guide}</p>
+               </Badge>
+               <span className="text-sm text-muted-foreground">Guided by {experiment.guide}</span>
+            </div>
+            <h1 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-4">{experiment.title}</h1>
+            
+            {/* About Toggle */}
+            <div className="border-l-2 border-primary/20 pl-4 py-1 cursor-pointer hover:border-primary transition-colors" onClick={() => setIsAboutOpen(!isAboutOpen)}>
+              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground">
+                 <BookOpen className="w-4 h-4" /> About this Experiment
+                 {isAboutOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
               </div>
+              {isAboutOpen && (
+                <p className="mt-2 text-base leading-relaxed text-muted-foreground max-w-2xl animate-in fade-in slide-in-from-top-2 duration-300">
+                  This experiment invites you to explore {experiment.category.toLowerCase()} principles in your daily life. 
+                  You'll test hypotheses, gather data on yourself, and record your findings to gain insights into your "Human Operating System".
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Video Player / Hero */}
+          <div className="relative rounded-xl overflow-hidden aspect-video bg-black mb-8 shadow-lg ring-1 ring-border/50 group">
+             <img 
+              src={experiment.image} 
+              alt={experiment.title}
+              className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity duration-500"
+            />
+            <div className="absolute inset-0 flex items-center justify-center">
+               <div className="w-20 h-20 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 shadow-2xl cursor-pointer group-hover:scale-110 transition-transform duration-300">
+                  <PlayCircle className="w-10 h-10 text-white fill-white/20" />
+               </div>
+            </div>
+            <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
+               <h3 className="text-white font-bold text-lg">Lesson 3: First Findings</h3>
+               <p className="text-white/70 text-sm">Duration: 12:45</p>
+            </div>
+          </div>
+
+          {/* Discussion Section */}
+          <div className="mt-12 max-w-3xl">
+            <h2 className="text-2xl font-bold font-serif mb-6 flex items-center gap-2">
+              <MessageCircle className="w-6 h-6 text-primary" />
+              Lab Partners Discussion
+            </h2>
+            
+            {/* Comment Input */}
+            <div className="flex gap-4 mb-8">
+              <img 
+                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=40&h=40&fit=crop" 
+                alt="Your avatar"
+                className="w-10 h-10 rounded-full border border-border"
+              />
+              <div className="flex-1">
+                <textarea 
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  placeholder="Share your findings, questions, or ahas..."
+                  className="w-full p-3 rounded-lg bg-muted/30 text-foreground placeholder-muted-foreground border border-border focus:outline-none focus:ring-1 focus:ring-primary resize-none transition-all"
+                  rows={2}
+                  data-testid="textarea-discussion"
+                />
+                <div className="mt-2 flex justify-end">
+                  <Button 
+                    onClick={handleAddComment}
+                    size="sm"
+                    className="gap-2 rounded-full px-6"
+                    data-testid="button-post-comment"
+                  >
+                    <Send className="w-3 h-3" /> Post
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Comments List */}
+            <div className="space-y-6">
+              {comments.map((comment) => (
+                <div key={comment.id} className="flex gap-4 group">
+                  <img 
+                    src={comment.avatar}
+                    alt={comment.author}
+                    className="w-10 h-10 rounded-full flex-shrink-0 border border-border"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-bold text-sm text-foreground" data-testid={`text-commenter-${comment.id}`}>{comment.author}</span>
+                      <span className="text-xs text-muted-foreground">• {comment.time}</span>
+                    </div>
+                    <p className="text-sm text-foreground/90 leading-relaxed mb-2">{comment.text}</p>
+                    <button 
+                      className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors"
+                      data-testid={`button-like-comment-${comment.id}`}
+                    >
+                      <Badge variant="outline" className="h-5 px-1.5 gap-1 hover:bg-primary/5 border-border/50">
+                        ❤️ {comment.likes || "Like"}
+                      </Badge>
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Stats & Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {/* Progress Card */}
-          <Card className="border-none shadow-sm bg-gradient-to-br from-purple-900/10 to-pink-900/10">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-lg" data-testid={`text-progress-${experiment.id}`}>Your Progress</h3>
-                <div className="text-3xl font-black text-primary">{experiment.progress}%</div>
+        {/* Right Column: Syllabus / Sidebar */}
+        <div className="w-full lg:w-[320px] border-l bg-card/30 flex-shrink-0 sticky top-0 h-fit lg:h-auto lg:min-h-[calc(100vh-64px)]">
+           <div className="p-6 space-y-8">
+              
+              {/* Progress Block */}
+              <div className="space-y-4">
+                 <div className="flex items-center justify-between text-sm">
+                    <span className="font-bold text-muted-foreground">Your Progress</span>
+                    <span className="font-bold text-primary">{experiment.progress}%</span>
+                 </div>
+                 <Progress value={experiment.progress} className="h-1.5" />
               </div>
-              <Progress value={experiment.progress} className="h-3 mb-4" />
-              <p className="text-sm text-muted-foreground">
-                {experiment.completedDiscoveries} of {experiment.totalDiscoveries} discoveries made
-              </p>
-            </CardContent>
-          </Card>
 
-          {/* Duration */}
-          <Card className="border-none shadow-sm">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <Clock className="w-6 h-6 text-cyan-500" />
-                <h3 className="font-bold text-lg">Duration</h3>
-              </div>
-              <p className="text-3xl font-black text-cyan-500 mb-2">5 Days</p>
-              <p className="text-sm text-muted-foreground">Weekly Experiment</p>
-            </CardContent>
-          </Card>
-
-          {/* Rewards */}
-          <Card className="border-none shadow-sm">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <Award className="w-6 h-6 text-yellow-500" />
-                <h3 className="font-bold text-lg">Rewards</h3>
-              </div>
-              <p className="text-3xl font-black text-yellow-500 mb-2">5000 Sats</p>
-              <p className="text-sm text-muted-foreground">+ Science Badge</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* CTA Button */}
-        <Button 
-          className="mb-8 px-8 py-3 font-semibold gap-2 rounded-full" 
-          data-testid={`button-${isCompleted ? 'review' : isInProgress ? 'resume' : 'start'}-experiment`}
-        >
-          {isCompleted ? (
-            <><CheckCircle className="w-5 h-5" /> Review Experiment</>
-          ) : isInProgress ? (
-            <><FlaskConical className="w-5 h-5" /> Resume Experiment</>
-          ) : (
-            <><FlaskConical className="w-5 h-5" /> Begin Experiment</>
-          )}
-        </Button>
-
-        {/* Discoveries */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold font-serif mb-6">Daily Discoveries</h2>
-          <div className="space-y-3">
-            {discoveries.map((discovery, idx) => (
-              <Card 
-                key={discovery.num} 
-                className={`border-none shadow-sm cursor-pointer transition-all hover:shadow-md ${
-                  idx < experiment.completedDiscoveries ? 'bg-primary/5' : ''
-                }`}
-                data-testid={`card-discovery-${experiment.id}-${discovery.num}`}
+              {/* Action Button */}
+              <Button 
+                className="w-full rounded-full font-bold h-10 shadow-lg shadow-primary/10" 
+                data-testid={`button-${isCompleted ? 'review' : isInProgress ? 'resume' : 'start'}-experiment`}
               >
-                <CardContent className="p-5 flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    {idx < experiment.completedDiscoveries ? (
-                      <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
-                        <CheckCircle className="w-5 h-5 text-white" />
-                      </div>
-                    ) : (
-                      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0 font-bold text-sm">
-                        <Lightbulb className="w-4 h-4" />
-                      </div>
-                    )}
-                    <div>
-                      <h3 className="font-bold" data-testid={`text-discovery-title-${discovery.num}`}>{discovery.title}</h3>
-                      <p className="text-sm text-muted-foreground">{discovery.duration}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {discovery.locked && (
-                      <Badge variant="secondary" className="text-xs">Locked</Badge>
-                    )}
-                    <div className="text-muted-foreground">→</div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
+                {isCompleted ? (
+                  <><CheckCircle className="w-4 h-4 mr-2" /> Review</>
+                ) : isInProgress ? (
+                  <><PlayCircle className="w-4 h-4 mr-2" /> Resume</>
+                ) : (
+                  <><PlayCircle className="w-4 h-4 mr-2" /> Start</>
+                )}
+              </Button>
 
-        {/* Experiment Description */}
-        <Card className="border-none shadow-sm bg-card/50">
-          <CardContent className="p-6">
-            <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-primary" />
-              About This Experiment
-            </h3>
-            <p className="text-foreground leading-relaxed mb-4">
-              This experiment invites you to explore {experiment.category.toLowerCase()} principles in your daily life. 
-              You'll test hypotheses, gather data on yourself, and record your findings.
-            </p>
-            <p className="text-foreground leading-relaxed">
-              By completing this experiment, you'll gain valuable insights into your own "Human Operating System" 
-              and earn rewards that contribute to your growth.
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Lab Notes / Discussion */}
-        <div className="mt-8">
-          <h2 className="text-2xl font-bold font-serif mb-6 flex items-center gap-2">
-            <MessageCircle className="w-6 h-6 text-primary" />
-            Lab Partners Discussion
-          </h2>
-          
-          {/* Comment Input */}
-          <Card className="border-none shadow-sm bg-card/50 mb-6">
-            <CardContent className="p-6">
-              <div className="flex gap-4">
-                <img 
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=40&h=40&fit=crop" 
-                  alt="Your avatar"
-                  className="w-10 h-10 rounded-full"
-                />
-                <div className="flex-1">
-                  <textarea 
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    placeholder="Share your findings, questions, or ahas with the community..."
-                    className="w-full p-3 rounded-xs bg-muted text-foreground placeholder-muted-foreground border border-border focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
-                    rows={3}
-                    data-testid="textarea-discussion"
-                  />
-                  <div className="mt-3 flex justify-end">
-                    <Button 
-                      onClick={handleAddComment}
-                      className="gap-2 rounded-md"
-                      data-testid="button-post-comment"
-                    >
-                      <Send className="w-4 h-4" /> Share Findings
-                    </Button>
-                  </div>
-                </div>
+              {/* Syllabus List */}
+              <div>
+                 <h3 className="font-serif font-bold text-lg mb-4">Discoveries</h3>
+                 <div className="space-y-1">
+                    {discoveries.map((discovery, idx) => (
+                       <div 
+                          key={discovery.num}
+                          className={`
+                            group flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-all
+                            ${idx === 2 ? 'bg-primary/5 border border-primary/10' : 'hover:bg-muted/50 border border-transparent'}
+                          `}
+                       >
+                          {/* Icon / Checkbox */}
+                          <div className="mt-0.5 text-muted-foreground group-hover:text-primary transition-colors">
+                             {discovery.completed ? (
+                                <div className="bg-green-500 rounded-full p-0.5">
+                                  <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                                </div>
+                             ) : discovery.locked ? (
+                                <Circle className="w-4 h-4 opacity-30" />
+                             ) : (
+                                <Circle className="w-4 h-4 text-primary" />
+                             )}
+                          </div>
+                          
+                          {/* Content */}
+                          <div className="flex-1">
+                             <p className={`text-sm font-medium leading-tight mb-1 ${discovery.locked ? 'text-muted-foreground' : 'text-foreground'}`}>
+                                {discovery.title}
+                             </p>
+                             <div className="flex items-center gap-2">
+                                <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">{discovery.duration}</span>
+                                {idx === 2 && <Badge variant="secondary" className="h-4 text-[9px] px-1 bg-primary/10 text-primary border-none">Current</Badge>}
+                             </div>
+                          </div>
+                       </div>
+                    ))}
+                 </div>
               </div>
-            </CardContent>
-          </Card>
 
-          {/* Comments List */}
-          <div className="space-y-4">
-            {comments.map((comment) => (
-              <Card key={comment.id} className="border-none shadow-sm" data-testid={`card-comment-${comment.id}`}>
-                <CardContent className="p-6">
-                  <div className="flex gap-4">
-                    <img 
-                      src={comment.avatar}
-                      alt={comment.author}
-                      className="w-10 h-10 rounded-full flex-shrink-0"
-                    />
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-2">
-                        <div>
-                          <p className="font-bold text-foreground" data-testid={`text-commenter-${comment.id}`}>{comment.author}</p>
-                          <p className="text-xs text-muted-foreground">{comment.time}</p>
-                        </div>
-                      </div>
-                      <p className="text-foreground mb-3">{comment.text}</p>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        className="text-muted-foreground hover:text-primary rounded-md"
-                        data-testid={`button-like-comment-${comment.id}`}
-                      >
-                        ❤️ {comment.likes}
-                      </Button>
+              {/* Stats (Minimalist) */}
+              <div className="grid grid-cols-2 gap-4 pt-6 border-t border-border/50">
+                 <div>
+                    <div className="flex items-center gap-1.5 mb-1 text-muted-foreground">
+                       <Clock className="w-3.5 h-3.5" />
+                       <span className="text-xs font-bold uppercase tracking-wider">Time</span>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                    <p className="font-medium text-sm">5 Days</p>
+                 </div>
+                 <div>
+                    <div className="flex items-center gap-1.5 mb-1 text-muted-foreground">
+                       <Award className="w-3.5 h-3.5" />
+                       <span className="text-xs font-bold uppercase tracking-wider">Reward</span>
+                    </div>
+                    <p className="font-medium text-sm text-yellow-600 dark:text-yellow-400">5000 Sats</p>
+                 </div>
+              </div>
+
+           </div>
         </div>
       </div>
     </Layout>
