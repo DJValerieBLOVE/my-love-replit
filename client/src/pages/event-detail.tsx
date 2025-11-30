@@ -168,7 +168,7 @@ export default function EventDetail() {
                     </div>
                   ) : (
                     <Button 
-                      className="w-full h-12 text-lg font-bold shadow-lg shadow-primary/20" 
+                      className="w-full font-bold shadow-lg shadow-primary/20" 
                       onClick={handleRsvp}
                     >
                       RSVP Now
