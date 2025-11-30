@@ -22,7 +22,7 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
       <SheetTrigger asChild>
         {trigger}
       </SheetTrigger>
-      <SheetContent side="right" className="w-full sm:max-w-[800px] sm:w-[800px] p-0 border-l shadow-2xl [&>button]:text-white [&>button]:hover:text-white/80 [&>button]:bg-white/10 [&>button]:hover:bg-white/20">
+      <SheetContent side="right" className="w-full sm:max-w-[800px] sm:w-[800px] p-0 border-l shadow-2xl [&>button]:text-white [&>button]:hover:text-white/80 [&>button]:bg-white/10 [&>button]:hover:bg-white/20 [&>button_svg]:stroke-white">
         <div className="h-full flex flex-col bg-background">
           {/* Consolidated Header + Suggestion + Chat Block */}
           <div className="p-6 border-b bg-gradient-to-br from-[#6600ff] to-[#cc00ff] space-y-4 shadow-sm relative overflow-hidden">
