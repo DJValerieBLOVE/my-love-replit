@@ -61,10 +61,10 @@ export default function Events() {
         {/* Filters & Search */}
         <div className="flex flex-col md:flex-row gap-4 mb-8 items-center justify-between">
           <div className="flex gap-2">
-            <Button className="px-6 py-1.5 h-8 rounded-lg text-base font-serif font-bold">Upcoming</Button>
-            <Button variant="outline" className="text-muted-foreground font-serif font-bold px-6 py-1.5 h-8 rounded-lg text-base">Nearby</Button>
-            <Button variant="outline" className="text-muted-foreground font-serif font-bold px-6 py-1.5 h-8 rounded-lg text-base">Past</Button>
-            <Button variant="outline" className="text-muted-foreground font-serif font-bold px-6 py-1.5 h-8 rounded-lg text-base">Yours</Button>
+            <Button className="px-6 py-1.5 h-8 rounded-lg text-base font-serif font-normal">Upcoming</Button>
+            <Button variant="outline" className="text-muted-foreground font-serif font-normal px-6 py-1.5 h-8 rounded-lg text-base">Nearby</Button>
+            <Button variant="outline" className="text-muted-foreground font-serif font-normal px-6 py-1.5 h-8 rounded-lg text-base">Past</Button>
+            <Button variant="outline" className="text-muted-foreground font-serif font-normal px-6 py-1.5 h-8 rounded-lg text-base">Yours</Button>
           </div>
           
           <div className="flex gap-2 w-full md:w-auto">
