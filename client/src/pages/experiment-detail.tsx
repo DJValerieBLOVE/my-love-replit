@@ -291,6 +291,30 @@ export default function ExperimentDetail() {
             </div>
           </div>
 
+          {/* Current Discovery Action Area */}
+          {(() => {
+             const currentDiscovery = discoveries.find(d => !d.completed && !d.locked);
+             if (currentDiscovery) {
+                return (
+                   <div className="mb-12 p-6 bg-card border border-border rounded-xl shadow-sm">
+                      <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                         <div>
+                            <h3 className="text-lg font-bold text-foreground">Ready to move on?</h3>
+                            <p className="text-muted-foreground text-sm">Complete "{currentDiscovery.title}" to unlock the next step.</p>
+                         </div>
+                         <Button 
+                            onClick={() => handleCompleteDiscovery(currentDiscovery.num)}
+                            className="w-full md:w-auto bg-primary hover:bg-primary/90 text-primary-foreground h-12 px-8 text-base font-bold shadow-md active:scale-95 transition-all"
+                         >
+                            Next Discovery <MoveRight className="w-5 h-5 ml-2" />
+                         </Button>
+                      </div>
+                   </div>
+                );
+             }
+             return null;
+          })()}
+
           {/* Discussion Section */}
           <div className="mt-12 max-w-3xl">
             <h2 className="text-2xl font-bold font-serif mb-6 flex items-center gap-2 text-muted-foreground">
@@ -408,17 +432,7 @@ export default function ExperimentDetail() {
                              </div>
                           </div>
 
-                          {/* Action Button for Current Step */}
-                          {isCurrent && (
-                             <div className="mt-3 pl-8">
-                                <Button 
-                                   onClick={() => handleCompleteDiscovery(discovery.num)}
-                                   className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-9 text-sm font-bold shadow-md active:scale-95 transition-all"
-                                >
-                                   Next Discovery <MoveRight className="w-4 h-4 ml-2" />
-                                </Button>
-                             </div>
-                          )}
+                          {/* Action Button for Current Step - REMOVED */}
                        </div>
                     )})}
                  </div>
