@@ -1,7 +1,7 @@
 import Layout from "@/components/layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PenLine, Calendar, Search, Filter, Heart, CheckCircle, FlaskConical, Lightbulb, Plus, Sparkles, Beaker, Quote, Play, X } from "lucide-react";
+import { PenLine, Calendar, Search, Filter, Heart, CheckCircle, FlaskConical, Lightbulb, Plus, Sparkles, Beaker, Quote, Play, X, Moon } from "lucide-react";
 import confetti from "canvas-confetti";
 import { getPlaylistForToday } from "@/lib/playlists";
 import { Input } from "@/components/ui/input";
@@ -136,7 +136,7 @@ export default function LabNotes() {
               <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-4 flex items-center justify-between relative overflow-hidden">
                 <div className="flex items-center gap-3 z-10">
                    <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
-                     <Sparkles className="w-5 h-5 fill-current" />
+                     <Moon className="w-5 h-5" />
                    </div>
                    <div>
                      <h3 className="font-bold text-orange-700 text-sm">Missed your evening vibe check?</h3>
@@ -173,7 +173,7 @@ export default function LabNotes() {
                 <Card className={`border-none shadow-sm overflow-hidden relative h-64 md:h-auto group ${todaysPlaylist?.bg}`}>
                    <CardContent className="relative z-10 h-full flex flex-col justify-center items-center text-center p-8">
                       <div className={`w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mb-4 ${todaysPlaylist?.color}`}>
-                        {todaysPlaylist?.icon && <todaysPlaylist.icon className="w-6 h-6 fill-current" />}
+                        {todaysPlaylist?.icon && <todaysPlaylist.icon className="w-6 h-6" />}
                       </div>
                       
                       <div className="space-y-1 mb-6">
@@ -183,7 +183,7 @@ export default function LabNotes() {
                       </div>
 
                       <Button className="rounded-full w-12 h-12 p-0 bg-primary text-white hover:scale-105 transition-transform shadow-lg">
-                         <Play className="w-5 h-5 ml-1 fill-current" />
+                         <Play className="w-5 h-5 ml-1" />
                       </Button>
                    </CardContent>
                    
