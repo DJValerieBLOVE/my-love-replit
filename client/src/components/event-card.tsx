@@ -58,7 +58,7 @@ export function EventCard({ event }: EventProps) {
         <CardContent className="p-4 flex-1 flex flex-col justify-between min-w-0">
           <div>
             <div className="flex justify-between items-start gap-2">
-              <h3 className="font-bold text-base sm:text-lg leading-tight group-hover:text-primary transition-colors line-clamp-1">
+              <h3 className="font-bold text-lg leading-tight text-muted-foreground group-hover:text-primary transition-colors line-clamp-1">
                 {event.title}
               </h3>
               <Button variant="ghost" size="icon" className="h-6 w-6 -mt-1 -mr-1 text-muted-foreground shrink-0">

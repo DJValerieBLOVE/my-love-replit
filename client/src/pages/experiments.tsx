@@ -42,7 +42,7 @@ export default function Experiments() {
                   )}
                 </div>
                 <CardContent className="p-5">
-                  <h3 className="font-bold text-lg leading-tight mb-1 group-hover:text-primary transition-colors" data-testid={`text-experiment-${experiment.id}`}>
+                  <h3 className="font-bold text-lg leading-tight mb-1 text-muted-foreground group-hover:text-primary transition-colors" data-testid={`text-experiment-${experiment.id}`}>
                     {experiment.title}
                   </h3>
                   <p className="text-base text-muted-foreground mb-4" data-testid={`text-guide-${experiment.id}`}>
