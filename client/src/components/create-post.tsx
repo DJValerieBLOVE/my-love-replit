@@ -20,7 +20,7 @@ export function CreatePost({ placeholder = "Share something with the community..
           <input 
             type="text" 
             placeholder={placeholder}
-            className="w-full bg-muted/50 rounded-full px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-serif"
+            className="w-full bg-muted/50 rounded-full px-4 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-serif placeholder:text-muted-foreground/70"
           />
           <div className="flex items-center justify-between mt-3 px-1">
             <div className="flex items-center gap-1">
