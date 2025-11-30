@@ -14,7 +14,7 @@ export const DAILY_PLAYLISTS = [
     day: "Sunday",
     theme: "Soulful Sunday",
     icon: Sun,
-    color: "text-yellow-500",
+    color: "text-muted-foreground",
     bg: "bg-yellow-500/10",
     spotifyId: "37i9dQZF1DX0Yxoavh5qJV", // Gospel/Soul placeholder
     description: "Recharge your spirit with these soulful tunes."
@@ -23,7 +23,7 @@ export const DAILY_PLAYLISTS = [
     day: "Monday",
     theme: "Manifesting Monday",
     icon: Zap,
-    color: "text-yellow-400",
+    color: "text-muted-foreground",
     bg: "bg-yellow-400/10",
     spotifyId: "37i9dQZF1DX1lVhptIYRda", // Motivation placeholder
     description: "High energy beats to manifest abundance."
@@ -32,7 +32,7 @@ export const DAILY_PLAYLISTS = [
     day: "Tuesday",
     theme: "Transformational Tuesday",
     icon: Sunrise,
-    color: "text-orange-500",
+    color: "text-muted-foreground",
     bg: "bg-orange-500/10",
     spotifyId: "37i9dQZF1DX4sWSpwq3LiO", // Peaceful piano placeholder
     description: "Embrace the power of change and evolution."
@@ -41,7 +41,7 @@ export const DAILY_PLAYLISTS = [
     day: "Wednesday",
     theme: "Wonder-Filled Wednesday",
     icon: Star,
-    color: "text-indigo-500",
+    color: "text-muted-foreground",
     bg: "bg-indigo-500/10",
     spotifyId: "37i9dQZF1DX843Qf4lr8fU", // Power hits placeholder
     description: "Stay curious and embrace the magic around you."
@@ -50,7 +50,7 @@ export const DAILY_PLAYLISTS = [
     day: "Thursday",
     theme: "Thankful Thursday",
     icon: Heart,
-    color: "text-purple-500",
+    color: "text-muted-foreground",
     bg: "bg-purple-500/10",
     spotifyId: "37i9dQZF1DXdpQPPZq3F7n", // Gratitude/Morning acoustic
     description: "Gentle rhythms for a grateful heart."
@@ -59,7 +59,7 @@ export const DAILY_PLAYLISTS = [
     day: "Friday",
     theme: "Funk-Yeah Friday",
     icon: Music,
-    color: "text-blue-500",
+    color: "text-muted-foreground",
     bg: "bg-blue-500/10",
     spotifyId: "37i9dQZF1DX0SM0LYsmbMT", // Jazz/Chill placeholder
     description: "Groove into the weekend with these funky jams."
@@ -68,7 +68,7 @@ export const DAILY_PLAYLISTS = [
     day: "Saturday",
     theme: "Sexy Saturday",
     icon: Moon,
-    color: "text-pink-600",
+    color: "text-muted-foreground",
     bg: "bg-pink-600/10",
     spotifyId: "37i9dQZF1DWZqd5JICZI0u", // Lo-fi beats
     description: "Embrace your sensuality and self-love."
