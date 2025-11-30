@@ -279,7 +279,7 @@ export default function LabNotes() {
                           {entry.type === 'daily-practice' ? (
                               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-full">
                                 {/* Col 1: Morning Alignment */}
-                                <div className="flex flex-col space-y-5 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full">
+                                <div className="flex flex-col space-y-5 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full shadow-sm">
                                   <div>
                                     <div className="flex items-center gap-2 mb-4">
                                       <Sun className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
@@ -305,7 +305,7 @@ export default function LabNotes() {
                                 </div>
 
                                 {/* Col 2: Focus & Action (Middle) */}
-                                <div className="flex flex-col space-y-6 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full relative">
+                                <div className="flex flex-col space-y-6 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full relative shadow-sm">
                                        <div className="flex items-center gap-2 mb-2">
                                           <Eye className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
                                           <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Vision</span>
@@ -359,8 +359,8 @@ export default function LabNotes() {
 
                                           {/* Villain at the bottom */}
                                           <div className="mt-6 pt-4 border-t border-border/10">
-                                              <div className="text-[15px] font-bold text-red-900/60 mb-1 pl-3">Villain (Obstacle)</div>
-                                              <div className="text-sm font-serif text-red-800/80 whitespace-normal pl-3">{entry.villain}</div>
+                                              <div className="text-[15px] font-bold text-muted-foreground mb-1 pl-3">Villain (Obstacle)</div>
+                                              <div className="text-sm font-serif text-muted-foreground whitespace-normal pl-3">{entry.villain}</div>
                                           </div>
                                        </div>
                                 </div>

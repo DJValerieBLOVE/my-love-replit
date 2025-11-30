@@ -102,7 +102,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
             
             {/* Col 1: Morning Alignment */}
-            <div className="flex flex-col space-y-5 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full">
+            <div className="flex flex-col space-y-5 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full shadow-sm">
                 <div className="flex items-center gap-2 mb-1">
                     <Sun className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
                     <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Morning Alignment</span>
@@ -173,7 +173,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
             </div>
 
             {/* Col 2: Focus & Action (Middle) */}
-            <div className="flex flex-col space-y-6 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full">
+            <div className="flex flex-col space-y-6 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full shadow-sm">
                 <div className="flex items-center gap-2 mb-1">
                     <Eye className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
                     <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Vision</span>
@@ -247,10 +247,10 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
 
                  {/* Villain Input - Bottom */}
                 <div className="space-y-2 pt-4 border-t border-border/10 mt-auto">
-                    <label className="text-[15px] font-bold text-red-900/60 pl-3">Villain (Obstacle)</label>
+                    <label className="text-[15px] font-bold text-muted-foreground pl-3">Villain (Obstacle)</label>
                     <Input 
                         placeholder="What stands in the way?" 
-                        className="h-9 bg-red-50/30 border-red-100/50 focus:border-red-300 text-sm font-serif text-red-900/80 placeholder:text-red-900/20"
+                        className="h-9 bg-white border-muted/50 focus:border-primary/30 text-sm font-serif text-muted-foreground placeholder:text-muted-foreground/20"
                         value={villain}
                         onChange={(e) => setVillain(e.target.value)}
                     />
@@ -258,7 +258,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
             </div>
 
             {/* Col 3: Evening Review */}
-            <div className="flex flex-col space-y-5 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full">
+            <div className="flex flex-col space-y-5 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full shadow-sm">
                 <div className="flex items-center gap-2 mb-1">
                     <Moon className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
                     <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Evening Review</span>
