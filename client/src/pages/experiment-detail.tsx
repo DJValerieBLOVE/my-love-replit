@@ -1,6 +1,6 @@
 import { useRoute } from "wouter";
 import Layout from "@/components/layout";
-import { EXPERIMENTS } from "@/lib/mock-data";
+import { EXPERIMENTS, CURRENT_USER } from "@/lib/mock-data";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -95,12 +95,12 @@ export default function ExperimentDetail() {
       setComments([{
         id: String(comments.length + 1),
         author: {
-          name: "You",
-          handle: "@you",
-          avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop"
+          name: CURRENT_USER.name,
+          handle: CURRENT_USER.handle,
+          avatar: CURRENT_USER.avatar
         },
         content: newComment,
-        timestamp: "Just now",
+        timestamp: "1m",
         likes: 0,
         comments: 0,
         zaps: 0
@@ -177,7 +177,7 @@ export default function ExperimentDetail() {
             {/* Comment Input */}
             <div className="flex gap-4 mb-8">
               <img 
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=40&h=40&fit=crop" 
+                src={CURRENT_USER.avatar} 
                 alt="Your avatar"
                 className="w-10 h-10 rounded-full border border-border"
               />
@@ -186,7 +186,7 @@ export default function ExperimentDetail() {
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   placeholder="Share your findings, questions, or ahas..."
-                  className="w-full p-3 rounded-lg bg-muted/30 text-foreground placeholder-muted-foreground border border-border focus:outline-none focus:ring-1 focus:ring-primary resize-none transition-all text-[17px]"
+                  className="w-full p-3 rounded-lg bg-card text-foreground placeholder-muted-foreground border border-border focus:outline-none focus:ring-1 focus:ring-primary resize-none transition-all text-[17px]"
                   rows={2}
                   data-testid="textarea-discussion"
                 />
