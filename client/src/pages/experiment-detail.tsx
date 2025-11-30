@@ -245,7 +245,7 @@ export default function ExperimentDetail() {
 
               {/* Syllabus List */}
               <div>
-                 <h3 className="font-serif font-bold text-lg mb-4">Discoveries</h3>
+                 <h3 className="font-serif font-bold text-lg mb-4 text-muted-foreground">Discoveries</h3>
                  <div className="space-y-1">
                     {discoveries.map((discovery, idx) => (
                        <div 
