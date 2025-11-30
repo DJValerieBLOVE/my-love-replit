@@ -366,8 +366,8 @@ export default function LabNotes() {
                                           {entry.focusArea && (
                                             <div className="bg-white/30 rounded-lg p-3 border border-border/20 space-y-2">
                                               <div className="flex items-center justify-between mb-1">
-                                                <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Big Dream: <span style={{ color: entry.focusArea.color }}>{entry.focusArea.name}</span></div>
-                                                <div className="text-[10px] font-medium text-muted-foreground">{entry.focusArea.progress}%</div>
+                                                <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider font-serif">Big Dream: <span style={{ color: entry.focusArea.color }}>{entry.focusArea.name}</span></div>
+                                                <div className="text-[10px] font-bold text-muted-foreground font-serif">{entry.focusArea.progress}%</div>
                                               </div>
                                               <div className="h-1 w-full bg-muted rounded-full overflow-hidden mb-2">
                                                 <div className="h-full rounded-full" style={{ width: `${entry.focusArea.progress}%`, backgroundColor: entry.focusArea.color }} />
@@ -382,7 +382,6 @@ export default function LabNotes() {
                                           <div>
                                             <div className="text-[10px] font-bold text-muted-foreground uppercase mb-2 flex justify-between">
                                               <span>Value (3 Actions)</span>
-                                              <span className="text-[9px] opacity-50">Done</span>
                                             </div>
                                             <div className="space-y-2">
                                                 <div className="flex gap-3 items-center opacity-90">

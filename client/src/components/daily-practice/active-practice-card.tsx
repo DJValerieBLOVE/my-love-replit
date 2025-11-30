@@ -177,7 +177,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                 {/* Focus Area */}
                 <div className="space-y-2">
                     <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">Focus</label>
-                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">Big Dream</label>
+                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block font-serif">Big Dream</label>
                     <Select value={selectedAreaId} onValueChange={setSelectedAreaId}>
                         <SelectTrigger className="w-full h-10 bg-white border-muted/50 focus:ring-primary/20 font-serif shadow-sm">
                             <SelectValue placeholder="Select a Focus Area..." />
@@ -187,7 +187,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                             <SelectItem key={area.id} value={area.id} className="font-serif">
                                 <div className="flex items-center gap-2">
                                     <span className={`w-2 h-2 rounded-full ${area.color}`} />
-                                    {area.name}
+                                    <span className="text-[10px] font-bold text-muted-foreground uppercase font-serif">{area.name}</span>
                                 </div>
                             </SelectItem>
                             ))}
@@ -198,8 +198,8 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                     {selectedArea && (
                         <div className="mt-2 p-3 bg-white/30 rounded-lg border border-border/20 animate-in fade-in slide-in-from-top-2">
                             <div className="flex items-center justify-between mb-1">
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Big Dream</span>
-                                <span className="text-[10px] font-bold text-muted-foreground">{selectedArea.progress}%</span>
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground font-serif">Big Dream</span>
+                                <span className="text-[10px] font-bold text-muted-foreground font-serif">{selectedArea.progress}%</span>
                             </div>
                             <p className="text-xs font-serif text-muted-foreground italic leading-relaxed opacity-80">
                                 "{selectedArea.dream}"
@@ -212,7 +212,6 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                 <div className="space-y-3 flex-1 pt-2">
                      <div className="text-[10px] font-bold text-muted-foreground uppercase flex justify-between">
                         <span>Value (3 Actions)</span>
-                        <span className="text-[9px] opacity-50">Check when done</span>
                      </div>
                      <div className="space-y-3">
                         {values.map((val, idx) => (
