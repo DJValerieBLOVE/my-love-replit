@@ -116,7 +116,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                         min="1" 
                         max="11"
                         placeholder="-"
-                        className="w-12 h-8 text-right p-0 border-none bg-transparent text-lg font-medium font-serif focus-visible:ring-0 placeholder:text-muted-foreground/30 shadow-none"
+                        className="w-12 h-8 text-right p-0 border-none bg-transparent text-lg font-medium font-serif focus-visible:ring-0 placeholder:text-muted-foreground/50 shadow-none"
                         value={morningVibe}
                         onChange={(e) => setMorningVibe(e.target.value)}
                     />
@@ -128,7 +128,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                     <div className="flex-1 bg-white border border-muted/50 rounded-xl overflow-hidden flex flex-col shadow-sm focus-within:ring-1 focus-within:ring-primary/20 transition-all">
                         <Textarea 
                             placeholder="I am grateful for..." 
-                            className="flex-1 min-h-[120px] border-none focus-visible:ring-0 text-sm font-serif resize-none p-3 shadow-none"
+                            className="flex-1 min-h-[120px] border-none focus-visible:ring-0 text-sm font-serif resize-none p-3 shadow-none placeholder:text-muted-foreground/50"
                             value={gratitude}
                             onChange={(e) => setGratitude(e.target.value)}
                         />
@@ -202,7 +202,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                                         <div className="h-full rounded-full" style={{ width: `${area.progress}%`, backgroundColor: area.hex }} />
                                     </div>
                                     
-                                    <p className="text-[10px] font-serif text-muted-foreground italic leading-relaxed opacity-80 line-clamp-2 whitespace-normal">
+                                    <p className="text-xs font-serif text-muted-foreground italic leading-relaxed opacity-80 line-clamp-2 whitespace-normal">
                                         "{area.dream}"
                                     </p>
                                 </div>
@@ -234,7 +234,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                                 <Input 
                                     placeholder={`Action Step ${idx + 1}`}
                                     className={cn(
-                                        "h-10 bg-white border-muted/30 rounded-lg px-3 focus-visible:ring-primary/10 focus-visible:border-primary/30 font-serif text-sm transition-all shadow-sm",
+                                        "h-10 bg-white border-muted/30 rounded-lg px-3 focus-visible:ring-primary/10 focus-visible:border-primary/30 font-serif text-sm transition-all shadow-sm placeholder:text-muted-foreground/50",
                                         checkedItems[idx] && "text-green-700 line-through opacity-60 decoration-green-500/30 bg-green-50/30"
                                     )}
                                     value={val}
@@ -250,7 +250,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                     <label className="text-[15px] font-bold text-muted-foreground pl-3">Villain (Obstacle)</label>
                     <Input 
                         placeholder="What stands in the way?" 
-                        className="h-9 bg-white border-muted/50 focus:border-primary/30 text-sm font-serif text-muted-foreground placeholder:text-muted-foreground/20"
+                        className="h-9 bg-white border-muted/50 focus:border-primary/30 text-sm font-serif text-muted-foreground placeholder:text-muted-foreground/50"
                         value={villain}
                         onChange={(e) => setVillain(e.target.value)}
                     />
@@ -272,7 +272,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                         min="1" 
                         max="11"
                         placeholder="-"
-                        className="w-12 h-8 text-right p-0 border-none bg-transparent text-lg font-medium font-serif text-muted-foreground focus-visible:ring-0 placeholder:text-muted-foreground/30 shadow-none"
+                        className="w-12 h-8 text-right p-0 border-none bg-transparent text-lg font-medium font-serif text-muted-foreground focus-visible:ring-0 placeholder:text-muted-foreground/50 shadow-none"
                         value={eveningVibe}
                         onChange={(e) => setEveningVibe(e.target.value)}
                     />
@@ -297,7 +297,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                     <label className="text-[15px] font-bold text-muted-foreground block pl-3">Lessons & Blessings</label>
                      <Textarea 
                         placeholder="What did I learn? What went well?" 
-                        className="flex-1 w-full min-h-[150px] bg-white border-muted/50 focus:ring-primary/10 resize-none font-serif text-muted-foreground text-sm leading-6 p-3 rounded-xl transition-all shadow-sm placeholder:text-muted-foreground/30"
+                        className="flex-1 w-full min-h-[150px] bg-white border-muted/50 focus:ring-primary/10 resize-none font-serif text-muted-foreground text-sm leading-6 p-3 rounded-xl transition-all shadow-sm placeholder:text-muted-foreground/50"
                         value={reflection}
                         onChange={(e) => setReflection(e.target.value)}
                     />
