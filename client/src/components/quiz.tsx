@@ -118,7 +118,7 @@ export function Quiz({ questions, onComplete, rewardAmount }: QuizProps) {
                          onClick={() => !isAnswered && setSelectedOption(option)}
                          disabled={isAnswered}
                          className={`
-                            w-full text-left px-6 py-4 rounded-lg border transition-all flex items-center justify-between font-serif font-normal text-base
+                            w-full text-left px-6 py-4 rounded-lg border transition-all flex items-center justify-between font-serif font-medium text-lg
                             ${isAnswered 
                                ? option === currentQuestion.correctAnswer 
                                   ? 'bg-[#6600ff] text-white border-transparent shadow-sm'
@@ -199,6 +199,7 @@ export function Quiz({ questions, onComplete, rewardAmount }: QuizProps) {
                          onClick={handleSubmit}
                          disabled={currentQuestion.type === 'multiple-choice' ? !selectedOption : !textAnswer}
                          variant="default"
+                         className="disabled:opacity-100 disabled:bg-[#6600ff]/60 disabled:cursor-not-allowed"
                       >
                          Check Answer
                       </Button>
