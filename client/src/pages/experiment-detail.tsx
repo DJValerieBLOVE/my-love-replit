@@ -341,7 +341,7 @@ export default function ExperimentDetail() {
                       ) : (
                          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <div className="flex items-center justify-between mb-6 border-b border-border pb-4">
-                               <h3 className="text-xl font-serif font-bold text-foreground flex items-center gap-2">
+                               <h3 className="text-xl font-serif font-bold text-muted-foreground flex items-center gap-2">
                                   <Lightbulb className="w-5 h-5 text-yellow-500" />
                                   Knowledge Check
                                </h3>

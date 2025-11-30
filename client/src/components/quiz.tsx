@@ -106,7 +106,7 @@ export function Quiz({ questions, onComplete, rewardAmount }: QuizProps) {
              <Card className="p-6 md:p-8 bg-card border-muted shadow-sm overflow-hidden relative">
                 
                 {/* Question Text */}
-                <h3 className="text-xl md:text-2xl font-serif font-bold mb-6 text-foreground leading-relaxed">
+                <h3 className="text-xl md:text-2xl font-serif font-bold mb-6 text-muted-foreground leading-relaxed">
                    {currentQuestion.question}
                 </h3>
 
