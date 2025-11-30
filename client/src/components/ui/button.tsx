@@ -5,20 +5,20 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
         default:
-          "bg-[#6600ff] text-white font-bold font-serif border border-transparent shadow-sm hover:bg-[#F5F3FF] hover:text-[#6600ff] hover:font-normal hover:border-[#6600ff] hover:shadow-md hover:-translate-y-0.5",
+          "bg-[#6600ff] text-white font-bold font-serif border border-transparent shadow-sm hover:bg-[#F5F3FF] hover:text-[#6600ff] hover:font-normal hover:border-[#6600ff] hover:shadow-md hover:-translate-y-0.5 disabled:opacity-100 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-[#6600ff] disabled:text-white",
         destructive:
-          "bg-destructive text-destructive-foreground shadow-sm border-destructive-border",
+          "bg-destructive text-destructive-foreground shadow-sm border-destructive-border disabled:opacity-50 disabled:pointer-events-none",
         outline:
-          "bg-white text-muted-foreground border border-muted font-serif font-normal text-base shadow-sm hover:bg-[#F5F3FF] hover:text-[#6600ff] hover:border-[#6600ff]/50 hover:shadow-md hover:-translate-y-0.5",
+          "bg-white text-muted-foreground border border-muted font-serif font-normal text-base shadow-sm hover:bg-[#F5F3FF] hover:text-[#6600ff] hover:border-[#6600ff]/50 hover:shadow-md hover:-translate-y-0.5 disabled:opacity-50 disabled:pointer-events-none",
         secondary:
-          "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+          "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 disabled:opacity-50 disabled:pointer-events-none",
+        ghost: "hover:bg-accent hover:text-accent-foreground disabled:opacity-50 disabled:pointer-events-none",
+        link: "text-primary underline-offset-4 hover:underline disabled:opacity-50 disabled:pointer-events-none",
       },
       size: {
         default: "h-9 px-4 py-2",
