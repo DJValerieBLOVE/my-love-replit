@@ -336,7 +336,7 @@ export default function LabNotes() {
                                 {entry.type === 'daily-practice' && (
                                   <div className="space-y-6">
                                     {/* Morning Vibe */}
-                                    <div className="bg-white/50 rounded-xl p-3 border border-border/40 flex justify-between items-center">
+                                    <div className="bg-white/50 rounded-xl h-10 px-3 border border-border/40 flex justify-between items-center">
                                       <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif">Morning Vibe</div>
                                       <div className="text-lg font-medium text-muted-foreground font-serif">{entry.morningVibe || entry.vibe}<span className="text-[10px] text-muted-foreground font-medium">/11</span></div>
                                     </div>
@@ -447,7 +447,7 @@ export default function LabNotes() {
                                       ) : (
                                         <div className="flex flex-col h-full space-y-6">
                                            {/* Evening Vibe */}
-                                          <div className="bg-white/50 rounded-xl p-3 border border-border/40 flex justify-between items-center">
+                                          <div className="bg-white/50 rounded-xl h-10 px-3 border border-border/40 flex justify-between items-center">
                                             <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif">Evening Vibe</div>
                                             <div className="text-lg font-medium text-muted-foreground font-serif">{entry.eveningVibe || "-"}<span className="text-[10px] text-muted-foreground font-medium">/11</span></div>
                                           </div>
