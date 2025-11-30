@@ -147,7 +147,12 @@ export default function LabNotes() {
         </div>
 
         {isPracticing ? (
-          <FiveVsWizard onComplete={handlePracticeComplete} />
+          // Show the blank/new card when practicing
+          <div className="space-y-8">
+             <ActivePracticeCard 
+               onComplete={handlePracticeComplete} 
+             />
+          </div>
         ) : (
           <div className="space-y-8">
             {/* Active Practice Card (Replaces static card + modal) */}
