@@ -247,7 +247,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
 
                  {/* Villain Input - Bottom */}
                 <div className="space-y-2 pt-4 border-t border-border/10 mt-auto">
-                    <label className="text-[10px] font-bold text-muted-foreground uppercase text-red-900/60">Villain (Obstacle)</label>
+                    <label className="text-[11px] font-bold text-muted-foreground uppercase text-red-900/60">Villain (Obstacle)</label>
                     <Input 
                         placeholder="What stands in the way?" 
                         className="h-9 bg-red-50/30 border-red-100/50 focus:border-red-300 text-sm font-serif text-red-900/80 placeholder:text-red-900/20"
@@ -266,7 +266,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
 
                 {/* Evening Vibe */}
                 <div className="bg-white/50 rounded-xl px-3 h-10 border border-border/40 flex justify-between items-center transition-all hover:shadow-sm">
-                    <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif">Evening Vibe</div>
+                    <div className="text-[11px] font-bold text-muted-foreground uppercase font-serif">Evening Vibe</div>
                     <Input 
                         type="number" 
                         min="1" 
@@ -280,7 +280,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
 
                  {/* Victory Input */}
                 <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-1">
+                    <label className="text-[11px] font-bold text-muted-foreground uppercase flex items-center gap-1">
                         <Trophy className="w-3 h-3 text-muted-foreground stroke-[1.5]" /> 
                         Victory
                     </label>
@@ -294,7 +294,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
 
                 {/* Lessons & Blessings */}
                 <div className="flex-1 flex flex-col space-y-2 pt-2 border-t border-border/20">
-                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">Lessons & Blessings</label>
+                    <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block">Lessons & Blessings</label>
                      <Textarea 
                         placeholder="What did I learn? What went well?" 
                         className="flex-1 w-full min-h-[150px] bg-white border-muted/50 focus:ring-primary/10 resize-none font-serif text-muted-foreground text-sm leading-6 p-3 rounded-xl transition-all shadow-sm placeholder:text-muted-foreground/30"
