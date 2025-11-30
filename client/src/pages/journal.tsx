@@ -60,7 +60,7 @@ export default function LabNotes() {
     {
       id: 1,
       type: "daily-practice",
-      date: "Today, Nov 28",
+      date: "Sunday Nov 28th",
       time: "10:42 AM",
       morningVibe: 8,
       eveningVibe: 9,
@@ -82,7 +82,7 @@ export default function LabNotes() {
     {
       id: 2,
       type: "experiment",
-      date: "Yesterday, Nov 27",
+      date: "Saturday Nov 27th",
       time: "4:15 PM",
       experimentTitle: "Cold Plunge Challenge",
       hypothesis: "3 minutes at 50°F will increase morning focus by 50%.",
@@ -94,7 +94,7 @@ export default function LabNotes() {
     {
       id: 3,
       type: "daily-practice",
-      date: "Nov 26",
+      date: "Friday Nov 26th",
       time: "9:30 AM",
       morningVibe: 9,
       eveningVibe: 7,
@@ -310,7 +310,7 @@ export default function LabNotes() {
                       >
                         <CardContent className="p-6">
                           {/* Date & Edit Header */}
-                          <div className="flex justify-between items-start mb-6 border-b border-border/10 pb-4">
+                          <div className="flex justify-between items-start mb-3 border-b border-border/10 pb-2">
                             <div className="space-y-1">
                                <div className="text-lg font-serif font-bold text-foreground">{entry.date}</div>
                                {/* Time removed as requested */}

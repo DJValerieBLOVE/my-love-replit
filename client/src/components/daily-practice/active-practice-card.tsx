@@ -175,7 +175,8 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
 
                 {/* Focus Area */}
                 <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">My Focus</label>
+                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">Focus</label>
+                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">Big Dream</label>
                     <Select value={selectedAreaId} onValueChange={setSelectedAreaId}>
                         <SelectTrigger className="w-full h-10 bg-white border-muted/50 focus:ring-primary/20 font-serif shadow-sm">
                             <SelectValue placeholder="Select a Focus Area..." />
