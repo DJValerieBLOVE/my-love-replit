@@ -12,89 +12,13 @@ import {
   ExternalLink, 
   BookOpen,
   MoreHorizontal,
-  Trash2
+  Trash2,
+  Bot
 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
+import { Link } from "wouter";
 
-// Mock Data for Toolbox
-const SAVED_EXPERIMENTS = [
-  {
-    id: 1,
-    title: "Morning Miracle",
-    category: "Routine",
-    image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400&h=200&fit=crop",
-    progress: 42
-  },
-  {
-    id: 2,
-    title: "Bitcoin Basics",
-    category: "Finance",
-    image: "https://images.unsplash.com/photo-1518546305927-5a5b0f98795f?w=400&h=200&fit=crop",
-    progress: 10
-  }
-];
+// ... (keep existing code)
 
-const WORKSHEETS = [
-  {
-    id: 1,
-    title: "11x Life Audit Template",
-    type: "PDF",
-    size: "2.4 MB",
-    date: "Nov 20, 2025"
-  },
-  {
-    id: 2,
-    title: "Daily 5 V's Tracker",
-    type: "Excel",
-    size: "1.1 MB",
-    date: "Nov 22, 2025"
-  },
-  {
-    id: 3,
-    title: "Dream Journal Prompts",
-    type: "PDF",
-    size: "500 KB",
-    date: "Nov 25, 2025"
-  }
-];
-
-const BOOKMARKS = [
-  {
-    id: 1,
-    title: "The Bitcoin Standard",
-    author: "Saifedean Ammous",
-    type: "Book",
-    url: "#",
-    cover: "https://images.unsplash.com/photo-1592496431122-2349e0fbc666?w=200&h=300&fit=crop"
-  },
-  {
-    id: 2,
-    title: "Breaking the Habit of Being Yourself",
-    author: "Dr. Joe Dispenza",
-    type: "Book",
-    url: "#",
-    cover: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=200&h=300&fit=crop"
-  },
-  {
-    id: 3,
-    title: "Introduction to Lightning Network",
-    author: "Article",
-    type: "Link",
-    url: "#",
-    cover: null
-  }
-];
-
-export default function Toolbox() {
-  return (
-    <Layout>
-      <div className="max-w-6xl mx-auto p-4 lg:p-8 space-y-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
@@ -105,9 +29,16 @@ export default function Toolbox() {
               Your personalized collection of bookmarks, worksheets, and resources.
             </p>
           </div>
-          <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold px-6 gap-2">
-            <Plus className="w-4 h-4" /> Add New Item
-          </Button>
+          <div className="flex gap-2">
+            <Link href="/admin/mentor">
+              <Button variant="outline" className="gap-2">
+                <Bot className="w-4 h-4 text-[#6600ff]" /> Mentor Studio
+              </Button>
+            </Link>
+            <Button className="bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold px-6 gap-2">
+              <Plus className="w-4 h-4" /> Add New Item
+            </Button>
+          </div>
         </div>
 
         {/* Main Content */}

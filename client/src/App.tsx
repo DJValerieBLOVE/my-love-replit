@@ -17,6 +17,7 @@ import Profile from "@/pages/profile";
 import Events from "@/pages/events";
 import Leaderboard from "@/pages/leaderboard";
 import AdminOnboarding from "@/pages/admin/onboarding";
+import MentorStudio from "@/pages/admin/mentor-studio";
 
 function Router() {
   return (
@@ -34,6 +35,7 @@ function Router() {
       <Route path="/events" component={Events} />
       <Route path="/leaderboard" component={Leaderboard} />
       <Route path="/admin/onboarding" component={AdminOnboarding} />
+      <Route path="/admin/mentor" component={MentorStudio} />
       <Route component={NotFound} />
     </Switch>
   );
