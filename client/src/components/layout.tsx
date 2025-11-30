@@ -18,7 +18,8 @@ import {
   Mail,
   Wrench, // Added
   Music,   // Added
-  HelpCircle // Added
+  HelpCircle, // Added
+  Flame // Added
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -198,16 +199,16 @@ export default function Layout({ children, showRightSidebar = true }: { children
           </div>
 
           {/* Widget 2: Streaks */}
-          <div className="bg-gradient-to-r from-orange-500/20 to-yellow-500/20 rounded-xs border border-orange-400/40 hover:border-orange-400/60 transition-colors p-4" data-testid="widget-streaks">
+          <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xs border border-blue-100 hover:border-blue-200 transition-colors p-4" data-testid="widget-streaks">
             {/* Header + Days on one line */}
             <div className="flex items-center justify-between gap-2 mb-4">
               <div className="flex items-center gap-2">
-                <Zap className="w-5 h-5 text-orange-500 fill-current" />
-                <h4 className="font-bold text-xs uppercase text-orange-500">Streak</h4>
+                <Flame className="w-5 h-5 text-blue-500 fill-blue-500" />
+                <h4 className="font-bold text-xs uppercase text-blue-600/80">Streak</h4>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="text-2xl font-black text-orange-500">{CURRENT_USER.streak}</span>
-                <span className="text-xs font-bold text-orange-600">Days</span>
+                <span className="text-2xl font-black text-blue-500">{CURRENT_USER.streak}</span>
+                <span className="text-xs font-bold text-blue-400">Days</span>
               </div>
             </div>
 
@@ -216,7 +217,7 @@ export default function Layout({ children, showRightSidebar = true }: { children
               {['M','T','W','T','F','S','S'].map((d, i) => (
                 <div key={i} className={cn(
                   "w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all",
-                  i < 5 ? "bg-orange-500 text-white shadow-md" : "bg-orange-400/40 text-white border border-orange-400/60 font-bold"
+                  i < 5 ? "bg-blue-500 text-white shadow-md" : "bg-blue-200 text-blue-400 font-bold"
                 )}>
                   {d}
                 </div>
