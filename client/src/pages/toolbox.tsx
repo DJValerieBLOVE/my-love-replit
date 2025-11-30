@@ -109,7 +109,7 @@ export default function Toolbox() {
           </div>
           <div className="flex gap-2">
             <Link href="/admin/mentor">
-              <Button variant="outline" className="gap-2">
+              <Button variant="outline" className="gap-2 text-muted-foreground border-muted hover:border-primary/50 hover:text-primary shadow-sm bg-card/50 font-serif text-base">
                 <Bot className="w-4 h-4 text-[#6600ff]" /> Mentor Studio
               </Button>
             </Link>
@@ -263,7 +263,9 @@ export default function Toolbox() {
                 <p className="text-muted-foreground text-sm mb-6 max-w-xs">
                   Upload worksheets, PDFs, or images to keep them handy in your toolbox.
                 </p>
-                <Button>Select Files</Button>
+                <Button variant="outline" className="mt-4 gap-2 text-muted-foreground border-muted hover:border-primary/50 hover:text-primary shadow-sm bg-card/50 font-serif text-base">
+                   Select Files
+                </Button>
               </CardContent>
             </Card>
             
