@@ -364,19 +364,18 @@ export default function LabNotes() {
                                       <div className="space-y-6">
                                           {/* Focus Area */}
                                           {entry.focusArea && (
-                                            <>
-                                            <div className="bg-white/50 rounded-xl h-10 px-3 border border-border/40 flex justify-between items-center">
-                                              <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif">Focus Area</div>
-                                              <div className="text-sm font-bold font-serif" style={{ color: entry.focusArea.color }}>{entry.focusArea.name}</div>
+                                            <div className="bg-white/30 rounded-lg p-3 border border-border/20 space-y-2">
+                                              <div className="flex items-center justify-between mb-1">
+                                                <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Big Dream: <span style={{ color: entry.focusArea.color }}>{entry.focusArea.name}</span></div>
+                                                <div className="text-[10px] font-medium text-muted-foreground">{entry.focusArea.progress}%</div>
+                                              </div>
+                                              <div className="h-1 w-full bg-muted rounded-full overflow-hidden mb-2">
+                                                <div className="h-full rounded-full" style={{ width: `${entry.focusArea.progress}%`, backgroundColor: entry.focusArea.color }} />
+                                              </div>
+                                              <div className="text-xs font-serif text-muted-foreground italic leading-relaxed opacity-80">
+                                                "{entry.focusArea.dream}"
+                                              </div>
                                             </div>
-                                            
-                                            <div className="space-y-2">
-                                                <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Big Dream</div>
-                                                <div className="text-xs font-serif text-muted-foreground italic leading-relaxed opacity-80">
-                                                    "{entry.focusArea.dream}"
-                                                </div>
-                                            </div>
-                                            </>
                                           )}
 
                                           {/* Values */}
