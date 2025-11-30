@@ -56,6 +56,7 @@ import { VerticalEqVisualizer } from "@/components/vertical-eq-visualizer";
 
 export default function Layout({ children, showRightSidebar = true }: { children: React.ReactNode, showRightSidebar?: boolean }) {
   const [location] = useLocation();
+  const [isAiOpen, setIsAiOpen] = useState(false);
   const [inboxOpen, setInboxOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
 
