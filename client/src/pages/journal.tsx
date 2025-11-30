@@ -38,18 +38,6 @@ export default function LabNotes() {
   const [showMissedCheckinAlert, setShowMissedCheckinAlert] = useState(true); 
   const todaysPlaylist = getPlaylistForToday();
 
-  const handlePracticeComplete = (data: any) => {
-    setIsPracticing(false);
-    setPracticeData(data);
-    
-    // Trigger confetti for morning practice complete
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
-  };
-
   const handleEveningComplete = (eveningData: any) => {
       setDayCompleted(true);
       // Here we would normally save everything to the backend
@@ -206,6 +194,7 @@ export default function LabNotes() {
                 </Button>
              </div>
              <ActivePracticeCard 
+               data={practiceData}
                onComplete={handlePracticeComplete} 
              />
           </div>
