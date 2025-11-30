@@ -137,13 +137,13 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
     {
       id: 4,
       title: "Villain",
-      subtitle: "Identify resistance & choose your weapon",
+      subtitle: "Identify Possible Obstacles",
       component: (
         <div className="space-y-6">
           <div className="space-y-2">
             <label className="text-xs font-serif text-muted-foreground uppercase tracking-wider">The Problem (Villain)</label>
             <Input 
-              placeholder="What resistance might show up? (e.g. Distraction, Doubt...)" 
+              placeholder="What obstacle might show up? (e.g. Distraction, Doubt, Tired, etc...)" 
               className="h-12 bg-muted/30 border-muted focus:bg-background text-base md:text-base font-serif"
               value={data.villain}
               onChange={e => setData({...data, villain: e.target.value})}
@@ -200,7 +200,7 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
             <div className="h-[2px] w-full bg-primary" />
             <CardContent className="p-8 min-h-[400px] flex flex-col">
               <div className="mb-8 text-center">
-                <h3 className="text-2xl font-serif mb-2">{currentStep.title}</h3>
+                <h3 className="text-2xl font-serif mb-2 text-muted-foreground">{currentStep.title}</h3>
                 <p className="text-muted-foreground text-lg font-serif">{currentStep.subtitle}</p>
               </div>
               
