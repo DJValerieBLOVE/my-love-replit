@@ -26,14 +26,41 @@ import {
 import { Link } from "wouter";
 import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { FeedPost } from "@/components/feed-post";
 
 export default function ExperimentDetail() {
   const [, params] = useRoute("/experiments/:id");
   const experiment = EXPERIMENTS.find(m => m.id === params?.id);
   const [newComment, setNewComment] = useState("");
+  
+  // Transformed comments to match FeedPost structure
   const [comments, setComments] = useState([
-    { id: 1, author: "Alex Chen", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop", text: "This discovery really shifted my perspective! 🙌", time: "2h ago", likes: 12 },
-    { id: 2, author: "Sarah M.", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop", text: "Anyone else testing this hypothesis?", time: "1h ago", likes: 5 },
+    { 
+      id: "1", 
+      author: {
+        name: "Alex Chen",
+        handle: "@alexc",
+        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop"
+      },
+      content: "This discovery really shifted my perspective! 🙌", 
+      timestamp: "2h ago", 
+      likes: 12,
+      comments: 3,
+      zaps: 210
+    },
+    { 
+      id: "2", 
+      author: {
+        name: "Sarah M.",
+        handle: "@sarahm",
+        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop"
+      },
+      content: "Anyone else testing this hypothesis?", 
+      timestamp: "1h ago", 
+      likes: 5,
+      comments: 1,
+      zaps: 50
+    },
   ]);
   
   const [isAboutOpen, setIsAboutOpen] = useState(true);
@@ -61,14 +88,19 @@ export default function ExperimentDetail() {
 
   const handleAddComment = () => {
     if (newComment.trim()) {
-      setComments([...comments, {
-        id: comments.length + 1,
-        author: "You",
-        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop",
-        text: newComment,
-        time: "now",
-        likes: 0
-      }]);
+      setComments([{
+        id: String(comments.length + 1),
+        author: {
+          name: "You",
+          handle: "@you",
+          avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop"
+        },
+        content: newComment,
+        timestamp: "Just now",
+        likes: 0,
+        comments: 0,
+        zaps: 0
+      }, ...comments]);
       setNewComment("");
     }
   };
@@ -167,31 +199,10 @@ export default function ExperimentDetail() {
               </div>
             </div>
 
-            {/* Comments List */}
+            {/* Comments List (Using FeedPost) */}
             <div className="space-y-6">
               {comments.map((comment) => (
-                <div key={comment.id} className="flex gap-4 group">
-                  <img 
-                    src={comment.avatar}
-                    alt={comment.author}
-                    className="w-10 h-10 rounded-full flex-shrink-0 border border-border"
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-bold text-foreground text-[15px]" data-testid={`text-commenter-${comment.id}`}>{comment.author}</span>
-                      <span className="text-xs text-muted-foreground">• {comment.time}</span>
-                    </div>
-                    <p className="text-[17px] text-foreground/90 leading-relaxed mb-2">{comment.text}</p>
-                    <button 
-                      className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors"
-                      data-testid={`button-like-comment-${comment.id}`}
-                    >
-                      <Badge variant="outline" className="h-5 px-1.5 gap-1 hover:bg-primary/5 border-border/50">
-                        ❤️ {comment.likes || "Like"}
-                      </Badge>
-                    </button>
-                  </div>
-                </div>
+                <FeedPost key={comment.id} post={comment} />
               ))}
             </div>
           </div>
@@ -210,8 +221,6 @@ export default function ExperimentDetail() {
                  <Progress value={experiment.progress} className="h-1.5" />
               </div>
 
-              {/* Action Button - REMOVED */}
-              
               {/* Syllabus List */}
               <div>
                  <h3 className="font-serif font-bold text-lg mb-4">Discoveries</h3>
