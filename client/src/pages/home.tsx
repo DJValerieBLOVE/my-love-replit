@@ -28,15 +28,6 @@ export default function Home() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="outline" className="gap-2">
-              <HelpCircle className="w-4 h-4" /> How it works
-            </Button>
-            
-            <Link href="/journal?startPractice=true">
-              <Button className="px-6 gap-2 font-bold h-10 bg-love-body text-white border border-transparent transition-all">
-                <img src={WhiteLogo} alt="Logo" className="w-4 h-4 group-hover:invert" /> Daily LOVE Practice
-              </Button>
-            </Link>
           </div>
         </div>
 
@@ -59,17 +50,17 @@ export default function Home() {
               <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-full -mr-20 -mt-20 blur-3xl pointer-events-none" />
               <CardContent className="p-8 relative z-10 flex flex-col justify-between h-full">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm text-2xl flex-shrink-0">
-                    ✨
-                  </div>
+                  {/* Removed Sparkle Icon */}
                   <div>
                     <h3 className="text-lg font-bold font-serif mb-2 text-love-body">Daily Wonder</h3>
                     <p className="text-xl font-medium text-muted-foreground italic mb-6">
                       "What if life isn't a test you can fail... but an experiment you get to play?"
                     </p>
-                    <Button variant="outline" className="h-10 px-6 transition-all">
-                      Capture Reflection
-                    </Button>
+                    <Link href="/journal?startPractice=true">
+                      <Button className="h-10 px-6 transition-all gap-2 bg-love-body text-white hover:bg-love-body/90">
+                        <img src={WhiteLogo} alt="Logo" className="w-4 h-4" /> Daily LOVE Practice
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </CardContent>

@@ -17,7 +17,8 @@ import {
   Menu,
   Mail,
   Wrench, // Added
-  Music   // Added
+  Music,   // Added
+  HelpCircle // Added
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -64,6 +65,7 @@ export default function Layout({ children, showRightSidebar = true }: { children
     { icon: Calendar, label: "Events", href: "/events" },
     { icon: LayoutGrid, label: "Clubs", href: "/community" },
     { icon: Music, label: "Resources", href: "/resources" },
+    { icon: HelpCircle, label: "FAWs", href: "/faws" },
   ];
 
   return (
