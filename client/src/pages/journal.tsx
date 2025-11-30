@@ -308,169 +308,161 @@ export default function LabNotes() {
                         onClick={() => setSelectedEntry(entry)}
                       >
                         <CardContent className="p-6">
-                          <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr_1fr] gap-8">
-                            {/* Col 1: Meta Data */}
-                            <div className="flex flex-col justify-between space-y-4">
+                          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-full">
+                            {/* Col 1: The Compass */}
+                            <div className="flex flex-col justify-between space-y-6 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full">
                               <div>
-                                <div className="flex items-center gap-2 mb-1">
-                                  {entry.type === 'daily-practice' && <Heart className="w-3 h-3 text-muted-foreground" strokeWidth={1.5} />}
-                                  {entry.type === 'experiment' && <Beaker className="w-3 h-3 text-muted-foreground" strokeWidth={1.5} />}
-                                  {entry.type === 'discovery' && <Lightbulb className="w-3 h-3 text-muted-foreground" strokeWidth={1.5} />}
+                                <div className="flex items-center gap-2 mb-2">
+                                  {entry.type === 'daily-practice' && <Heart className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />}
+                                  {entry.type === 'experiment' && <Beaker className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />}
+                                  {entry.type === 'discovery' && <Lightbulb className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />}
                                   <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider mt-[1px]">
-                                    {entry.type === 'daily-practice' ? "Daily LOVE Practice" : entry.type.charAt(0).toUpperCase() + entry.type.slice(1)}
+                                    {entry.type === 'daily-practice' ? "The Compass" : entry.type.charAt(0).toUpperCase() + entry.type.slice(1)}
                                   </span>
                                 </div>
-                                <div className="text-lg text-muted-foreground font-serif">{entry.date}</div>
-                              </div>
+                                <div className="text-lg text-muted-foreground font-serif mb-4">{entry.date}</div>
                               
-                              {entry.type === 'daily-practice' && (
-                                <div className="space-y-3">
-                                  <div className="bg-muted/10 rounded-lg p-3 border border-border/40 flex justify-between items-center">
-                                    <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif flex items-center gap-2">
-                                        <Sun className="w-4 h-4 text-muted-foreground stroke-[1.5]" /> 
-                                        Morning Vibe
-                                    </div>
-                                    <div className="text-lg font-medium text-muted-foreground font-serif">{entry.morningVibe || entry.vibe}<span className="text-[10px] text-muted-foreground font-medium">/11</span></div>
-                                  </div>
-                                  <div className="bg-muted/10 rounded-lg p-3 border border-border/40 flex justify-between items-center">
-                                    <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif flex items-center gap-2">
-                                        <Moon className="w-4 h-4 text-muted-foreground stroke-[1.5]" /> 
-                                        Evening Vibe
-                                    </div>
-                                    <div className="text-lg font-medium text-muted-foreground font-serif">{entry.eveningVibe || "-"}<span className="text-[10px] text-muted-foreground font-medium">/11</span></div>
-                                  </div>
-                                  
-                                  {entry.focusArea && (
-                                    <div className="bg-muted/20 rounded-lg p-3 border border-border/50 mt-2 space-y-3">
-                                      <div className="text-xs font-serif text-muted-foreground italic leading-relaxed">
-                                        "{entry.focusArea.dream}"
+                                {entry.type === 'daily-practice' && (
+                                  <div className="space-y-4">
+                                    {/* Morning Vibe */}
+                                    <div className="bg-white/50 rounded-xl p-3 border border-border/40 flex justify-between items-center">
+                                      <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif flex items-center gap-2">
+                                          <Sun className="w-4 h-4 text-muted-foreground stroke-[1.5]" /> 
+                                          Morning Vibe
                                       </div>
-                                      
-                                      <div className="space-y-1">
-                                        <div className="flex items-center justify-between">
+                                      <div className="text-lg font-medium text-muted-foreground font-serif">{entry.morningVibe || entry.vibe}<span className="text-[10px] text-muted-foreground font-medium">/11</span></div>
+                                    </div>
+                                    
+                                    {/* Focus Area */}
+                                    {entry.focusArea && (
+                                      <div className="bg-white/30 rounded-lg p-3 border border-border/20 space-y-2">
+                                         <div className="flex items-center justify-between mb-1">
                                           <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Big Dream: <span style={{ color: entry.focusArea.color }}>{entry.focusArea.name}</span></div>
                                           <div className="text-[10px] font-medium text-muted-foreground">{entry.focusArea.progress}%</div>
                                         </div>
-                                        <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
+                                        <div className="h-1 w-full bg-muted rounded-full overflow-hidden mb-2">
                                           <div className="h-full rounded-full" style={{ width: `${entry.focusArea.progress}%`, backgroundColor: entry.focusArea.color }} />
                                         </div>
+                                        <div className="text-xs font-serif text-muted-foreground italic leading-relaxed opacity-80">
+                                          "{entry.focusArea.dream}"
+                                        </div>
                                       </div>
+                                    )}
+
+                                    {/* Vision & Villain */}
+                                    <div className="space-y-3">
+                                        <div>
+                                            <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Vision</div>
+                                            <div className="text-sm font-serif text-muted-foreground whitespace-normal italic">"{entry.vision}"</div>
+                                        </div>
+                                        <div className="pt-2 border-t border-border/20">
+                                            <div className="text-[10px] font-bold text-red-900/60 uppercase mb-1">Villain</div>
+                                            <div className="text-sm font-serif text-red-800/80 whitespace-normal">{entry.villain}</div>
+                                        </div>
                                     </div>
-                                  )}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Col 2: The Actions (Middle) */}
+                            <div className="flex flex-col space-y-6 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full">
+                               {entry.type === 'daily-practice' ? (
+                                 <>
+                                   <div className="flex items-center gap-2 mb-2">
+                                      <CheckCircle className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+                                      <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">The Actions</span>
+                                   </div>
+
+                                   <div className="space-y-4 flex-1">
+                                      <div>
+                                        <div className="text-[10px] font-bold text-muted-foreground uppercase mb-2 flex justify-between">
+                                          <span>Values (Actions)</span>
+                                          <span className="text-[9px] opacity-50">Done</span>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <div className="flex gap-3 items-center opacity-90">
+                                                <div className="w-5 h-5 rounded-full bg-green-500 border border-green-500 flex items-center justify-center shrink-0 shadow-sm">
+                                                    <CheckCircle className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                                                </div>
+                                                <span className="text-sm font-serif text-green-800 line-through opacity-70">{entry.value || "Action 1"}</span>
+                                            </div>
+                                            <div className="flex gap-3 items-center opacity-90">
+                                                <div className="w-5 h-5 rounded-full bg-green-500 border border-green-500 flex items-center justify-center shrink-0 shadow-sm">
+                                                    <CheckCircle className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                                                </div>
+                                                <span className="text-sm font-serif text-green-800 line-through opacity-70">Review goals</span>
+                                            </div>
+                                            <div className="flex gap-3 items-center opacity-90">
+                                                <div className="w-5 h-5 rounded-full bg-green-500 border border-green-500 flex items-center justify-center shrink-0 shadow-sm">
+                                                    <CheckCircle className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                                                </div>
+                                                <span className="text-sm font-serif text-green-800 line-through opacity-70">Meditate 10m</span>
+                                            </div>
+                                        </div>
+                                      </div>
+                                   </div>
+
+                                   <div className="space-y-4 pt-4 border-t border-border/20">
+                                      {/* Evening Vibe */}
+                                      <div className="bg-white/50 rounded-xl p-3 border border-border/40 flex justify-between items-center">
+                                        <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif flex items-center gap-2">
+                                            <Moon className="w-4 h-4 text-muted-foreground stroke-[1.5]" /> 
+                                            Evening Vibe
+                                        </div>
+                                        <div className="text-lg font-medium text-muted-foreground font-serif">{entry.eveningVibe || "-"}<span className="text-[10px] text-muted-foreground font-medium">/11</span></div>
+                                      </div>
+
+                                      {/* Victory */}
+                                      <div>
+                                        <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1 flex items-center gap-1">
+                                            <Trophy className="w-3 h-3 text-muted-foreground" /> Victory
+                                        </div>
+                                        <div className="text-sm font-serif text-muted-foreground whitespace-normal">{entry.victory}</div>
+                                      </div>
+                                   </div>
+                                 </>
+                               ) : (
+                                 // For other types, just show content
+                                 <div className="flex items-center justify-center h-full text-muted-foreground italic font-serif">
+                                   See details...
+                                 </div>
+                               )}
+                            </div>
+
+                            {/* Col 3: The Wisdom (Reflection) */}
+                            <div className="flex flex-col h-full bg-white p-5 rounded-2xl border border-border/20 shadow-sm">
+                                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-4 flex items-center gap-2">
+                                    <BookOpen className="w-4 h-4 text-muted-foreground stroke-[1.5]" /> 
+                                    {entry.type === 'daily-practice' ? "Lessons & Blessings" : "Notes"}
+                                </label>
+                                <div className="flex-1">
+                                    {entry.type === 'experiment' ? (
+                                        <>
+                                          <p className="text-base font-bold font-serif mb-2">{entry.experimentTitle}</p>
+                                          <p className="text-base leading-relaxed text-muted-foreground font-serif italic line-clamp-[10]">
+                                            "{entry.hypothesis}" <br/><br/>
+                                            {entry.content}
+                                          </p>
+                                        </>
+                                      ) : entry.type === 'discovery' ? (
+                                        <>
+                                           <p className="text-base leading-relaxed text-foreground font-serif font-medium italic line-clamp-[10]">
+                                            "{entry.ahaMoment}" <br/><br/>
+                                            {entry.content}
+                                          </p>
+                                        </>
+                                      ) : (
+                                        <p className="text-base leading-relaxed text-muted-foreground font-serif italic whitespace-pre-wrap">
+                                          "{entry.content}"
+                                        </p>
+                                      )}
                                 </div>
-                              )}
-                            </div>
-
-                            {/* Col 2: Content Preview */}
-                            <div className="space-y-2 pt-[3px]">
-                              {entry.type === 'experiment' ? (
-                                <>
-                                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Hypothesis</label>
-                                  <p className="text-base font-bold font-serif mb-2">{entry.experimentTitle}</p>
-                                  <p className="text-base leading-relaxed text-muted-foreground font-serif italic line-clamp-3">
-                                    "{entry.hypothesis}"
-                                  </p>
-                                </>
-                              ) : entry.type === 'discovery' ? (
-                                <>
-                                   <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">"Aha!" Moment</label>
-                                   <p className="text-base leading-relaxed text-foreground font-serif font-medium italic line-clamp-3">
-                                    "{entry.ahaMoment}"
-                                  </p>
-                                </>
-                              ) : (
-                                <>
-                                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                                    <BookOpen className="w-3 h-3 text-muted-foreground stroke-[1.5]" />
-                                    My Blessings
-                                  </label>
-                                  <p className="text-base leading-relaxed text-muted-foreground font-serif italic line-clamp-6">
-                                    "{entry.content}"
-                                  </p>
-                                </>
-                              )}
-                            </div>
-
-                            {/* Col 3: Key Details List */}
-                            <div className="space-y-4 bg-muted/20 p-4 rounded-lg border border-border/50 h-fit">
-                              {entry.type === 'daily-practice' && (
-                                <>
-                                  <div>
-                                    <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Vision</div>
-                                    <div className="text-sm font-serif text-muted-foreground whitespace-normal italic">"{entry.vision}"</div>
-                                  </div>
-
-                                  <div>
-                                    <div className="text-[10px] font-bold text-muted-foreground uppercase mb-2 flex justify-between">
-                                      <span>Action Steps</span>
-                                      <span className="text-[9px] opacity-50">Done</span>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <div className="flex gap-2 items-center opacity-70">
-                                            <div className="w-4 h-4 rounded-full bg-green-500 border border-green-500 flex items-center justify-center shrink-0">
-                                                <CheckCircle className="w-3 h-3 text-white" strokeWidth={3} />
-                                            </div>
-                                            <span className="text-xs font-serif text-green-700 line-through">{entry.value || "Action 1"}</span>
-                                        </div>
-                                        <div className="flex gap-2 items-center opacity-70">
-                                            <div className="w-4 h-4 rounded-full bg-green-500 border border-green-500 flex items-center justify-center shrink-0">
-                                                <CheckCircle className="w-3 h-3 text-white" strokeWidth={3} />
-                                            </div>
-                                            <span className="text-xs font-serif text-green-700 line-through">Review goals</span>
-                                        </div>
-                                        <div className="flex gap-2 items-center opacity-70">
-                                            <div className="w-4 h-4 rounded-full bg-green-500 border border-green-500 flex items-center justify-center shrink-0">
-                                                <CheckCircle className="w-3 h-3 text-white" strokeWidth={3} />
-                                            </div>
-                                            <span className="text-xs font-serif text-green-700 line-through">Meditate 10m</span>
-                                        </div>
-                                    </div>
-                                  </div>
-
-                                  <div>
-                                    <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Villain</div>
-                                    <div className="text-sm font-serif text-red-500/80 whitespace-normal">{entry.villain}</div>
-                                  </div>
-
-                                  <div>
-                                    <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1 flex items-center gap-1">
-                                        <Trophy className="w-3 h-3 text-muted-foreground" /> Victory
-                                    </div>
-                                    <div className="text-sm font-serif text-muted-foreground whitespace-normal">{entry.victory}</div>
-                                  </div>
-                                </>
-                              )}
-
-                              {entry.type === 'experiment' && (
-                                <>
-                                  <div>
-                                    <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Observation</div>
-                                    <div className="text-sm font-serif text-muted-foreground whitespace-normal line-clamp-2">{entry.observation}</div>
-                                  </div>
-                                  <div>
-                                    <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Conclusion</div>
-                                    <div className="text-sm font-serif text-muted-foreground whitespace-normal line-clamp-2">{entry.conclusion}</div>
-                                  </div>
-                                </>
-                              )}
-
-                              {entry.type === 'discovery' && (
-                                <>
-                                  <div>
-                                    <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Context</div>
-                                    <div className="text-sm font-serif text-muted-foreground whitespace-normal">{entry.context}</div>
-                                  </div>
-                                  <div>
-                                    <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Action Item</div>
-                                    <div className="text-sm font-serif text-primary whitespace-normal font-medium">{entry.actionItem}</div>
-                                  </div>
-                                </>
-                              )}
                             </div>
                           </div>
                         </CardContent>
                       </Card>
-                    ))}
+                      ))}
                   </div>
                 </TabsContent>
               ))}
@@ -478,7 +470,6 @@ export default function LabNotes() {
           </div>
         )}
       </div>
-
       <EntryDetailModal 
         entry={selectedEntry} 
         isOpen={!!selectedEntry} 
