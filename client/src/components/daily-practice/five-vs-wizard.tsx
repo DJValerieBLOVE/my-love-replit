@@ -65,7 +65,7 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
               </SelectTrigger>
               <SelectContent className="w-[var(--radix-select-trigger-width)] max-h-[300px]">
                 {LOVE_CODE_AREAS.map((area) => (
-                  <SelectItem key={area.id} value={area.id} className="pl-2 pr-2 w-full">
+                  <SelectItem key={area.id} value={area.id} className="w-full px-4 py-2 cursor-pointer">
                     <div className="flex flex-col gap-2 text-left w-full">
                       <div className="grid grid-cols-[1fr_45px] items-center w-full gap-2">
                         <div className="flex items-center gap-2 overflow-hidden">
