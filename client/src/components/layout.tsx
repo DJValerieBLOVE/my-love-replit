@@ -180,7 +180,7 @@ export default function Layout({ children, showRightSidebar = true }: { children
               </div>
 
               {/* Tagline */}
-              <p className="text-base text-purple-200 mb-3 italic font-bold text-center">"Rock Your Dreams!"</p>
+              <p className="text-base text-white mb-3 italic font-bold text-center">"Rock Your Dreams!"</p>
 
               {/* Ask Magic Mentor Button */}
               <Button 
@@ -212,7 +212,7 @@ export default function Layout({ children, showRightSidebar = true }: { children
               {['M','T','W','T','F','S','S'].map((d, i) => (
                 <div key={i} className={cn(
                   "w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all",
-                  i < 5 ? "bg-orange-500 text-white shadow-md" : "bg-orange-400/40 text-orange-700 border-2 border-orange-400/60 font-bold"
+                  i < 5 ? "bg-orange-500 text-white shadow-md" : "bg-orange-400/40 text-white border border-orange-400/60 font-bold"
                 )}>
                   {d}
                 </div>
