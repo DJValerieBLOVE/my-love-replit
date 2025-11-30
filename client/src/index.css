@@ -73,147 +73,169 @@
   --love-time: #00ccff;       /* Cyan */
   --love-env: #0033ff;        /* Blue */
 
-  /* Light Mode: Clean, Modern, High Energy */
-  --background: 0 0% 98%;
-  --foreground: 0 0% 4%; /* 95% black */
+  /* 11x LOVE Design System - Standardized Hex Codes */
+  
+  /* Main Text Colors */
+  --color-text-main: #4D3D5C;  /* Muted Deep Purple - Headings & Body */
+  --color-text-brand: #6600ff; /* Brand Purple */
+  --color-text-sats: #FF9900;  /* Bitcoin Orange */
 
-  --card: 0 0% 100%;
-  --card-foreground: 0 0% 4%; /* 95% black */
+  /* Light Mode Theme */
+  --background: #FAFAFA;       /* Clean Off-White */
+  --foreground: #4D3D5C;       /* Muted Deep Purple */
 
-  --popover: 0 0% 100%;
-  --popover-foreground: 0 0% 4%; /* 95% black */
+  --card: #FFFFFF;
+  --card-foreground: #4D3D5C;
+
+  --popover: #FFFFFF;
+  --popover-foreground: #4D3D5C;
 
   /* Primary: Body Purple (Brand) */
-  --primary: 264 100% 50%; /* #6600ff */ 
-  --primary-foreground: 0 0% 100%;
+  --primary: #6600ff;
+  --primary-foreground: #FFFFFF;
 
   /* Secondary: Cyber Gold/Orange (Sats) */
-  --secondary: 35 100% 60%;
-  --secondary-foreground: 0 0% 100%;
+  --secondary: #FF9900;
+  --secondary-foreground: #FFFFFF;
 
-  --muted: 270 20% 96%;
-  --muted-foreground: 270 20% 30%;
+  --muted: #F5F3FF;           /* Light Purple Tint */
+  --muted-foreground: #4D3D5C; /* Muted Deep Purple */
 
-  --accent: 180 80% 96%;
-  --accent-foreground: 180 100% 35%;
+  --accent: #E0F7FA;
+  --accent-foreground: #006064;
 
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 98%;
+  --destructive: #EF4444;
+  --destructive-foreground: #FAFAFA;
 
-  --border: 270 20% 90%;
-  --input: 270 20% 90%;
-  --ring: 270 100% 50%; /* #6600ff */
+  --border: #E5E5E5;
+  --input: #E5E5E5;
+  --ring: #6600ff;
 
-  --sidebar: 0 0% 100%;
-  --sidebar-foreground: 0 0% 0%; /* darkest */
-  --sidebar-primary: 270 100% 50%; /* #6600ff */
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 270 20% 96%;
-  --sidebar-accent-foreground: 270 100% 50%; /* #6600ff */
-  --sidebar-border: 270 20% 90%;
-  --sidebar-ring: 270 90% 60%;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #4D3D5C;
+  --sidebar-primary: #6600ff;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F5F3FF;
+  --sidebar-accent-foreground: #6600ff;
+  --sidebar-border: #E5E5E5;
+  --sidebar-ring: #6600ff;
 }
 
 
 /* Dark Mode: Cyber Goddess, Deep Space */
 .dark {
-  --background: 270 50% 5%; /* Deepest Purple Black */
-  --foreground: 270 10% 98%;
+  --background: #0D001A; /* Deepest Purple Black */
+  --foreground: #F3E8FF; /* Light Lavender */
 
-  --card: 270 40% 10%;
-  --card-foreground: 270 10% 98%;
+  --card: #1A052E;       /* Deep Purple Card */
+  --card-foreground: #F3E8FF;
 
-  --popover: 270 40% 10%;
-  --popover-foreground: 270 10% 98%;
+  --popover: #1A052E;
+  --popover-foreground: #F3E8FF;
 
-  --primary: 270 100% 70%; /* Glowing Purple */
-  --primary-foreground: 270 50% 10%;
+  --primary: #9D4DFF;    /* Lighter Glowing Purple */
+  --primary-foreground: #FFFFFF;
 
-  --secondary: 35 100% 60%;
-  --secondary-foreground: 0 0% 100%;
+  --secondary: #FFAA33;  /* Lighter Orange */
+  --secondary-foreground: #FFFFFF;
 
-  --muted: 270 30% 20%;
-  --muted-foreground: 270 20% 70%;
+  --muted: #2D1B4E;
+  --muted-foreground: #D8B4FE;
 
-  --accent: 180 100% 20%;
-  --accent-foreground: 180 100% 80%;
+  --accent: #006064;
+  --accent-foreground: #E0F7FA;
 
-  --destructive: 0 62% 30%;
-  --destructive-foreground: 0 0% 98%;
+  --destructive: #7F1D1D;
+  --destructive-foreground: #FAFAFA;
 
-  --border: 270 30% 20%;
-  --input: 270 30% 20%;
-  --ring: 270 100% 70%;
+  --border: #4D3D5C;
+  --input: #4D3D5C;
+  --ring: #9D4DFF;
 
-  --sidebar: 270 50% 7%;
-  --sidebar-foreground: 270 10% 98%;
-  --sidebar-primary: 270 100% 70%;
-  --sidebar-primary-foreground: 270 50% 10%;
-  --sidebar-accent: 270 30% 20%;
-  --sidebar-accent-foreground: 270 100% 80%;
-  --sidebar-border: 270 30% 20%;
-  --sidebar-ring: 270 100% 70%;
+  --sidebar: #0D001A;
+  --sidebar-foreground: #F3E8FF;
+  --sidebar-primary: #9D4DFF;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #2D1B4E;
+  --sidebar-accent-foreground: #9D4DFF;
+  --sidebar-border: #4D3D5C;
+  --sidebar-ring: #9D4DFF;
 }
 
 @layer base {
   * {
     @apply border-border;
   }
+  
+  /* GLOBAL TYPOGRAPHY RESET */
   body {
     @apply font-sans antialiased bg-background text-foreground selection:bg-primary/30 selection:text-primary;
-    font-size: 18px;
-  }
-  h1 {
     font-family: 'Marcellus', Georgia, serif;
-    font-size: 48px;
+    font-size: 17px !important; /* Standard Body Size */
     font-weight: 400;
+    color: var(--foreground);
+  }
+
+  /* HEADINGS - Consistent #4D3D5C Muted Purple */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Marcellus', Georgia, serif;
+    color: var(--foreground) !important;
+    font-weight: 400;
+  }
+
+  h1 {
+    font-size: 42px !important;
     letter-spacing: -0.5px;
   }
+  
   h2 {
-    font-family: 'Marcellus', Georgia, serif;
-    font-size: 36px;
-    font-weight: 400;
+    font-size: 32px !important;
     letter-spacing: -0.3px;
   }
+  
+  /* CARD TITLES (H3) - Adjusted to 18px to match current "good" size */
   h3 {
-    font-family: 'Marcellus', Georgia, serif;
-    font-size: 22px;
-    font-weight: 400;
+    font-size: 18px !important; 
+    font-weight: 700 !important; /* Bold for Card Titles */
   }
+  
   h4 {
+    font-size: 16px !important;
+  }
+
+  p, span, div, li {
+    /* Inherit body size unless overridden */
+  }
+
+  /* INPUTS - 17px Standard */
+  input, textarea, select, button {
     font-family: 'Marcellus', Georgia, serif;
-    font-size: 18px;
+    font-size: 17px !important;
     font-weight: 400;
   }
-  h5 {
-    font-family: 'Marcellus', Georgia, serif;
-    font-size: 20px;
-    font-weight: 400;
+
+  /* META / SMALL TEXT - 14px Standard */
+  small, .text-sm, .text-xs {
+    font-size: 14px !important;
   }
-  h6 {
-    font-family: 'Marcellus', Georgia, serif;
-    font-size: 18px;
-    font-weight: 400;
-  }
-  p {
-    font-family: 'Marcellus', Georgia, serif;
-    font-size: 18px;
-  }
-  button {
-    font-family: 'Marcellus', Georgia, serif;
-    font-size: 16px;
-  }
-  button[size="lg"] {
-    font-size: 18px !important;
-  }
-  input, textarea, select {
-    font-family: 'Marcellus', Georgia, serif;
-  }
+  
+  /* Override Tailwind utility classes to enforce system */
+  .text-xs { font-size: 14px !important; }
+  .text-sm { font-size: 14px !important; }
+  .text-base { font-size: 17px !important; }
+  .text-lg { font-size: 18px !important; }
+  .text-xl { font-size: 20px !important; }
+  
+  /* Force Font Weights */
+  .font-bold { font-weight: 700 !important; }
+  .font-semibold { font-weight: 700 !important; } 
+  .font-medium { font-weight: 400 !important; }
+  .font-normal { font-weight: 400 !important; }
 }
 
 @layer utilities {
   .sidebar-menu {
-    font-size: 18px !important;
+    font-size: 17px !important;
   }
   
   .glass-panel {
