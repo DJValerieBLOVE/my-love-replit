@@ -74,7 +74,7 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
                             {area.name}
                           </span>
                         </div>
-                        <span className="text-[15px] font-normal text-right tabular-nums" style={{ color: area.hex }}>
+                        <span className="text-[14px] font-normal text-right tabular-nums" style={{ color: area.hex }}>
                           {area.progress}%
                         </span>
                       </div>
