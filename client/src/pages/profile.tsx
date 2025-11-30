@@ -15,7 +15,9 @@ import {
   Shield,
   Crown,
   Flame,
-  Gift
+  Gift,
+  Package,
+  Brain
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import BitcoinIcon from "../assets/bitcoin_icon.png";
@@ -114,7 +116,7 @@ export default function Profile() {
                {/* Left Col: Big Dreams Progress */}
                <div className="lg:col-span-2 space-y-6">
                  <h3 className="font-serif text-xl font-bold text-muted-foreground flex items-center gap-2">
-                   <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" /> 11 Big Dreams Progress
+                   <Star className="w-5 h-5" /> 11 Big Dreams Progress
                  </h3>
                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                    {LOVE_CODE_AREAS.map((area) => (
@@ -142,7 +144,7 @@ export default function Profile() {
                {/* Right Col: Next Rewards */}
                <div className="space-y-6">
                  <h3 className="font-serif text-xl font-bold text-muted-foreground flex items-center gap-2">
-                   <Gift className="w-5 h-5 text-pink-400" /> Next Rewards
+                   <Gift className="w-5 h-5" /> Next Rewards
                  </h3>
                  <Card className="border-none shadow-sm bg-muted/30">
                    <CardContent className="p-6 space-y-6">
@@ -161,8 +163,8 @@ export default function Profile() {
                      </div>
 
                      <div className="flex gap-4 items-start">
-                       <div className="w-10 h-10 rounded-lg bg-white shadow-sm flex items-center justify-center shrink-0 text-2xl">
-                         📦
+                       <div className="w-10 h-10 rounded-lg bg-white shadow-sm flex items-center justify-center shrink-0">
+                         <Package className="w-5 h-5 text-muted-foreground" />
                        </div>
                        <div>
                          <h4 className="font-bold text-sm">Mystery Box (Level 13)</h4>
@@ -175,8 +177,8 @@ export default function Profile() {
                      </div>
 
                      <div className="flex gap-4 items-start">
-                       <div className="w-10 h-10 rounded-lg bg-white shadow-sm flex items-center justify-center shrink-0 text-2xl">
-                         🧘‍♀️
+                       <div className="w-10 h-10 rounded-lg bg-white shadow-sm flex items-center justify-center shrink-0">
+                         <Brain className="w-5 h-5 text-muted-foreground" />
                        </div>
                        <div>
                          <h4 className="font-bold text-sm">Mind Master Badge</h4>
