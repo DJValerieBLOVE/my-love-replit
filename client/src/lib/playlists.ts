@@ -21,7 +21,7 @@ export const DAILY_PLAYLISTS = [
   },
   {
     day: "Monday",
-    theme: "Magic Money Monday",
+    theme: "Manifesting Monday",
     icon: Zap,
     color: "text-yellow-400",
     bg: "bg-yellow-400/10",
@@ -30,26 +30,26 @@ export const DAILY_PLAYLISTS = [
   },
   {
     day: "Tuesday",
-    theme: "Transformation Tuesday",
+    theme: "Trusting Tuesday",
     icon: Sunrise,
     color: "text-orange-500",
     bg: "bg-orange-500/10",
     spotifyId: "37i9dQZF1DX4sWSpwq3LiO", // Peaceful piano placeholder
-    description: "Embrace change with flowing melodies."
+    description: "Surrender to the flow and trust the process."
   },
   {
     day: "Wednesday",
-    theme: "Wild Woman Wednesday",
-    icon: Heart,
-    color: "text-red-500",
-    bg: "bg-red-500/10",
+    theme: "Wonder-Filled Wednesday",
+    icon: Star,
+    color: "text-indigo-500",
+    bg: "bg-indigo-500/10",
     spotifyId: "37i9dQZF1DX843Qf4lr8fU", // Power hits placeholder
-    description: "Unleash your inner power."
+    description: "Stay curious and embrace the magic around you."
   },
   {
     day: "Thursday",
     theme: "Thankful Thursday",
-    icon: Star,
+    icon: Heart,
     color: "text-purple-500",
     bg: "bg-purple-500/10",
     spotifyId: "37i9dQZF1DXdpQPPZq3F7n", // Gratitude/Morning acoustic
@@ -57,21 +57,21 @@ export const DAILY_PLAYLISTS = [
   },
   {
     day: "Friday",
-    theme: "Freedom Friday",
+    theme: "Funk-Yeah Friday",
     icon: Music,
     color: "text-blue-500",
     bg: "bg-blue-500/10",
     spotifyId: "37i9dQZF1DX0SM0LYsmbMT", // Jazz/Chill placeholder
-    description: "Celebrate your wins and slide into the weekend."
+    description: "Groove into the weekend with these funky jams."
   },
   {
     day: "Saturday",
-    theme: "Self-Love Saturday",
+    theme: "Sexy Saturday",
     icon: Moon,
-    color: "text-pink-500",
-    bg: "bg-pink-500/10",
+    color: "text-pink-600",
+    bg: "bg-pink-600/10",
     spotifyId: "37i9dQZF1DWZqd5JICZI0u", // Lo-fi beats
-    description: "Nourish your soul with these loving vibes."
+    description: "Embrace your sensuality and self-love."
   }
 ];
 

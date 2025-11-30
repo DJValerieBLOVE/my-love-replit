@@ -131,10 +131,6 @@ export default function LabNotes() {
           <FiveVsWizard onComplete={handleComplete} />
         ) : (
           <div className="space-y-8">
-        {isPracticing ? (
-          <FiveVsWizard onComplete={handleComplete} />
-        ) : (
-          <div className="space-y-8">
             {/* Missed Check-in Alert (Mock) */}
             {showMissedCheckinAlert && (
               <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-4 flex items-center justify-between relative overflow-hidden">
