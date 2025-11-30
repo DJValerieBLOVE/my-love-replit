@@ -28,11 +28,8 @@ export default function Community() {
             <Link key={space.id} href={`/community/${space.id}`}>
               <Card className="hover:shadow-md transition-all border-none bg-card/50 shadow-sm group cursor-pointer overflow-hidden flex flex-col h-full">
                 <div className="h-[2px] w-full bg-gradient-to-r from-primary/20 to-primary/5 group-hover:from-primary group-hover:to-purple-400 transition-all" />
-                <CardHeader className="pb-2">
-                  <div className={`w-10 h-10 rounded-lg bg-muted flex items-center justify-center mb-2 group-hover:scale-110 transition-transform duration-300 ${space.color}`}>
-                    <space.icon className="w-6 h-6" />
-                  </div>
-                  <CardTitle className="text-lg font-bold text-muted-foreground group-hover:text-primary transition-colors">{space.name}</CardTitle>
+                <CardHeader className="pb-2 pt-6 relative z-10">
+                  <CardTitle className="text-xl font-bold text-muted-foreground group-hover:text-primary transition-colors font-serif">{space.name}</CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-col flex-1">
                   <p className="text-base text-muted-foreground mb-4 line-clamp-2">

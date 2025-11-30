@@ -56,9 +56,6 @@ export default function ClubDetail() {
 
         <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8 z-20 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="flex items-end gap-6">
-            <div className={`w-24 h-24 md:w-32 md:h-32 rounded-2xl bg-background shadow-xl flex items-center justify-center p-4 ${club.color} border-4 border-background shrink-0`}>
-              <club.icon className="w-full h-full" strokeWidth={1.5} />
-            </div>
             <div className="mb-2">
               <h1 className="text-3xl md:text-5xl font-serif font-bold text-foreground mb-2 text-shadow-sm">{club.name}</h1>
               <p className="text-lg text-muted-foreground max-w-xl mb-4">{club.description}</p>
