@@ -1,7 +1,7 @@
 import Layout from "@/components/layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PenLine, Calendar, Search, Filter, Heart, CheckCircle, FlaskConical, Lightbulb, Plus, Sparkles, Beaker } from "lucide-react";
+import { PenLine, Calendar, Search, Filter, Heart, CheckCircle, FlaskConical, Lightbulb, Plus, Sparkles, Beaker, Quote } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -120,23 +120,44 @@ export default function LabNotes() {
           <FiveVsWizard onComplete={handleComplete} />
         ) : (
           <div className="space-y-8">
-            {/* Daily Practice Prompt */}
+            {/* Daily Practice Prompt & Quote */}
             {!isCompleted && (
-              <Card className="border-none shadow-sm bg-muted/30">
-                <CardContent className="p-8 text-center">
-                  <div className="w-16 h-16 bg-background rounded-full flex items-center justify-center mx-auto mb-4 border border-border/50">
-                    <Heart className="w-8 h-8 text-muted-foreground" strokeWidth={1.5} />
-                  </div>
-                  <h2 className="text-xl font-bold mb-2 text-muted-foreground">Daily LOVE Practice</h2>
-                  <p className="text-muted-foreground mb-6">Set your vibe, vision, and victory for the day.</p>
-                  <Button 
-                    className="gap-2"
-                    onClick={() => setIsPracticing(true)}
-                  >
-                    <img src={WhiteLogo} alt="Logo" className="w-4 h-4" /> Start Daily Practice
-                  </Button>
-                </CardContent>
-              </Card>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card className="border-none shadow-sm bg-muted/30 h-full flex flex-col justify-center">
+                  <CardContent className="p-8 text-center">
+                    <div className="w-16 h-16 bg-background rounded-full flex items-center justify-center mx-auto mb-4 border border-border/50">
+                      <Heart className="w-8 h-8 text-muted-foreground" strokeWidth={1.5} />
+                    </div>
+                    <h2 className="text-xl font-bold mb-2 text-muted-foreground">Daily LOVE Practice</h2>
+                    <p className="text-muted-foreground mb-6">Set your vibe, vision, and victory for the day.</p>
+                    <Button 
+                      className="gap-2"
+                      onClick={() => setIsPracticing(true)}
+                    >
+                      <img src={WhiteLogo} alt="Logo" className="w-4 h-4" /> Start Daily Practice
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-none shadow-sm overflow-hidden relative h-64 md:h-auto group">
+                   {/* Image Background */}
+                   <img 
+                     src="https://images.unsplash.com/photo-1518531933037-9a61605450ee?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzR8fG5hdHVyZSUyMHB1cnBsZXxlbnwwfHwwfHx8MA%3D%3D" 
+                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                     alt="Quote Background"
+                   />
+                   <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors duration-500" />
+                   <CardContent className="relative z-10 h-full flex flex-col justify-center items-center text-center p-8 text-white">
+                      <Quote className="w-8 h-8 mb-4 opacity-80 fill-current" />
+                      <p className="font-serif text-xl md:text-2xl italic mb-4 leading-relaxed">
+                        "The only way to do great work is to love what you do."
+                      </p>
+                      <p className="text-xs font-bold uppercase tracking-widest opacity-80">
+                        — Steve Jobs
+                      </p>
+                   </CardContent>
+                </Card>
+              </div>
             )}
             
             {isCompleted && (
