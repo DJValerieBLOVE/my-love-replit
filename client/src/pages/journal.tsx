@@ -349,7 +349,7 @@ export default function LabNotes() {
                                       <div className="space-y-1">
                                         <div className="flex items-center justify-between">
                                           <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Big Dream: <span style={{ color: entry.focusArea.color }}>{entry.focusArea.name}</span></div>
-                                          <div className="text-[10px] font-medium" style={{ color: entry.focusArea.color }}>{entry.focusArea.progress}%</div>
+                                          <div className="text-[10px] font-medium text-muted-foreground">{entry.focusArea.progress}%</div>
                                         </div>
                                         <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
                                           <div className="h-full rounded-full" style={{ width: `${entry.focusArea.progress}%`, backgroundColor: entry.focusArea.color }} />

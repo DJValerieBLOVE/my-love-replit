@@ -151,7 +151,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                             <div className="mt-3 p-3 bg-muted/20 rounded-lg border border-border/30 animate-in fade-in slide-in-from-top-2">
                                 <div className="flex items-center justify-between mb-2">
                                     <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Big Dream</span>
-                                    <span className="text-[10px] font-bold" style={{ color: selectedArea.hex }}>{selectedArea.progress}%</span>
+                                    <span className="text-[10px] font-bold text-muted-foreground">{selectedArea.progress}%</span>
                                 </div>
                                 <p className="text-xs font-serif text-muted-foreground italic leading-relaxed mb-2">
                                     "{selectedArea.dream}"
