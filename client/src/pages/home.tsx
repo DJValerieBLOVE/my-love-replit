@@ -33,7 +33,7 @@ export default function Home() {
             </Button>
             
             <Link href="/journal">
-              <Button className="px-6 gap-2 font-bold h-10 bg-love-body text-white border border-transparent hover:bg-[#F5F3FF] hover:text-[#6600ff] hover:border-[#6600ff]/50 hover:shadow-md hover:-translate-y-0.5 transition-all">
+              <Button className="px-6 gap-2 font-bold h-10 bg-love-body text-white border border-transparent transition-all">
                 <img src={WhiteLogo} alt="Logo" className="w-4 h-4 group-hover:invert" /> Daily 5 V's
               </Button>
             </Link>
@@ -67,7 +67,7 @@ export default function Home() {
                     <p className="text-xl font-medium text-muted-foreground italic mb-6">
                       "What if life isn't a test you can fail... but an experiment you get to play?"
                     </p>
-                    <Button variant="outline" className="h-10 px-6 hover:bg-[#F5F3FF] hover:text-[#6600ff] hover:border-[#6600ff]/50 hover:shadow-md hover:-translate-y-0.5 transition-all">
+                    <Button variant="outline" className="h-10 px-6 transition-all">
                       Capture Reflection
                     </Button>
                   </div>
@@ -98,7 +98,7 @@ export default function Home() {
                     <div className="bg-love-body h-2 rounded-full w-[42%]" />
                   </div>
                 </div>
-                <Button className="w-full h-10 hover:bg-[#F5F3FF] hover:text-[#6600ff] hover:border-[#6600ff]/50 hover:shadow-md hover:-translate-y-0.5 transition-all" variant="outline">Continue</Button>
+                <Button className="w-full h-10 transition-all" variant="outline">Continue</Button>
               </CardContent>
             </Card>
           </div>
