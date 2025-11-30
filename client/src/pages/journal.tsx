@@ -127,24 +127,42 @@ export default function LabNotes() {
 
   return (
     <Layout>
-      <div className="max-w-5xl mx-auto p-4 lg:p-8 space-y-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-serif font-bold text-muted-foreground mb-2">Lab Notes</h1>
-            <p className="text-lg text-muted-foreground">
-              Your private record of experiments, discoveries, and daily vibes.
-            </p>
-          </div>
-          
-          <div className="flex gap-2 w-full sm:w-auto">
-             <div className="relative flex-1 sm:w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input placeholder="Search..." className="pl-9 bg-background/50 border-muted text-[16px] h-9" />
-            </div>
-            <Button variant="outline" size="icon" className="shrink-0 h-9 w-9">
-              <Filter className="w-4 h-4" />
+      <div className="max-w-5xl mx-auto p-4 lg:p-8 space-y-6">
+        {/* Header Section */}
+        <div className="space-y-1">
+          <h1 className="text-3xl font-serif font-bold text-muted-foreground">Lab Notes</h1>
+          <p className="text-lg text-muted-foreground">
+            Your private record of experiments, discoveries, and daily vibes.
+          </p>
+        </div>
+        
+        {/* Action Buttons */}
+        <div className="flex gap-3">
+            <Button 
+                className="gap-2 bg-primary text-white hover:bg-primary/90 shadow-md"
+                onClick={() => setIsPracticing(true)}
+            >
+              <Heart className="w-4 h-4 fill-current" /> Daily Practice
             </Button>
-          </div>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="gap-2">
+                  <Plus className="w-4 h-4" /> New Note
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem className="focus:bg-love-body/10 focus:text-love-body cursor-pointer">
+                  <FlaskConical className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Experiment Note
+                </DropdownMenuItem>
+                <DropdownMenuItem className="focus:bg-love-body/10 focus:text-love-body cursor-pointer">
+                  <Lightbulb className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Discovery Note
+                </DropdownMenuItem>
+                <DropdownMenuItem className="focus:bg-love-body/10 focus:text-love-body cursor-pointer">
+                  <Sparkles className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Magic Mentor Session
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
         </div>
 
         {isPracticing ? (
@@ -188,46 +206,37 @@ export default function LabNotes() {
             )}
 
             <Tabs defaultValue="all" className="space-y-8">
-              <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-                <TabsList className="bg-[#FAFAFA] p-1 h-auto flex-wrap justify-start">
-                  <TabsTrigger value="all" className="px-4 py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">All Notes</TabsTrigger>
-                  <TabsTrigger value="daily-practice" className="px-4 py-2 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                    <Heart className="w-3 h-3 text-muted-foreground" strokeWidth={1.5} /> Daily LOVE Practice
+              <div className="flex flex-col sm:flex-row gap-4 justify-between items-end border-b border-border/40 pb-0">
+                <TabsList className="bg-transparent p-0 h-auto -mb-px flex-wrap justify-start gap-6">
+                  <TabsTrigger 
+                    value="all" 
+                    className="px-0 py-3 bg-transparent shadow-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none rounded-none text-muted-foreground hover:text-foreground transition-all"
+                  >
+                    All Notes
                   </TabsTrigger>
-                  <TabsTrigger value="experiments" className="px-4 py-2 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                    <FlaskConical className="w-3 h-3 text-muted-foreground" strokeWidth={1.5} /> Experiments
+                  <TabsTrigger 
+                    value="daily-practice" 
+                    className="px-0 py-3 gap-2 bg-transparent shadow-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none rounded-none text-muted-foreground hover:text-foreground transition-all"
+                  >
+                    <Heart className="w-3 h-3" strokeWidth={1.5} /> Daily LOVE Practice
                   </TabsTrigger>
-                  <TabsTrigger value="discoveries" className="px-4 py-2 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                    <Lightbulb className="w-3 h-3 text-muted-foreground" strokeWidth={1.5} /> Discoveries
+                  <TabsTrigger 
+                    value="experiments" 
+                    className="px-0 py-3 gap-2 bg-transparent shadow-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none rounded-none text-muted-foreground hover:text-foreground transition-all"
+                  >
+                    <FlaskConical className="w-3 h-3" strokeWidth={1.5} /> Experiments
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="discoveries" 
+                    className="px-0 py-3 gap-2 bg-transparent shadow-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:shadow-none rounded-none text-muted-foreground hover:text-foreground transition-all"
+                  >
+                    <Lightbulb className="w-3 h-3" strokeWidth={1.5} /> Discoveries
                   </TabsTrigger>
                 </TabsList>
 
-                <div className="flex gap-3">
-                    <Button 
-                        className="gap-2 bg-primary text-white hover:bg-primary/90 shadow-md"
-                        onClick={() => setIsPracticing(true)}
-                    >
-                      <Heart className="w-4 h-4 fill-current" /> Daily Practice
-                    </Button>
-
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="gap-2">
-                          <Plus className="w-4 h-4" /> New Note
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-56">
-                        <DropdownMenuItem className="focus:bg-love-body/10 focus:text-love-body cursor-pointer">
-                          <FlaskConical className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Experiment Note
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="focus:bg-love-body/10 focus:text-love-body cursor-pointer">
-                          <Lightbulb className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Discovery Note
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="focus:bg-love-body/10 focus:text-love-body cursor-pointer">
-                          <Sparkles className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Magic Mentor Session
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                <div className="flex items-center gap-2 pb-2 w-full sm:w-auto">
+                    <Search className="w-4 h-4 text-muted-foreground" />
+                    <Input placeholder="Search..." className="h-8 w-full sm:w-40 bg-transparent border-none focus-visible:ring-0 px-0 placeholder:text-muted-foreground/50" />
                 </div>
               </div>
 
