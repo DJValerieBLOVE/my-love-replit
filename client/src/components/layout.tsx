@@ -65,7 +65,7 @@ export default function Layout({ children, showRightSidebar = true }: { children
     { icon: Calendar, label: "Events", href: "/events" },
     { icon: LayoutGrid, label: "Clubs", href: "/community" },
     { icon: Music, label: "Resources", href: "/resources" },
-    { icon: HelpCircle, label: "FAWs", href: "/faws" },
+    { icon: HelpCircle, label: "FAQs", href: "/faws" },
   ];
 
   return (
