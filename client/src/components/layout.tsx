@@ -138,7 +138,7 @@ export default function Layout({ children, showRightSidebar = true }: { children
                 <div className={cn(
                   "flex items-center gap-3 px-4 py-1.5 rounded-lg transition-all duration-300 cursor-pointer group font-serif sidebar-menu text-base",
                   isActive 
-                    ? "bg-primary/10 text-purple-600 dark:text-purple-400 shadow-md shadow-primary/10 border border-primary/10" 
+                    ? "bg-primary/10 text-[#6600ff] shadow-md shadow-primary/10 border border-primary/10" 
                     : "text-muted-foreground hover:bg-primary/5 hover:text-primary hover:shadow-sm hover:translate-x-1"
                 )}>
                   <item.icon strokeWidth={1.5} className={cn("w-5 h-5 transition-transform group-hover:scale-110", isActive && "opacity-100")} />
