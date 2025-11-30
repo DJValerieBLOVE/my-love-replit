@@ -1,5 +1,6 @@
 import Layout from "@/components/layout";
 import { FeedPost } from "@/components/feed-post";
+import { CreatePost } from "@/components/create-post";
 import { FEED_POSTS, CURRENT_USER } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Plus, Sparkles, Play, HelpCircle } from "lucide-react";
@@ -107,6 +108,10 @@ export default function Home() {
             <div className="flex items-center justify-between border-b pb-4">
               <h2 className="text-xl font-bold text-muted-foreground">Feed</h2>
             </div>
+            
+            {/* Create Post */}
+            <CreatePost />
+
             <div className="space-y-4">
               {FEED_POSTS.map((post) => (
                 <FeedPost key={post.id} post={post} />

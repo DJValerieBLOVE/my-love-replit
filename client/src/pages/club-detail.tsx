@@ -14,6 +14,8 @@ import {
   Calendar,
   Sparkles
 } from "lucide-react";
+import { FeedPost } from "@/components/feed-post";
+import { CreatePost } from "@/components/create-post";
 import { Link, useRoute } from "wouter";
 import { CLUBS, FEED_POSTS } from "@/lib/mock-data";
 import { useState } from "react";
@@ -91,111 +93,33 @@ export default function ClubDetail() {
 
       <div className="max-w-6xl mx-auto p-4 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Feed */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* New Post Input */}
-          <Card className="border-none shadow-sm bg-card/50 backdrop-blur-sm">
-            <CardContent className="p-4 flex gap-4">
-              <Avatar className="w-10 h-10">
-                <AvatarImage src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=faces" />
-                <AvatarFallback>ME</AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <input 
-                  type="text" 
-                  placeholder={`Share something with the ${club.name}...`}
-                  className="w-full bg-muted/50 rounded-full px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
-                />
-                <div className="flex items-center justify-between mt-3 px-1">
-                  <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary">
-                      <Sparkles className="w-4 h-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary">
-                      <Calendar className="w-4 h-4" />
-                    </Button>
-                  </div>
-                  <Button size="sm" className="rounded-full px-6">Post</Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        <div className="lg:col-span-2">
+          {/* Create Post */}
+          <CreatePost placeholder={`Share something with the ${club.name}...`} />
 
           {/* Feed Posts */}
           <div className="space-y-4">
-            <h3 className="font-bold text-muted-foreground uppercase text-xs tracking-wider px-1">Pinned</h3>
+            <h3 className="font-bold text-muted-foreground uppercase text-xs tracking-wider px-1 mb-4">Pinned</h3>
             
-            {/* Pinned Welcome Post */}
-            <Card className="border-l-4 border-l-primary shadow-sm border-y-0 border-r-0">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-full ${club.color} bg-opacity-10 flex items-center justify-center`}>
-                      <club.icon className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <p className="font-bold text-foreground">{club.name} Admin</p>
-                      <p className="text-xs text-muted-foreground">Pinned • 2 days ago</p>
-                    </div>
-                  </div>
-                  <Button variant="ghost" size="icon" className="h-8 w-8"><MoreHorizontal className="w-4 h-4" /></Button>
-                </div>
-                <p className="text-foreground/80 leading-relaxed mb-4">
-                  Welcome to the {club.name}! 👋 This is a safe space for us to connect, share, and grow together. 
-                  Please introduce yourself in the comments below and let us know what brings you here!
-                </p>
-                <div className="flex items-center gap-4 pt-4 border-t border-border/50">
-                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-pink-500 gap-2">
-                    <Heart className="w-4 h-4" /> 142
-                  </Button>
-                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-blue-500 gap-2">
-                    <MessageSquare className="w-4 h-4" /> 56
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+            {/* Pinned Welcome Post - Using FeedPost style but manual for pinned content */}
+            <FeedPost post={{
+              id: "pinned-1",
+              author: {
+                name: `${club.name} Admin`,
+                handle: "@admin",
+                avatar: "" // Will fallback to initial
+              },
+              content: `Welcome to the ${club.name}! 👋 This is a safe space for us to connect, share, and grow together. \n\nPlease introduce yourself in the comments below and let us know what brings you here!`,
+              likes: 142,
+              comments: 56,
+              zaps: 1000,
+              timestamp: "Pinned"
+            }} />
 
-            <h3 className="font-bold text-muted-foreground uppercase text-xs tracking-wider px-1 mt-8">Recent Activity</h3>
+            <h3 className="font-bold text-muted-foreground uppercase text-xs tracking-wider px-1 mt-8 mb-4">Recent Activity</h3>
             
             {FEED_POSTS.map((post) => (
-              <Card key={post.id} className="border-none shadow-sm hover:shadow-md transition-all bg-card/50">
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <Avatar>
-                        <AvatarImage src={post.author.avatar} />
-                        <AvatarFallback>{post.author.name[0]}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-bold text-foreground">{post.author.name}</p>
-                        <p className="text-xs text-muted-foreground">{post.author.handle} • {post.timestamp}</p>
-                      </div>
-                    </div>
-                    <Button variant="ghost" size="icon" className="h-8 w-8"><MoreHorizontal className="w-4 h-4" /></Button>
-                  </div>
-                  
-                  <p className="text-foreground/90 leading-relaxed mb-4">{post.content}</p>
-                  
-                  {post.image && (
-                    <div className="rounded-xl overflow-hidden mb-4">
-                      <img src={post.image} alt="Post content" className="w-full h-auto object-cover" />
-                    </div>
-                  )}
-
-                  <div className="flex items-center justify-between pt-4 border-t border-border/50">
-                    <div className="flex items-center gap-4">
-                      <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-pink-500 gap-2">
-                        <Heart className="w-4 h-4" /> {post.likes}
-                      </Button>
-                      <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-blue-500 gap-2">
-                        <MessageSquare className="w-4 h-4" /> {post.comments}
-                      </Button>
-                      <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-orange-500 gap-2">
-                        <Zap className="w-4 h-4" /> {post.zaps}
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <FeedPost key={post.id} post={post} />
             ))}
           </div>
         </div>
