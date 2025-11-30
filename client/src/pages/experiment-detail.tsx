@@ -105,7 +105,7 @@ export default function ExperimentDetail() {
                  {isAboutOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
               </div>
               {isAboutOpen && (
-                <p className="mt-2 text-base leading-relaxed text-muted-foreground max-w-2xl animate-in fade-in slide-in-from-top-2 duration-300">
+                <p className="mt-2 text-[17px] leading-relaxed text-muted-foreground max-w-2xl animate-in fade-in slide-in-from-top-2 duration-300">
                   This experiment invites you to explore {experiment.category.toLowerCase()} principles in your daily life. 
                   You'll test hypotheses, gather data on yourself, and record your findings to gain insights into your "Human Operating System".
                 </p>
@@ -178,10 +178,10 @@ export default function ExperimentDetail() {
                   />
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="font-bold text-base text-foreground" data-testid={`text-commenter-${comment.id}`}>{comment.author}</span>
+                      <span className="font-bold text-foreground text-[15px]" data-testid={`text-commenter-${comment.id}`}>{comment.author}</span>
                       <span className="text-xs text-muted-foreground">• {comment.time}</span>
                     </div>
-                    <p className="text-base text-foreground/90 leading-relaxed mb-2">{comment.text}</p>
+                    <p className="text-[17px] text-foreground/90 leading-relaxed mb-2">{comment.text}</p>
                     <button 
                       className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors"
                       data-testid={`button-like-comment-${comment.id}`}
