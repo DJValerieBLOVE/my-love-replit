@@ -82,7 +82,7 @@ export default function LabNotes() {
                   <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Sparkles className="w-8 h-8 text-primary" />
                   </div>
-                  <h2 className="text-xl font-bold mb-2">Morning 5 V's</h2>
+                  <h2 className="text-xl font-bold mb-2 text-muted-foreground">Morning 5 V's</h2>
                   <p className="text-muted-foreground mb-6">Set your vibe, vision, and victory for the day.</p>
                   <Button 
                     size="lg" 

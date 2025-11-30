@@ -27,7 +27,7 @@ export default function BigDreams() {
         {/* Section 2: My 11 Big Dreams */}
             <section>
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold flex items-center gap-2">
+                <h2 className="text-xl font-bold flex items-center gap-2 text-muted-foreground">
                   <Target className="w-5 h-5 text-primary" /> My 11 Big Dreams
                 </h2>
                 <span className="text-sm text-muted-foreground">Update your vision for each dimension</span>
@@ -39,7 +39,7 @@ export default function BigDreams() {
                     <div className={cn("h-[2px] w-full", area.color)} />
                     <CardHeader className="pb-2">
                       <div className="flex justify-between items-center">
-                        <CardTitle className="text-lg font-serif">{area.name}</CardTitle>
+                        <CardTitle className="text-lg font-bold font-serif text-muted-foreground">{area.name}</CardTitle>
                         <span className="text-xs font-bold text-muted-foreground">{area.progress}% Realized</span>
                       </div>
                     </CardHeader>

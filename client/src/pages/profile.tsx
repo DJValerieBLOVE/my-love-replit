@@ -74,7 +74,7 @@ export default function Profile() {
             </Card>
           </div>
 
-          <h2 className="font-bold text-lg mb-4">Badges</h2>
+          <h2 className="font-bold text-lg mb-4 text-muted-foreground">Badges</h2>
           <div className="grid grid-cols-3 md:grid-cols-5 gap-4">
             {CURRENT_USER.badges.map((badge, i) => (
               <div key={i} className="aspect-square rounded-xs bg-muted/50 flex flex-col items-center justify-center p-2 text-center gap-2 hover:bg-muted transition-colors cursor-pointer group">

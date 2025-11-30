@@ -137,7 +137,7 @@ export default function Toolbox() {
           <TabsContent value="all" className="space-y-8">
             {/* Combined View Section 1: Favorites/Experiments */}
             <section>
-              <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+              <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-muted-foreground">
                 <Bookmark className="w-5 h-5 text-primary" /> Recent Saves
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -164,7 +164,7 @@ export default function Toolbox() {
 
             {/* Combined View Section 2: Files */}
             <section>
-              <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+              <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-muted-foreground">
                 <FileText className="w-5 h-5 text-primary" /> Worksheets & Files
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -189,7 +189,7 @@ export default function Toolbox() {
 
             {/* Combined View Section 3: Bookmarks */}
             <section>
-              <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+              <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-muted-foreground">
                 <LinkIcon className="w-5 h-5 text-primary" /> Books & Links
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
