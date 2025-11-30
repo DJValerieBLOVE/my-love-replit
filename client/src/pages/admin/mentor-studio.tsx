@@ -43,7 +43,7 @@ export default function MentorStudio() {
               Train your AI companion and configure its personality.
             </p>
           </div>
-          <Button className="bg-[#6600ff] hover:bg-[#aa66ff] text-white gap-2">
+          <Button className="bg-[#6600ff] text-white font-bold border border-transparent hover:bg-white hover:text-[#6600ff] hover:border-[#6600ff] gap-2 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
             <Save className="w-4 h-4" /> Save Changes
           </Button>
         </div>

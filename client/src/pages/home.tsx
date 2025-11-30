@@ -32,7 +32,7 @@ export default function Home() {
             </Button>
             
             <Link href="/journal">
-              <Button className="bg-[#6600ff] hover:bg-[#aa66ff] text-white font-bold px-6 gap-2 shadow-sm hover:shadow-md transition-all">
+              <Button className="bg-[#6600ff] text-white font-bold border border-transparent hover:bg-white hover:text-[#6600ff] hover:border-[#6600ff] px-6 gap-2 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
                 <img src={WhiteLogo} alt="Logo" className="w-4 h-4" /> Daily 5 V's
               </Button>
             </Link>
