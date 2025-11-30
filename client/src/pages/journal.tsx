@@ -153,31 +153,26 @@ export default function LabNotes() {
                         </p>
                       </div>
 
-                      {/* Col 3: 5 V's Stacked Summary */}
-                      <div className="space-y-3 bg-muted/20 p-4 rounded-lg border border-border/50 h-fit">
-                        <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">5 V's Summary</h4>
-                        
-                        <div className="space-y-3">
-                          <div>
-                            <div className="text-[10px] font-bold text-muted-foreground uppercase">Vision</div>
-                            <div className="text-sm font-serif text-muted-foreground line-clamp-2">{entry.vision}</div>
-                          </div>
-                          
-                          <div className="grid grid-cols-2 gap-2">
-                            <div>
-                              <div className="text-[10px] font-bold text-muted-foreground uppercase">Value</div>
-                              <div className="text-sm font-serif text-muted-foreground whitespace-normal">{entry.value}</div>
-                            </div>
-                            <div>
-                              <div className="text-[10px] font-bold text-muted-foreground uppercase">Victory</div>
-                              <div className="text-sm font-serif text-green-600 whitespace-normal">{entry.victory}</div>
-                            </div>
-                          </div>
+                      {/* Col 3: 5 V's List */}
+                      <div className="space-y-4 bg-muted/20 p-4 rounded-lg border border-border/50 h-fit">
+                        <div>
+                          <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Vision</div>
+                          <div className="text-sm font-serif text-muted-foreground whitespace-normal">{entry.vision}</div>
+                        </div>
 
-                          <div>
-                            <div className="text-[10px] font-bold text-muted-foreground uppercase">Villain</div>
-                            <div className="text-sm font-serif text-red-500 whitespace-normal">{entry.villain}</div>
-                          </div>
+                        <div>
+                          <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Value</div>
+                          <div className="text-sm font-serif text-muted-foreground whitespace-normal">{entry.value}</div>
+                        </div>
+
+                        <div>
+                          <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Villain</div>
+                          <div className="text-sm font-serif text-red-500 whitespace-normal">{entry.villain}</div>
+                        </div>
+
+                        <div>
+                          <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Victory</div>
+                          <div className="text-sm font-serif text-green-600 whitespace-normal">{entry.victory}</div>
                         </div>
                       </div>
                     </div>

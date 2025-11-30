@@ -64,31 +64,26 @@ export default function BigDreams() {
                           </div>
                         </div>
 
-                        {/* Col 3: Summary of 5 V's */}
-                        <div className="space-y-3 bg-muted/20 p-4 rounded-lg border border-border/50">
-                          <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">5 V's Summary</h4>
-                          
-                          <div className="space-y-3">
-                            <div>
-                              <div className="text-[10px] font-bold text-muted-foreground uppercase">Vision</div>
-                              <div className="text-sm font-serif line-clamp-2">{area.dream}</div>
-                            </div>
-                            
-                            <div className="grid grid-cols-2 gap-2">
-                              <div>
-                                <div className="text-[10px] font-bold text-muted-foreground uppercase">Value</div>
-                                <div className="text-sm font-serif text-muted-foreground whitespace-normal">{area.value || "Define value..."}</div>
-                              </div>
-                              <div>
-                                <div className="text-[10px] font-bold text-muted-foreground uppercase">Victory</div>
-                                <div className="text-sm font-serif text-green-600 whitespace-normal">{area.victory || "Define victory..."}</div>
-                              </div>
-                            </div>
+                        {/* Col 3: 5 V's List */}
+                        <div className="space-y-4 bg-muted/20 p-4 rounded-lg border border-border/50">
+                          <div>
+                            <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Vision</div>
+                            <div className="text-sm font-serif text-muted-foreground whitespace-normal">{area.dream}</div>
+                          </div>
 
-                            <div>
-                              <div className="text-[10px] font-bold text-muted-foreground uppercase">Villain</div>
-                              <div className="text-sm font-serif text-red-500 whitespace-normal">{area.villain || "Identify obstacle..."}</div>
-                            </div>
+                          <div>
+                            <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Value</div>
+                            <div className="text-sm font-serif text-muted-foreground whitespace-normal">{area.value || "Define value..."}</div>
+                          </div>
+
+                          <div>
+                            <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Villain</div>
+                            <div className="text-sm font-serif text-red-500 whitespace-normal">{area.villain || "Identify obstacle..."}</div>
+                          </div>
+
+                          <div>
+                            <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Victory</div>
+                            <div className="text-sm font-serif text-green-600 whitespace-normal">{area.victory || "Define victory..."}</div>
                           </div>
                         </div>
                       </div>
