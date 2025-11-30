@@ -309,11 +309,22 @@ export default function LabNotes() {
                         onClick={() => setSelectedEntry(entry)}
                       >
                         <CardContent className="p-6">
+                          {/* Date & Edit Header */}
+                          <div className="flex justify-between items-start mb-6 border-b border-border/10 pb-4">
+                            <div className="space-y-1">
+                               <div className="text-lg font-serif font-bold text-foreground">{entry.date}</div>
+                               <div className="text-xs text-muted-foreground uppercase tracking-wider">{entry.time}</div>
+                            </div>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary">
+                                <PenLine className="w-4 h-4" />
+                            </Button>
+                          </div>
+
                           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-full">
                             {/* Col 1: Morning Alignment */}
-                            <div className="flex flex-col justify-between space-y-5 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full">
+                            <div className="flex flex-col space-y-5 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full">
                               <div>
-                                <div className="flex items-center gap-2 mb-2">
+                                <div className="flex items-center gap-2 mb-4">
                                   {entry.type === 'daily-practice' && <Sun className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />}
                                   {entry.type === 'experiment' && <Beaker className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />}
                                   {entry.type === 'discovery' && <Lightbulb className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />}
@@ -321,10 +332,9 @@ export default function LabNotes() {
                                     {entry.type === 'daily-practice' ? "Morning Alignment" : entry.type.charAt(0).toUpperCase() + entry.type.slice(1)}
                                   </span>
                                 </div>
-                                <div className="text-lg text-muted-foreground font-serif mb-4">{entry.date}</div>
                               
                                 {entry.type === 'daily-practice' && (
-                                  <div className="space-y-4">
+                                  <div className="space-y-6">
                                     {/* Morning Vibe */}
                                     <div className="bg-white/50 rounded-xl p-3 border border-border/40 flex justify-between items-center">
                                       <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif">Morning Vibe</div>
@@ -332,79 +342,81 @@ export default function LabNotes() {
                                     </div>
 
                                     {/* Gratitude */}
-                                     <div>
-                                        <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Morning Gratitude</div>
-                                        <div className="text-sm font-serif text-muted-foreground whitespace-normal italic">"{entry.gratitude || "Grateful for this day..."}"</div>
-                                    </div>
-                                    
-                                    {/* Focus Area */}
-                                    {entry.focusArea && (
-                                      <div className="bg-white/30 rounded-lg p-3 border border-border/20 space-y-2">
-                                         <div className="flex items-center justify-between mb-1">
-                                          <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Big Dream: <span style={{ color: entry.focusArea.color }}>{entry.focusArea.name}</span></div>
-                                          <div className="text-[10px] font-medium text-muted-foreground">{entry.focusArea.progress}%</div>
-                                        </div>
-                                        <div className="h-1 w-full bg-muted rounded-full overflow-hidden mb-2">
-                                          <div className="h-full rounded-full" style={{ width: `${entry.focusArea.progress}%`, backgroundColor: entry.focusArea.color }} />
-                                        </div>
-                                        <div className="text-xs font-serif text-muted-foreground italic leading-relaxed opacity-80 line-clamp-2">
-                                          "{entry.focusArea.dream}"
-                                        </div>
-                                      </div>
-                                    )}
-
-                                    {/* Vision */}
-                                    <div>
-                                        <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Vision</div>
-                                        <div className="text-sm font-serif text-muted-foreground whitespace-normal italic">"{entry.vision}"</div>
+                                     <div className="flex-1">
+                                        <div className="text-[10px] font-bold text-muted-foreground uppercase mb-2">Morning Gratitude</div>
+                                        <div className="text-sm font-serif text-muted-foreground whitespace-normal italic leading-relaxed">"{entry.gratitude || "Grateful for this day..."}"</div>
                                     </div>
                                   </div>
                                 )}
                               </div>
                             </div>
 
-                            {/* Col 2: The Mission (Middle) */}
-                            <div className="flex flex-col space-y-6 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full">
+                            {/* Col 2: Focus & Action (Middle) */}
+                            <div className="flex flex-col space-y-6 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full relative">
                                {entry.type === 'daily-practice' ? (
                                  <>
                                    <div className="flex items-center gap-2 mb-2">
                                       <CheckCircle className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-                                      <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">The Mission</span>
+                                      {/* User requested removing the text "The Mission", keeping just icon or leaving blank? User said "get rid of the word the mission" */}
                                    </div>
 
-                                   <div className="space-y-5 flex-1">
-                                      {/* Villain */}
-                                      <div>
-                                          <div className="text-[10px] font-bold text-red-900/60 uppercase mb-1">Villain (Obstacle)</div>
-                                          <div className="text-sm font-serif text-red-800/80 whitespace-normal">{entry.villain}</div>
+                                   <div className="flex flex-col h-full justify-between">
+                                      <div className="space-y-6">
+                                          {/* Focus Area */}
+                                          {entry.focusArea && (
+                                            <div className="bg-white/30 rounded-lg p-3 border border-border/20 space-y-2">
+                                              <div className="flex items-center justify-between mb-1">
+                                                <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Big Dream: <span style={{ color: entry.focusArea.color }}>{entry.focusArea.name}</span></div>
+                                                <div className="text-[10px] font-medium text-muted-foreground">{entry.focusArea.progress}%</div>
+                                              </div>
+                                              <div className="h-1 w-full bg-muted rounded-full overflow-hidden mb-2">
+                                                <div className="h-full rounded-full" style={{ width: `${entry.focusArea.progress}%`, backgroundColor: entry.focusArea.color }} />
+                                              </div>
+                                              <div className="text-xs font-serif text-muted-foreground italic leading-relaxed opacity-80 line-clamp-2">
+                                                "{entry.focusArea.dream}"
+                                              </div>
+                                            </div>
+                                          )}
+
+                                          {/* Vision */}
+                                          <div>
+                                              <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Vision</div>
+                                              <div className="text-sm font-serif text-muted-foreground whitespace-normal italic">"{entry.vision}"</div>
+                                          </div>
+
+                                          {/* Values */}
+                                          <div>
+                                            <div className="text-[10px] font-bold text-muted-foreground uppercase mb-2 flex justify-between">
+                                              <span>Values (Actions)</span>
+                                              <span className="text-[9px] opacity-50">Done</span>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <div className="flex gap-3 items-center opacity-90">
+                                                    <div className="w-5 h-5 rounded-full bg-green-500 border border-green-500 flex items-center justify-center shrink-0 shadow-sm">
+                                                        <CheckCircle className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                                                    </div>
+                                                    <span className="text-sm font-serif text-green-800 line-through opacity-70">{entry.value || "Action 1"}</span>
+                                                </div>
+                                                <div className="flex gap-3 items-center opacity-90">
+                                                    <div className="w-5 h-5 rounded-full bg-green-500 border border-green-500 flex items-center justify-center shrink-0 shadow-sm">
+                                                        <CheckCircle className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                                                    </div>
+                                                    <span className="text-sm font-serif text-green-800 line-through opacity-70">Review goals</span>
+                                                </div>
+                                                <div className="flex gap-3 items-center opacity-90">
+                                                    <div className="w-5 h-5 rounded-full bg-green-500 border border-green-500 flex items-center justify-center shrink-0 shadow-sm">
+                                                        <CheckCircle className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                                                    </div>
+                                                    <span className="text-sm font-serif text-green-800 line-through opacity-70">Meditate 10m</span>
+                                                </div>
+                                            </div>
+                                          </div>
                                       </div>
 
-                                      {/* Values */}
-                                      <div>
-                                        <div className="text-[10px] font-bold text-muted-foreground uppercase mb-2 flex justify-between">
-                                          <span>Values (Actions)</span>
-                                          <span className="text-[9px] opacity-50">Done</span>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <div className="flex gap-3 items-center opacity-90">
-                                                <div className="w-5 h-5 rounded-full bg-green-500 border border-green-500 flex items-center justify-center shrink-0 shadow-sm">
-                                                    <CheckCircle className="w-3.5 h-3.5 text-white" strokeWidth={3} />
-                                                </div>
-                                                <span className="text-sm font-serif text-green-800 line-through opacity-70">{entry.value || "Action 1"}</span>
-                                            </div>
-                                            <div className="flex gap-3 items-center opacity-90">
-                                                <div className="w-5 h-5 rounded-full bg-green-500 border border-green-500 flex items-center justify-center shrink-0 shadow-sm">
-                                                    <CheckCircle className="w-3.5 h-3.5 text-white" strokeWidth={3} />
-                                                </div>
-                                                <span className="text-sm font-serif text-green-800 line-through opacity-70">Review goals</span>
-                                            </div>
-                                            <div className="flex gap-3 items-center opacity-90">
-                                                <div className="w-5 h-5 rounded-full bg-green-500 border border-green-500 flex items-center justify-center shrink-0 shadow-sm">
-                                                    <CheckCircle className="w-3.5 h-3.5 text-white" strokeWidth={3} />
-                                                </div>
-                                                <span className="text-sm font-serif text-green-800 line-through opacity-70">Meditate 10m</span>
-                                            </div>
-                                        </div>
+                                      {/* Villain at the bottom */}
+                                      <div className="mt-6 pt-4 border-t border-border/10">
+                                          <div className="text-[10px] font-bold text-red-900/60 uppercase mb-1">Villain (Obstacle)</div>
+                                          <div className="text-sm font-serif text-red-800/80 whitespace-normal">{entry.villain}</div>
                                       </div>
                                    </div>
                                  </>
@@ -439,7 +451,7 @@ export default function LabNotes() {
                                           </p>
                                         </>
                                       ) : (
-                                        <div className="flex flex-col h-full space-y-4">
+                                        <div className="flex flex-col h-full space-y-6">
                                            {/* Evening Vibe */}
                                           <div className="bg-white/50 rounded-xl p-3 border border-border/40 flex justify-between items-center">
                                             <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif">Evening Vibe</div>

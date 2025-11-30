@@ -106,18 +106,25 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                 </div>
 
                 {/* Morning Gratitude */}
-                <div className="space-y-2">
+                <div className="space-y-2 flex-1 flex flex-col">
                     <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">Morning Gratitude</label>
                     <Textarea 
                         placeholder="I am grateful for..." 
-                        className="min-h-[80px] bg-white border-muted/50 focus:border-primary/30 text-sm font-serif resize-none shadow-sm"
+                        className="flex-1 min-h-[200px] bg-white border-muted/50 focus:border-primary/30 text-sm font-serif resize-none shadow-sm"
                         value={gratitude}
                         onChange={(e) => setGratitude(e.target.value)}
                     />
                 </div>
+            </div>
+
+            {/* Col 2: Focus & Action (Middle) */}
+            <div className="flex flex-col space-y-6 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full">
+                <div className="flex items-center gap-2 mb-1">
+                    <CheckCircle className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+                </div>
 
                 {/* Focus Area */}
-                <div className="space-y-2 pt-2 border-t border-border/20">
+                <div className="space-y-2">
                     <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">My Focus</label>
                     <Select value={selectedAreaId} onValueChange={setSelectedAreaId}>
                         <SelectTrigger className="w-full h-10 bg-white border-muted/50 focus:ring-primary/20 font-serif shadow-sm">
@@ -159,25 +166,6 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                         onChange={(e) => setVision(e.target.value)}
                     />
                 </div>
-            </div>
-
-            {/* Col 2: The Mission (Action) */}
-            <div className="flex flex-col space-y-6 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full">
-                <div className="flex items-center gap-2 mb-1">
-                    <CheckCircle className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-                    <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">The Mission</span>
-                </div>
-
-                 {/* Villain Input */}
-                <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-muted-foreground uppercase text-red-900/60">Villain (Obstacle)</label>
-                    <Input 
-                        placeholder="What stands in the way?" 
-                        className="h-9 bg-red-50/30 border-red-100/50 focus:border-red-300 text-sm font-serif text-red-900/80 placeholder:text-red-900/20"
-                        value={villain}
-                        onChange={(e) => setVillain(e.target.value)}
-                    />
-                </div>
 
                 {/* Values (Action Steps) */}
                 <div className="space-y-3 flex-1">
@@ -211,6 +199,17 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                             </div>
                         ))}
                      </div>
+                </div>
+
+                 {/* Villain Input - Bottom */}
+                <div className="space-y-2 pt-4 border-t border-border/10 mt-auto">
+                    <label className="text-[10px] font-bold text-muted-foreground uppercase text-red-900/60">Villain (Obstacle)</label>
+                    <Input 
+                        placeholder="What stands in the way?" 
+                        className="h-9 bg-red-50/30 border-red-100/50 focus:border-red-300 text-sm font-serif text-red-900/80 placeholder:text-red-900/20"
+                        value={villain}
+                        onChange={(e) => setVillain(e.target.value)}
+                    />
                 </div>
             </div>
 
