@@ -14,6 +14,10 @@ interface ActivePracticeCardProps {
   onComplete: (data: any) => void;
 }
 
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Users, Lock } from "lucide-react";
+
 export function ActivePracticeCard({ data: initialData, onComplete }: ActivePracticeCardProps) {
   // Initialize state with existing data OR defaults
   // Ensure numbers are converted to strings for Inputs
@@ -31,6 +35,8 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
   const [tool, setTool] = useState(initialData?.tool || "");
   const [victory, setVictory] = useState(initialData?.victory || "");
   const [gratitudeImage, setGratitudeImage] = useState<string | null>(null);
+  
+  const [isShared, setIsShared] = useState(initialData?.isShared || false);
 
   const selectedArea = LOVE_CODE_AREAS.find(a => a.id === selectedAreaId);
 
@@ -90,7 +96,8 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
       checkedItems,
       villain,
       tool,
-      victory
+      victory,
+      isShared
     });
   };
 
@@ -346,6 +353,25 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                         value={reflection}
                         onChange={(e) => setReflection(e.target.value)}
                     />
+                    <div className="flex items-center justify-between pt-4 pb-1">
+                         <div className="flex items-center gap-2">
+                             {isShared ? (
+                                 <Users className="w-4 h-4 text-primary" />
+                             ) : (
+                                 <Lock className="w-4 h-4 text-muted-foreground" />
+                             )}
+                             <Label htmlFor="share-mode" className="text-xs font-medium text-muted-foreground uppercase tracking-wide cursor-pointer">
+                                 {isShared ? "Shared to Club" : "Private Note"}
+                             </Label>
+                         </div>
+                         <Switch 
+                             id="share-mode" 
+                             checked={isShared}
+                             onCheckedChange={setIsShared}
+                             className="scale-90 data-[state=checked]:bg-primary"
+                         />
+                    </div>
+
                     <Button 
                         className="w-full bg-primary hover:bg-primary/90 text-white shadow-md h-10 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] mt-2"
                         onClick={handleComplete}
