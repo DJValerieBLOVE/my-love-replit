@@ -37,9 +37,12 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
               </div>
             </div>
 
-            {/* Suggestion Box */}
-            <div className="bg-white border rounded-xl p-4 text-sm text-foreground shadow-lg">
-              <p className="leading-relaxed italic text-muted-foreground">"You've been focusing a lot on <strong className="text-foreground font-bold">Community</strong> lately. Maybe spend some time on <strong className="text-foreground font-bold">Body</strong> today?"</p>
+            {/* Quote of the Day Box */}
+            <div className="bg-white border rounded-xl p-5 text-sm text-foreground shadow-lg relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-1 h-full bg-[#6600ff]" />
+              <p className="font-bold text-xs text-[#6600ff] uppercase mb-2 tracking-wider">Quote of the Day</p>
+              <p className="leading-relaxed italic text-muted-foreground font-serif text-base">"Your task is not to seek for love, but merely to seek and find all the barriers within yourself that you have built against it."</p>
+              <p className="text-xs text-right mt-2 font-bold text-muted-foreground/60">— Rumi</p>
             </div>
 
             {/* Chat Input */}
