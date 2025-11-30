@@ -65,19 +65,19 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
               </SelectTrigger>
               <SelectContent className="max-h-[300px]">
                 {LOVE_CODE_AREAS.map((area) => (
-                  <SelectItem key={area.id} value={area.id} className="">
-                    <div className="flex flex-col gap-2 text-left w-full">
-                      <div className="grid grid-cols-[1fr_40px] items-center w-full gap-2">
+                  <SelectItem key={area.id} value={area.id} className="pl-2 pr-2">
+                    <div className="flex flex-col gap-2 text-left w-[350px] max-w-[85vw]">
+                      <div className="grid grid-cols-[1fr_45px] items-center w-full gap-2">
                         <div className="flex items-center gap-2 overflow-hidden">
                           <span className={`w-2 h-2 rounded-full flex-shrink-0 ${area.color}`} />
                           <span className="text-xs font-serif text-muted-foreground uppercase tracking-wider truncate">
                             {area.name}
                           </span>
                         </div>
-                        <span className="text-[10px] font-bold text-right" style={{ color: area.hex }}>{area.progress}%</span>
+                        <span className="text-[11px] font-bold text-right tabular-nums" style={{ color: area.hex }}>{area.progress}%</span>
                       </div>
                       
-                      <div className="h-1.5 w-full rounded-full overflow-hidden relative">
+                      <div className="h-2 w-full rounded-full overflow-hidden relative">
                         {/* Track - lighter opacity of brand color */}
                         <div className="absolute inset-0 w-full h-full opacity-20" style={{ backgroundColor: area.hex }} />
                         {/* Indicator - solid brand color */}
