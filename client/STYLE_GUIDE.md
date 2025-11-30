@@ -50,3 +50,18 @@
 - **Primary Brand**: #6600ff (Purple)
 - **Secondary**: #eb00a8 (Pink/Love God)
 - **Sats/Gold**: #ff9900
+- **Text Base**: #4D3D5C (Deep Muted Purple)
+
+## Iconography
+- **Sidebar/Navigation**:
+  - **Style**: Minimalist, Thin Stroke.
+  - **Stroke Width**: `1.5` (do not use bold/thick icons).
+  - **Color**: `text-muted-foreground` (No primary colors for nav icons).
+  - **Background**: Transparent (No colored backgrounds/boxes around icons).
+
+## Button Standardization
+- **Consistency**: All action buttons should share consistent height and padding.
+- **Height**: Avoid over-sized buttons (like `h-12` or `h-14`) inside cards or sidebars. Use standard sizes.
+- **Padding**: Ensure optical balance.
+- **Typography**: Only primary brand buttons (Purple/White) should use **Bold** text. Secondary/Ghost buttons should be `font-normal` or `font-medium`.
+
