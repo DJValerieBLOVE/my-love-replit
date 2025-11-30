@@ -51,7 +51,7 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
                 placeholder={`Aloha ${CURRENT_USER.name.split(' ')[0]} ~ Ask me anything...`}
                 value={chatMessage}
                 onChange={(e) => setChatMessage(e.target.value)}
-                className="flex-1 px-4 py-3 rounded-xl border border-white bg-[#F4F4F5] text-sm text-foreground placeholder:text-[#71717A] focus:outline-none focus:ring-2 focus:ring-white shadow-[0_0_30px_rgba(255,255,255,0.6),0_4px_12px_rgba(0,0,0,0.1)] transition-all"
+                className="flex-1 px-4 py-3 rounded-xl border border-white bg-[#F4F4F5] text-sm text-foreground placeholder:text-[#4B5563] focus:outline-none focus:ring-2 focus:ring-white shadow-[0_0_30px_rgba(255,255,255,0.6),0_4px_12px_rgba(0,0,0,0.1)] transition-all"
                 data-testid="input-chat-message"
               />
               <button 
