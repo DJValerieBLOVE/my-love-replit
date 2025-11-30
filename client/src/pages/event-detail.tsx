@@ -114,8 +114,8 @@ export default function EventDetail() {
                 {/* Date/Time Block */}
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
-                    <div className="p-2 bg-primary/10 rounded-lg text-primary">
-                      <Calendar className="w-5 h-5" />
+                    <div className="p-2 rounded-lg text-muted-foreground">
+                      <Calendar className="w-5 h-5" strokeWidth={1.5} />
                     </div>
                     <div>
                       <p className="font-bold text-foreground">
@@ -126,8 +126,8 @@ export default function EventDetail() {
                   </div>
                   
                   <div className="flex items-start gap-3">
-                    <div className="p-2 bg-primary/10 rounded-lg text-primary">
-                      <Clock className="w-5 h-5" />
+                    <div className="p-2 rounded-lg text-muted-foreground">
+                      <Clock className="w-5 h-5" strokeWidth={1.5} />
                     </div>
                     <div>
                       <p className="font-bold text-foreground">{event.time} - {parseInt(event.time) + 1}:00pm EST</p>
@@ -136,8 +136,8 @@ export default function EventDetail() {
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <div className="p-2 bg-primary/10 rounded-lg text-primary">
-                      <Video className="w-5 h-5" />
+                    <div className="p-2 rounded-lg text-muted-foreground">
+                      <Video className="w-5 h-5" strokeWidth={1.5} />
                     </div>
                     <div>
                       <p className="font-bold text-foreground">Online via Zoom</p>
