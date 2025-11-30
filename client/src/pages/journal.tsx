@@ -136,34 +136,36 @@ export default function LabNotes() {
           </p>
         </div>
         
-        {/* Action Buttons */}
-        <div className="flex gap-3">
-            <Button 
-                className="gap-2"
-                onClick={() => setIsPracticing(true)}
-            >
-              <Heart className="w-4 h-4" /> Daily LOVE Practice
-            </Button>
+        {/* Action Buttons - Hidden when in practice mode */}
+        {!isPracticing && (
+          <div className="flex gap-3">
+              <Button 
+                  className="gap-2"
+                  onClick={() => setIsPracticing(true)}
+              >
+                <Heart className="w-4 h-4" /> Daily LOVE Practice
+              </Button>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="gap-2">
-                  <Plus className="w-4 h-4" /> New Note
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem className="focus:bg-love-body/10 focus:text-love-body cursor-pointer">
-                  <FlaskConical className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Experiment Note
-                </DropdownMenuItem>
-                <DropdownMenuItem className="focus:bg-love-body/10 focus:text-love-body cursor-pointer">
-                  <Lightbulb className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Discovery Note
-                </DropdownMenuItem>
-                <DropdownMenuItem className="focus:bg-love-body/10 focus:text-love-body cursor-pointer">
-                  <Sparkles className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Magic Mentor Session
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-        </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="gap-2">
+                    <Plus className="w-4 h-4" /> New Note
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem className="focus:bg-love-body/10 focus:text-love-body cursor-pointer">
+                    <FlaskConical className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Experiment Note
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="focus:bg-love-body/10 focus:text-love-body cursor-pointer">
+                    <Lightbulb className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Discovery Note
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="focus:bg-love-body/10 focus:text-love-body cursor-pointer">
+                    <Sparkles className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Magic Mentor Session
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+          </div>
+        )}
 
         {isPracticing ? (
           // Show the blank/new card when practicing

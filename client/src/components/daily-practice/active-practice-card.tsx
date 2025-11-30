@@ -99,7 +99,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
        <CardContent className="p-6">
           <div className="mb-6 flex items-center gap-2">
               <Heart className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-              <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Daily LOVE Practice</h2>
+              <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Daily LOVE Practice</h2>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 h-full">
