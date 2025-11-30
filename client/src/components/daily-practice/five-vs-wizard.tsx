@@ -224,7 +224,7 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
                 
                 <Button 
                   size="lg" 
-                  className="gap-2 px-8 bg-[#6600ff] text-white font-serif font-bold border border-transparent hover:bg-[#F5F3FF] hover:text-[#6600ff] hover:border-primary/50 hover:font-normal shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5"
+                  className="gap-2 px-8"
                   onClick={step < 5 ? nextStep : onComplete}
                 >
                   {step < 5 ? (
