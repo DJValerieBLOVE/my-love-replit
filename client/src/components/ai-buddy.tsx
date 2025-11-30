@@ -54,10 +54,10 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
               />
               <Button 
                 size="icon" 
-                className="h-auto w-12 rounded-xl shadow-lg bg-white hover:bg-white/90 border border-transparent"
+                className="h-auto w-12 rounded-xl shadow-lg bg-white hover:bg-white/90 border border-transparent text-[#cc00ff]"
                 data-testid="button-send-message"
               >
-                <Send className="w-5 h-5 text-[#cc00ff]" strokeWidth={1.5} />
+                <Send className="w-5 h-5" strokeWidth={1.5} />
               </Button>
             </div>
           </div>
