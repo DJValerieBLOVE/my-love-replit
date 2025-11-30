@@ -15,7 +15,7 @@ export function StreakWidget({ streak, data, className }: StreakWidgetProps) {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <div className="p-2 bg-orange-500/10 rounded-full animate-pulse">
-              <Zap className="w-5 h-5 text-orange-500 fill-orange-500" />
+              <Zap className="w-5 h-5 text-orange-500" strokeWidth={1.5} />
             </div>
             <div>
               <h3 className="font-bold text-foreground leading-none">Daily Streak</h3>
@@ -34,7 +34,7 @@ export function StreakWidget({ streak, data, className }: StreakWidgetProps) {
                   ? "bg-orange-500 text-white shadow-md shadow-orange-500/20" 
                   : "bg-muted text-muted-foreground"
               )}>
-                {day.active ? <Zap className="w-3 h-3 fill-current" /> : ""}
+                {day.active ? <Zap className="w-3 h-3 text-white" strokeWidth={2} /> : ""}
               </div>
               <span className="text-[10px] font-medium text-muted-foreground">{day.day}</span>
             </div>
