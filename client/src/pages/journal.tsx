@@ -313,7 +313,7 @@ export default function LabNotes() {
                           <div className="flex justify-between items-start mb-6 border-b border-border/10 pb-4">
                             <div className="space-y-1">
                                <div className="text-lg font-serif font-bold text-foreground">{entry.date}</div>
-                               <div className="text-xs text-muted-foreground uppercase tracking-wider">{entry.time}</div>
+                               {/* Time removed as requested */}
                             </div>
                             <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary">
                                 <PenLine className="w-4 h-4" />

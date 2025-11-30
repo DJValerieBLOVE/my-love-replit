@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { CheckCircle, Heart, Moon, Sun, Trophy, BookOpen, ChevronDown, Award } from "lucide-react";
+import { CheckCircle, Heart, Moon, Sun, Trophy, BookOpen, ChevronDown, Award, Image as ImageIcon, Plus } from "lucide-react";
 import confetti from "canvas-confetti";
 import { cn } from "@/lib/utils";
 import { LOVE_CODE_AREAS } from "@/lib/mock-data";
@@ -28,6 +28,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
   const [checkedItems, setCheckedItems] = useState<boolean[]>(initialData?.checkedItems || [false, false, false]);
   const [villain, setVillain] = useState(initialData?.villain || "");
   const [victory, setVictory] = useState(initialData?.victory || "");
+  const [gratitudeImage, setGratitudeImage] = useState<string | null>(null);
 
   const selectedArea = LOVE_CODE_AREAS.find(a => a.id === selectedAreaId);
 
@@ -52,6 +53,16 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
             origin: { y: 0.7, x: 0.5 },
             colors: ['#10B981', '#34D399'] 
         });
+    }
+  };
+
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setGratitudeImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -92,28 +103,66 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                 </div>
                 
                 {/* Morning Vibe */}
-                <div className="bg-white/50 rounded-xl p-3 border border-border/40 flex justify-between items-center transition-all hover:shadow-sm">
+                <div className="bg-white/50 rounded-xl px-3 h-10 border border-border/40 flex justify-between items-center transition-all hover:shadow-sm">
                     <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif">Morning Vibe</div>
                     <Input 
                         type="number" 
                         min="1" 
                         max="11"
                         placeholder="-"
-                        className="w-12 h-8 text-right p-0 border-none bg-transparent text-lg font-medium font-serif focus-visible:ring-0 placeholder:text-muted-foreground/30"
+                        className="w-12 h-8 text-right p-0 border-none bg-transparent text-lg font-medium font-serif focus-visible:ring-0 placeholder:text-muted-foreground/30 shadow-none"
                         value={morningVibe}
                         onChange={(e) => setMorningVibe(e.target.value)}
                     />
                 </div>
 
-                {/* Morning Gratitude */}
+                {/* Morning Gratitude & Image */}
                 <div className="space-y-2 flex-1 flex flex-col">
                     <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">Morning Gratitude</label>
-                    <Textarea 
-                        placeholder="I am grateful for..." 
-                        className="flex-1 min-h-[200px] bg-white border-muted/50 focus:border-primary/30 text-sm font-serif resize-none shadow-sm"
-                        value={gratitude}
-                        onChange={(e) => setGratitude(e.target.value)}
-                    />
+                    <div className="flex-1 bg-white border border-muted/50 rounded-xl overflow-hidden flex flex-col shadow-sm focus-within:ring-1 focus-within:ring-primary/20 transition-all">
+                        <Textarea 
+                            placeholder="I am grateful for..." 
+                            className="flex-1 min-h-[120px] border-none focus-visible:ring-0 text-sm font-serif resize-none p-3 shadow-none"
+                            value={gratitude}
+                            onChange={(e) => setGratitude(e.target.value)}
+                        />
+                        
+                        {/* Image Preview Area */}
+                        {gratitudeImage && (
+                            <div className="px-3 pb-3">
+                                <div className="relative aspect-square w-full rounded-lg overflow-hidden border border-border/20 group/image">
+                                    <img src={gratitudeImage} alt="Gratitude" className="w-full h-full object-cover" />
+                                    <Button 
+                                        variant="destructive" 
+                                        size="icon" 
+                                        className="absolute top-2 right-2 w-6 h-6 opacity-0 group-hover/image:opacity-100 transition-opacity rounded-full"
+                                        onClick={() => setGratitudeImage(null)}
+                                    >
+                                        <Plus className="w-4 h-4 rotate-45" />
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Image Upload Button */}
+                        {!gratitudeImage && (
+                            <div className="p-2 border-t border-muted/20 flex justify-between items-center bg-muted/5">
+                                <div className="relative">
+                                    <input 
+                                        type="file" 
+                                        accept="image/*" 
+                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                        onChange={handleImageUpload}
+                                    />
+                                    <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground gap-2 hover:text-primary hover:bg-primary/5 px-2">
+                                        <ImageIcon className="w-3.5 h-3.5" />
+                                        Add Photo
+                                    </Button>
+                                </div>
+                                <span className="text-[10px] text-muted-foreground/50 italic pr-2">Optional</span>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 
@@ -221,14 +270,14 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                 </div>
 
                 {/* Evening Vibe */}
-                <div className="bg-white/50 rounded-xl p-3 border border-border/40 flex justify-between items-center transition-all hover:shadow-sm">
+                <div className="bg-white/50 rounded-xl px-3 h-10 border border-border/40 flex justify-between items-center transition-all hover:shadow-sm">
                     <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif">Evening Vibe</div>
                     <Input 
                         type="number" 
                         min="1" 
                         max="11"
                         placeholder="-"
-                        className="w-12 h-8 text-right p-0 border-none bg-transparent text-lg font-medium font-serif text-muted-foreground focus-visible:ring-0 placeholder:text-muted-foreground/30"
+                        className="w-12 h-8 text-right p-0 border-none bg-transparent text-lg font-medium font-serif text-muted-foreground focus-visible:ring-0 placeholder:text-muted-foreground/30 shadow-none"
                         value={eveningVibe}
                         onChange={(e) => setEveningVibe(e.target.value)}
                     />
