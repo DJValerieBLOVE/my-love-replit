@@ -99,13 +99,13 @@ export default function Layout({ children, showRightSidebar = true }: { children
             </div>
 
             {/* Inbox */}
-            <Button variant="ghost" size="icon" className="rounded-full relative" data-testid="button-inbox">
+            <Button variant="ghost" size="icon" className="rounded-full relative text-muted-foreground" data-testid="button-inbox">
               <Mail className="w-5 h-5" />
               <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" data-testid="notification-dot-inbox"></span>
             </Button>
 
             {/* Notifications */}
-            <Button variant="ghost" size="icon" className="rounded-full relative" data-testid="button-notifications">
+            <Button variant="ghost" size="icon" className="rounded-full relative text-muted-foreground" data-testid="button-notifications">
               <Bell className="w-5 h-5" />
               <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" data-testid="notification-dot-bell"></span>
             </Button>
