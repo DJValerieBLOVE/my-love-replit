@@ -210,7 +210,7 @@ export default function LabNotes() {
                         onClick={() => setSelectedEntry(entry)}
                       >
                         <CardContent className="p-6">
-                          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                          <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr_1fr] gap-8">
                             {/* Col 1: Meta Data */}
                             <div className="flex flex-col justify-between space-y-4">
                               <div>
