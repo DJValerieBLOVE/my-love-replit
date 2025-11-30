@@ -404,7 +404,6 @@ export default function ExperimentDetail() {
                                 </p>
                                 <div className="flex items-center gap-2">
                                    <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">{discovery.duration}</span>
-                                   {isCurrent && <span className="text-[10px] text-primary font-bold bg-primary/10 px-1.5 rounded-full">Current</span>}
                                 </div>
                              </div>
                           </div>
@@ -416,7 +415,7 @@ export default function ExperimentDetail() {
                                    onClick={() => handleCompleteDiscovery(discovery.num)}
                                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-9 text-sm font-bold shadow-md active:scale-95 transition-all"
                                 >
-                                   Complete & Collect {DISCOVERY_REWARD} Sats <MoveRight className="w-4 h-4 ml-2" />
+                                   Next Discovery <MoveRight className="w-4 h-4 ml-2" />
                                 </Button>
                              </div>
                           )}
