@@ -25,7 +25,7 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
       <SheetContent side="right" className="w-full sm:max-w-[800px] sm:w-[800px] p-0 border-l shadow-2xl [&>button]:text-white [&>button]:hover:text-white/80 [&>button]:bg-white/10 [&>button]:hover:bg-white/20">
         <div className="h-full flex flex-col bg-background">
           {/* Consolidated Header + Suggestion + Chat Block */}
-          <div className="p-6 border-b bg-[#6600ff] space-y-4 shadow-sm relative overflow-hidden">
+          <div className="p-6 border-b bg-gradient-to-br from-[#6600ff] to-[#cc00ff] space-y-4 shadow-sm relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-white/10 to-transparent rounded-full -mr-20 -mt-20 blur-3xl pointer-events-none" />
             {/* Magic Mentor Header */}
             <div className="flex items-center gap-4">
