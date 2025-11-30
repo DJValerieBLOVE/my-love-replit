@@ -20,6 +20,8 @@ export function EveningModal({ morningData, isOpen, onOpenChange, onComplete }: 
   const [victory, setVictory] = useState("");
   const [eveningVibe, setEveningVibe] = useState(8); // Default to a good vibe
 
+  if (!morningData) return null;
+
   const handleCheck = (index: number) => {
     const newChecked = [...checkedItems];
     newChecked[index] = !newChecked[index];

@@ -185,12 +185,14 @@ export default function LabNotes() {
                </Card>
             )}
 
-            <EveningModal 
-              isOpen={isEveningModalOpen} 
-              onOpenChange={setIsEveningModalOpen}
-              morningData={practiceData} 
-              onComplete={handleEveningComplete} 
-            />
+            {practiceData && (
+              <EveningModal 
+                isOpen={isEveningModalOpen} 
+                onOpenChange={setIsEveningModalOpen}
+                morningData={practiceData} 
+                onComplete={handleEveningComplete} 
+              />
+            )}
 
             {/* Day Fully Completed Success Card */}
             {dayCompleted && (
