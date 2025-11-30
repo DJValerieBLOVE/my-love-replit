@@ -18,8 +18,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { EveningCheckIn } from "@/components/daily-practice/evening-check-in";
+
 export default function LabNotes() {
   const [isPracticing, setIsPracticing] = useState(false);
+  const [practiceData, setPracticeData] = useState<any>(null);
+  const [dayCompleted, setDayCompleted] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -27,21 +31,27 @@ export default function LabNotes() {
       setIsPracticing(true);
     }
   }, []);
-  const [isCompleted, setIsCompleted] = useState(false);
-  const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
 
-  const [showMissedCheckinAlert, setShowMissedCheckinAlert] = useState(true); // Mock state
+  const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
+  const [showMissedCheckinAlert, setShowMissedCheckinAlert] = useState(true); 
   const todaysPlaylist = getPlaylistForToday();
 
-  const handleComplete = () => {
+  const handlePracticeComplete = (data: any) => {
     setIsPracticing(false);
-    setIsCompleted(true);
-    // Trigger confetti
+    setPracticeData(data);
+    
+    // Trigger confetti for morning practice complete
     confetti({
       particleCount: 100,
       spread: 70,
       origin: { y: 0.6 }
     });
+  };
+
+  const handleEveningComplete = (eveningData: any) => {
+      setDayCompleted(true);
+      // Here we would normally save everything to the backend
+      console.log("Full Day Data:", { ...practiceData, ...eveningData });
   };
 
   const entries: JournalEntry[] = [
@@ -135,11 +145,34 @@ export default function LabNotes() {
         </div>
 
         {isPracticing ? (
-          <FiveVsWizard onComplete={handleComplete} />
+          <FiveVsWizard onComplete={handlePracticeComplete} />
         ) : (
           <div className="space-y-8">
-            {/* Missed Check-in Alert (Mock) */}
-            {showMissedCheckinAlert && (
+            {/* Evening Check-in (Shows if morning practice is done but day not fully completed) */}
+            {practiceData && !dayCompleted && (
+               <EveningCheckIn morningData={practiceData} onComplete={handleEveningComplete} />
+            )}
+
+            {/* Day Fully Completed Success Card */}
+            {dayCompleted && (
+               <Card className="border-none shadow-sm bg-green-50 dark:bg-green-900/10 border-green-200">
+                <CardContent className="p-8 text-center">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle className="w-8 h-8 text-green-600" strokeWidth={1.5} />
+                  </div>
+                  <h2 className="text-2xl font-bold mb-2 text-green-800 font-serif">Day Complete!</h2>
+                  <p className="text-green-700 mb-4 font-serif text-lg">Way to go, VIP! You've earned 100 Sats.</p>
+                  <div className="flex justify-center gap-2">
+                      {practiceData?.values?.map((v: string, i: number) => (
+                          <Badge key={i} variant="secondary" className="bg-green-100 text-green-800 border-green-200">{v}</Badge>
+                      ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Missed Check-in Alert (Mock) - Only show if we haven't done practice yet */}
+            {showMissedCheckinAlert && !practiceData && !dayCompleted && (
               <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-4 flex items-center justify-between relative overflow-hidden">
                 <div className="flex items-center gap-3 z-10">
                    <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-muted-foreground">
@@ -158,8 +191,8 @@ export default function LabNotes() {
               </div>
             )}
 
-            {/* Daily Practice Prompt & Song of the Day */}
-            {!isCompleted && (
+            {/* Daily Practice Prompt & Song of the Day - Only show if we haven't started practice */}
+            {!practiceData && !dayCompleted && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card className="border-none shadow-sm bg-muted/30 h-full flex flex-col justify-center">
                   <CardContent className="p-8 text-center">
@@ -201,18 +234,8 @@ export default function LabNotes() {
               </div>
             )}
             
-            {isCompleted && (
-               <Card className="border-none shadow-sm bg-green-50 dark:bg-green-900/10 border-green-200">
-                <CardContent className="p-8 text-center">
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <CheckCircle className="w-8 h-8 text-muted-foreground" strokeWidth={1.5} />
-                  </div>
-                  <h2 className="text-xl font-bold mb-2 text-green-800">Practice Complete!</h2>
-                  <p className="text-green-700 mb-0">Way to go, VIP! You've earned 100 Sats.</p>
-                </CardContent>
-              </Card>
-            )}
-
+            {/* Removed old isCompleted block since we have new cards above */}
+            
             <Tabs defaultValue="all" className="space-y-8">
               <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
                 <TabsList className="bg-[#FAFAFA] p-1 h-auto flex-wrap justify-start">

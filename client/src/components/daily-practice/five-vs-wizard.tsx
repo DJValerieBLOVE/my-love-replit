@@ -10,7 +10,7 @@ import { ArrowRight, Check, Sparkles, ArrowLeft } from "lucide-react";
 import { LOVE_CODE_AREAS } from "@/lib/mock-data";
 
 interface FiveVsWizardProps {
-  onComplete: () => void;
+  onComplete: (data: any) => void;
 }
 
 export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
@@ -240,7 +240,7 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
                 <Button 
                   size="lg" 
                   className="gap-2 px-8"
-                  onClick={step < 5 ? nextStep : onComplete}
+                  onClick={step < 5 ? nextStep : () => onComplete(data)}
                 >
                   {step < 5 ? (
                     <>Next Step <ArrowRight className="w-4 h-4" /></>
