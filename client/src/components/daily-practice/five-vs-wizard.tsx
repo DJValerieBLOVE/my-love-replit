@@ -199,7 +199,7 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
   return (
     <div className="max-w-2xl mx-auto">
       <div className="mb-8 flex justify-between items-center">
-        <h2 className="text-3xl font-serif text-muted-foreground">Morning 5 V's</h2>
+        <h2 className="text-3xl font-serif text-muted-foreground">Daily LOVE Practice</h2>
         <span className="text-sm font-serif text-muted-foreground">Step {step} of 5</span>
       </div>
 
