@@ -115,7 +115,7 @@ export default function Layout({ children, showRightSidebar = true }: { children
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Avatar className="h-9 w-9 cursor-pointer ring-2 ring-primary/20 transition-all hover:ring-primary">
+                <Avatar className="h-9 w-9 shrink-0 cursor-pointer ring-2 ring-primary/20 transition-all hover:ring-primary">
                   <AvatarImage src={CURRENT_USER.avatar} />
                   <AvatarFallback>SJ</AvatarFallback>
                 </Avatar>

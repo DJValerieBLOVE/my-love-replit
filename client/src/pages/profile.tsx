@@ -35,7 +35,7 @@ export default function Profile() {
           <Card className="bg-gradient-to-br from-love-body to-love-soul border-none text-white relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-2xl" />
             <CardContent className="p-6 flex items-center gap-4 relative z-10">
-              <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center border-2 border-white/30 shadow-lg">
+              <div className="w-16 h-16 shrink-0 rounded-full bg-white/20 flex items-center justify-center border-2 border-white/30 shadow-lg">
                 <img src={user.avatar} alt={user.name} className="w-full h-full rounded-full object-cover" />
               </div>
               <div>
