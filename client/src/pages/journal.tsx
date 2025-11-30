@@ -312,6 +312,9 @@ export default function LabNotes() {
                           {/* Date & Edit Header */}
                           <div className="flex justify-between items-start mb-3 border-b border-border/10 pb-2">
                             <div className="space-y-1">
+                               {entry.type === 'daily-practice' && (
+                                   <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-0.5">Daily LOVE Practice</div>
+                               )}
                                <div className="text-lg font-serif font-bold text-foreground">{entry.date}</div>
                                {/* Time removed as requested */}
                             </div>
