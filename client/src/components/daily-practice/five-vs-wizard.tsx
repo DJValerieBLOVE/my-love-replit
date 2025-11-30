@@ -67,11 +67,11 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
                 {LOVE_CODE_AREAS.map((area) => (
                   <SelectItem key={area.id} value={area.id} className="">
                     <div className="flex flex-col gap-1 text-left">
-                      <span className="text-sm font-serif text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                        <span className={`w-2 h-2 rounded-full ${area.color}`} />
+                      <span className="text-xs font-serif text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                        <span className={`w-2 h-2 rounded-full flex-shrink-0 ${area.color}`} />
                         {area.name}
                       </span>
-                      <span className="text-lg line-clamp-2 text-muted-foreground font-serif">{area.dream || "No dream defined yet..."}</span>
+                      <span className="text-base line-clamp-2 text-muted-foreground font-serif whitespace-normal">{area.dream || "No dream defined yet..."}</span>
                     </div>
                   </SelectItem>
                 ))}
