@@ -365,12 +365,17 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                     <div className="pt-4 pb-1 space-y-2">
                         <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wide pl-1">Optional: Share with Club</Label>
                         <Select value={sharedClubId} onValueChange={setSharedClubId}>
-                            <SelectTrigger className="w-full h-9 bg-white border-muted/50 text-xs font-medium">
+                            <SelectTrigger className={cn(
+                                "w-full h-9 text-xs font-medium transition-all",
+                                sharedClubId === 'private' 
+                                    ? "bg-love-body/10 text-love-body border-love-body/10 shadow-sm" 
+                                    : "bg-white border-muted/50 text-foreground"
+                            )}>
                                 <div className="flex items-center gap-2">
                                     {sharedClubId === 'private' ? (
-                                        <Lock className="w-3.5 h-3.5 text-muted-foreground" />
+                                        <Lock className="w-3.5 h-3.5" />
                                     ) : (
-                                        <Users className="w-3.5 h-3.5 text-primary" />
+                                        <Users className="w-3.5 h-3.5" />
                                     )}
                                     <SelectValue />
                                 </div>

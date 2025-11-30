@@ -1,7 +1,7 @@
 import Layout from "@/components/layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PenLine, Calendar, Search, Filter, Heart, CheckCircle, FlaskConical, Lightbulb, Plus, Sparkles, Beaker, Quote, Play, X, Moon, Sun, BookOpen, Trophy, Eye, ChevronLeft } from "lucide-react";
+import { PenLine, Calendar, Search, Filter, Heart, CheckCircle, FlaskConical, Lightbulb, Plus, Sparkles, Beaker, Quote, Play, X, Moon, Sun, BookOpen, Trophy, Eye, ChevronLeft, Lock } from "lucide-react";
 import confetti from "canvas-confetti";
 import { getPlaylistForToday } from "@/lib/playlists";
 import { Input } from "@/components/ui/input";
@@ -306,20 +306,26 @@ export default function LabNotes() {
                                <div className="text-lg font-serif font-bold text-foreground">{entry.date}</div>
                                {/* Time removed as requested */}
                             </div>
-                            <Button 
-                                variant="ghost" 
-                                size="icon" 
-                                className="h-8 w-8 text-muted-foreground hover:text-primary"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (entry.type === 'daily-practice') {
-                                        setPracticeData(entry);
-                                        setIsPracticing(true);
-                                    }
-                                }}
-                            >
-                                <PenLine className="w-4 h-4" />
-                            </Button>
+                            <div className="flex items-center gap-1">
+                                {/* Show Lock if Private (or default) */}
+                                {(entry.sharedClubId === 'private' || !entry.sharedClubId) && (
+                                    <Lock className="w-3.5 h-3.5 text-muted-foreground/40" strokeWidth={1.5} />
+                                )}
+                                <Button 
+                                    variant="ghost" 
+                                    size="icon" 
+                                    className="h-8 w-8 text-muted-foreground hover:text-primary"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (entry.type === 'daily-practice') {
+                                            setPracticeData(entry);
+                                            setIsPracticing(true);
+                                        }
+                                    }}
+                                >
+                                    <PenLine className="w-4 h-4" />
+                                </Button>
+                            </div>
                           </div>
 
                           {/* Content Render based on Type */}
