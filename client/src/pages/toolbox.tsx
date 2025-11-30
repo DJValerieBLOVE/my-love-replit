@@ -169,20 +169,22 @@ export default function Toolbox() {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {WORKSHEETS.map((file) => (
-                  <Card key={file.id} className="border-none shadow-sm hover:bg-[#FAFAFA] transition-colors group">
-                    <CardContent className="p-4 flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                        <FileText className="w-5 h-5" />
+                  <div key={file.id} className="flex items-center justify-between p-3 bg-[#FAFAFA] rounded-md border border-[#E5E5E5]">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-background p-2 rounded shadow-sm">
+                        {file.type === 'PDF' ? <FileText className="w-5 h-5 text-red-500" /> : 
+                         file.type === 'Excel' ? <FileText className="w-5 h-5 text-green-500" /> :
+                         <FileText className="w-5 h-5 text-blue-500" />}
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-bold text-sm truncate">{file.title}</h4>
+                      <div>
+                        <p className="font-medium text-sm">{file.title}</p>
                         <p className="text-xs text-muted-foreground">{file.type} • {file.size}</p>
                       </div>
-                      <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
-                        <Download className="w-4 h-4" />
-                      </Button>
-                    </CardContent>
-                  </Card>
+                    </div>
+                    <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
+                      <Download className="w-4 h-4" />
+                    </Button>
+                  </div>
                 ))}
               </div>
             </section>
@@ -194,34 +196,26 @@ export default function Toolbox() {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {BOOKMARKS.map((item) => (
-                  <Card key={item.id} className="border-none shadow-sm hover:shadow-md transition-all group">
-                    <CardContent className="p-4 flex gap-4">
-                      {item.cover ? (
-                        <div className="w-16 h-24 rounded-md bg-gray-200 shrink-0 overflow-hidden shadow-sm">
-                          <img src={item.cover} alt={item.title} className="w-full h-full object-cover" />
-                        </div>
-                      ) : (
-                        <div className="w-16 h-24 rounded-md bg-gray-100 shrink-0 flex items-center justify-center text-muted-foreground">
-                          <LinkIcon className="w-6 h-6" />
-                        </div>
-                      )}
-                      <div className="flex flex-col justify-between flex-1 py-1">
-                        <div>
-                          <Badge variant="outline" className="mb-2 text-[10px] h-5 px-1.5">{item.type}</Badge>
-                          <h4 className="font-bold text-sm leading-tight mb-1 line-clamp-2">{item.title}</h4>
-                          <p className="text-xs text-muted-foreground">{item.author}</p>
-                        </div>
-                        <div className="flex justify-end gap-2">
-                          <Button variant="ghost" size="icon">
-                            <Trash2 className="w-3.5 h-3.5 text-muted-foreground hover:text-red-500" />
-                          </Button>
-                          <Button variant="ghost" size="icon">
-                            <ExternalLink className="w-3.5 h-3.5" />
-                          </Button>
-                        </div>
+                  <div key={item.id} className="flex items-center justify-between p-3 bg-[#FAFAFA] rounded-md border border-[#E5E5E5]">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-background p-2 rounded shadow-sm shrink-0">
+                         {item.type === 'Book' ? <BookOpen className="w-5 h-5 text-purple-500" /> : 
+                          <LinkIcon className="w-5 h-5 text-blue-400" />}
                       </div>
-                    </CardContent>
-                  </Card>
+                      <div className="min-w-0">
+                        <p className="font-medium text-sm truncate pr-2">{item.title}</p>
+                        <p className="text-xs text-muted-foreground">{item.type} • {item.author}</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-1 shrink-0">
+                      <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive h-8 w-8">
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary h-8 w-8">
+                        <ExternalLink className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
                 ))}
               </div>
             </section>
@@ -271,29 +265,31 @@ export default function Toolbox() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {WORKSHEETS.map((file) => (
-                <Card key={file.id} className="border-none shadow-sm hover:bg-[#FAFAFA] transition-colors group">
-                  <CardContent className="p-4 flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                      <FileText className="w-6 h-6" />
+                <div key={file.id} className="flex items-center justify-between p-3 bg-[#FAFAFA] rounded-md border border-[#E5E5E5]">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-background p-2 rounded shadow-sm">
+                      {file.type === 'PDF' ? <FileText className="w-5 h-5 text-red-500" /> : 
+                       file.type === 'Excel' ? <FileText className="w-5 h-5 text-green-500" /> :
+                       <FileText className="w-5 h-5 text-blue-500" />}
                     </div>
-                    <div className="flex-1 min-w-0 py-1">
-                      <h4 className="font-bold text-base truncate">{file.title}</h4>
-                      <p className="text-xs text-muted-foreground mt-1">{file.type} • {file.size} • Added {file.date}</p>
+                    <div>
+                      <p className="font-medium text-sm">{file.title}</p>
+                      <p className="text-xs text-muted-foreground">{file.type} • {file.size}</p>
                     </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="w-4 h-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Download</DropdownMenuItem>
-                        <DropdownMenuItem>Rename</DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </CardContent>
-                </Card>
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <MoreHorizontal className="w-4 h-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem>Download</DropdownMenuItem>
+                      <DropdownMenuItem>Rename</DropdownMenuItem>
+                      <DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               ))}
             </div>
           </TabsContent>
