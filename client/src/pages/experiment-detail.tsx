@@ -178,10 +178,10 @@ export default function ExperimentDetail() {
                   />
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="font-bold text-sm text-foreground" data-testid={`text-commenter-${comment.id}`}>{comment.author}</span>
+                      <span className="font-bold text-base text-foreground" data-testid={`text-commenter-${comment.id}`}>{comment.author}</span>
                       <span className="text-xs text-muted-foreground">• {comment.time}</span>
                     </div>
-                    <p className="text-sm text-foreground/90 leading-relaxed mb-2">{comment.text}</p>
+                    <p className="text-base text-foreground/90 leading-relaxed mb-2">{comment.text}</p>
                     <button 
                       className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors"
                       data-testid={`button-like-comment-${comment.id}`}
@@ -210,20 +210,8 @@ export default function ExperimentDetail() {
                  <Progress value={experiment.progress} className="h-1.5" />
               </div>
 
-              {/* Action Button */}
-              <Button 
-                className="w-full rounded-full font-bold h-10 shadow-lg shadow-primary/10" 
-                data-testid={`button-${isCompleted ? 'review' : isInProgress ? 'resume' : 'start'}-experiment`}
-              >
-                {isCompleted ? (
-                  <><CheckCircle className="w-4 h-4 mr-2" /> Review</>
-                ) : isInProgress ? (
-                  <><PlayCircle className="w-4 h-4 mr-2" /> Resume</>
-                ) : (
-                  <><PlayCircle className="w-4 h-4 mr-2" /> Start</>
-                )}
-              </Button>
-
+              {/* Action Button - REMOVED */}
+              
               {/* Syllabus List */}
               <div>
                  <h3 className="font-serif font-bold text-lg mb-4">Discoveries</h3>
@@ -237,21 +225,21 @@ export default function ExperimentDetail() {
                           `}
                        >
                           {/* Icon / Checkbox */}
-                          <div className="mt-0.5 text-muted-foreground group-hover:text-primary transition-colors">
+                          <div className="mt-0.5 text-muted-foreground transition-colors">
                              {discovery.completed ? (
                                 <div className="bg-green-500 rounded-full p-0.5">
-                                  <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                                  <Check className="w-4 h-4 text-white" strokeWidth={3} />
                                 </div>
                              ) : discovery.locked ? (
-                                <Circle className="w-4 h-4 opacity-30" />
+                                <Circle className="w-5 h-5 opacity-30" />
                              ) : (
-                                <Circle className="w-4 h-4 text-primary" />
+                                <Circle className="w-5 h-5 text-muted-foreground group-hover:text-foreground" />
                              )}
                           </div>
                           
                           {/* Content */}
                           <div className="flex-1">
-                             <p className={`text-sm font-medium leading-tight mb-1 ${discovery.locked ? 'text-muted-foreground' : 'text-foreground'}`}>
+                             <p className={`text-base font-medium leading-tight mb-1 ${discovery.locked ? 'text-muted-foreground' : 'text-foreground'}`}>
                                 {discovery.title}
                              </p>
                              <div className="flex items-center gap-2">
