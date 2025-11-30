@@ -105,27 +105,15 @@ export default function LabNotes() {
             </p>
           </div>
           
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button className="gap-2">
-                <Plus className="w-4 h-4" /> New Entry
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem onClick={() => setIsPracticing(true)}>
-                <Heart className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Daily LOVE Practice
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Beaker className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Log Experiment
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Lightbulb className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Note Discovery
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Sparkles className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Magic Mentor Session
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex gap-2 w-full sm:w-auto">
+             <div className="relative flex-1 sm:w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input placeholder="Search..." className="pl-9 bg-background/50 border-muted text-[16px] h-9" />
+            </div>
+            <Button variant="outline" size="icon" className="shrink-0 h-9 w-9">
+              <Filter className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
 
         {isPracticing ? (
@@ -178,15 +166,30 @@ export default function LabNotes() {
                   </TabsTrigger>
                 </TabsList>
 
-                <div className="flex gap-2 w-full sm:w-auto">
-                   <div className="relative flex-1 sm:w-64">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input placeholder="Search..." className="pl-9 bg-background/50 border-muted text-[16px] h-9" />
-                  </div>
-                  <Button variant="outline" size="icon" className="shrink-0 h-9 w-9">
-                    <Filter className="w-4 h-4" />
-                  </Button>
-                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button className="gap-2">
+                      <Plus className="w-4 h-4" /> New Entry
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuItem 
+                      onClick={() => setIsPracticing(true)}
+                      className="focus:bg-love-body/10 focus:text-love-body cursor-pointer"
+                    >
+                      <Heart className="w-4 h-4 mr-2 text-muted-foreground group-hover:text-love-body" strokeWidth={1.5} /> Daily LOVE Practice
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="focus:bg-love-body/10 focus:text-love-body cursor-pointer">
+                      <Beaker className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Log Experiment
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="focus:bg-love-body/10 focus:text-love-body cursor-pointer">
+                      <Lightbulb className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Note Discovery
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="focus:bg-love-body/10 focus:text-love-body cursor-pointer">
+                      <Sparkles className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Magic Mentor Session
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
 
               {/* Helper to render entry list */}
