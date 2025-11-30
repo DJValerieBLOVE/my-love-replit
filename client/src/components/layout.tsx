@@ -131,7 +131,7 @@ export default function Layout({ children, showRightSidebar = true }: { children
                       </div>
                    </DropdownMenuItem>
                    <DropdownMenuItem className="cursor-pointer items-start gap-3 p-3 focus:bg-muted/50">
-                      <div className="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-pink-600 font-bold text-xs mt-0.5 shrink-0">SJ</div>
+                      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground font-bold text-xs mt-0.5 shrink-0">SJ</div>
                       <div className="flex flex-col gap-1">
                          <div className="flex justify-between items-center w-full">
                             <span className="font-bold text-sm">Sarah J.</span>
@@ -162,7 +162,7 @@ export default function Layout({ children, showRightSidebar = true }: { children
                 <div className="max-h-[300px] overflow-y-auto">
                    {/* Mock Notifications */}
                    <DropdownMenuItem className="cursor-pointer gap-3 p-3 focus:bg-muted/50">
-                      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mt-0.5 shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground mt-0.5 shrink-0">
                         <Flame className="w-4 h-4" />
                       </div>
                       <div className="flex flex-col gap-1">
@@ -171,7 +171,7 @@ export default function Layout({ children, showRightSidebar = true }: { children
                       </div>
                    </DropdownMenuItem>
                    <DropdownMenuItem className="cursor-pointer gap-3 p-3 focus:bg-muted/50">
-                      <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 mt-0.5 shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground mt-0.5 shrink-0">
                         <Heart className="w-4 h-4" />
                       </div>
                       <div className="flex flex-col gap-1">
@@ -180,7 +180,7 @@ export default function Layout({ children, showRightSidebar = true }: { children
                       </div>
                    </DropdownMenuItem>
                    <DropdownMenuItem className="cursor-pointer gap-3 p-3 focus:bg-muted/50">
-                      <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 mt-0.5 shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground mt-0.5 shrink-0">
                         <Trophy className="w-4 h-4" />
                       </div>
                       <div className="flex flex-col gap-1">
