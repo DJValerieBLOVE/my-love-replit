@@ -110,7 +110,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                 
                 {/* Morning Vibe */}
                 <div className="bg-white/50 rounded-xl px-3 h-10 border border-border/40 flex justify-between items-center transition-all hover:shadow-sm">
-                    <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif">Morning Vibe</div>
+                    <div className="text-[11px] font-bold text-muted-foreground uppercase font-serif">Morning Vibe</div>
                     <Input 
                         type="number" 
                         min="1" 
@@ -124,7 +124,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
 
                 {/* Morning Gratitude & Image */}
                 <div className="space-y-2 flex-1 flex flex-col">
-                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">Morning Gratitude</label>
+                    <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block">Morning Gratitude</label>
                     <div className="flex-1 bg-white border border-muted/50 rounded-xl overflow-hidden flex flex-col shadow-sm focus-within:ring-1 focus-within:ring-primary/20 transition-all">
                         <Textarea 
                             placeholder="I am grateful for..." 
@@ -181,7 +181,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
 
                 {/* Focus Area */}
                 <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block font-serif mt-2.5 ml-1">Big Dream</label>
+                    <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block font-serif mt-2.5 ml-1">Big Dream</label>
                     <Select value={selectedAreaId} onValueChange={setSelectedAreaId}>
                         <SelectTrigger className="w-full h-10 bg-white border-muted/50 focus:ring-primary/20 font-serif shadow-sm">
                             <SelectValue placeholder="Select a Focus Area..." />
@@ -214,7 +214,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
 
                 {/* Values (Action Steps) */}
                 <div className="space-y-3 flex-1 pt-2">
-                     <div className="text-[10px] font-bold text-muted-foreground uppercase flex justify-between">
+                     <div className="text-[11px] font-bold text-muted-foreground uppercase flex justify-between">
                         <span>Value (3 Actions)</span>
                      </div>
                      <div className="space-y-3">
