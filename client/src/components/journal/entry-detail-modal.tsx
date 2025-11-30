@@ -27,6 +27,10 @@ export type JournalEntry = {
   };
   villain?: string;
   value?: string;
+  values?: string[];
+  checkedItems?: boolean[];
+  tool?: string;
+  sharedClubId?: string;
   victory?: string;
   // Experiment Fields
   experimentTitle?: string;
