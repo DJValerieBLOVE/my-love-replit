@@ -17,6 +17,7 @@ import {
   Flame,
   Gift
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import BitcoinIcon from "../assets/bitcoin_icon.png";
 import SatsIcon from "@assets/generated_images/sats_icon.png";
 
@@ -70,21 +71,23 @@ export default function Profile() {
 
           <Card className="border-none shadow-sm bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-100">
             <CardContent className="p-6 flex flex-col justify-center h-full">
-              <div className="flex justify-between items-start mb-2">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-blue-600/80">Current Streak</p>
-                  <h2 className="text-3xl font-black text-blue-500 flex items-center gap-2 mt-1">
-                    {user.streak}
-                    <span className="text-sm font-bold text-blue-400 mt-1">Days</span>
-                  </h2>
+              <div className="flex items-center justify-between gap-2 mb-4">
+                <div className="flex items-center gap-2">
+                  <Flame className="w-5 h-5 text-blue-500 fill-blue-500" />
+                  <h4 className="font-bold text-xs uppercase text-blue-600/80">Streak</h4>
                 </div>
-                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                  <Flame className="w-6 h-6 text-blue-500 fill-blue-500" />
+                <div className="flex items-center gap-1.5">
+                  <span className="text-2xl font-black text-blue-500">{user.streak}</span>
+                  <span className="text-xs font-bold text-blue-400">Days</span>
                 </div>
               </div>
-              <div className="flex gap-1 mt-2 justify-between">
+
+              <div className="flex justify-between gap-1.5">
                  {STREAK_DATA.map((d, i) => (
-                   <div key={i} className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${d.active ? 'bg-blue-500 text-white' : 'bg-blue-200 text-blue-400'}`}>
+                   <div key={i} className={cn(
+                     "w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all",
+                     d.active ? "bg-blue-500 text-white shadow-md" : "bg-blue-200 text-blue-400 font-bold"
+                   )}>
                      {d.day}
                    </div>
                  ))}
