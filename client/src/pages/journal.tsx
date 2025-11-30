@@ -64,7 +64,7 @@ export default function LabNotes() {
             </p>
           </div>
           <Button 
-            className="bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold gap-2 shadow-md shadow-primary/20"
+            className="gap-2"
             onClick={() => setIsPracticing(true)}
           >
             <PenLine className="w-4 h-4" /> New Entry
@@ -86,7 +86,7 @@ export default function LabNotes() {
                   <p className="text-muted-foreground mb-6">Set your vibe, vision, and victory for the day.</p>
                   <Button 
                     size="lg" 
-                    className="bg-primary hover:bg-primary/90 text-white gap-2 shadow-lg shadow-primary/20"
+                    className="gap-2"
                     onClick={() => setIsPracticing(true)}
                   >
                     <img src={WhiteLogo} alt="Logo" className="w-4 h-4" /> Start Daily Practice
@@ -112,10 +112,10 @@ export default function LabNotes() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input placeholder="Search your notes..." className="pl-9 bg-background/50 border-muted" />
               </div>
-              <Button variant="outline" className="gap-2 text-muted-foreground border-muted hover:text-primary">
+              <Button variant="outline" className="gap-2">
                 <Calendar className="w-4 h-4" /> Date Range
               </Button>
-              <Button variant="outline" className="gap-2 text-muted-foreground border-muted hover:text-primary">
+              <Button variant="outline" className="gap-2">
                 <Filter className="w-4 h-4" /> Filter
               </Button>
             </div>

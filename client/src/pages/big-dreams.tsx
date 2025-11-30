@@ -55,7 +55,7 @@ export default function BigDreams() {
                         />
                       </div>
                       <div className="flex justify-end">
-                         <Button variant="ghost" size="sm" className="text-xs text-muted-foreground hover:text-primary">
+                         <Button variant="ghost" size="sm" className="text-xs">
                            Save Vision
                          </Button>
                       </div>
