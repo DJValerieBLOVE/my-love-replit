@@ -27,7 +27,7 @@ export default function Home() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="outline" className="gap-2 font-bold text-muted-foreground border-muted hover:border-primary/50 hover:text-primary shadow-sm bg-background">
+            <Button variant="outline" className="gap-2 font-bold text-muted-foreground border-muted hover:border-primary/50 hover:text-primary shadow-sm bg-card/50">
               <HelpCircle className="w-4 h-4" /> How it works
             </Button>
             
