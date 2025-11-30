@@ -74,11 +74,11 @@ export default function ClubDetail() {
           </div>
 
           <div className="flex items-center gap-3 mb-2">
-            <Button variant="outline" className="gap-2 bg-background/50 backdrop-blur-sm h-10 px-6">
+            <Button variant="outline" className="gap-2 bg-background/50 backdrop-blur-sm h-8 px-6">
               <Share2 className="w-4 h-4" /> Share
             </Button>
             <Button 
-              className={`gap-2 font-bold h-10 px-6 shadow-lg shadow-primary/20 min-w-[140px] ${isJoined ? "bg-secondary hover:bg-secondary/90" : ""}`}
+              className={`gap-2 font-bold h-8 px-6 shadow-lg shadow-primary/20 min-w-[140px] ${isJoined ? "bg-secondary hover:bg-secondary/90" : ""}`}
               onClick={handleJoin}
             >
               {isJoined ? "Joined ✓" : "Join Club"}
