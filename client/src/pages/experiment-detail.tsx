@@ -41,11 +41,14 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
+import { SurprisePortal } from "@/components/surprise-portal";
+
 export default function ExperimentDetail() {
   const [, params] = useRoute("/experiments/:id");
   const experiment = EXPERIMENTS.find(m => m.id === params?.id);
   const [newComment, setNewComment] = useState("");
   const [localWalletBalance, setLocalWalletBalance] = useState(CURRENT_USER.walletBalance);
+  const [showPortal, setShowPortal] = useState(false);
   
   // Local state for discoveries to handle unlocking/completing
   const [discoveries, setDiscoveries] = useState([
@@ -158,6 +161,14 @@ export default function ExperimentDetail() {
            } 
         }));
         
+        // 5.5 Check for Surprise Portal (Random Chance)
+        // Using 30% chance for demo purposes (normally might be lower)
+        if (Math.random() > 0.7) {
+           setTimeout(() => {
+              setShowPortal(true);
+           }, 1500); // Delay slightly so user sees the checkmark first
+        }
+
         // 6. Check for Full Completion
         const allComplete = newDiscoveries.every(d => d.completed);
         if (allComplete) {
@@ -192,6 +203,15 @@ export default function ExperimentDetail() {
        confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
        confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
      }, 250);
+  };
+
+  const handlePortalClaim = (amount: number) => {
+     const newBalance = localWalletBalance + amount;
+     setLocalWalletBalance(newBalance);
+     toast(`+${amount} Sats!`, {
+        icon: '🌌',
+        description: 'Portal Reward Claimed'
+     });
   };
 
   const handleAddComment = () => {
@@ -454,6 +474,13 @@ export default function ExperimentDetail() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      
+      {/* Surprise Portal */}
+      <SurprisePortal 
+         isOpen={showPortal} 
+         onClose={() => setShowPortal(false)} 
+         onClaim={handlePortalClaim}
+      />
 
     </Layout>
   );
