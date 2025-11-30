@@ -53,10 +53,10 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
                 data-testid="input-chat-message"
               />
               <button 
-                className="flex items-center justify-center h-12 w-12 rounded-xl shadow-lg bg-white hover:bg-white/90 border border-transparent transition-all"
+                className="flex items-center justify-center h-12 w-12 rounded-xl shadow-lg bg-white border border-transparent transition-all z-10 relative hover:scale-105 active:scale-95"
                 data-testid="button-send-message"
               >
-                <Send className="w-5 h-5" style={{ color: '#cc00ff' }} strokeWidth={1.5} />
+                <Send className="w-5 h-5" color="#cc00ff" strokeWidth={2} />
               </button>
             </div>
           </div>
