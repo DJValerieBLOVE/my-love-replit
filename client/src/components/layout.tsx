@@ -180,7 +180,7 @@ export default function Layout({ children, showRightSidebar = true }: { children
               </div>
 
               {/* Tagline */}
-              <p className="text-base text-purple-50 mb-3 italic font-bold text-center">"Rock Your Dreams!"</p>
+              <p className="text-base text-purple-200 mb-3 italic font-bold text-center">"Rock Your Dreams!"</p>
 
               {/* Ask Magic Mentor Button */}
               <Button 

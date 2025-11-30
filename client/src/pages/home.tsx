@@ -63,7 +63,7 @@ export default function Home() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold font-serif mb-2 text-primary">Daily Wonder</h3>
-                    <p className="text-xl font-medium text-foreground italic mb-6">
+                    <p className="text-xl font-medium text-muted-foreground italic mb-6">
                       "What if life isn't a test you can fail... but an experiment you get to play?"
                     </p>
                     <Button variant="outline">
