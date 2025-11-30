@@ -297,8 +297,8 @@ export default function LabNotes() {
 
                                         {/* Gratitude */}
                                          <div className="flex-1">
-                                            <div className="text-[15px] font-bold text-muted-foreground mb-2">Morning Gratitude</div>
-                                            <div className="text-sm font-serif text-muted-foreground whitespace-normal italic leading-relaxed">"{entry.gratitude || "Grateful for this day..."}"</div>
+                                            <div className="text-[15px] font-bold text-muted-foreground mb-2 pl-3">Morning Gratitude</div>
+                                            <div className="text-sm font-serif text-muted-foreground whitespace-normal italic leading-relaxed pl-3">"{entry.gratitude || "Grateful for this day..."}"</div>
                                         </div>
                                       </div>
                                   </div>
@@ -331,10 +331,10 @@ export default function LabNotes() {
 
                                               {/* Values */}
                                               <div>
-                                                <div className="text-[15px] font-bold text-muted-foreground mb-2 flex justify-between">
+                                                <div className="text-[15px] font-bold text-muted-foreground mb-2 flex justify-between pl-3">
                                                   <span>Value (3 Actions)</span>
                                                 </div>
-                                                <div className="space-y-2">
+                                                <div className="space-y-2 pl-3">
                                                     <div className="flex gap-3 items-center opacity-90">
                                                         <div className="w-5 h-5 rounded-full bg-green-500 border border-green-500 flex items-center justify-center shrink-0 shadow-sm">
                                                             <CheckCircle className="w-3.5 h-3.5 text-white" strokeWidth={3} />
@@ -359,8 +359,8 @@ export default function LabNotes() {
 
                                           {/* Villain at the bottom */}
                                           <div className="mt-6 pt-4 border-t border-border/10">
-                                              <div className="text-[15px] font-bold text-red-900/60 mb-1">Villain (Obstacle)</div>
-                                              <div className="text-sm font-serif text-red-800/80 whitespace-normal">{entry.villain}</div>
+                                              <div className="text-[15px] font-bold text-red-900/60 mb-1 pl-3">Villain (Obstacle)</div>
+                                              <div className="text-sm font-serif text-red-800/80 whitespace-normal pl-3">{entry.villain}</div>
                                           </div>
                                        </div>
                                 </div>
@@ -381,16 +381,16 @@ export default function LabNotes() {
 
                                                {/* Victory */}
                                               <div>
-                                                <div className="text-[15px] font-bold text-muted-foreground mb-1 flex items-center gap-1">
+                                                <div className="text-[15px] font-bold text-muted-foreground mb-1 flex items-center gap-1 pl-3">
                                                     <Trophy className="w-3 h-3 text-muted-foreground" /> Victory
                                                 </div>
-                                                <div className="text-sm font-serif text-muted-foreground whitespace-normal">{entry.victory}</div>
+                                                <div className="text-sm font-serif text-muted-foreground whitespace-normal pl-3">{entry.victory}</div>
                                               </div>
 
                                                {/* Lessons */}
                                                <div className="pt-2 border-t border-border/20 flex-1">
-                                                <div className="text-[15px] font-bold text-muted-foreground mb-1">Lessons & Blessings</div>
-                                                <p className="text-sm leading-relaxed text-muted-foreground font-serif italic whitespace-pre-wrap">
+                                                <div className="text-[15px] font-bold text-muted-foreground mb-1 pl-3">Lessons & Blessings</div>
+                                                <p className="text-sm leading-relaxed text-muted-foreground font-serif italic whitespace-pre-wrap pl-3">
                                                   "{entry.content}"
                                                 </p>
                                               </div>
