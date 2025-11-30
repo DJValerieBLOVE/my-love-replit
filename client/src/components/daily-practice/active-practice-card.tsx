@@ -183,33 +183,33 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                 <div className="space-y-2">
                     <label className="text-[15px] font-bold text-muted-foreground block mt-2.5 pl-3">Big Dream</label>
                     <Select value={selectedAreaId} onValueChange={setSelectedAreaId}>
-                        <SelectTrigger className="w-full h-10 bg-white border-muted/50 focus:ring-primary/20 font-serif shadow-sm">
+                        <SelectTrigger className="w-full h-auto min-h-[3rem] py-3 bg-white border-muted/50 focus:ring-primary/20 font-serif shadow-sm text-left">
                             <SelectValue placeholder="Select a Focus Area..." />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="max-h-[400px]">
                             {LOVE_CODE_AREAS.map((area) => (
-                            <SelectItem key={area.id} value={area.id} className="font-serif">
-                                <div className="flex items-center gap-2">
-                                    <span className={`w-2 h-2 rounded-full ${area.color}`} />
-                                    <span className="text-[10px] font-bold text-muted-foreground uppercase font-serif">{area.name}</span>
+                            <SelectItem key={area.id} value={area.id} className="font-serif py-3 focus:bg-muted/5 border-b border-border/10 last:border-0 cursor-pointer">
+                                <div className="flex flex-col gap-2 w-[260px] text-left">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <span className={`w-2 h-2 rounded-full ${area.color}`} />
+                                            <span className="text-[11px] font-bold text-muted-foreground uppercase font-serif">{area.name}</span>
+                                        </div>
+                                        <span className="text-[10px] font-bold text-muted-foreground font-serif">{area.progress}%</span>
+                                    </div>
+                                    
+                                    <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
+                                        <div className="h-full rounded-full" style={{ width: `${area.progress}%`, backgroundColor: area.hex }} />
+                                    </div>
+                                    
+                                    <p className="text-[10px] font-serif text-muted-foreground italic leading-relaxed opacity-80 line-clamp-2 whitespace-normal">
+                                        "{area.dream}"
+                                    </p>
                                 </div>
                             </SelectItem>
                             ))}
                         </SelectContent>
                     </Select>
-                    
-                     {/* Selected Area Preview */}
-                    {selectedArea && (
-                        <div className="mt-2 p-3 bg-white/30 rounded-lg border border-border/20 animate-in fade-in slide-in-from-top-2">
-                            <div className="flex items-center justify-between mb-1">
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground font-serif">Big Dream</span>
-                                <span className="text-[10px] font-bold text-muted-foreground font-serif">{selectedArea.progress}%</span>
-                            </div>
-                            <p className="text-xs font-serif text-muted-foreground italic leading-relaxed opacity-80">
-                                "{selectedArea.dream}"
-                            </p>
-                        </div>
-                    )}
                 </div>
 
                 {/* Values (Action Steps) */}
