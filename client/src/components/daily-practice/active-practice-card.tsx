@@ -28,6 +28,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
   const [values, setValues] = useState<string[]>(initialData?.values || ["", "", ""]);
   const [checkedItems, setCheckedItems] = useState<boolean[]>(initialData?.checkedItems || [false, false, false]);
   const [villain, setVillain] = useState(initialData?.villain || "");
+  const [tool, setTool] = useState(initialData?.tool || "");
   const [victory, setVictory] = useState(initialData?.victory || "");
   const [gratitudeImage, setGratitudeImage] = useState<string | null>(null);
 
@@ -88,6 +89,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
       values,
       checkedItems,
       villain,
+      tool,
       victory
     });
   };
@@ -289,12 +291,8 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                         <Input 
                             placeholder="How will I overcome it?" 
                             className="h-9 bg-white border-muted/50 focus:border-primary/30 text-sm font-serif text-muted-foreground placeholder:text-muted-foreground/50"
-                            value={data?.tool || ""}
-                            onChange={(e) => {
-                                // We need to add 'tool' to state, but for now let's just use local state if needed or assume it propagates
-                                // Since we didn't add 'tool' to the initial state in the component, let's add it now.
-                                // EDIT: I need to add the state variable first.
-                            }} 
+                            value={tool}
+                            onChange={(e) => setTool(e.target.value)} 
                         />
                     </div>
                 </div>

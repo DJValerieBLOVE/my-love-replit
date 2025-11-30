@@ -427,97 +427,79 @@ export default function LabNotes() {
                               </div>
                           ) : entry.type === 'experiment' ? (
                              /* Experiment Layout */
-                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-full">
+                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 h-full">
                                 <div className="flex flex-col space-y-5 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full shadow-sm">
-                                    <div className="flex items-center gap-2 mb-4">
-                                        <Beaker className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-                                        <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider mt-[1px]">Experiment</span>
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <FlaskConical className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+                                        <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Hypothesis</span>
                                     </div>
-                                    <div className="space-y-6">
-                                        <div className="flex-1">
-                                            <div className="text-[15px] font-bold text-muted-foreground mb-2 pl-3">Hypothesis</div>
-                                            <div className="text-sm font-serif text-muted-foreground whitespace-normal italic leading-relaxed pl-3">"{entry.hypothesis}"</div>
-                                        </div>
+                                    <div className="flex-1 bg-white border border-muted/50 rounded-xl p-3 shadow-sm">
+                                        <p className="text-sm font-serif text-muted-foreground italic leading-relaxed whitespace-pre-wrap">
+                                            "{entry.hypothesis}"
+                                        </p>
                                     </div>
                                 </div>
-
-                                <div className="flex flex-col space-y-6 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full relative shadow-sm">
-                                    <div className="flex items-center gap-2 mb-2">
+                                
+                                <div className="flex flex-col space-y-5 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full shadow-sm">
+                                    <div className="flex items-center gap-2 mb-1">
                                         <Eye className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
                                         <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Observation</span>
                                     </div>
-                                    <div className="space-y-6">
-                                         <div className="flex-1">
-                                            <div className="text-[15px] font-bold text-muted-foreground mb-2 pl-3">What Happened?</div>
-                                            <div className="text-sm font-serif text-muted-foreground whitespace-normal leading-relaxed pl-3">{entry.observation}</div>
-                                        </div>
+                                    <div className="flex-1 bg-white border border-muted/50 rounded-xl p-3 shadow-sm">
+                                        <p className="text-sm font-serif text-muted-foreground italic leading-relaxed whitespace-pre-wrap">
+                                            "{entry.observation}"
+                                        </p>
                                     </div>
                                 </div>
-
+                                
                                 <div className="flex flex-col space-y-5 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full shadow-sm">
                                     <div className="flex items-center gap-2 mb-1">
-                                        <Lightbulb className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+                                        <CheckCircle className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
                                         <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Conclusion</span>
                                     </div>
-                                    <div className="space-y-6 mt-4">
-                                         <div className="flex-1">
-                                            <div className="text-[15px] font-bold text-muted-foreground mb-2 pl-3">Result</div>
-                                            <div className="text-sm font-serif text-muted-foreground whitespace-normal leading-relaxed pl-3">{entry.conclusion}</div>
-                                        </div>
-                                        <div className="flex-1 pt-4 border-t border-border/10">
-                                            <div className="text-[15px] font-bold text-muted-foreground mb-2 pl-3">Additional Notes</div>
-                                            <div className="text-sm font-serif text-muted-foreground whitespace-normal leading-relaxed pl-3 italic">"{entry.content}"</div>
-                                        </div>
+                                    <div className="flex-1 bg-white border border-muted/50 rounded-xl p-3 shadow-sm">
+                                        <p className="text-sm font-serif text-muted-foreground italic leading-relaxed whitespace-pre-wrap">
+                                            "{entry.conclusion}"
+                                        </p>
                                     </div>
                                 </div>
                              </div>
                           ) : (
                              /* Discovery Layout */
-                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-full">
-                                {/* Col 1: Context */}
+                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 h-full">
                                 <div className="flex flex-col space-y-5 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full shadow-sm">
-                                    <div className="flex items-center gap-2 mb-4">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <Lightbulb className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+                                        <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Aha! Moment</span>
+                                    </div>
+                                    <div className="flex-1 bg-white border border-muted/50 rounded-xl p-3 shadow-sm">
+                                        <p className="text-sm font-serif text-muted-foreground italic leading-relaxed whitespace-pre-wrap">
+                                            "{entry.ahaMoment}"
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col space-y-5 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full shadow-sm">
+                                    <div className="flex items-center gap-2 mb-1">
                                         <BookOpen className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-                                        <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider mt-[1px]">Context</span>
+                                        <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Context</span>
                                     </div>
-                                    <div className="space-y-6">
-                                        <div className="flex-1">
-                                            <div className="text-[15px] font-bold text-muted-foreground mb-2 pl-3">Situation</div>
-                                            <div className="text-sm font-serif text-muted-foreground whitespace-normal italic leading-relaxed pl-3">"{entry.context}"</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Col 2: Aha Moment */}
-                                <div className="flex flex-col space-y-6 bg-yellow-50/40 dark:bg-yellow-900/5 p-5 rounded-2xl border border-yellow-200/40 dark:border-yellow-800/20 h-full relative shadow-sm">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <Lightbulb className="w-4 h-4 text-yellow-600/80" strokeWidth={1.5} />
-                                        <span className="text-xs font-bold uppercase text-yellow-700/80 tracking-wider">The Discovery</span>
-                                    </div>
-                                    <div className="space-y-6 flex-1 flex flex-col">
-                                         <div className="flex-1 flex flex-col justify-center items-center text-center">
-                                            <Lightbulb className="w-10 h-10 text-yellow-500 mb-4" strokeWidth={1.5} />
-                                            <div className="text-[15px] font-bold text-yellow-800/80 mb-3">Aha! Moment</div>
-                                            <div className="text-lg font-serif text-yellow-900/90 whitespace-normal leading-relaxed font-medium italic">"{entry.ahaMoment}"</div>
-                                        </div>
+                                    <div className="flex-1 bg-white border border-muted/50 rounded-xl p-3 shadow-sm">
+                                        <p className="text-sm font-serif text-muted-foreground italic leading-relaxed whitespace-pre-wrap">
+                                            "{entry.context}"
+                                        </p>
                                     </div>
                                 </div>
 
-                                {/* Col 3: Application */}
                                 <div className="flex flex-col space-y-5 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full shadow-sm">
                                     <div className="flex items-center gap-2 mb-1">
                                         <Play className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-                                        <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Application</span>
+                                        <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Action Item</span>
                                     </div>
-                                    <div className="space-y-6 mt-4">
-                                         <div className="flex-1">
-                                            <div className="text-[15px] font-bold text-muted-foreground mb-2 pl-3">Action Item</div>
-                                            <div className="text-sm font-serif text-muted-foreground whitespace-normal leading-relaxed pl-3">{entry.actionItem}</div>
-                                        </div>
-                                        <div className="flex-1 pt-4 border-t border-border/10">
-                                            <div className="text-[15px] font-bold text-muted-foreground mb-2 pl-3">Notes</div>
-                                            <div className="text-sm font-serif text-muted-foreground whitespace-normal leading-relaxed pl-3 italic">"{entry.content}"</div>
-                                        </div>
+                                    <div className="flex-1 bg-white border border-muted/50 rounded-xl p-3 shadow-sm">
+                                        <p className="text-sm font-serif text-muted-foreground italic leading-relaxed whitespace-pre-wrap">
+                                            "{entry.actionItem}"
+                                        </p>
                                     </div>
                                 </div>
                              </div>
