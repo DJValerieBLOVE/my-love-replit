@@ -193,7 +193,7 @@ export default function Layout({ children, showRightSidebar = true }: { children
                 className="w-full rounded-lg h-10 font-bold text-sm bg-white text-[#6600ff] border-2 border-white hover:bg-white/90 hover:scale-[1.02] shadow-lg transition-all duration-300"
                 data-testid="button-ask-mentor"
               >
-                <Sparkles className="w-4 h-4 mr-1.5 fill-[#6600ff]" strokeWidth={2} /> Ask Magic Mentor
+                <Sparkles className="w-4 h-4 mr-1.5" strokeWidth={2} /> Ask Magic Mentor
               </Button>
             </div>
           </div>
