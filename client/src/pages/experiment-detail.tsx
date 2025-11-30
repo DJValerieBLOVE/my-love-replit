@@ -275,7 +275,6 @@ export default function ExperimentDetail() {
                              </p>
                              <div className="flex items-center gap-2">
                                 <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">{discovery.duration}</span>
-                                {idx === 2 && <Badge variant="secondary" className="h-4 text-[9px] px-1 bg-primary/10 text-primary border-none">Current</Badge>}
                              </div>
                           </div>
                        </div>
