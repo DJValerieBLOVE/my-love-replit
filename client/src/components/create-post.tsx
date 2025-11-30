@@ -37,7 +37,7 @@ export function CreatePost({ placeholder = "Share something with the community..
                 <Calendar className="w-4 h-4" strokeWidth={1.5} />
               </Button>
             </div>
-            <Button className="rounded-full px-6 font-bold h-10 shadow-lg hover:shadow-xl transition-all bg-love-body hover:bg-love-body/90 text-white">Post</Button>
+            <Button className="rounded-full px-6 font-bold h-10 bg-love-body text-white border border-transparent hover:bg-white hover:text-love-body hover:border-love-body hover:shadow-md transition-all">Post</Button>
           </div>
         </div>
       </CardContent>
