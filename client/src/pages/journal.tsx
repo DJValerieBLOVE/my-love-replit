@@ -56,7 +56,7 @@ export default function LabNotes() {
       console.log("Full Day Data:", { ...practiceData, ...eveningData });
   };
 
-  const entries: JournalEntry[] = [
+  const [entries, setEntries] = useState<JournalEntry[]>([
     {
       id: 1,
       type: "daily-practice",
@@ -77,7 +77,9 @@ export default function LabNotes() {
       value: "Presence",
       victory: "Completed the team briefing early.",
       content: "My focus today was on connection. I noticed that when I paused to breathe before responding to emails, I felt much more grounded and capable. The experiment with the morning cold plunge is getting easier...",
-      tags: ["Daily LOVE Practice"]
+      tags: ["Daily LOVE Practice"],
+      values: ["Presence", "Review goals", "Meditate 10m"],
+      checkedItems: [true, true, false]
     },
     {
       id: 2,
@@ -123,7 +125,35 @@ export default function LabNotes() {
       content: "It clicked when I was looking at the stream. Money flows like water. Lightning channels are just directing that flow without moving the entire ocean (chain).",
       tags: ["Discovery", "Bitcoin"]
     }
-  ];
+  ]);
+
+  const handlePracticeComplete = (data: any) => {
+    setIsPracticing(false);
+    setPracticeData(null); // Clear current editing data
+    
+    // Check if we are updating an existing entry
+    if (data.id) {
+        setEntries(entries.map(e => e.id === data.id ? { ...e, ...data } : e));
+    } else {
+        // Create new entry
+        const newEntry: JournalEntry = {
+            id: Date.now(),
+            type: "daily-practice",
+            date: new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' }),
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            tags: ["Daily LOVE Practice"],
+            ...data
+        };
+        setEntries([newEntry, ...entries]);
+    }
+    
+    // Trigger confetti for morning practice complete
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+  };
 
   return (
     <Layout>
@@ -287,7 +317,18 @@ export default function LabNotes() {
                                <div className="text-lg font-serif font-bold text-foreground">{entry.date}</div>
                                {/* Time removed as requested */}
                             </div>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary">
+                            <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-8 w-8 text-muted-foreground hover:text-primary"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (entry.type === 'daily-practice') {
+                                        setPracticeData(entry);
+                                        setIsPracticing(true);
+                                    }
+                                }}
+                            >
                                 <PenLine className="w-4 h-4" />
                             </Button>
                           </div>

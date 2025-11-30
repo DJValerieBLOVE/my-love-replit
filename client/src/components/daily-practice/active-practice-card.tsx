@@ -94,6 +94,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
     });
 
     onComplete({
+      id: initialData?.id,
       morningVibe,
       eveningVibe,
       focusArea: selectedArea,
