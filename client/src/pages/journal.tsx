@@ -265,7 +265,22 @@ export default function LabNotes() {
                           <div className="flex justify-between items-start mb-3 border-b border-border/10 pb-2">
                             <div className="space-y-1">
                                {entry.type === 'daily-practice' && (
-                                   <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-0.5">Daily LOVE Practice</div>
+                                   <div className="flex items-center gap-2 mb-1 text-muted-foreground">
+                                      <Heart className="w-3 h-3" strokeWidth={1.5} />
+                                      <span className="text-xs font-medium">Daily LOVE Practice</span>
+                                   </div>
+                               )}
+                               {entry.type === 'experiment' && (
+                                   <div className="flex items-center gap-2 mb-1 text-muted-foreground">
+                                      <FlaskConical className="w-3 h-3" strokeWidth={1.5} />
+                                      <span className="text-xs font-medium">Experiments</span>
+                                   </div>
+                               )}
+                               {entry.type === 'discovery' && (
+                                   <div className="flex items-center gap-2 mb-1 text-muted-foreground">
+                                      <Lightbulb className="w-3 h-3" strokeWidth={1.5} />
+                                      <span className="text-xs font-medium">Discoveries</span>
+                                   </div>
                                )}
                                <div className="text-lg font-serif font-bold text-foreground">{entry.date}</div>
                                {/* Time removed as requested */}
