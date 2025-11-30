@@ -116,7 +116,7 @@ export default function Profile() {
                {/* Left Col: Big Dreams Progress */}
                <div className="lg:col-span-2 space-y-6">
                  <h3 className="font-serif text-xl font-bold text-muted-foreground flex items-center gap-2">
-                   <Star className="w-5 h-5" /> 11 Big Dreams Progress
+                   <Star className="w-5 h-5" strokeWidth={1.5} /> 11 Big Dreams Progress
                  </h3>
                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                    {LOVE_CODE_AREAS.map((area) => (
@@ -144,13 +144,13 @@ export default function Profile() {
                {/* Right Col: Next Rewards */}
                <div className="space-y-6">
                  <h3 className="font-serif text-xl font-bold text-muted-foreground flex items-center gap-2">
-                   <Gift className="w-5 h-5" /> Next Rewards
+                   <Gift className="w-5 h-5" strokeWidth={1.5} /> Next Rewards
                  </h3>
                  <Card className="border-none shadow-sm bg-muted/30">
                    <CardContent className="p-6 space-y-6">
                      <div className="flex gap-4 items-start opacity-50">
                        <div className="w-10 h-10 rounded-lg bg-muted border-2 border-dashed border-muted-foreground/30 flex items-center justify-center shrink-0">
-                         <Zap className="w-5 h-5 text-muted-foreground" />
+                         <Zap className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
                        </div>
                        <div>
                          <h4 className="font-bold text-sm">7-Day Streak Bonus</h4>
@@ -164,7 +164,7 @@ export default function Profile() {
 
                      <div className="flex gap-4 items-start">
                        <div className="w-10 h-10 rounded-lg bg-white shadow-sm flex items-center justify-center shrink-0">
-                         <Package className="w-5 h-5 text-muted-foreground" />
+                         <Package className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
                        </div>
                        <div>
                          <h4 className="font-bold text-sm">Mystery Box (Level 13)</h4>
@@ -178,7 +178,7 @@ export default function Profile() {
 
                      <div className="flex gap-4 items-start">
                        <div className="w-10 h-10 rounded-lg bg-white shadow-sm flex items-center justify-center shrink-0">
-                         <Brain className="w-5 h-5 text-muted-foreground" />
+                         <Brain className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
                        </div>
                        <div>
                          <h4 className="font-bold text-sm">Mind Master Badge</h4>
