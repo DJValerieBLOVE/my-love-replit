@@ -110,7 +110,7 @@ export default function LabNotes() {
             <div className="flex gap-4 items-center bg-card/50 p-4 rounded-lg border border-border/50">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input placeholder="Search your notes..." className="pl-9 bg-background/50 border-muted" />
+                <Input placeholder="Search your notes..." className="pl-9 bg-background/50 border-muted text-[16px]" />
               </div>
               <Button variant="outline" className="gap-2">
                 <Calendar className="w-4 h-4" /> Date Range

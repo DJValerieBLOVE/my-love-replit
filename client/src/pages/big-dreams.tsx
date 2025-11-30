@@ -50,7 +50,7 @@ export default function BigDreams() {
                         <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">My Vision</label>
                         <Textarea 
                           placeholder={`What is your big dream for your ${area.name.toLowerCase()}?`}
-                          className="min-h-[80px] bg-muted/30 border-muted focus:bg-background resize-none text-base md:text-base font-serif"
+                          className="min-h-[80px] bg-muted/30 border-muted focus:bg-background resize-none text-base md:text-[16px] font-serif"
                           defaultValue={area.dream}
                         />
                       </div>
