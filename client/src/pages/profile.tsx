@@ -17,7 +17,7 @@ import {
   Flame,
   Gift
 } from "lucide-react";
-import BitcoinIcon from "@assets/bitcoin_icon.png";
+import BitcoinIcon from "../assets/bitcoin_icon.png";
 import SatsIcon from "@assets/generated_images/sats_icon.png";
 
 export default function Profile() {
