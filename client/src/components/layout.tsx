@@ -163,8 +163,8 @@ export default function Layout({ children, showRightSidebar = true }: { children
         {showRightSidebar && (
           <aside className="hidden lg:flex flex-col w-[320px] border-l bg-card/50 p-4 gap-4 overflow-y-auto">
             {/* Widget 1: Magic Mentor */}
-            <div className="bg-gradient-to-br from-[#6600ff] via-[#8227ff] to-[#b066ff] rounded-xs border border-white/10 p-4 overflow-hidden relative group cursor-pointer hover:shadow-lg transition-all shadow-md" data-testid="widget-mentor">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-12 -mt-12 blur-3xl transition-all" />
+            <div className="bg-[#6600ff] rounded-xs border border-white/10 p-4 overflow-hidden relative group cursor-pointer hover:shadow-lg transition-all shadow-md" data-testid="widget-mentor">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-white/20 to-transparent rounded-full -mr-20 -mt-20 blur-3xl transition-all" />
             
             <div className="relative z-10 flex flex-col">
               {/* Image and Badge on same line */}
@@ -176,7 +176,7 @@ export default function Layout({ children, showRightSidebar = true }: { children
                 </div>
                 
                 {/* VIP Level Badge */}
-                <div className="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 rounded-lg px-2 py-1 cursor-pointer hover:bg-white/20 transition-colors backdrop-blur-sm">
+                <div className="inline-flex items-center gap-1.5 bg-black/20 border border-white/10 rounded-lg px-2 py-1 cursor-pointer hover:bg-black/30 transition-colors backdrop-blur-sm">
                   <Sparkles className="w-4 h-4 text-yellow-300 flex-shrink-0" strokeWidth={1.5} />
                   <Link href="/profile">
                     <span className="text-[10px] font-bold text-white">Level <span className="text-yellow-300 font-black">12</span></span>
@@ -190,7 +190,7 @@ export default function Layout({ children, showRightSidebar = true }: { children
               {/* Ask Magic Mentor Button */}
               <Button 
                 onClick={() => setIsAiOpen(true)}
-                className="w-full rounded-lg h-10 font-bold text-sm bg-white/20 text-white border border-white/20 transition-all shadow-sm backdrop-blur-sm hover:bg-[#F5F3FF] hover:text-[#6600ff] hover:border-[#6600ff] hover:shadow-md hover:-translate-y-0.5"
+                className="w-full rounded-lg h-10 font-bold text-sm bg-[#1a0b2e] text-white border border-white/10 transition-all shadow-sm hover:bg-[#2d1b4e] hover:shadow-md hover:-translate-y-0.5"
                 data-testid="button-ask-mentor"
               >
                 <Sparkles className="w-4 h-4 mr-1.5" strokeWidth={1.5} /> Ask Magic Mentor
