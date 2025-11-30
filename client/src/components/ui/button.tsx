@@ -14,17 +14,17 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground shadow-sm border-destructive-border disabled:opacity-50 disabled:pointer-events-none",
         outline:
-          "bg-white text-muted-foreground border border-muted font-serif font-normal text-base shadow-sm hover:bg-[#F5F3FF] hover:text-[#6600ff] hover:border-[#6600ff] hover:shadow-md hover:-translate-y-0.5 disabled:opacity-50 disabled:pointer-events-none",
+          "bg-white text-muted-foreground border border-muted font-serif font-normal text-sm shadow-sm hover:bg-[#F5F3FF] hover:text-[#6600ff] hover:border-[#6600ff] hover:shadow-md hover:-translate-y-0.5 disabled:opacity-50 disabled:pointer-events-none",
         secondary:
           "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 disabled:opacity-50 disabled:pointer-events-none",
         ghost: "hover:bg-accent hover:text-accent-foreground disabled:opacity-50 disabled:pointer-events-none",
         link: "text-primary underline-offset-4 hover:underline disabled:opacity-50 disabled:pointer-events-none",
       },
       size: {
-        default: "h-9 px-4 py-2",
-        sm: "h-8 rounded-md px-3 text-xs",
-        lg: "h-10 rounded-md px-8",
-        icon: "h-9 w-9",
+        default: "h-10 px-6 py-2 text-sm",
+        sm: "h-9 rounded-md px-3 text-xs",
+        lg: "h-12 rounded-md px-8 text-base",
+        icon: "h-10 w-10",
       },
     },
     defaultVariants: {
