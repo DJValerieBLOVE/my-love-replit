@@ -415,31 +415,48 @@ export default function LabNotes() {
                               </div>
                           ) : entry.type === 'experiment' ? (
                              /* Experiment Layout */
-                             <div className="space-y-6 p-2">
-                                <div className="flex items-center gap-2 mb-4">
-                                   <Beaker className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
-                                   <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Experiment Log</span>
-                                </div>
-                                
-                                <div className="bg-secondary/5 p-6 rounded-xl border border-secondary/20">
-                                   <h3 className="text-[10px] font-bold text-secondary uppercase tracking-wider mb-2">Hypothesis</h3>
-                                   <p className="italic text-xl font-serif text-foreground">"{entry.hypothesis}"</p>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                   <div className="bg-muted/5 p-5 rounded-xl border border-border/10">
-                                      <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">Observation</h4>
-                                      <p className="text-sm font-serif text-muted-foreground leading-relaxed">{entry.observation}</p>
-                                   </div>
-                                   <div className="bg-muted/5 p-5 rounded-xl border border-border/10">
-                                      <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">Conclusion</h4>
-                                      <p className="text-sm font-serif text-muted-foreground leading-relaxed">{entry.conclusion}</p>
-                                   </div>
+                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-full">
+                                <div className="flex flex-col space-y-5 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full shadow-sm">
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <Beaker className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+                                        <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider mt-[1px]">Experiment</span>
+                                    </div>
+                                    <div className="space-y-6">
+                                        <div className="flex-1">
+                                            <div className="text-[15px] font-bold text-muted-foreground mb-2 pl-3">Hypothesis</div>
+                                            <div className="text-sm font-serif text-muted-foreground whitespace-normal italic leading-relaxed pl-3">"{entry.hypothesis}"</div>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div className="pt-4 border-t border-border/10">
-                                    <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">Additional Notes</h4>
-                                    <p className="text-sm font-serif text-muted-foreground leading-relaxed">{entry.content}</p>
+                                <div className="flex flex-col space-y-6 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full relative shadow-sm">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <Eye className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+                                        <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Observation</span>
+                                    </div>
+                                    <div className="space-y-6">
+                                         <div className="flex-1">
+                                            <div className="text-[15px] font-bold text-muted-foreground mb-2 pl-3">What Happened?</div>
+                                            <div className="text-sm font-serif text-muted-foreground whitespace-normal leading-relaxed pl-3">{entry.observation}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col space-y-5 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full shadow-sm">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <Lightbulb className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+                                        <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Conclusion</span>
+                                    </div>
+                                    <div className="space-y-6 mt-4">
+                                         <div className="flex-1">
+                                            <div className="text-[15px] font-bold text-muted-foreground mb-2 pl-3">Result</div>
+                                            <div className="text-sm font-serif text-muted-foreground whitespace-normal leading-relaxed pl-3">{entry.conclusion}</div>
+                                        </div>
+                                        <div className="flex-1 pt-4 border-t border-border/10">
+                                            <div className="text-[15px] font-bold text-muted-foreground mb-2 pl-3">Additional Notes</div>
+                                            <div className="text-sm font-serif text-muted-foreground whitespace-normal leading-relaxed pl-3 italic">"{entry.content}"</div>
+                                        </div>
+                                    </div>
                                 </div>
                              </div>
                           ) : (
