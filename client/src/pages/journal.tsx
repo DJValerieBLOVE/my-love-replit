@@ -337,7 +337,7 @@ export default function LabNotes() {
                                         <Moon className="w-4 h-4 text-muted-foreground stroke-[1.5]" /> 
                                         Evening Vibe
                                     </div>
-                                    <div className="text-lg font-medium text-[#6600ff] font-serif">{entry.eveningVibe || "-"}<span className="text-[10px] text-muted-foreground font-medium">/11</span></div>
+                                    <div className="text-lg font-medium text-muted-foreground font-serif">{entry.eveningVibe || "-"}<span className="text-[10px] text-muted-foreground font-medium">/11</span></div>
                                   </div>
                                   
                                   {entry.focusArea && (

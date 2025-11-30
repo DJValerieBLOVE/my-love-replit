@@ -121,7 +121,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                             min="1" 
                             max="11"
                             placeholder="-"
-                            className="w-12 h-8 text-right p-0 border-none bg-transparent text-lg font-medium font-serif text-[#6600ff] focus-visible:ring-0 placeholder:text-muted-foreground/30"
+                            className="w-12 h-8 text-right p-0 border-none bg-transparent text-lg font-medium font-serif focus-visible:ring-0 placeholder:text-muted-foreground/30"
                             value={eveningVibe}
                             onChange={(e) => setEveningVibe(e.target.value)}
                         />
