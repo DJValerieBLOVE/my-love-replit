@@ -230,7 +230,6 @@ export default function Layout({ children, showRightSidebar = true }: { children
                 <DropdownMenuItem>Settings</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            </div>
           </div>
       </header>
 
