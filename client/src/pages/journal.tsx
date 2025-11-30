@@ -65,6 +65,7 @@ export default function LabNotes() {
       morningVibe: 8,
       eveningVibe: 9,
       vibe: 8, // Fallback
+      gratitude: "The sun shining through the window and fresh coffee.",
       focusArea: {
         name: "GOD/LOVE",
         color: "#eb00a8",
@@ -309,15 +310,15 @@ export default function LabNotes() {
                       >
                         <CardContent className="p-6">
                           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-full">
-                            {/* Col 1: The Compass */}
-                            <div className="flex flex-col justify-between space-y-6 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full">
+                            {/* Col 1: Morning Alignment */}
+                            <div className="flex flex-col justify-between space-y-5 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full">
                               <div>
                                 <div className="flex items-center gap-2 mb-2">
-                                  {entry.type === 'daily-practice' && <Heart className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />}
+                                  {entry.type === 'daily-practice' && <Sun className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />}
                                   {entry.type === 'experiment' && <Beaker className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />}
                                   {entry.type === 'discovery' && <Lightbulb className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />}
                                   <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider mt-[1px]">
-                                    {entry.type === 'daily-practice' ? "The Compass" : entry.type.charAt(0).toUpperCase() + entry.type.slice(1)}
+                                    {entry.type === 'daily-practice' ? "Morning Alignment" : entry.type.charAt(0).toUpperCase() + entry.type.slice(1)}
                                   </span>
                                 </div>
                                 <div className="text-lg text-muted-foreground font-serif mb-4">{entry.date}</div>
@@ -326,11 +327,14 @@ export default function LabNotes() {
                                   <div className="space-y-4">
                                     {/* Morning Vibe */}
                                     <div className="bg-white/50 rounded-xl p-3 border border-border/40 flex justify-between items-center">
-                                      <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif flex items-center gap-2">
-                                          <Sun className="w-4 h-4 text-muted-foreground stroke-[1.5]" /> 
-                                          Morning Vibe
-                                      </div>
+                                      <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif">Morning Vibe</div>
                                       <div className="text-lg font-medium text-muted-foreground font-serif">{entry.morningVibe || entry.vibe}<span className="text-[10px] text-muted-foreground font-medium">/11</span></div>
+                                    </div>
+
+                                    {/* Gratitude */}
+                                     <div>
+                                        <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Morning Gratitude</div>
+                                        <div className="text-sm font-serif text-muted-foreground whitespace-normal italic">"{entry.gratitude || "Grateful for this day..."}"</div>
                                     </div>
                                     
                                     {/* Focus Area */}
@@ -343,38 +347,39 @@ export default function LabNotes() {
                                         <div className="h-1 w-full bg-muted rounded-full overflow-hidden mb-2">
                                           <div className="h-full rounded-full" style={{ width: `${entry.focusArea.progress}%`, backgroundColor: entry.focusArea.color }} />
                                         </div>
-                                        <div className="text-xs font-serif text-muted-foreground italic leading-relaxed opacity-80">
+                                        <div className="text-xs font-serif text-muted-foreground italic leading-relaxed opacity-80 line-clamp-2">
                                           "{entry.focusArea.dream}"
                                         </div>
                                       </div>
                                     )}
 
-                                    {/* Vision & Villain */}
-                                    <div className="space-y-3">
-                                        <div>
-                                            <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Vision</div>
-                                            <div className="text-sm font-serif text-muted-foreground whitespace-normal italic">"{entry.vision}"</div>
-                                        </div>
-                                        <div className="pt-2 border-t border-border/20">
-                                            <div className="text-[10px] font-bold text-red-900/60 uppercase mb-1">Villain</div>
-                                            <div className="text-sm font-serif text-red-800/80 whitespace-normal">{entry.villain}</div>
-                                        </div>
+                                    {/* Vision */}
+                                    <div>
+                                        <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Vision</div>
+                                        <div className="text-sm font-serif text-muted-foreground whitespace-normal italic">"{entry.vision}"</div>
                                     </div>
                                   </div>
                                 )}
                               </div>
                             </div>
 
-                            {/* Col 2: The Actions (Middle) */}
+                            {/* Col 2: The Mission (Middle) */}
                             <div className="flex flex-col space-y-6 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full">
                                {entry.type === 'daily-practice' ? (
                                  <>
                                    <div className="flex items-center gap-2 mb-2">
                                       <CheckCircle className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-                                      <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">The Actions</span>
+                                      <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">The Mission</span>
                                    </div>
 
-                                   <div className="space-y-4 flex-1">
+                                   <div className="space-y-5 flex-1">
+                                      {/* Villain */}
+                                      <div>
+                                          <div className="text-[10px] font-bold text-red-900/60 uppercase mb-1">Villain (Obstacle)</div>
+                                          <div className="text-sm font-serif text-red-800/80 whitespace-normal">{entry.villain}</div>
+                                      </div>
+
+                                      {/* Values */}
                                       <div>
                                         <div className="text-[10px] font-bold text-muted-foreground uppercase mb-2 flex justify-between">
                                           <span>Values (Actions)</span>
@@ -402,25 +407,6 @@ export default function LabNotes() {
                                         </div>
                                       </div>
                                    </div>
-
-                                   <div className="space-y-4 pt-4 border-t border-border/20">
-                                      {/* Evening Vibe */}
-                                      <div className="bg-white/50 rounded-xl p-3 border border-border/40 flex justify-between items-center">
-                                        <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif flex items-center gap-2">
-                                            <Moon className="w-4 h-4 text-muted-foreground stroke-[1.5]" /> 
-                                            Evening Vibe
-                                        </div>
-                                        <div className="text-lg font-medium text-muted-foreground font-serif">{entry.eveningVibe || "-"}<span className="text-[10px] text-muted-foreground font-medium">/11</span></div>
-                                      </div>
-
-                                      {/* Victory */}
-                                      <div>
-                                        <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1 flex items-center gap-1">
-                                            <Trophy className="w-3 h-3 text-muted-foreground" /> Victory
-                                        </div>
-                                        <div className="text-sm font-serif text-muted-foreground whitespace-normal">{entry.victory}</div>
-                                      </div>
-                                   </div>
                                  </>
                                ) : (
                                  // For other types, just show content
@@ -430,11 +416,11 @@ export default function LabNotes() {
                                )}
                             </div>
 
-                            {/* Col 3: The Wisdom (Reflection) */}
-                            <div className="flex flex-col h-full bg-white p-5 rounded-2xl border border-border/20 shadow-sm">
+                            {/* Col 3: Evening Review (Reflection) */}
+                            <div className="flex flex-col h-full bg-muted/5 p-5 rounded-2xl border border-border/20 shadow-sm">
                                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-4 flex items-center gap-2">
-                                    <BookOpen className="w-4 h-4 text-muted-foreground stroke-[1.5]" /> 
-                                    {entry.type === 'daily-practice' ? "Lessons & Blessings" : "Notes"}
+                                    <Moon className="w-4 h-4 text-muted-foreground stroke-[1.5]" /> 
+                                    {entry.type === 'daily-practice' ? "Evening Review" : "Notes"}
                                 </label>
                                 <div className="flex-1">
                                     {entry.type === 'experiment' ? (
@@ -453,9 +439,29 @@ export default function LabNotes() {
                                           </p>
                                         </>
                                       ) : (
-                                        <p className="text-base leading-relaxed text-muted-foreground font-serif italic whitespace-pre-wrap">
-                                          "{entry.content}"
-                                        </p>
+                                        <div className="flex flex-col h-full space-y-4">
+                                           {/* Evening Vibe */}
+                                          <div className="bg-white/50 rounded-xl p-3 border border-border/40 flex justify-between items-center">
+                                            <div className="text-[10px] font-bold text-muted-foreground uppercase font-serif">Evening Vibe</div>
+                                            <div className="text-lg font-medium text-muted-foreground font-serif">{entry.eveningVibe || "-"}<span className="text-[10px] text-muted-foreground font-medium">/11</span></div>
+                                          </div>
+
+                                           {/* Victory */}
+                                          <div>
+                                            <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1 flex items-center gap-1">
+                                                <Trophy className="w-3 h-3 text-muted-foreground" /> Victory
+                                            </div>
+                                            <div className="text-sm font-serif text-muted-foreground whitespace-normal">{entry.victory}</div>
+                                          </div>
+
+                                           {/* Lessons */}
+                                           <div className="pt-2 border-t border-border/20 flex-1">
+                                            <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Lessons & Blessings</div>
+                                            <p className="text-sm leading-relaxed text-muted-foreground font-serif italic whitespace-pre-wrap">
+                                              "{entry.content}"
+                                            </p>
+                                          </div>
+                                        </div>
                                       )}
                                 </div>
                             </div>

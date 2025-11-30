@@ -17,6 +17,7 @@ export type JournalEntry = {
   vibe?: number;
   morningVibe?: number;
   eveningVibe?: number;
+  gratitude?: string;
   vision?: string;
   focusArea?: {
     name: string;
@@ -124,6 +125,12 @@ export function EntryDetailModal({ entry, isOpen, onClose }: EntryDetailModalPro
                       <div className="text-xs font-bold text-muted-foreground uppercase">Vision</div>
                       <div className="font-medium">{entry.vision}</div>
                     </div>
+                    {entry.gratitude && (
+                      <div className="space-y-1 col-span-full">
+                        <div className="text-xs font-bold text-muted-foreground uppercase">Gratitude</div>
+                        <div className="font-medium italic text-muted-foreground">"{entry.gratitude}"</div>
+                      </div>
+                    )}
                     <div className="space-y-1">
                       <div className="text-xs font-bold text-muted-foreground uppercase">Value</div>
                       <div className="font-medium">{entry.value}</div>
