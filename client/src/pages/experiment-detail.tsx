@@ -86,6 +86,10 @@ export default function ExperimentDetail() {
   const isInProgress = experiment.progress > 0 && experiment.progress < 100;
   const isCompleted = experiment.progress === 100;
 
+  const completedCount = discoveries.filter(d => d.completed).length;
+  const totalCount = discoveries.length;
+  const currentProgress = Math.round((completedCount / totalCount) * 100);
+
   const handleAddComment = () => {
     if (newComment.trim()) {
       setComments([{
@@ -234,9 +238,9 @@ export default function ExperimentDetail() {
               <div className="space-y-4">
                  <div className="flex items-center justify-between text-sm">
                     <span className="font-bold text-muted-foreground">Your Progress</span>
-                    <span className="font-bold text-primary">{experiment.progress}%</span>
+                    <span className="font-bold text-primary">{currentProgress}%</span>
                  </div>
-                 <Progress value={experiment.progress} className="h-1.5" />
+                 <Progress value={currentProgress} className="h-1.5" />
               </div>
 
               {/* Syllabus List */}
