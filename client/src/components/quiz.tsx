@@ -87,8 +87,8 @@ export function Quiz({ questions, onComplete, rewardAmount }: QuizProps) {
        <div className="mb-6 space-y-2">
           <div className="flex justify-between text-sm text-muted-foreground font-medium">
              <span>Question {currentQuestionIndex + 1} of {questions.length}</span>
-             <span className="flex items-center gap-1 text-yellow-600 dark:text-yellow-400">
-                <Zap className="w-3 h-3 fill-current" />
+             <span className="flex items-center gap-1 text-orange-500">
+                <Zap className="w-4 h-4" strokeWidth={1.5} />
                 Potential Reward: {rewardAmount} Sats
              </span>
           </div>
@@ -198,17 +198,19 @@ export function Quiz({ questions, onComplete, rewardAmount }: QuizProps) {
                       <Button 
                          onClick={handleSubmit}
                          disabled={currentQuestion.type === 'multiple-choice' ? !selectedOption : !textAnswer}
+                         variant="default"
                       >
                          Check Answer
                       </Button>
                    ) : (
                       <Button 
                          onClick={handleNext}
+                         variant="default"
                       >
                          {currentQuestionIndex < questions.length - 1 ? (
-                            <>Next Question <ArrowRight className="w-4 h-4" /></>
+                            <>Next Question <ArrowRight className="w-4 h-4" strokeWidth={1.5} /></>
                          ) : (
-                            <>Complete Quiz <Zap className="w-4 h-4" /></>
+                            <>Complete Quiz <Zap className="w-4 h-4" strokeWidth={1.5} /></>
                          )}
                       </Button>
                    )}

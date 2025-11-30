@@ -418,11 +418,11 @@ export default function ExperimentDetail() {
                     <p className="font-medium text-sm">5 Days</p>
                  </div>
                  <div>
-                    <div className="flex items-center gap-1.5 mb-1 text-muted-foreground">
-                       <Zap className="w-3.5 h-3.5 text-yellow-500" />
+                    <div className="flex items-center gap-1.5 mb-1 text-orange-500">
+                       <Zap className="w-4 h-4" strokeWidth={1.5} />
                        <span className="text-xs font-bold uppercase tracking-wider">Total Earned</span>
                     </div>
-                    <p className="font-medium text-sm text-yellow-600 dark:text-yellow-400">{localWalletBalance.toLocaleString()} Sats</p>
+                    <p className="font-medium text-sm text-orange-500">{localWalletBalance.toLocaleString()} Sats</p>
                  </div>
               </div>
 
