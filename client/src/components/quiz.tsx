@@ -111,32 +111,32 @@ export function Quiz({ questions, onComplete, rewardAmount }: QuizProps) {
                 </h3>
 
                 {/* Options / Input */}
-                <div className="space-y-4">
+                <div className="space-y-3">
                    {currentQuestion.type === 'multiple-choice' && currentQuestion.options?.map((option, idx) => (
                       <button
                          key={idx}
                          onClick={() => !isAnswered && setSelectedOption(option)}
                          disabled={isAnswered}
                          className={`
-                            w-full text-left p-4 rounded-xl border-2 transition-all flex items-center justify-between group
+                            w-full text-left px-6 py-4 rounded-lg border transition-all flex items-center justify-between font-serif font-normal text-base
                             ${isAnswered 
                                ? option === currentQuestion.correctAnswer 
-                                  ? 'bg-primary/10 border-primary text-foreground'
+                                  ? 'bg-[#6600ff] text-white border-transparent shadow-sm'
                                   : selectedOption === option 
-                                     ? 'bg-destructive/10 border-destructive text-foreground'
-                                     : 'bg-muted/20 border-transparent opacity-50 text-muted-foreground'
+                                     ? 'bg-destructive text-destructive-foreground border-transparent shadow-sm opacity-70'
+                                     : 'bg-white text-muted-foreground border-muted shadow-sm opacity-50'
                                : selectedOption === option
-                                  ? 'bg-primary/15 border-primary text-foreground font-medium'
-                                  : 'bg-muted/20 border-border hover:bg-muted/30 hover:border-muted-foreground/40 text-foreground'
+                                  ? 'bg-[#F5F3FF] text-[#6600ff] border-[#6600ff]/50 shadow-md -translate-y-0.5 font-bold'
+                                  : 'bg-white text-muted-foreground border-muted shadow-sm hover:bg-[#F5F3FF] hover:text-[#6600ff] hover:border-[#6600ff]/50 hover:shadow-md hover:-translate-y-0.5'
                             }
                          `}
                       >
-                         <span className="font-medium text-base">{option}</span>
+                         <span>{option}</span>
                          {isAnswered && option === currentQuestion.correctAnswer && (
-                            <Check className="w-5 h-5 text-primary" />
+                            <Check className="w-5 h-5 text-white" />
                          )}
                          {isAnswered && selectedOption === option && option !== currentQuestion.correctAnswer && (
-                            <X className="w-5 h-5 text-destructive" />
+                            <X className="w-5 h-5" />
                          )}
                       </button>
                    ))}
@@ -149,18 +149,18 @@ export function Quiz({ questions, onComplete, rewardAmount }: QuizProps) {
                             disabled={isAnswered}
                             placeholder="Type your answer here..."
                             className={`
-                               text-base p-4 h-12 bg-muted/20 border-2 transition-all rounded-lg
+                               text-base p-4 h-12 transition-all rounded-lg border font-serif
                                ${isAnswered
                                   ? isCorrect
-                                     ? 'border-primary bg-primary/10'
-                                     : 'border-destructive bg-destructive/10'
-                                  : 'border-border focus:border-primary focus:ring-0'
+                                     ? 'bg-[#6600ff] text-white border-transparent shadow-sm'
+                                     : 'bg-destructive text-destructive-foreground border-transparent shadow-sm'
+                                  : 'bg-white text-muted-foreground border-muted shadow-sm focus:bg-[#F5F3FF] focus:text-[#6600ff] focus:border-[#6600ff]/50 focus:shadow-md focus:ring-0'
                                }
                             `}
                          />
                          {isAnswered && (
                             <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                               {isCorrect ? <Check className="w-5 h-5 text-primary" /> : <X className="w-5 h-5 text-destructive" />}
+                               {isCorrect ? <Check className="w-5 h-5 text-white" /> : <X className="w-5 h-5 text-destructive-foreground" />}
                             </div>
                          )}
                       </div>
@@ -198,14 +198,14 @@ export function Quiz({ questions, onComplete, rewardAmount }: QuizProps) {
                       <Button 
                          onClick={handleSubmit}
                          disabled={currentQuestion.type === 'multiple-choice' ? !selectedOption : !textAnswer}
-                         className="gap-2 rounded-full px-8 text-base"
+                         className="gap-2"
                       >
                          Check Answer
                       </Button>
                    ) : (
                       <Button 
                          onClick={handleNext}
-                         className="gap-2 rounded-full px-8 text-base"
+                         className="gap-2"
                       >
                          {currentQuestionIndex < questions.length - 1 ? (
                             <>Next Question <ArrowRight className="w-4 h-4" /></>
