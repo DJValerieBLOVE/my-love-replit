@@ -45,17 +45,21 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
             </div>
 
             {/* Chat Input */}
-            <div className="flex gap-2 pt-2">
+            <div className="flex gap-2 pt-2 relative">
               <input 
                 type="text" 
-                placeholder={`Aloha ${CURRENT_USER.name.split(' ')[0]} ~ Ask me anything...`}
                 value={chatMessage}
                 onChange={(e) => setChatMessage(e.target.value)}
-                className="flex-1 px-4 py-3 rounded-xl border border-white bg-[#F4F4F5] text-sm text-foreground placeholder:text-[#4B5563] focus:outline-none focus:ring-2 focus:ring-white shadow-[0_0_30px_rgba(255,255,255,0.6),0_4px_12px_rgba(0,0,0,0.1)] transition-all"
+                className="flex-1 px-4 py-3 rounded-xl border border-white bg-[#F4F4F5] text-sm text-foreground placeholder:text-transparent focus:outline-none focus:ring-2 focus:ring-white shadow-[0_0_30px_rgba(255,255,255,0.6),0_4px_12px_rgba(0,0,0,0.1)] transition-all z-10 relative bg-transparent"
                 data-testid="input-chat-message"
               />
+              {!chatMessage && (
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none z-0 text-sm text-[#4B5563] animate-pulse">
+                  Aloha {CURRENT_USER.name.split(' ')[0]} ~ Ask me anything...
+                </div>
+              )}
               <button 
-                className="flex items-center justify-center h-12 w-12 rounded-xl shadow-lg bg-white border border-transparent transition-all z-10 relative hover:scale-105 active:scale-95"
+                className="flex items-center justify-center h-12 w-12 rounded-xl shadow-lg bg-white border border-transparent transition-all z-20 relative hover:scale-105 active:scale-95"
                 data-testid="button-send-message"
               >
                 <Send className="w-5 h-5" color="#6600ff" strokeWidth={2} />
