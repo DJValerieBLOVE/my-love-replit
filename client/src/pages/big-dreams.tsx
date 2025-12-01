@@ -28,63 +28,33 @@ export default function BigDreams() {
             <section>
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold flex items-center gap-2 text-muted-foreground">
-                  <Target className="w-5 h-5 text-primary" /> My 11 Big Dreams
+                  <Target className="w-5 h-5" /> My 11 Big Dreams
                 </h2>
                 <span className="text-sm text-muted-foreground">Update your vision for each dimension</span>
               </div>
               
-              <div className="grid gap-6 grid-cols-1">
+              <div className="grid gap-6 md:grid-cols-2">
                 {LOVE_CODE_AREAS.map((area) => (
                   <Card key={area.id} className="overflow-hidden border-none shadow-sm hover:shadow-md transition-all group">
                     <div className={cn("h-[2px] w-full", area.color)} />
                     <CardContent className="p-6">
-                      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                        {/* Col 1: As Is (Identity & Progress) - Spans 4 cols */}
-                        <div className="space-y-4 lg:col-span-4">
-                          <div className="flex justify-between items-center mb-2">
-                            <CardTitle className="text-2xl font-bold font-serif text-muted-foreground">{area.name}</CardTitle>
-                            <span className="text-sm font-bold text-muted-foreground">{area.progress}% Realized</span>
-                          </div>
-                          <Progress value={area.progress} className="h-3" indicatorClassName={area.color} />
-                          <div className="text-sm text-muted-foreground italic mt-4">
-                            "{area.dream}"
-                          </div>
+                      <div className="space-y-4">
+                        <div className="flex justify-between items-center mb-2">
+                          <CardTitle className="text-xl font-bold font-serif text-muted-foreground">{area.name}</CardTitle>
+                          <span className="text-sm font-bold text-muted-foreground">{area.progress}% Realized</span>
                         </div>
-
-                        {/* Col 2: Input Prompt - Spans 5 cols */}
-                        <div className="space-y-3 lg:col-span-5">
-                          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Input Prompt</label>
+                        <Progress value={area.progress} className="h-2" indicatorClassName={area.color} />
+                        
+                        <div className="pt-2">
                           <Textarea 
                             placeholder={`What is your big dream for your ${area.name.toLowerCase()}?`}
-                            className="min-h-[120px] bg-muted/30 border-muted focus:bg-background resize-none text-base font-serif"
+                            className="min-h-[100px] bg-muted/30 border-muted focus:bg-background resize-none text-sm font-serif"
                             defaultValue={area.dream}
                           />
-                          <div className="flex justify-end">
-                            <Button variant="ghost" size="sm">Save Vision</Button>
-                          </div>
                         </div>
 
-                        {/* Col 3: 5 V's List - Spans 3 cols */}
-                        <div className="space-y-4 bg-muted/20 p-4 rounded-lg border border-border/50 lg:col-span-3">
-                          <div>
-                            <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Vision</div>
-                            <div className="text-sm font-serif text-muted-foreground whitespace-normal">{area.dream}</div>
-                          </div>
-
-                          <div>
-                            <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Value</div>
-                            <div className="text-sm font-serif text-muted-foreground whitespace-normal">{area.value || "Define value..."}</div>
-                          </div>
-
-                          <div>
-                            <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Villain</div>
-                            <div className="text-sm font-serif text-red-500 whitespace-normal">{area.villain || "Identify obstacle..."}</div>
-                          </div>
-
-                          <div>
-                            <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Victory</div>
-                            <div className="text-sm font-serif text-green-600 whitespace-normal">{area.victory || "Define victory..."}</div>
-                          </div>
+                        <div className="flex justify-end">
+                          <Button variant="ghost" size="sm">Save Vision</Button>
                         </div>
                       </div>
                     </CardContent>
