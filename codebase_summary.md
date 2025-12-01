@@ -1235,3 +1235,647 @@ export default function BigDreams() {
   );
 }
 ```
+
+## File: client/src/pages/home.tsx
+```tsx
+import Layout from "@/components/layout";
+import { FeedPost } from "@/components/feed-post";
+import { CreatePost } from "@/components/create-post";
+import { FEED_POSTS, CURRENT_USER } from "@/lib/mock-data";
+import { Button } from "@/components/ui/button";
+import { Plus, Sparkles, Play, HelpCircle } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { EqVisualizer } from "@/components/eq-visualizer";
+import { Link } from "wouter";
+import WhiteLogo from "@assets/white transparent vector and png art  11x LOVE logo _1764365495719.png";
+import { FiveVsWizard } from "@/components/daily-practice/five-vs-wizard";
+import { useState } from "react";
+
+export default function Home() {
+  const [isDailyOpen, setIsDailyOpen] = useState(false);
+
+  return (
+    <Layout>
+      <div className="max-w-5xl mx-auto p-4 lg:p-8 space-y-8">
+        {/* Welcome Header */}
+        <div className="flex flex-col md:flex-row justify-between items-end gap-4">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-serif font-bold text-muted-foreground mb-2">
+              Welcome to the LOVE Lab 🔬
+            </h1>
+            <p className="text-lg text-muted-foreground">
+              Life is an experiment. Play with curiosity.
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+          </div>
+        </div>
+
+        <div className="space-y-8">
+          {/* Top Section: Wonder & Experiment */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Daily Wonder Card */}
+            <Card className="bg-gradient-to-br from-purple-50 to-white border-none shadow-md overflow-hidden relative h-full">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-full -mr-20 -mt-20 blur-3xl pointer-events-none" />
+              <CardContent className="px-8 pt-8 pb-4 relative z-10 flex flex-col justify-between h-full">
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold font-serif mb-2 text-love-body">Daily Wonder</h3>
+                  <p className="text-xl font-medium text-muted-foreground italic mb-6">
+                    "What if life isn't a test you can fail... but an experiment you get to play?"
+                  </p>
+                </div>
+                <Link href="/journal?startPractice=true" className="w-full">
+                  <Button className="w-full h-10 px-6 transition-all gap-2 bg-love-body text-white border border-transparent hover:bg-[#F5F3FF] hover:text-[#6600ff] hover:border-[#6600ff] hover:shadow-md hover:-translate-y-0.5">
+                    <img src={WhiteLogo} alt="Logo" className="w-4 h-4" /> Daily LOVE Practice
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            {/* Current Experiment */}
+            <Card className="border-none shadow-md overflow-hidden group cursor-pointer hover:shadow-lg transition-all h-full flex flex-col">
+              <div className="h-32 bg-gray-900 relative shrink-0">
+                <img 
+                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=200&fit=crop" 
+                  alt="Experiment"
+                  className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity"
+                />
+                <div className="absolute bottom-3 left-3 text-white">
+                  <span className="text-xs font-bold bg-love-body px-2 py-0.5 rounded-full mb-1 inline-block">Active Experiment</span>
+                  <h3 className="font-bold text-lg leading-tight">Morning Miracle</h3>
+                </div>
+              </div>
+              <CardContent className="p-4 flex flex-col justify-between flex-1">
+                <div>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="text-muted-foreground">Day 3 of 7</span>
+                    <span className="font-bold text-love-body">42%</span>
+                  </div>
+                  <div className="w-full bg-muted rounded-full h-2 mb-4">
+                    <div className="bg-love-body h-2 rounded-full w-[42%]" />
+                  </div>
+                </div>
+                <Button className="w-full h-10 transition-all mx-auto block max-w-[calc(100%-2rem)]" variant="outline">Continue</Button>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Feed Section - Centered Single Column */}
+          <div className="space-y-6 max-w-2xl mx-auto w-full">
+            <div className="flex items-center justify-between border-b pb-4">
+              <h2 className="text-xl font-bold text-muted-foreground">Feed</h2>
+            </div>
+            
+            {/* Create Post */}
+            <CreatePost />
+
+            <div className="space-y-4">
+              {FEED_POSTS.map((post) => (
+                <FeedPost key={post.id} post={post} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </Layout>
+  );
+}
+```
+
+## File: client/src/components/journal/entry-detail-modal.tsx
+```tsx
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Calendar, Clock, Sparkles, Beaker, Lightbulb, Heart } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+
+// Define the types for our journal entries
+export type JournalEntry = {
+  id: number | string;
+  type: "daily-practice" | "experiment" | "discovery";
+  date: string;
+  time?: string;
+  tags: string[];
+  content: string;
+  // Daily Practice Fields
+  vibe?: number;
+  morningVibe?: number;
+  eveningVibe?: number;
+  gratitude?: string;
+  vision?: string;
+  focusArea?: {
+    name: string;
+    dream: string;
+    color: string;
+    progress: number;
+  };
+  villain?: string;
+  value?: string;
+  values?: string[];
+  checkedItems?: boolean[];
+  tool?: string;
+  sharedClubId?: string;
+  victory?: string;
+  // Experiment Fields
+  experimentTitle?: string;
+  hypothesis?: string;
+  observation?: string;
+  conclusion?: string;
+  rating?: number;
+  // Discovery Fields
+  ahaMoment?: string;
+  context?: string;
+  actionItem?: string;
+};
+
+interface EntryDetailModalProps {
+  entry: JournalEntry | null;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export function EntryDetailModal({ entry, isOpen, onClose }: EntryDetailModalProps) {
+  if (!entry) return null;
+
+  const renderHeaderIcon = () => {
+    switch (entry.type) {
+      case "daily-practice":
+        return <Heart className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />;
+      case "experiment":
+        return <Beaker className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />;
+      case "discovery":
+        return <Lightbulb className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />;
+      default:
+        return <Heart className="w-6 h-6 text-muted-foreground" strokeWidth={1.5} />;
+    }
+  };
+
+  const renderHeaderTitle = () => {
+    switch (entry.type) {
+      case "daily-practice":
+        return "Daily LOVE Practice";
+      case "experiment":
+        return entry.experimentTitle || "Experiment Log";
+      case "discovery":
+        return "Discovery Note";
+      default:
+        return "Journal Entry";
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-4xl h-[90vh] p-0 gap-0 overflow-hidden bg-background border-none shadow-2xl flex flex-col">
+        {/* Notion-style Cover Image Placeholder (Optional) */}
+        <div className="h-32 bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/5 w-full shrink-0" />
+        
+        <ScrollArea className="flex-1">
+          <div className="p-8 lg:p-12 max-w-3xl mx-auto space-y-8">
+            {/* Header Section */}
+            <div className="space-y-6">
+              <div className="flex items-center gap-3 text-muted-foreground mb-4">
+                {renderHeaderIcon()}
+                <span className="text-sm font-medium uppercase tracking-wider">{renderHeaderTitle()}</span>
+              </div>
+              
+              <h1 className="text-4xl font-serif font-bold text-foreground leading-tight">
+                {entry.type === 'daily-practice' 
+                  ? `Journal Entry: ${entry.date}` 
+                  : (entry.experimentTitle || entry.ahaMoment || "Untitled Entry")}
+              </h1>
+
+              <div className="flex flex-wrap gap-4 text-sm text-muted-foreground items-center">
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />
+                  <span>{entry.date}</span>
+                </div>
+                <div className="flex gap-2 ml-2">
+                  {entry.tags.map(tag => (
+                    <Badge key={tag} variant="outline" className="font-normal bg-muted/50">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Content Section based on Type */}
+            <div className="space-y-8 font-serif text-lg leading-relaxed text-foreground/90">
+              
+              {/* Daily Practice View */}
+              {entry.type === "daily-practice" && (
+                <>
+                  {/* 5 V's Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-muted/30 p-6 rounded-xl border border-border/40">
+                    <div className="space-y-1">
+                      <div className="text-xs font-bold text-muted-foreground uppercase">Vision</div>
+                      <div className="font-medium">{entry.vision}</div>
+                    </div>
+                    {entry.gratitude && (
+                      <div className="space-y-1 col-span-full">
+                        <div className="text-xs font-bold text-muted-foreground uppercase">Gratitude</div>
+                        <div className="font-medium italic text-muted-foreground">"{entry.gratitude}"</div>
+                      </div>
+                    )}
+                    <div className="space-y-1">
+                      <div className="text-xs font-bold text-muted-foreground uppercase">Value</div>
+                      <div className="font-medium">{entry.value}</div>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="text-xs font-bold text-muted-foreground uppercase">Victory</div>
+                      <div className="font-medium text-green-600">{entry.victory}</div>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="text-xs font-bold text-muted-foreground uppercase">Villain</div>
+                      <div className="font-medium text-red-500">{entry.villain}</div>
+                    </div>
+                    <div className="col-span-full pt-2 border-t border-border/20 mt-2 flex items-center justify-between">
+                       <div className="text-xs font-bold text-muted-foreground uppercase">Morning Vibe</div>
+                       <div className="font-bold text-primary text-xl">{entry.morningVibe || entry.vibe || "-"}/10</div>
+                    </div>
+                    <div className="col-span-full flex items-center justify-between">
+                       <div className="text-xs font-bold text-muted-foreground uppercase">Evening Vibe</div>
+                       <div className="font-bold text-primary text-xl">{entry.eveningVibe || "-"}/10</div>
+                    </div>
+                    
+                    {entry.focusArea && (
+                      <div className="col-span-full mt-2 pt-4 border-t border-border/20">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="text-xs font-bold text-muted-foreground uppercase">Focus Area</div>
+                          <Badge variant="outline" className="font-normal text-[10px] uppercase tracking-wider" style={{borderColor: entry.focusArea.color, color: entry.focusArea.color}}>
+                            {entry.focusArea.name}
+                          </Badge>
+                        </div>
+                        <div className="space-y-1">
+                          <div className="text-sm font-medium italic text-muted-foreground">"{entry.focusArea.dream}"</div>
+                          <div className="h-1.5 w-full bg-muted rounded-full mt-2 overflow-hidden">
+                            <div className="h-full rounded-full" style={{ width: `${entry.focusArea.progress}%`, backgroundColor: entry.focusArea.color }} />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Main Content */}
+                  <div className="prose prose-lg dark:prose-invert max-w-none">
+                    <h3>Reflection</h3>
+                    <p>{entry.content}</p>
+                  </div>
+                </>
+              )}
+
+              {/* Experiment View */}
+              {entry.type === "experiment" && (
+                <>
+                   <div className="bg-secondary/5 p-6 rounded-xl border border-secondary/20">
+                      <h3 className="text-sm font-bold text-secondary uppercase tracking-wider mb-2">Hypothesis</h3>
+                      <p className="italic text-xl">"{entry.hypothesis}"</p>
+                   </div>
+
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="space-y-2">
+                        <h4 className="font-bold text-muted-foreground uppercase text-sm">Observation</h4>
+                        <p>{entry.observation}</p>
+                      </div>
+                      <div className="space-y-2">
+                        <h4 className="font-bold text-muted-foreground uppercase text-sm">Conclusion</h4>
+                        <p>{entry.conclusion}</p>
+                      </div>
+                   </div>
+                   
+                   <div className="prose prose-lg dark:prose-invert max-w-none pt-4">
+                    <h3>Additional Notes</h3>
+                    <p>{entry.content}</p>
+                  </div>
+                </>
+              )}
+
+              {/* Discovery View */}
+              {entry.type === "discovery" && (
+                <>
+                  <div className="flex items-start gap-4 bg-yellow-50 dark:bg-yellow-900/10 p-6 rounded-xl border border-yellow-200 dark:border-yellow-800">
+                    <Lightbulb className="w-8 h-8 text-muted-foreground shrink-0 mt-1" strokeWidth={1.5} />
+                    <div className="space-y-2">
+                      <h3 className="text-xl font-bold text-yellow-700 dark:text-yellow-400">The "Aha!" Moment</h3>
+                      <p className="text-xl font-medium italic leading-relaxed">"{entry.ahaMoment}"</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div>
+                      <h4 className="font-bold text-muted-foreground uppercase text-sm mb-2">Context</h4>
+                      <p>{entry.context}</p>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-bold text-muted-foreground uppercase text-sm mb-2">Action Item</h4>
+                      <div className="flex items-center gap-3 p-4 bg-card border rounded-lg">
+                         <div className="w-5 h-5 rounded-full border-2 border-muted-foreground/30" />
+                         <span className="font-medium">{entry.actionItem}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="prose prose-lg dark:prose-invert max-w-none pt-4">
+                    <h3>Reflection</h3>
+                    <p>{entry.content}</p>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+}
+```
+
+## File: client/src/components/feed-post.tsx
+```tsx
+import { useState } from "react";
+import { 
+  Clock, 
+  Heart, 
+  MoreHorizontal, 
+  Video, 
+  ArrowRight,
+  Calendar as CalendarIcon,
+  Zap,
+  MessageSquare,
+  Repeat2,
+  Share,
+  Bookmark,
+  Minus,
+  Plus
+} from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import SatsIcon from "@assets/generated_images/sats_icon.png";
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+  DialogClose
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+interface FeedPostProps {
+  post: {
+    id: string;
+    author: {
+      name: string;
+      handle: string;
+      avatar: string;
+    };
+    content: string;
+    image?: string;
+    likes: number;
+    comments: number;
+    zaps: number;
+    timestamp: string;
+  };
+}
+
+export function FeedPost({ post }: FeedPostProps) {
+  const [zaps, setZaps] = useState(post.zaps);
+  const [isZapped, setIsZapped] = useState(false);
+  const [zapAmount, setZapAmount] = useState(21);
+  const [zapComment, setZapComment] = useState("");
+  const [isZapOpen, setIsZapOpen] = useState(false);
+
+  const handleZap = () => {
+    setZaps(prev => prev + zapAmount);
+    setIsZapped(true);
+    setIsZapOpen(false);
+    
+    toast("Zap Sent! ⚡", {
+      description: `You sent ${zapAmount} sats to ${post.author.name}`,
+      action: {
+        label: "Undo",
+        onClick: () => setZaps(prev => prev - zapAmount),
+      },
+    });
+    
+    // Reset for next time
+    setZapComment("");
+    setZapAmount(21);
+  };
+
+  const ZAP_PRESETS = [21, 50, 100, 500, 1000, 5000];
+
+  return (
+    <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow bg-card mb-4">
+      <CardContent className="p-0">
+        <div className="p-4 flex gap-3">
+          <Avatar className="w-10 h-10 border-2 border-border">
+            <AvatarImage src={post.author.avatar} />
+            <AvatarFallback>{post.author.name[0]}</AvatarFallback>
+          </Avatar>
+          <div className="flex-1 min-w-0">
+            <div className="flex justify-between items-start">
+              <div>
+                <h3 className="font-bold text-muted-foreground text-sm flex items-center gap-2">
+                  {post.author.name}
+                  <span className="text-muted-foreground font-normal text-sm">
+                    {post.timestamp.replace(" ago", "")}
+                  </span>
+                </h3>
+              </div>
+              <Button variant="ghost" size="icon" className="text-muted-foreground">
+                <MoreHorizontal className="w-4 h-4" />
+              </Button>
+            </div>
+            
+            <p className="mt-2 text-base leading-relaxed text-foreground/90 whitespace-pre-wrap">
+              {post.content}
+            </p>
+            
+            {post.image && (
+              <div className="mt-3 rounded-xs overflow-hidden border border-[#E5E5E5]">
+                <img src={post.image} alt="Post content" className="w-full h-auto object-cover max-h-[400px]" />
+              </div>
+            )}
+
+            <div className="flex items-center justify-between mt-4 pt-2 border-t border-border px-2 h-12">
+              {/* 1. Comment */}
+              <Button variant="ghost" className="text-muted-foreground hover:text-love-time hover:bg-love-time-light px-2 gap-1.5 min-w-[60px]">
+                <MessageSquare className="w-[18px] h-[18px]" strokeWidth={1.5} />
+                <span className="text-sm font-medium">{post.comments > 0 ? post.comments : ""}</span>
+              </Button>
+
+              {/* 2. Repost */}
+              <Button variant="ghost" className="text-muted-foreground hover:text-love-mission hover:bg-love-mission-light px-2 gap-1.5 min-w-[60px]">
+                <Repeat2 className="w-[22px] h-[22px]" strokeWidth={1.5} />
+                <span className="text-sm font-medium"></span>
+              </Button>
+
+              {/* 3. Zap (Center, Largest) - Now with Dialog */}
+              <Dialog open={isZapOpen} onOpenChange={setIsZapOpen}>
+                <DialogTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    className={`px-2 rounded-full transition-all group min-w-[60px] ${isZapped || zaps > 0 ? 'text-love-family hover:bg-love-family-light' : 'text-muted-foreground hover:text-love-family hover:bg-love-family-light'}`}
+                  >
+                    <Zap 
+                      className={`mr-1.5 transition-all ${isZapped || zaps > 0 ? 'text-love-family w-[28px] h-[28px]' : 'w-[28px] h-[28px] group-hover:scale-110'}`} 
+                      strokeWidth={1.5}
+                      fill={isZapped ? "currentColor" : "none"}
+                    />
+                    <span className={`text-sm font-medium ${isZapped || zaps > 0 ? 'font-bold' : ''}`}>
+                      {zaps > 0 ? zaps.toLocaleString() : ""}
+                    </span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md border-love-family-light">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2 font-serif text-2xl">
+                      <span className="text-love-family">⚡</span> Zap {post.author.name}
+                    </DialogTitle>
+                    <DialogDescription>
+                      Send sats directly to their Lightning Address.
+                    </DialogDescription>
+                  </DialogHeader>
+                  
+                  <div className="flex flex-col gap-6 py-4">
+                    {/* Presets */}
+                    <div className="grid grid-cols-3 gap-3">
+                      {ZAP_PRESETS.map((amount) => (
+                        <Button
+                          key={amount}
+                          variant={zapAmount === amount ? "default" : "outline"}
+                          className={`text-lg font-bold ${
+                            zapAmount === amount 
+                              ? "bg-love-family hover:bg-[#E65C00] text-white border-love-family" 
+                              : "border-[#E5E5E5] hover:border-love-family hover:bg-love-family-light text-muted-foreground"
+                          }`}
+                          onClick={() => setZapAmount(amount)}
+                        >
+                          ⚡ {amount}
+                        </Button>
+                      ))}
+                    </div>
+
+                    {/* Custom Amount */}
+                    <div className="space-y-2">
+                      <Label htmlFor="custom-amount" className="text-muted-foreground font-serif">Custom Amount (Sats)</Label>
+                      <div className="relative">
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-love-family font-bold">⚡</div>
+                        <Input 
+                          id="custom-amount" 
+                          type="number" 
+                          value={zapAmount}
+                          onChange={(e) => setZapAmount(Number(e.target.value))}
+                          className="pl-9 text-lg font-bold bg-[#FAFAFA] border-muted" 
+                        />
+                      </div>
+                    </div>
+
+                    {/* Comment */}
+                    <div className="space-y-2">
+                      <Label htmlFor="zap-comment" className="text-muted-foreground font-serif">Comment (Optional)</Label>
+                      <Input 
+                        id="zap-comment" 
+                        placeholder="Great post! 🔥" 
+                        value={zapComment}
+                        onChange={(e) => setZapComment(e.target.value)}
+                        className="bg-[#FAFAFA] border-muted"
+                      />
+                    </div>
+                  </div>
+
+                  <DialogFooter className="sm:justify-between gap-2">
+                    <DialogClose asChild>
+                      <Button type="button" variant="ghost">Cancel</Button>
+                    </DialogClose>
+                    <Button 
+                      type="submit" 
+                      onClick={handleZap}
+                      className="bg-love-family hover:bg-[#E65C00] text-white font-bold px-8 w-full sm:w-auto"
+                    >
+                      Zap {zapAmount} Sats ⚡
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+
+              {/* 4. Like */}
+              <Button variant="ghost" className="text-muted-foreground hover:text-love-romance hover:bg-love-romance-light px-2 gap-1.5 min-w-[60px]">
+                <Heart className="w-[18px] h-[18px]" strokeWidth={1.5} />
+                <span className="text-sm font-medium">{post.likes > 0 ? post.likes : ""}</span>
+              </Button>
+
+              {/* 5. Share/Bookmark */}
+              <Button variant="ghost" className="text-muted-foreground hover:text-love-body hover:bg-love-body-light px-2 gap-1.5 min-w-[60px]">
+                <Bookmark className="w-[20px] h-[20px]" strokeWidth={1.5} />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+```
+
+## File: client/src/components/create-post.tsx
+```tsx
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Calendar, Sparkles, Image as ImageIcon, Smile } from "lucide-react";
+import { CURRENT_USER } from "@/lib/mock-data";
+
+interface CreatePostProps {
+  placeholder?: string;
+}
+
+export function CreatePost({ placeholder = "Share something with the community..." }: CreatePostProps) {
+  return (
+    <Card className="border-none shadow-sm bg-card mb-6">
+      <CardContent className="p-4 flex gap-4">
+        <Avatar className="w-10 h-10 border border-border">
+          <AvatarImage src={CURRENT_USER.avatar} />
+          <AvatarFallback>{CURRENT_USER.name[0]}</AvatarFallback>
+        </Avatar>
+        <div className="flex-1">
+          <input 
+            type="text" 
+            placeholder={placeholder}
+            className="w-full bg-[#F4F4F5] rounded-full px-4 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-primary-light transition-all font-serif placeholder:text-[#A1A1AA]"
+          />
+          <div className="flex items-center justify-between mt-3 px-1">
+            <div className="flex items-center gap-1">
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary-light rounded-full">
+                <ImageIcon className="w-4 h-4" strokeWidth={1.5} />
+              </Button>
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary-light rounded-full">
+                <Sparkles className="w-4 h-4" strokeWidth={1.5} />
+              </Button>
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary-light rounded-full">
+                <Smile className="w-4 h-4" strokeWidth={1.5} />
+              </Button>
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary-light rounded-full">
+                <Calendar className="w-4 h-4" strokeWidth={1.5} />
+              </Button>
+            </div>
+            <Button className="rounded-full px-6 font-bold bg-love-body text-white border border-transparent transition-all">Post</Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+```
