@@ -33,14 +33,14 @@ export default function BigDreams() {
                 <span className="text-sm text-muted-foreground">Update your vision for each dimension</span>
               </div>
               
-              <div className="grid gap-6 md:grid-cols-2">
+              <div className="grid gap-6 grid-cols-1">
                 {LOVE_CODE_AREAS.map((area) => (
                   <Card key={area.id} className="overflow-hidden border-none shadow-sm hover:shadow-md transition-all group">
                     <div className={cn("h-[2px] w-full", area.color)} />
                     <CardContent className="p-6">
-                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        {/* Col 1: As Is (Identity & Progress) */}
-                        <div className="space-y-4">
+                      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                        {/* Col 1: As Is (Identity & Progress) - Spans 4 cols */}
+                        <div className="space-y-4 lg:col-span-4">
                           <div className="flex justify-between items-center mb-2">
                             <CardTitle className="text-2xl font-bold font-serif text-muted-foreground">{area.name}</CardTitle>
                             <span className="text-sm font-bold text-muted-foreground">{area.progress}% Realized</span>
@@ -51,8 +51,8 @@ export default function BigDreams() {
                           </div>
                         </div>
 
-                        {/* Col 2: Input Prompt */}
-                        <div className="space-y-3">
+                        {/* Col 2: Input Prompt - Spans 5 cols */}
+                        <div className="space-y-3 lg:col-span-5">
                           <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Input Prompt</label>
                           <Textarea 
                             placeholder={`What is your big dream for your ${area.name.toLowerCase()}?`}
@@ -64,8 +64,8 @@ export default function BigDreams() {
                           </div>
                         </div>
 
-                        {/* Col 3: 5 V's List */}
-                        <div className="space-y-4 bg-muted/20 p-4 rounded-lg border border-border/50">
+                        {/* Col 3: 5 V's List - Spans 3 cols */}
+                        <div className="space-y-4 bg-muted/20 p-4 rounded-lg border border-border/50 lg:col-span-3">
                           <div>
                             <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Vision</div>
                             <div className="text-sm font-serif text-muted-foreground whitespace-normal">{area.dream}</div>
