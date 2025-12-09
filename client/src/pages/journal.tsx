@@ -17,14 +17,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
 import { ActivePracticeCard } from "@/components/daily-practice/active-practice-card";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getJournalEntries, createJournalEntry, updateJournalEntry, deleteJournalEntry, CURRENT_USER_ID } from "@/lib/api";
+import { toast } from "sonner";
 
 export default function LabNotes() {
+  const queryClient = useQueryClient();
   const [isPracticing, setIsPracticing] = useState(false);
   const [practiceData, setPracticeData] = useState<any>(null);
   const [dayCompleted, setDayCompleted] = useState(false);
-  // Removed isEveningModalOpen since we use the card now
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -33,18 +35,46 @@ export default function LabNotes() {
     }
   }, []);
 
+  // Fetch journal entries from API
+  const { data: apiEntries = [], isLoading: entriesLoading } = useQuery({
+    queryKey: ["journalEntries", CURRENT_USER_ID],
+    queryFn: () => getJournalEntries(CURRENT_USER_ID, 50),
+  });
+
+  // Create journal entry mutation
+  const createEntryMutation = useMutation({
+    mutationFn: createJournalEntry,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["journalEntries", CURRENT_USER_ID] });
+      toast.success("Daily LOVE Practice saved!");
+      setDayCompleted(true);
+      setTimeout(() => setDayCompleted(false), 5000);
+    },
+    onError: () => {
+      toast.error("Failed to save entry");
+    },
+  });
+
+  // Update journal entry mutation
+  const updateEntryMutation = useMutation({
+    mutationFn: ({ id, entry }: { id: string; entry: any }) =>
+      updateJournalEntry(id, entry),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["journalEntries", CURRENT_USER_ID] });
+      toast.success("Entry updated!");
+    },
+    onError: () => {
+      toast.error("Failed to update entry");
+    },
+  });
 
   const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
   const [showMissedCheckinAlert, setShowMissedCheckinAlert] = useState(true); 
   const todaysPlaylist = getPlaylistForToday();
 
-  const handleEveningComplete = (eveningData: any) => {
-      setDayCompleted(true);
-      // Here we would normally save everything to the backend
-      console.log("Full Day Data:", { ...practiceData, ...eveningData });
-  };
-
-  const [entries, setEntries] = useState<JournalEntry[]>([
+  // Combine real journal entries with mock entries for other types
+  // Mock entries for non-daily-practice types (temporarily keep until we implement those)
+  const mockEntries: JournalEntry[] = [
     {
       id: 1,
       type: "daily-practice",
@@ -113,34 +143,60 @@ export default function LabNotes() {
       content: "It clicked when I was looking at the stream. Money flows like water. Lightning channels are just directing that flow without moving the entire ocean (chain).",
       tags: ["Discovery", "Bitcoin"]
     }
-  ]);
+  ];
+
+  // Combine API entries (real data) with mock entries (for experiments/discoveries until implemented)
+  // Convert API entries to JournalEntry format
+  const convertedApiEntries: JournalEntry[] = (apiEntries as any[]).map((entry: any) => ({
+    id: entry.id,
+    type: "daily-practice" as const,
+    date: new Date(entry.date).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' }),
+    time: new Date(entry.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    vibe: entry.vibeRating,
+    morningVibe: entry.vibeRating,
+    gratitude: entry.gratitude,
+    vision: entry.lesson,
+    victory: entry.blessing,
+    content: entry.reflection,
+    tags: ["Daily LOVE Practice"],
+    values: entry.goal?.split(", ").filter(Boolean) || [],
+    sharedClubId: entry.isPrivate ? "private" : (entry.sharedClubs?.[0] || "private"),
+  }));
+
+  const entries = [...convertedApiEntries, ...mockEntries.filter((e: JournalEntry) => e.type !== "daily-practice")];
 
   const handlePracticeComplete = (data: any) => {
     setIsPracticing(false);
-    setPracticeData(null); // Clear current editing data
+    setPracticeData(null);
     
-    // Check if we are updating an existing entry
-    if (data.id) {
-        setEntries(entries.map(e => e.id === data.id ? { ...e, ...data } : e));
-    } else {
-        // Create new entry
-        const newEntry: JournalEntry = {
-            id: Date.now(),
-            type: "daily-practice",
-            date: new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' }),
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            tags: ["Daily LOVE Practice"],
-            ...data
-        };
-        setEntries([newEntry, ...entries]);
-    }
-    
-    // Trigger confetti for morning practice complete
+    // Trigger confetti
     confetti({
       particleCount: 100,
       spread: 70,
       origin: { y: 0.6 }
     });
+
+    // Prepare entry for backend
+    const entry = {
+      userId: CURRENT_USER_ID,
+      date: new Date(),
+      vibeRating: parseInt(data.morningVibe) || parseInt(data.eveningVibe) || 5,
+      gratitude: data.gratitude || "",
+      gratitudePhoto: null,
+      lesson: data.vision || "",
+      blessing: data.victory || "",
+      goal: data.values?.join(", ") || "",
+      reflection: data.content || "",
+      isPrivate: data.sharedClubId === "private",
+      sharedClubs: data.sharedClubId && data.sharedClubId !== "private" ? [data.sharedClubId] : [],
+    };
+
+    // Check if updating existing entry
+    if (data.id) {
+      updateEntryMutation.mutate({ id: data.id, entry });
+    } else {
+      createEntryMutation.mutate(entry);
+    }
   };
 
   return (
@@ -200,14 +256,6 @@ export default function LabNotes() {
           </div>
         ) : (
           <div className="space-y-8">
-            {/* Active Practice Card (Replaces static card + modal) */}
-            {practiceData && !dayCompleted && (
-               <ActivePracticeCard 
-                 data={practiceData} 
-                 onComplete={handleEveningComplete} 
-               />
-            )}
-
             {/* Day Fully Completed Success Card */}
             {dayCompleted && (
                <Card className="border-none shadow-sm bg-green-50 dark:bg-green-900/10 border-green-200 mb-8">

@@ -9,8 +9,59 @@ import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import WhiteLogo from "@assets/white transparent vector and png art  11x LOVE logo _1764365495719.png";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getDreams, getAreaProgress, saveDream, CURRENT_USER_ID } from "@/lib/api";
+import { toast } from "sonner";
 
 export default function BigDreams() {
+  const queryClient = useQueryClient();
+  const [editingDreams, setEditingDreams] = useState<Record<string, string>>({});
+
+  // Fetch dreams and area progress from API
+  const { data: dreams = [], isLoading: dreamsLoading } = useQuery({
+    queryKey: ["dreams", CURRENT_USER_ID],
+    queryFn: () => getDreams(CURRENT_USER_ID),
+  });
+
+  const { data: progress = [], isLoading: progressLoading } = useQuery({
+    queryKey: ["areaProgress", CURRENT_USER_ID],
+    queryFn: () => getAreaProgress(CURRENT_USER_ID),
+  });
+
+  // Mutation to save dream
+  const saveDreamMutation = useMutation({
+    mutationFn: ({ areaId, dream }: { areaId: string; dream: string }) =>
+      saveDream(CURRENT_USER_ID, areaId, dream),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["dreams", CURRENT_USER_ID] });
+      toast.success("Dream saved successfully!");
+    },
+    onError: () => {
+      toast.error("Failed to save dream");
+    },
+  });
+
+  // Create lookup maps for dreams and progress
+  const dreamsByArea = dreams.reduce((acc: any, dream: any) => {
+    acc[dream.areaId] = dream.dream;
+    return acc;
+  }, {});
+
+  const progressByArea = progress.reduce((acc: any, p: any) => {
+    acc[p.areaId] = p.progress;
+    return acc;
+  }, {});
+
+  const handleSaveDream = (areaId: string) => {
+    const dreamText = editingDreams[areaId];
+    if (dreamText?.trim()) {
+      saveDreamMutation.mutate({ areaId, dream: dreamText });
+    }
+  };
+
+  const handleDreamChange = (areaId: string, value: string) => {
+    setEditingDreams(prev => ({ ...prev, [areaId]: value }));
+  };
   return (
     <Layout>
       <div className="max-w-4xl mx-auto p-4 lg:p-8 space-y-12">
@@ -34,32 +85,50 @@ export default function BigDreams() {
               </div>
               
               <div className="grid gap-6 md:grid-cols-2">
-                {LOVE_CODE_AREAS.map((area) => (
-                  <Card key={area.id} className="overflow-hidden border-none shadow-sm hover:shadow-md transition-all group">
-                    <div className={cn("h-[2px] w-full", area.color)} />
-                    <CardContent className="p-6">
-                      <div className="space-y-4">
-                        <div className="flex justify-between items-center mb-2">
-                          <CardTitle className="text-xl font-bold font-serif text-muted-foreground">{area.name}</CardTitle>
-                          <span className="text-sm font-bold text-muted-foreground">{area.progress}% Realized</span>
-                        </div>
-                        <Progress value={area.progress} className="h-2" indicatorClassName={area.color} />
-                        
-                        <div className="pt-2">
-                          <Textarea 
-                            placeholder={`What is your big dream for your ${area.name.toLowerCase()}?`}
-                            className="min-h-[100px] bg-muted/30 border-muted focus:bg-background resize-none text-sm font-serif"
-                            defaultValue={area.dream}
-                          />
-                        </div>
+                {dreamsLoading || progressLoading ? (
+                  <div className="col-span-2 text-center py-8 text-muted-foreground">Loading your dreams...</div>
+                ) : (
+                  LOVE_CODE_AREAS.map((area) => {
+                    const currentDream = dreamsByArea[area.id] || "";
+                    const currentProgress = progressByArea[area.id] || 0;
+                    const editingDream = editingDreams[area.id] ?? currentDream;
 
-                        <div className="flex justify-end">
-                          <Button variant="ghost" size="sm">Save Vision</Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                    return (
+                      <Card key={area.id} className="overflow-hidden border-none shadow-sm hover:shadow-md transition-all group">
+                        <div className={cn("h-[2px] w-full", area.color)} />
+                        <CardContent className="p-6">
+                          <div className="space-y-4">
+                            <div className="flex justify-between items-center mb-2">
+                              <CardTitle className="text-xl font-bold font-serif text-muted-foreground">{area.name}</CardTitle>
+                              <span className="text-sm font-bold text-muted-foreground">{currentProgress}% Realized</span>
+                            </div>
+                            <Progress value={currentProgress} className="h-2" indicatorClassName={area.color} />
+                            
+                            <div className="pt-2">
+                              <Textarea 
+                                placeholder={`What is your big dream for your ${area.name.toLowerCase()}?`}
+                                className="min-h-[100px] bg-muted/30 border-muted focus:bg-background resize-none text-sm font-serif"
+                                value={editingDream}
+                                onChange={(e) => handleDreamChange(area.id, e.target.value)}
+                              />
+                            </div>
+
+                            <div className="flex justify-end">
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={() => handleSaveDream(area.id)}
+                                disabled={saveDreamMutation.isPending}
+                              >
+                                {saveDreamMutation.isPending ? "Saving..." : "Save Vision"}
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })
+                )}
               </div>
             </section>
           </div>

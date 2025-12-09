@@ -1,7 +1,7 @@
 import Layout from "@/components/layout";
 import { FeedPost } from "@/components/feed-post";
 import { CreatePost } from "@/components/create-post";
-import { FEED_POSTS, CURRENT_USER } from "@/lib/mock-data";
+import { CURRENT_USER } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Plus, Sparkles, Play, HelpCircle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,9 +10,17 @@ import { Link } from "wouter";
 import WhiteLogo from "@assets/white transparent vector and png art  11x LOVE logo _1764365495719.png";
 import { FiveVsWizard } from "@/components/daily-practice/five-vs-wizard";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getRecentPosts, CURRENT_USER_ID } from "@/lib/api";
 
 export default function Home() {
   const [isDailyOpen, setIsDailyOpen] = useState(false);
+  
+  // Fetch real posts from API
+  const { data: posts = [], isLoading: postsLoading } = useQuery({
+    queryKey: ["posts"],
+    queryFn: () => getRecentPosts(50),
+  });
 
   return (
     <Layout>
@@ -101,9 +109,15 @@ export default function Home() {
             <CreatePost />
 
             <div className="space-y-4">
-              {FEED_POSTS.map((post) => (
-                <FeedPost key={post.id} post={post} />
-              ))}
+              {postsLoading ? (
+                <div className="text-center py-8 text-muted-foreground">Loading feed...</div>
+              ) : posts.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">No posts yet. Be the first to share!</div>
+              ) : (
+                posts.map((post: any) => (
+                  <FeedPost key={post.id} post={post} />
+                ))
+              )}
             </div>
           </div>
         </div>
