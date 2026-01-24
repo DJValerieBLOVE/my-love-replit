@@ -76,22 +76,31 @@
 ## Key Features
 
 ### Already Built
-- Daily LOVE Practice journaling with 3-column layout
+- Daily LOVE Practice journaling with 3-column layout (/journal)
 - Big Dreams page (11 LOVE Code areas)
-- Home page with feed
-- Lab Notes / Journal page
+- Home page with 9-card flip dashboard ("My Masterpiece")
+- Resources page with tabs: Lab Notes, My Toolbox, Music & Meditations
+- Learning page (courses/experiments)
+- Communities page (clubs)
+- Events page with calendar
+- Leaderboard page
+- Floating Magic Mentor AI button (bottom-right, mobile-friendly)
 - PostgreSQL database with full schema
 - Express API backend
 
+### Navigation Structure
+- Left sidebar: Home, Big Dreams, Learning, Events, Communities, Resources, Leaderboard
+- Floating button: Magic Mentor AI (Sparkles icon, bottom-right corner)
+- No right sidebar (simplified home screen)
+
 ### To Build (Priority Order)
-1. 9-card flip dashboard ("My Masterpiece")
-2. Streak tracking & wins display
-3. 11x LOVE rainbow equalizer widget
-4. Nostr authentication
-5. AI Learning Buddy
-6. Community membership system
-7. Lightning/Zaps integration
-8. Leaderboard & gamification
+1. Streak tracking & wins display
+2. 11x LOVE rainbow equalizer widget
+3. Nostr authentication
+4. AI Learning Buddy (enhanced)
+5. Community membership system
+6. Lightning/Zaps integration
+7. Bitcoin rewards system
 
 ## Design Patterns
 - **Monorepo Structure**: Client (`client/`), Server (`server/`), Shared (`shared/`)
