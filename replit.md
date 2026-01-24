@@ -1,12 +1,45 @@
-# 11x LOVE Lab
+# My Masterpiece App
 
 ## Overview
 
-11x LOVE Lab is a privacy-first, Bitcoin-native community and course platform designed for coaches, creators, and community leaders. The platform combines features from Circle.so (community spaces), Mighty Networks (courses and member profiles), and Primal.net (Bitcoin Lightning integration). The core philosophy centers around personal growth across 11 life dimensions (GOD/LOVE, Romance, Family, Community, Mission, Money, Time, Environment, Body, Mind, Soul) with gamification, daily journaling practices, and community engagement features.
+**My Masterpiece** is a spiritual, gamified personal growth app where users design their own dashboard, earn Bitcoin for progress, consume courses/podcasts/music in one place, connect with collaborators, journal privately, and get coached by an AI that remembers them forever — powered by a hybrid Nostr + Database architecture with Lightning payments.
+
+**One-Liner:** Notion + Obsidian + Mighty Networks + Spotify + Nostr + Lightning + AI Coach + Pinterest Vision Board = My Masterpiece
+
+**11x LOVE LaB** is a community INSIDE this app (not the app name itself).
 
 ## User Preferences
 
-Preferred communication style: Simple, everyday language.
+- Preferred communication style: Simple, everyday language
+- Daily LOVE Practice is the MOST IMPORTANT feature (LOVE always capitalized)
+- Sparkles icon ONLY for Magic Mentor AI - no other usage
+- NO colored icons anywhere - all icons use muted-foreground color
+- Hover interactions use light purple (#F0E6FF), never blue
+- All colors solid hex, no opacity values
+- Privacy-first: entries default to private, optional sharing
+
+## Design Language
+
+### 11 LOVE Code Colors
+- GOD/LOVE: #eb00a8
+- Romance: #e60023
+- Family: #ff6600
+- Community: #ffdf00
+- Mission: #a2f005
+- Money: #00d81c
+- Time: #00ccff
+- Environment: #0033ff
+- Body: #6600ff
+- Mind: #9900ff
+- Soul: #cc00ff
+
+### Visual Style
+- Purple gradient aesthetic (#6600ff to #cc00ff)
+- 9-card flip dashboard ("My Masterpiece") - like EdStr/Shakespeare screenshots
+- Left navigation sidebar (keep existing)
+- Top header (keep existing)
+- White cards with subtle shadows, rounded corners
+- Card flip animations for affirmation deck
 
 ## System Architecture
 
@@ -32,39 +65,49 @@ Preferred communication style: Simple, everyday language.
 - **Migrations**: Drizzle Kit with output to `./migrations`
 - **Key Entities**: Users, JournalEntries, Dreams, AreaProgress, Experiments, UserExperiments, Events, Posts, Clubs
 
-### Design Patterns
+### Future Tech Stack (Per Spec)
+- **Identity**: Nostr (NDK library) - user owns keys
+- **Payments**: Lightning (WebLN/NWC) - non-custodial
+- **Zaps**: Nostr NIP-57
+- **AI Memory**: Voy/Orama (browser) - local vector store
+- **AI Model**: OpenRouter API (Claude Sonnet 3.5 default)
+- **Mobile**: PWA first
+
+## Key Features
+
+### Already Built
+- Daily LOVE Practice journaling with 3-column layout
+- Big Dreams page (11 LOVE Code areas)
+- Home page with feed
+- Lab Notes / Journal page
+- PostgreSQL database with full schema
+- Express API backend
+
+### To Build (Priority Order)
+1. 9-card flip dashboard ("My Masterpiece")
+2. Streak tracking & wins display
+3. 11x LOVE rainbow equalizer widget
+4. Nostr authentication
+5. AI Learning Buddy
+6. Community membership system
+7. Lightning/Zaps integration
+8. Leaderboard & gamification
+
+## Design Patterns
 - **Monorepo Structure**: Client (`client/`), Server (`server/`), Shared (`shared/`)
 - **Path Aliases**: `@/` for client source, `@shared/` for shared code, `@assets/` for static assets
-- **API Client**: Centralized fetch wrapper with error handling in `client/src/lib/api.ts`
+- **API Client**: Centralized fetch wrapper in `client/src/lib/api.ts`
 - **Component Organization**: Feature-based with shared UI components in `components/ui/`
 
-### Key Features
-- **Daily LOVE Practice**: Journaling system with morning/evening check-ins
-- **EQ Visualizer**: Visual progress tracker across 11 life dimensions
-- **Experiments**: Course-like learning modules with quizzes and rewards
-- **Community Clubs**: Group spaces for discussions and events
-- **Gamification**: Sats rewards, streaks, levels, badges, and leaderboards
-- **Lightning Wallet**: Bitcoin/sats integration for rewards and payments
-
-## External Dependencies
-
-### Database
-- **PostgreSQL**: Primary data store via `DATABASE_URL` environment variable
-- **Neon Serverless**: `@neondatabase/serverless` for connection pooling
-
-### UI/UX Libraries
-- **Radix UI**: Complete primitive library for accessible components
-- **Lucide React**: Icon library
-- **Canvas Confetti**: Celebration animations
-- **Recharts**: Data visualization for wallet and progress charts
-
-### Development Tools
-- **Vite**: Frontend build and dev server
-- **esbuild**: Server bundling for production
-- **Drizzle Kit**: Database migrations and schema management
-
-### Fonts
-- **Marcellus**: Primary serif font loaded from Google Fonts (used for elevated/magical aesthetic)
-
-### Environment Variables Required
+## Environment Variables Required
 - `DATABASE_URL`: PostgreSQL connection string (required)
+- Future: `ADMIN_NPUB`, `SESSION_SECRET`, `OPENROUTER_API_KEY`
+
+## Technical Notes
+- Test user ID from seed: e9594e8a-3846-4517-b815-b8b0756b084e (CURRENT_USER_ID)
+- Server runs on port 5000
+- vite.config.ts is fragile - avoid direct edits
+
+## Backup Info
+- Replit checkpoints are automatic
+- GitHub repo: https://github.com/DJValerieBLOVE/my-love-replit.git
