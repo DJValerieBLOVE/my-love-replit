@@ -17,6 +17,7 @@ import Profile from "@/pages/profile";
 import Events from "@/pages/events";
 import EventDetail from "@/pages/event-detail";
 import Leaderboard from "@/pages/leaderboard";
+import Feed from "@/pages/feed";
 import AdminOnboarding from "@/pages/admin/onboarding";
 import MentorStudio from "@/pages/admin/mentor-studio";
 
@@ -36,6 +37,7 @@ function Router() {
       <Route path="/events" component={Events} />
       <Route path="/events/:id" component={EventDetail} />
       <Route path="/leaderboard" component={Leaderboard} />
+      <Route path="/feed" component={Feed} />
       <Route path="/admin/onboarding" component={AdminOnboarding} />
       <Route path="/admin/mentor" component={MentorStudio} />
       <Route component={NotFound} />

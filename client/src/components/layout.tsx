@@ -11,7 +11,8 @@ import {
   Mail,
   Flame,
   Heart,
-  Lightbulb
+  Lightbulb,
+  Rss
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -48,6 +49,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { icon: Users, label: "Communities", href: "/community" },
     { icon: BookOpen, label: "Library", href: "/resources" },
     { icon: Trophy, label: "Leaderboard", href: "/leaderboard" },
+    { icon: Rss, label: "Feed", href: "/feed" },
   ];
 
   return (

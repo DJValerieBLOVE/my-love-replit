@@ -258,21 +258,32 @@ export function MasterpieceDashboard() {
         <div className="space-y-3">
           <div className="text-sm font-medium text-center">Top 3 Focus Areas</div>
           <div className="space-y-2">
-            <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
-              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: "#a2f005" }} />
-              <span className="text-sm font-medium">Mission</span>
-              <span className="text-xs text-muted-foreground ml-auto">Active</span>
-            </div>
-            <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
-              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: "#00d81c" }} />
-              <span className="text-sm font-medium">Money</span>
-              <span className="text-xs text-muted-foreground ml-auto">Growing</span>
-            </div>
-            <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
-              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: "#6600ff" }} />
-              <span className="text-sm font-medium">Body</span>
-              <span className="text-xs text-muted-foreground ml-auto">Improving</span>
-            </div>
+            {areaProgress.length > 0 ? (
+              [...areaProgress]
+                .sort((a: any, b: any) => (b.progress || 0) - (a.progress || 0))
+                .slice(0, 3)
+                .map((area: any) => {
+                  const areaId = area.areaId || "unknown";
+                  const displayName = AREA_ORDER.find(a => a.toLowerCase().replace(/[\/\s]/g, '-') === areaId) || areaId;
+                  const color = LOVE_COLORS[displayName as keyof typeof LOVE_COLORS] || "#6600ff";
+                  const progress = area.progress || 0;
+                  const status = progress >= 80 ? "Thriving" : progress >= 50 ? "Growing" : "Building";
+                  return (
+                    <div key={area.id} className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
+                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
+                      <span className="text-sm font-medium capitalize">{areaId.replace(/-/g, ' ')}</span>
+                      <span className="text-xs text-muted-foreground ml-auto">{status}</span>
+                    </div>
+                  );
+                })
+            ) : (
+              <>
+                <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
+                  <div className="w-2 h-2 rounded-full bg-muted" />
+                  <span className="text-sm text-muted-foreground">Set your first goal</span>
+                </div>
+              </>
+            )}
           </div>
           <div className="text-xs text-center text-muted-foreground pt-1">
             Ask Magic Mentor for guidance
