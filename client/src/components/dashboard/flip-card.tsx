@@ -52,6 +52,7 @@ export function FlipCard({
     e.stopPropagation();
     if (isPinned) {
       setIsPinned(false);
+      setIsFlipped(false);
     } else {
       setIsPinned(true);
       setIsFlipped(true);
