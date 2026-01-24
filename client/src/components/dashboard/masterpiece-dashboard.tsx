@@ -94,18 +94,18 @@ export function MasterpieceDashboard() {
       subtitle: "Celebrate progress",
       image: "https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?w=1200&h=800&fit=crop",
       backContent: (
-        <div className="text-center space-y-3">
-          <div className="text-5xl font-bold text-love-body">{winsThisWeek}</div>
-          <div className="text-sm text-muted-foreground">wins this week</div>
-          <div className="flex items-center justify-center gap-2 text-lg font-semibold">
+        <div className="text-center space-y-2">
+          <div className="text-4xl font-bold text-love-body">{winsThisWeek}</div>
+          <div className="text-xs text-muted-foreground">wins this week</div>
+          <div className="flex items-center justify-center gap-2 text-base font-semibold">
             <span>{streak} day streak</span>
-            <Flame className="w-5 h-5 text-muted-foreground" />
+            <Flame className="w-4 h-4 text-muted-foreground" />
           </div>
-          <div className="flex justify-center gap-1 pt-2">
+          <div className="flex justify-center gap-1 pt-1">
             {[...Array(7)].map((_, i) => (
               <div
                 key={i}
-                className={`w-2.5 h-2.5 rounded-full ${
+                className={`w-2 h-2 rounded-full ${
                   i < streak ? "bg-gray-900" : "bg-gray-200"
                 }`}
               />
@@ -121,12 +121,12 @@ export function MasterpieceDashboard() {
       subtitle: "Life balance",
       image: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=1200&h=800&fit=crop",
       backContent: (
-        <div className="text-center space-y-3">
+        <div className="text-center space-y-2">
           <div className="text-4xl font-bold" style={{ color: "#6600ff" }}>
             {overallProgress}%
           </div>
-          <div className="text-sm text-muted-foreground">overall progress</div>
-          <div className="flex items-end justify-center gap-1 h-16">
+          <div className="text-xs text-muted-foreground">overall progress</div>
+          <div className="flex items-end justify-center gap-1 h-12">
             {AREA_ORDER.map((area, i) => {
               const progress = areaProgress.find((p: any) => p.area === area);
               const score = progress?.currentScore || 0;
@@ -134,7 +134,7 @@ export function MasterpieceDashboard() {
               return (
                 <div
                   key={area}
-                  className="w-4 rounded-t-sm transition-all"
+                  className="w-3 rounded-t-sm transition-all"
                   style={{
                     height: `${height}%`,
                     backgroundColor: LOVE_COLORS[area as keyof typeof LOVE_COLORS],
@@ -154,23 +154,23 @@ export function MasterpieceDashboard() {
       subtitle: "Focus on 3",
       image: "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=1200&h=800&fit=crop",
       backContent: (
-        <div className="space-y-3">
+        <div className="space-y-2">
           <div className="text-3xl font-bold text-center text-love-body">2</div>
-          <div className="text-sm text-center text-muted-foreground">experiments active</div>
-          <div className="space-y-2 mt-4">
-            <div className="flex justify-between text-sm">
+          <div className="text-xs text-center text-muted-foreground">experiments active</div>
+          <div className="space-y-1.5 mt-2">
+            <div className="flex justify-between text-xs">
               <span>Morning Routine</span>
               <span className="text-muted-foreground">65%</span>
             </div>
-            <div className="w-full bg-gray-100 rounded-full h-2">
-              <div className="bg-love-body h-2 rounded-full" style={{ width: "65%" }} />
+            <div className="w-full bg-gray-100 rounded-full h-1.5">
+              <div className="bg-love-body h-1.5 rounded-full" style={{ width: "65%" }} />
             </div>
-            <div className="flex justify-between text-sm mt-3">
+            <div className="flex justify-between text-xs mt-2">
               <span>Daily Journaling</span>
               <span className="text-muted-foreground">40%</span>
             </div>
-            <div className="w-full bg-gray-100 rounded-full h-2">
-              <div className="bg-love-body h-2 rounded-full" style={{ width: "40%" }} />
+            <div className="w-full bg-gray-100 rounded-full h-1.5">
+              <div className="bg-love-body h-1.5 rounded-full" style={{ width: "40%" }} />
             </div>
           </div>
         </div>
@@ -183,16 +183,16 @@ export function MasterpieceDashboard() {
       subtitle: "2 upcoming",
       image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&h=800&fit=crop",
       backContent: (
-        <div className="space-y-3">
-          <div className="text-sm font-medium">Upcoming Events</div>
-          <div className="space-y-2">
-            <div className="p-2 bg-gray-50 rounded-lg">
-              <div className="font-medium text-sm">Weekly Check-in</div>
-              <div className="text-xs text-muted-foreground">Tomorrow, 10:00 AM</div>
+        <div className="space-y-2">
+          <div className="text-xs font-medium">Upcoming Events</div>
+          <div className="space-y-1.5">
+            <div className="p-1.5 bg-gray-50 rounded-lg">
+              <div className="font-medium text-xs">Weekly Check-in</div>
+              <div className="text-[10px] text-muted-foreground">Tomorrow, 10:00 AM</div>
             </div>
-            <div className="p-2 bg-gray-50 rounded-lg">
-              <div className="font-medium text-sm">Community Call</div>
-              <div className="text-xs text-muted-foreground">Friday, 3:00 PM</div>
+            <div className="p-1.5 bg-gray-50 rounded-lg">
+              <div className="font-medium text-xs">Community Call</div>
+              <div className="text-[10px] text-muted-foreground">Friday, 3:00 PM</div>
             </div>
           </div>
         </div>
@@ -205,14 +205,14 @@ export function MasterpieceDashboard() {
       subtitle: "3 partners",
       image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1200&h=800&fit=crop",
       backContent: (
-        <div className="text-center space-y-3">
-          <div className="flex justify-center -space-x-3">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 border-2 border-white" />
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-teal-500 border-2 border-white" />
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-red-500 border-2 border-white" />
+        <div className="text-center space-y-2">
+          <div className="flex justify-center -space-x-2">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 border-2 border-white" />
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-teal-500 border-2 border-white" />
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-red-500 border-2 border-white" />
           </div>
-          <div className="text-sm text-muted-foreground">Your accountability partners</div>
-          <div className="text-xs text-green-600 font-medium">All on track this week!</div>
+          <div className="text-xs text-muted-foreground">Your accountability partners</div>
+          <div className="text-[10px] text-green-600 font-medium">All on track this week!</div>
         </div>
       ),
       detailsLink: "/buddies",
@@ -223,25 +223,25 @@ export function MasterpieceDashboard() {
       subtitle: "2 active",
       image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=1200&h=800&fit=crop",
       backContent: (
-        <div className="space-y-3">
-          <div className="text-sm font-medium">Current Courses</div>
-          <div className="space-y-2">
-            <div className="p-2 bg-gray-50 rounded-lg">
-              <div className="font-medium text-sm">11x LOVE Foundations</div>
-              <div className="flex items-center gap-2 mt-1">
-                <div className="flex-1 bg-gray-200 rounded-full h-1.5">
-                  <div className="bg-love-body h-1.5 rounded-full" style={{ width: "75%" }} />
+        <div className="space-y-2">
+          <div className="text-xs font-medium">Current Courses</div>
+          <div className="space-y-1.5">
+            <div className="p-1.5 bg-gray-50 rounded-lg">
+              <div className="font-medium text-xs">11x LOVE Foundations</div>
+              <div className="flex items-center gap-2 mt-0.5">
+                <div className="flex-1 bg-gray-200 rounded-full h-1">
+                  <div className="bg-love-body h-1 rounded-full" style={{ width: "75%" }} />
                 </div>
-                <span className="text-xs text-muted-foreground">75%</span>
+                <span className="text-[10px] text-muted-foreground">75%</span>
               </div>
             </div>
-            <div className="p-2 bg-gray-50 rounded-lg">
-              <div className="font-medium text-sm">Daily Rituals</div>
-              <div className="flex items-center gap-2 mt-1">
-                <div className="flex-1 bg-gray-200 rounded-full h-1.5">
-                  <div className="bg-love-body h-1.5 rounded-full" style={{ width: "30%" }} />
+            <div className="p-1.5 bg-gray-50 rounded-lg">
+              <div className="font-medium text-xs">Daily Rituals</div>
+              <div className="flex items-center gap-2 mt-0.5">
+                <div className="flex-1 bg-gray-200 rounded-full h-1">
+                  <div className="bg-love-body h-1 rounded-full" style={{ width: "30%" }} />
                 </div>
-                <span className="text-xs text-muted-foreground">30%</span>
+                <span className="text-[10px] text-muted-foreground">30%</span>
               </div>
             </div>
           </div>
@@ -255,9 +255,9 @@ export function MasterpieceDashboard() {
       subtitle: "Your focus areas",
       image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1200&h=800&fit=crop",
       backContent: (
-        <div className="space-y-3">
-          <div className="text-sm font-medium text-center">Top 3 Focus Areas</div>
-          <div className="space-y-2">
+        <div className="space-y-2">
+          <div className="text-xs font-medium text-center">Top 3 Focus Areas</div>
+          <div className="space-y-1.5">
             {areaProgress.length > 0 ? (
               [...areaProgress]
                 .sort((a: any, b: any) => (b.progress || 0) - (a.progress || 0))
@@ -269,23 +269,23 @@ export function MasterpieceDashboard() {
                   const progress = area.progress || 0;
                   const status = progress >= 80 ? "Thriving" : progress >= 50 ? "Growing" : "Building";
                   return (
-                    <div key={area.id} className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
-                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
-                      <span className="text-sm font-medium capitalize">{areaId.replace(/-/g, ' ')}</span>
-                      <span className="text-xs text-muted-foreground ml-auto">{status}</span>
+                    <div key={area.id} className="flex items-center gap-2 p-1.5 bg-gray-50 rounded-lg">
+                      <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: color }} />
+                      <span className="text-xs font-medium capitalize truncate">{areaId.replace(/-/g, ' ')}</span>
+                      <span className="text-[10px] text-muted-foreground ml-auto">{status}</span>
                     </div>
                   );
                 })
             ) : (
               <>
-                <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
-                  <div className="w-2 h-2 rounded-full bg-muted" />
-                  <span className="text-sm text-muted-foreground">Set your first goal</span>
+                <div className="flex items-center gap-2 p-1.5 bg-gray-50 rounded-lg">
+                  <div className="w-1.5 h-1.5 rounded-full bg-muted" />
+                  <span className="text-xs text-muted-foreground">Set your first goal</span>
                 </div>
               </>
             )}
           </div>
-          <div className="text-xs text-center text-muted-foreground pt-1">
+          <div className="text-[10px] text-center text-muted-foreground">
             Ask Magic Mentor for guidance
           </div>
         </div>
@@ -298,13 +298,13 @@ export function MasterpieceDashboard() {
       subtitle: `${streak} days strong`,
       image: "https://images.unsplash.com/photo-1533227268428-f9ed0900fb3b?w=1200&h=800&fit=crop",
       backContent: (
-        <div className="text-center space-y-3">
+        <div className="text-center space-y-2">
           <div className="flex items-center justify-center gap-2">
-            <Flame className="w-10 h-10 text-muted-foreground" />
-            <span className="text-5xl font-bold">{streak}</span>
+            <Flame className="w-8 h-8 text-muted-foreground" />
+            <span className="text-4xl font-bold">{streak}</span>
           </div>
-          <div className="text-sm text-muted-foreground">consecutive days</div>
-          <div className="text-xs text-muted-foreground">
+          <div className="text-xs text-muted-foreground">consecutive days</div>
+          <div className="text-[10px] text-muted-foreground">
             {streak > 0
               ? `Keep it going! You're on fire!`
               : "Start your streak today!"}
@@ -319,21 +319,21 @@ export function MasterpieceDashboard() {
       subtitle: "2 groups",
       image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200&h=800&fit=crop",
       backContent: (
-        <div className="space-y-3">
-          <div className="text-sm font-medium">Your Communities</div>
-          <div className="space-y-2">
-            <div className="p-2 bg-gray-50 rounded-lg flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500" />
-              <div>
-                <div className="font-medium text-sm">11x LOVE LaB</div>
-                <div className="text-xs text-green-600">3 online</div>
+        <div className="space-y-2">
+          <div className="text-xs font-medium">Your Communities</div>
+          <div className="space-y-1.5">
+            <div className="p-1.5 bg-gray-50 rounded-lg flex items-center gap-2">
+              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 shrink-0" />
+              <div className="min-w-0">
+                <div className="font-medium text-xs truncate">11x LOVE LaB</div>
+                <div className="text-[10px] text-green-600">3 online</div>
               </div>
             </div>
-            <div className="p-2 bg-gray-50 rounded-lg flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-teal-500" />
-              <div>
-                <div className="font-medium text-sm">Growth Mindset</div>
-                <div className="text-xs text-green-600">1 online</div>
+            <div className="p-1.5 bg-gray-50 rounded-lg flex items-center gap-2">
+              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-teal-500 shrink-0" />
+              <div className="min-w-0">
+                <div className="font-medium text-xs truncate">Growth Mindset</div>
+                <div className="text-[10px] text-green-600">1 online</div>
               </div>
             </div>
           </div>

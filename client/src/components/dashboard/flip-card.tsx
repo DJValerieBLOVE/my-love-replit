@@ -84,17 +84,19 @@ export function FlipCard({
             transform: "rotateY(180deg)",
           }}
         >
-          <div className="flex flex-col h-full p-5">
-            <div className="flex-1">{backContent}</div>
-            <Button
-              className="w-full mt-3 bg-gray-900 hover:bg-gray-800 text-white"
-              onClick={(e) => {
-                e.stopPropagation();
-                if (onDetailsClick) onDetailsClick();
-              }}
-            >
-              Details <ChevronRight className="w-4 h-4 ml-1" />
-            </Button>
+          <div className="flex flex-col h-full p-4 relative">
+            <div className="flex-1 overflow-y-auto pb-14">{backContent}</div>
+            <div className="absolute bottom-4 left-4 right-4">
+              <Button
+                className="w-full bg-gray-900 hover:bg-gray-800 text-white h-10"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onDetailsClick) onDetailsClick();
+                }}
+              >
+                Details <ChevronRight className="w-4 h-4 ml-1" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
