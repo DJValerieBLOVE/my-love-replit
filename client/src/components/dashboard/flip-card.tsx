@@ -3,8 +3,6 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 
-import { Pin } from "lucide-react";
-
 interface FlipCardProps {
   title: string;
   subtitle: string;
@@ -14,8 +12,6 @@ interface FlipCardProps {
   detailsLink?: string;
   onDetailsClick?: () => void;
   className?: string;
-  isPinned?: boolean;
-  onPinToggle?: () => void;
 }
 
 export function FlipCard({
@@ -27,21 +23,16 @@ export function FlipCard({
   detailsLink,
   onDetailsClick,
   className,
-  isPinned,
-  onPinToggle,
 }: FlipCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
-  const effectiveFlipped = isPinned || isFlipped;
-
   const handleClick = (e: React.MouseEvent) => {
-    if (isPinned) return;
+    // On mobile/touch devices, we use click. On desktop, hover handles it but click toggles too.
     setIsFlipped(!isFlipped);
   };
 
   const handleMouseEnter = () => {
-    if (isPinned) return;
     if (window.matchMedia("(min-width: 1024px)").matches) {
       setIsHovered(true);
       setIsFlipped(true);
@@ -49,7 +40,6 @@ export function FlipCard({
   };
 
   const handleMouseLeave = () => {
-    if (isPinned) return;
     if (window.matchMedia("(min-width: 1024px)").matches) {
       setIsHovered(false);
       setIsFlipped(false);
@@ -79,10 +69,10 @@ export function FlipCard({
       onKeyDown={handleKeyDown}
     >
       <div
-        className="relative w-full h-full transition-transform duration-[800ms] ease-in-out"
+        className="relative w-full h-full transition-transform duration-[400ms] ease-in-out"
         style={{
           transformStyle: "preserve-3d",
-          transform: effectiveFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
+          transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
         }}
       >
         {/* Front of card */}
@@ -113,18 +103,6 @@ export function FlipCard({
           }}
         >
           <div className="flex flex-col h-full p-4 relative">
-            <button
-              className={cn(
-                "absolute top-2 right-2 p-1.5 rounded-full transition-colors z-20",
-                isPinned ? "bg-[#F0E6FF] text-[#6600ff]" : "text-muted-foreground hover:bg-gray-100"
-              )}
-              onClick={(e) => {
-                e.stopPropagation();
-                if (onPinToggle) onPinToggle();
-              }}
-            >
-              <Pin className={cn("w-3.5 h-3.5", isPinned && "fill-current")} />
-            </button>
             <div className="flex-1 overflow-y-auto pb-14">{backContent}</div>
             <div className="absolute bottom-4 left-4 right-4">
               <Button
