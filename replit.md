@@ -97,10 +97,26 @@
 1. Streak tracking & wins display
 2. 11x LOVE rainbow equalizer widget
 3. Nostr authentication
-4. AI Learning Buddy (enhanced)
-5. Community membership system
+4. AI Learning Buddy (enhanced) - trains on user's journal, goals, course learnings
+5. Community membership system (multi-tenant: creators can set up paid communities)
 6. Lightning/Zaps integration
 7. Bitcoin rewards system
+8. User personalization: Spotify playlists, podcast RSS feeds, favorite quotes/authors
+
+## Multi-Tenant Architecture
+- **Creators/coaches** can set up paid communities (limit 5 per paid plan, extra available for fee)
+- **Value for Value**: Content is free to consume with optional zaps, communities are paid
+- **11x LOVE Code course**: Everyone goes through this to define dreams, fears, goals in 11 areas
+- **Magic Mentor AI trains on**: Journal entries, goals, course learnings, personal preferences
+
+## Daily LOVE Practice (5 V's)
+- **Vibe**: How you're feeling today (emotional check-in)
+- **Vision**: What you're focused on / clarity of purpose
+- **Value**: Gratitude and appreciation
+- **Villain**: Obstacles or resistance to overcome
+- **Victory**: Small wins and celebrations
+- Entries stored in private journal (only user and AI can see)
+- Connects to journal page via /journal?startPractice=true
 
 ## Design Patterns
 - **Monorepo Structure**: Client (`client/`), Server (`server/`), Shared (`shared/`)

@@ -94,43 +94,31 @@ export function MasterpieceDashboard() {
       subtitle: "Vibe • Vision • Value • Villain • Victory",
       image: "https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?w=1200&h=800&fit=crop",
       backContent: (
-        <div className="space-y-2 px-1">
-          <div className="text-[12px] text-muted-foreground uppercase tracking-wider mb-1 px-2">Daily Check</div>
-          <div className="space-y-1">
-            <div className="p-2 px-3 bg-gray-50/80 rounded-md border border-gray-100/50">
-              <div className="flex items-center justify-between text-[13px] text-gray-900">
-                <span>Vibe</span>
-                <span className="text-[11px] text-muted-foreground">Feeling Good</span>
+        <div className="flex flex-col items-center justify-center text-center h-full px-4 space-y-3">
+          <div className="text-[12px] text-muted-foreground uppercase tracking-wider">Today's Practice</div>
+          <div className="flex items-center gap-2">
+            <Flame className="w-5 h-5 text-orange-500" />
+            <span className="text-2xl text-gray-900">{streak} day streak</span>
+          </div>
+          <div className="text-[11px] text-muted-foreground">
+            {journalEntries.length > 0 && new Date(journalEntries[0]?.createdAt).toDateString() === new Date().toDateString()
+              ? "Completed today"
+              : "Tap to start your practice"}
+          </div>
+          <div className="flex gap-1.5 mt-1">
+            {["V", "V", "V", "V", "V"].map((letter, i) => (
+              <div
+                key={i}
+                className="w-6 h-6 rounded-full bg-gradient-to-br from-[#6600ff] to-[#cc00ff] flex items-center justify-center text-[10px] text-white"
+                title={["Vibe", "Vision", "Value", "Villain", "Victory"][i]}
+              >
+                {letter}
               </div>
-            </div>
-            <div className="p-2 px-3 bg-gray-50/80 rounded-md border border-gray-100/50">
-              <div className="flex items-center justify-between text-[13px] text-gray-900">
-                <span>Vision</span>
-                <span className="text-[11px] text-muted-foreground">Clear</span>
-              </div>
-            </div>
-            <div className="p-2 px-3 bg-gray-50/80 rounded-md border border-gray-100/50">
-              <div className="flex items-center justify-between text-[13px] text-gray-900">
-                <span>Value</span>
-                <span className="text-[11px] text-muted-foreground">Grateful</span>
-              </div>
-            </div>
-            <div className="p-2 px-3 bg-gray-50/80 rounded-md border border-gray-100/50">
-              <div className="flex items-center justify-between text-[13px] text-gray-900">
-                <span>Villain</span>
-                <span className="text-[11px] text-muted-foreground">Identified</span>
-              </div>
-            </div>
-            <div className="p-2 px-3 bg-gray-50/80 rounded-md border border-gray-100/50">
-              <div className="flex items-center justify-between text-[13px] text-gray-900">
-                <span>Victory</span>
-                <span className="text-[11px] text-muted-foreground">Small Wins</span>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       ),
-      detailsLink: "/journal",
+      detailsLink: "/journal?startPractice=true",
     },
     {
       id: "11x-love",
