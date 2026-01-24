@@ -1,17 +1,17 @@
 import { Link, useLocation } from "wouter";
 import { 
   Home, 
-  LayoutGrid, 
-  Book,
+  Users,
+  BookOpen,
   Bell,
   Calendar,
   Target,
   Sparkles,
   Trophy,
   Mail,
-  Wrench,
   Flame,
-  Heart
+  Heart,
+  GraduationCap
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -43,10 +43,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const navLinks = [
     { icon: Home, label: "Home", href: "/" },
     { icon: Target, label: "Big Dreams", href: "/big-dreams" },
-    { icon: Book, label: "Learning", href: "/learning" },
+    { icon: GraduationCap, label: "Learning", href: "/learning" },
     { icon: Calendar, label: "Events", href: "/events" },
-    { icon: LayoutGrid, label: "Communities", href: "/community" },
-    { icon: Wrench, label: "Library", href: "/resources" },
+    { icon: Users, label: "Communities", href: "/community" },
+    { icon: BookOpen, label: "Library", href: "/resources" },
     { icon: Trophy, label: "Leaderboard", href: "/leaderboard" },
   ];
 
