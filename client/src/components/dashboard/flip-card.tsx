@@ -43,7 +43,7 @@ export function FlipCard({
       tabIndex={0}
       aria-label={`${title} card. ${isFlipped ? "Showing details. Press to flip back." : "Press to see details."}`}
       className={cn(
-        "relative w-full aspect-[4/3] cursor-pointer",
+        "relative w-full aspect-[16/9] cursor-pointer",
         className
       )}
       style={{ perspective: "1000px" }}
@@ -59,7 +59,7 @@ export function FlipCard({
       >
         {/* Front of card */}
         <div
-          className="absolute inset-0 w-full h-full rounded-2xl overflow-hidden shadow-lg"
+          className="absolute inset-0 w-full h-full rounded-md overflow-hidden shadow-sm"
           style={{ backfaceVisibility: "hidden" }}
         >
           <div
@@ -78,7 +78,7 @@ export function FlipCard({
 
         {/* Back of card */}
         <div
-          className="absolute inset-0 w-full h-full rounded-2xl overflow-hidden shadow-lg bg-white"
+          className="absolute inset-0 w-full h-full rounded-md overflow-hidden shadow-sm bg-white"
           style={{
             backfaceVisibility: "hidden",
             transform: "rotateY(180deg)",

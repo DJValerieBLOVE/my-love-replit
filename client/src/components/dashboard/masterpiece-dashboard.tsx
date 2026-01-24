@@ -92,7 +92,7 @@ export function MasterpieceDashboard() {
       id: "daily-wins",
       title: "Daily Wins",
       subtitle: "Celebrate progress",
-      image: "https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?w=600&h=400&fit=crop",
+      image: "https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?w=1200&h=800&fit=crop",
       backContent: (
         <div className="text-center space-y-3">
           <div className="text-5xl font-bold text-love-body">{winsThisWeek}</div>
@@ -119,7 +119,7 @@ export function MasterpieceDashboard() {
       id: "11x-love",
       title: "11x LOVE",
       subtitle: "Life balance",
-      image: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=600&h=400&fit=crop",
+      image: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=1200&h=800&fit=crop",
       backContent: (
         <div className="text-center space-y-3">
           <div className="text-4xl font-bold" style={{ color: "#6600ff" }}>
@@ -152,7 +152,7 @@ export function MasterpieceDashboard() {
       id: "your-goals",
       title: "Your Goals",
       subtitle: "Focus on 3",
-      image: "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=600&h=400&fit=crop",
+      image: "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=1200&h=800&fit=crop",
       backContent: (
         <div className="space-y-3">
           <div className="text-3xl font-bold text-center text-love-body">2</div>
@@ -181,7 +181,7 @@ export function MasterpieceDashboard() {
       id: "events",
       title: "Events",
       subtitle: "2 upcoming",
-      image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&h=400&fit=crop",
+      image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&h=800&fit=crop",
       backContent: (
         <div className="space-y-3">
           <div className="text-sm font-medium">Upcoming Events</div>
@@ -203,7 +203,7 @@ export function MasterpieceDashboard() {
       id: "buddies",
       title: "Buddies",
       subtitle: "3 partners",
-      image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&h=400&fit=crop",
+      image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1200&h=800&fit=crop",
       backContent: (
         <div className="text-center space-y-3">
           <div className="flex justify-center -space-x-3">
@@ -221,7 +221,7 @@ export function MasterpieceDashboard() {
       id: "learning",
       title: "Learning",
       subtitle: "2 active",
-      image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=600&h=400&fit=crop",
+      image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=1200&h=800&fit=crop",
       backContent: (
         <div className="space-y-3">
           <div className="text-sm font-medium">Current Courses</div>
@@ -253,7 +253,7 @@ export function MasterpieceDashboard() {
       id: "ai-mentor",
       title: "AI Mentor",
       subtitle: "Ready to guide",
-      image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600&h=400&fit=crop",
+      image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1200&h=800&fit=crop",
       backContent: (
         <div className="text-center space-y-3">
           <div className="text-4xl text-muted-foreground">AI</div>
@@ -270,7 +270,7 @@ export function MasterpieceDashboard() {
       id: "streak",
       title: "Streak",
       subtitle: `${streak} days strong`,
-      image: "https://images.unsplash.com/photo-1533227268428-f9ed0900fb3b?w=600&h=400&fit=crop",
+      image: "https://images.unsplash.com/photo-1533227268428-f9ed0900fb3b?w=1200&h=800&fit=crop",
       backContent: (
         <div className="text-center space-y-3">
           <div className="flex items-center justify-center gap-2">
@@ -291,7 +291,7 @@ export function MasterpieceDashboard() {
       id: "communities",
       title: "Communities",
       subtitle: "2 groups",
-      image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&h=400&fit=crop",
+      image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200&h=800&fit=crop",
       backContent: (
         <div className="space-y-3">
           <div className="text-sm font-medium">Your Communities</div>
@@ -318,8 +318,8 @@ export function MasterpieceDashboard() {
   ];
 
   return (
-    <div className="max-w-5xl mx-auto p-4 lg:p-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="w-full p-4 lg:p-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1 px-4 lg:px-12">
         {cards.map((card) => (
           <FlipCard
             key={card.id}
