@@ -89,27 +89,32 @@ export function MasterpieceDashboard() {
 
   const cards = [
     {
-      id: "daily-wins",
-      title: "Daily Wins",
-      subtitle: "Celebrate progress",
+      id: "daily-love",
+      title: "Daily LOVE Practice",
+      subtitle: "Vision • Value • Villain • Victory",
       image: "https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?w=1200&h=800&fit=crop",
       backContent: (
-        <div className="text-center space-y-2">
-          <div className="text-4xl font-bold text-love-body">{winsThisWeek}</div>
-          <div className="text-xs text-muted-foreground">wins this week</div>
-          <div className="flex items-center justify-center gap-2 text-base font-semibold">
-            <span>{streak} day streak</span>
-            <Flame className="w-4 h-4 text-muted-foreground" />
-          </div>
-          <div className="flex justify-center gap-1 pt-1">
-            {[...Array(7)].map((_, i) => (
-              <div
-                key={i}
-                className={`w-2 h-2 rounded-full ${
-                  i < streak ? "bg-gray-900" : "bg-gray-200"
-                }`}
-              />
-            ))}
+        <div className="space-y-2 px-1">
+          <div className="text-[12px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 px-2">Vibe Check</div>
+          <div className="space-y-1">
+            <div className="p-2 px-3 bg-gray-50/80 rounded-md border border-gray-100/50">
+              <div className="flex items-center justify-between text-[13px] font-bold text-gray-900">
+                <span>Vision</span>
+                <span className="text-[11px] font-normal text-muted-foreground">Clear</span>
+              </div>
+            </div>
+            <div className="p-2 px-3 bg-gray-50/80 rounded-md border border-gray-100/50">
+              <div className="flex items-center justify-between text-[13px] font-bold text-gray-900">
+                <span>Value</span>
+                <span className="text-[11px] font-normal text-muted-foreground">Grateful</span>
+              </div>
+            </div>
+            <div className="p-2 px-3 bg-gray-50/80 rounded-md border border-gray-100/50">
+              <div className="flex items-center justify-between text-[13px] font-bold text-gray-900">
+                <span>Victory</span>
+                <span className="text-[11px] font-normal text-muted-foreground">Small Wins</span>
+              </div>
+            </div>
           </div>
         </div>
       ),
@@ -154,23 +159,26 @@ export function MasterpieceDashboard() {
       subtitle: "Focus on 3",
       image: "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=1200&h=800&fit=crop",
       backContent: (
-        <div className="space-y-2">
-          <div className="text-3xl font-bold text-center text-love-body">2</div>
-          <div className="text-xs text-center text-muted-foreground">experiments active</div>
-          <div className="space-y-1.5 mt-2">
-            <div className="flex justify-between text-xs">
-              <span>Morning Routine</span>
-              <span className="text-muted-foreground">65%</span>
+        <div className="space-y-2 px-1">
+          <div className="text-[12px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 px-2 text-center">Active Experiments</div>
+          <div className="space-y-1 mt-1">
+            <div className="p-2 px-3 bg-gray-50/80 rounded-md border border-gray-100/50">
+              <div className="flex justify-between text-[13px] font-bold text-gray-900 mb-1">
+                <span>Morning Routine</span>
+                <span className="text-[11px] text-muted-foreground font-medium">65%</span>
+              </div>
+              <div className="w-full bg-gray-200/50 rounded-full h-1.5">
+                <div className="bg-love-body h-1.5 rounded-full" style={{ width: "65%" }} />
+              </div>
             </div>
-            <div className="w-full bg-gray-100 rounded-full h-1.5">
-              <div className="bg-love-body h-1.5 rounded-full" style={{ width: "65%" }} />
-            </div>
-            <div className="flex justify-between text-xs mt-2">
-              <span>Daily Journaling</span>
-              <span className="text-muted-foreground">40%</span>
-            </div>
-            <div className="w-full bg-gray-100 rounded-full h-1.5">
-              <div className="bg-love-body h-1.5 rounded-full" style={{ width: "40%" }} />
+            <div className="p-2 px-3 bg-gray-50/80 rounded-md border border-gray-100/50">
+              <div className="flex justify-between text-[13px] font-bold text-gray-900 mb-1">
+                <span>Daily Journaling</span>
+                <span className="text-[11px] text-muted-foreground font-medium">40%</span>
+              </div>
+              <div className="w-full bg-gray-200/50 rounded-full h-1.5">
+                <div className="bg-love-body h-1.5 rounded-full" style={{ width: "40%" }} />
+              </div>
             </div>
           </div>
         </div>
@@ -178,26 +186,26 @@ export function MasterpieceDashboard() {
       detailsLink: "/experiments",
     },
     {
-      id: "events",
-      title: "Events",
-      subtitle: "2 upcoming",
+      id: "podcast-day",
+      title: "Podcast of the Day",
+      subtitle: "Deep Dive: Lightning",
       image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&h=800&fit=crop",
       backContent: (
         <div className="space-y-2 px-1">
-          <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 px-2">Upcoming Events</div>
-          <div className="space-y-1">
-            <div className="p-2 px-3 bg-gray-50/80 rounded-md flex items-center justify-between gap-2 border border-gray-100/50">
-              <div className="font-medium text-[11px] text-gray-900 truncate">Weekly Check-in</div>
-              <div className="text-[10px] text-muted-foreground whitespace-nowrap">Tomorrow, 10:00 AM</div>
-            </div>
-            <div className="p-2 px-3 bg-gray-50/80 rounded-md flex items-center justify-between gap-2 border border-gray-100/50">
-              <div className="font-medium text-[11px] text-gray-900 truncate">Community Call</div>
-              <div className="text-[10px] text-muted-foreground whitespace-nowrap">Friday, 3:00 PM</div>
+          <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 px-2">Now Playing</div>
+          <div className="p-3 bg-gray-50/80 rounded-md border border-gray-100/50">
+            <div className="font-bold text-[13px] text-gray-900 leading-tight">Lightning Network 101</div>
+            <div className="text-[11px] text-muted-foreground mt-1">with DJ Valerie B LOVE</div>
+            <div className="mt-2 flex items-center gap-2">
+              <div className="w-full bg-gray-200 h-1 rounded-full overflow-hidden">
+                <div className="bg-orange-500 h-full w-[40%]" />
+              </div>
+              <span className="text-[10px] text-muted-foreground">12:45</span>
             </div>
           </div>
         </div>
       ),
-      detailsLink: "/events",
+      detailsLink: "/resources",
     },
     {
       id: "buddies",
@@ -224,24 +232,24 @@ export function MasterpieceDashboard() {
       image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=1200&h=800&fit=crop",
       backContent: (
         <div className="space-y-2 px-1">
-          <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 px-2">Current Courses</div>
+          <div className="text-[12px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 px-2 text-center">Current Courses</div>
           <div className="space-y-1">
             <div className="p-2 px-3 bg-gray-50/80 rounded-md border border-gray-100/50">
               <div className="flex items-center justify-between gap-2 mb-1">
-                <div className="font-medium text-[11px] text-gray-900 truncate">11x LOVE Foundations</div>
-                <span className="text-[10px] text-muted-foreground whitespace-nowrap font-medium">75%</span>
+                <div className="font-bold text-[13px] text-gray-900 truncate">11x LOVE Foundations</div>
+                <span className="text-[11px] text-muted-foreground whitespace-nowrap font-medium">75%</span>
               </div>
-              <div className="w-full bg-gray-200/50 rounded-full h-1">
-                <div className="bg-love-body h-1 rounded-full" style={{ width: "75%" }} />
+              <div className="w-full bg-gray-200/50 rounded-full h-1.5">
+                <div className="bg-love-body h-1.5 rounded-full" style={{ width: "75%" }} />
               </div>
             </div>
             <div className="p-2 px-3 bg-gray-50/80 rounded-md border border-gray-100/50">
               <div className="flex items-center justify-between gap-2 mb-1">
-                <div className="font-medium text-[11px] text-gray-900 truncate">Daily Rituals</div>
-                <span className="text-[10px] text-muted-foreground whitespace-nowrap font-medium">30%</span>
+                <div className="font-bold text-[13px] text-gray-900 truncate">Daily Rituals</div>
+                <span className="text-[11px] text-muted-foreground whitespace-nowrap font-medium">30%</span>
               </div>
-              <div className="w-full bg-gray-200/50 rounded-full h-1">
-                <div className="bg-love-body h-1 rounded-full" style={{ width: "30%" }} />
+              <div className="w-full bg-gray-200/50 rounded-full h-1.5">
+                <div className="bg-love-body h-1.5 rounded-full" style={{ width: "30%" }} />
               </div>
             </div>
           </div>
@@ -256,7 +264,7 @@ export function MasterpieceDashboard() {
       image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1200&h=800&fit=crop",
       backContent: (
         <div className="space-y-2 px-1">
-          <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 px-2 text-center">Top 3 Focus Areas</div>
+          <div className="text-[12px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 px-2">Top 3 Focus Areas</div>
           <div className="space-y-1">
             {areaProgress.length > 0 ? (
               [...areaProgress]
@@ -271,20 +279,17 @@ export function MasterpieceDashboard() {
                   return (
                     <div key={area.id} className="flex items-center gap-2 p-2 px-3 bg-gray-50/80 rounded-md border border-gray-100/50">
                       <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
-                      <span className="text-[11px] font-medium text-gray-900 capitalize truncate">{areaId.replace(/-/g, ' ')}</span>
-                      <span className="text-[10px] text-muted-foreground ml-auto whitespace-nowrap">{status}</span>
+                      <span className="text-[13px] font-bold text-gray-900 capitalize truncate">{areaId.replace(/-/g, ' ')}</span>
+                      <span className="text-[11px] text-muted-foreground ml-auto whitespace-nowrap">{status}</span>
                     </div>
                   );
                 })
             ) : (
               <div className="flex items-center gap-2 p-2 px-3 bg-gray-50/80 rounded-md border border-gray-100/50">
                 <div className="w-1.5 h-1.5 rounded-full bg-muted shrink-0" />
-                <span className="text-[11px] text-muted-foreground">Set your first goal</span>
+                <span className="text-[12px] text-muted-foreground">Set your first goal</span>
               </div>
             )}
-          </div>
-          <div className="text-[10px] text-center text-muted-foreground mt-1 italic">
-            Ask Magic Mentor for guidance
           </div>
         </div>
       ),
@@ -312,38 +317,19 @@ export function MasterpieceDashboard() {
       detailsLink: "/journal",
     },
     {
-      id: "communities",
-      title: "Communities",
-      subtitle: "2 groups",
+      id: "daily-affirmation",
+      title: "Daily Affirmation",
+      subtitle: "Your mantra for today",
       image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200&h=800&fit=crop",
       backContent: (
-        <div className="space-y-2 px-1">
-          <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 px-2">Your Communities</div>
-          <div className="space-y-1">
-            <div className="p-2 px-3 bg-gray-50/80 rounded-md flex items-center justify-between border border-gray-100/50">
-              <div className="flex items-center gap-2 min-w-0">
-                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 shrink-0" />
-                <div className="font-medium text-[11px] text-gray-900 truncate">11x LOVE LaB</div>
-              </div>
-              <div className="flex items-center gap-1.5 ml-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                <div className="text-[10px] text-green-600 font-medium whitespace-nowrap">3 online</div>
-              </div>
-            </div>
-            <div className="p-2 px-3 bg-gray-50/80 rounded-md flex items-center justify-between border border-gray-100/50">
-              <div className="flex items-center gap-2 min-w-0">
-                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-teal-500 shrink-0" />
-                <div className="font-medium text-[11px] text-gray-900 truncate">Growth Mindset</div>
-              </div>
-              <div className="flex items-center gap-1.5 ml-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                <div className="text-[10px] text-green-600 font-medium whitespace-nowrap">1 online</div>
-              </div>
-            </div>
+        <div className="flex flex-col items-center justify-center text-center h-full px-4 space-y-3">
+          <div className="text-[14px] font-bold text-gray-900 leading-relaxed italic">
+            "I am the architect of my own masterpiece, building with LOVE and intention."
           </div>
+          <div className="w-8 h-0.5 bg-love-body/20 rounded-full" />
         </div>
       ),
-      detailsLink: "/communities",
+      detailsLink: "/big-dreams",
     },
   ];
 

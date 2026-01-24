@@ -25,9 +25,25 @@ export function FlipCard({
   className,
 }: FlipCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent) => {
+    // On mobile/touch devices, we use click. On desktop, hover handles it but click toggles too.
     setIsFlipped(!isFlipped);
+  };
+
+  const handleMouseEnter = () => {
+    if (window.matchMedia("(min-width: 1024px)").matches) {
+      setIsHovered(true);
+      setIsFlipped(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (window.matchMedia("(min-width: 1024px)").matches) {
+      setIsHovered(false);
+      setIsFlipped(false);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -48,10 +64,12 @@ export function FlipCard({
       )}
       style={{ perspective: "1000px" }}
       onClick={handleClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       onKeyDown={handleKeyDown}
     >
       <div
-        className="relative w-full h-full transition-transform duration-500"
+        className="relative w-full h-full transition-transform duration-[400ms] ease-in-out"
         style={{
           transformStyle: "preserve-3d",
           transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
