@@ -12,7 +12,9 @@ import {
   Flame,
   Heart,
   Lightbulb,
-  Rss
+  Rss,
+  LogOut,
+  Zap
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -23,6 +25,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeCustomizer } from "@/components/theme-customizer";
 import { useState } from "react";
 import { AiBuddy } from "@/components/ai-buddy";
+import { useNostr } from "@/contexts/nostr-context";
+import { NostrLoginDialog } from "@/components/nostr-login-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,6 +44,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [inboxOpen, setInboxOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+  const { isConnected, profile, disconnect, isAdmin, isLoading } = useNostr();
 
   const navLinks = [
     { icon: Home, label: "Home", href: "/" },
@@ -205,23 +211,51 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </DropdownMenu>
             </div>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Avatar className="h-9 w-9 shrink-0 cursor-pointer ring-2 ring-primary/20 transition-all hover:ring-primary">
-                  <AvatarImage src={CURRENT_USER.avatar} />
-                  <AvatarFallback>SJ</AvatarFallback>
-                </Avatar>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <Link href="/profile"><DropdownMenuItem>Profile</DropdownMenuItem></Link>
-                <Link href="/wallet"><DropdownMenuItem>Wallet</DropdownMenuItem></Link>
-                <DropdownMenuItem>Settings</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {isLoading ? (
+              <div className="h-9 w-9 rounded-full bg-muted animate-pulse" />
+            ) : isConnected ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Avatar className="h-9 w-9 shrink-0 cursor-pointer ring-2 ring-primary/20 transition-all hover:ring-primary" data-testid="avatar-user">
+                    <AvatarImage src={profile?.picture || CURRENT_USER.avatar} />
+                    <AvatarFallback>{profile?.name?.[0] || profile?.npub?.slice(-2).toUpperCase() || "?"}</AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel className="flex flex-col">
+                    <span>{profile?.name || "Nostr User"}</span>
+                    <span className="text-xs font-normal text-muted-foreground truncate">
+                      {profile?.npub?.slice(0, 12)}...{profile?.npub?.slice(-4)}
+                    </span>
+                    {isAdmin && (
+                      <span className="text-xs text-love-family font-medium mt-1">Admin</span>
+                    )}
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <Link href="/profile"><DropdownMenuItem>Profile</DropdownMenuItem></Link>
+                  <Link href="/wallet"><DropdownMenuItem>Wallet</DropdownMenuItem></Link>
+                  <DropdownMenuItem>Settings</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={disconnect} className="text-red-600 focus:text-red-600">
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Disconnect
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button
+                onClick={() => setLoginDialogOpen(true)}
+                className="bg-gradient-to-r from-[#6600ff] to-[#cc00ff] hover:from-[#5500dd] hover:to-[#bb00dd] text-white font-medium"
+                data-testid="button-login"
+              >
+                <Zap className="w-4 h-4 mr-2" />
+                Login
+              </Button>
+            )}
           </div>
       </header>
+      
+      <NostrLoginDialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen} />
 
       <div className="flex-1 flex overflow-hidden">
         {/* Left Sidebar (Navigation) */}
