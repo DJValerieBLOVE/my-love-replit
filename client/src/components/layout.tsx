@@ -234,10 +234,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </aside>
 
         {/* Main Content Area */}
-        <main className="flex-1 overflow-y-auto bg-muted/30">
-          <div className="max-w-6xl mx-auto">
-            {children}
-          </div>
+        <main className="flex-1 overflow-hidden">
+          {children}
         </main>
 
       </div>
