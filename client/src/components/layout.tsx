@@ -46,7 +46,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { icon: Book, label: "Learning", href: "/learning" },
     { icon: Calendar, label: "Events", href: "/events" },
     { icon: LayoutGrid, label: "Communities", href: "/community" },
-    { icon: Wrench, label: "Resources", href: "/resources" },
+    { icon: Wrench, label: "Library", href: "/resources" },
     { icon: Trophy, label: "Leaderboard", href: "/leaderboard" },
   ];
 

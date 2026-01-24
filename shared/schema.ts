@@ -16,6 +16,9 @@ export const users = pgTable("users", {
   streak: integer("streak").default(0).notNull(),
   walletBalance: integer("wallet_balance").default(0).notNull(),
   badges: text("badges").array().default(sql`ARRAY[]::text[]`).notNull(),
+  lookingForBuddy: boolean("looking_for_buddy").default(false).notNull(),
+  buddyDescription: text("buddy_description"),
+  labInterests: text("lab_interests").array().default(sql`ARRAY[]::text[]`).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
