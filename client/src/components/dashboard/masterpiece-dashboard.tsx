@@ -318,8 +318,8 @@ export function MasterpieceDashboard() {
   ];
 
   return (
-    <div className="w-full h-full overflow-hidden bg-black">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px h-full">
+    <div className="w-full h-full p-4 overflow-hidden bg-background">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 h-full">
         {cards.map((card) => (
           <FlipCard
             key={card.id}
