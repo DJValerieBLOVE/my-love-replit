@@ -2,36 +2,24 @@ import { Link, useLocation } from "wouter";
 import { 
   Home, 
   LayoutGrid, 
-  Book, // Changed from BookOpen
-  Wallet, 
-  User, 
+  Book,
   Bell,
-  Settings,
   Calendar,
-  Search,
   Target,
   Sparkles,
-  Zap,
-  FlaskConical, // Changed from Rocket
   Trophy,
-  Menu,
   Mail,
-  Wrench, // Added
-  Music,   // Added
-  HelpCircle, // Added
-  Flame, // Added
-  Heart // Added
+  Wrench,
+  Flame,
+  Heart
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { CURRENT_USER, CLUBS, EXPERIMENTS, LOVE_CODE_AREAS, STREAK_DATA } from "@/lib/mock-data";
-import Logo from "../assets/11x_love_logo.png";
+import { CURRENT_USER } from "@/lib/mock-data";
 import BitcoinIcon from "../assets/bitcoin_icon.png";
 import MagicMentor from "@assets/djvalerieblove_twirling_bitcoin_goddess_colorful_vivid_psyche_4e0fb7f6-b95b-488f-9d18-eb77e7dd0a60_1_1764334332945.png";
-import Course1 from "@assets/generated_images/missions_header.png";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeCustomizer } from "@/components/theme-customizer";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState } from "react";
 import { AiBuddy } from "@/components/ai-buddy";
 import {
@@ -42,19 +30,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Progress } from "@/components/ui/progress";
-import { Card } from "@/components/ui/card";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 import { EqVisualizer } from "@/components/eq-visualizer";
 import { VerticalEqVisualizer } from "@/components/vertical-eq-visualizer";
 
-export default function Layout({ children, showRightSidebar = true }: { children: React.ReactNode, showRightSidebar?: boolean }) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [inboxOpen, setInboxOpen] = useState(false);
@@ -63,13 +43,11 @@ export default function Layout({ children, showRightSidebar = true }: { children
   const navLinks = [
     { icon: Home, label: "Home", href: "/" },
     { icon: Target, label: "Big Dreams", href: "/big-dreams" },
-    { icon: FlaskConical, label: "Experiments", href: "/experiments" },
-    { icon: Book, label: "Lab Notes", href: "/journal" },
-    { icon: Wrench, label: "My Toolbox", href: "/toolbox" },
+    { icon: Book, label: "Learning", href: "/learning" },
     { icon: Calendar, label: "Events", href: "/events" },
-    { icon: LayoutGrid, label: "Clubs", href: "/community" },
-    { icon: Music, label: "Resources", href: "/resources" },
-    { icon: HelpCircle, label: "FAQs", href: "/faws" },
+    { icon: LayoutGrid, label: "Communities", href: "/community" },
+    { icon: Wrench, label: "Resources", href: "/resources" },
+    { icon: Trophy, label: "Leaderboard", href: "/leaderboard" },
   ];
 
   return (
@@ -262,123 +240,6 @@ export default function Layout({ children, showRightSidebar = true }: { children
           </div>
         </main>
 
-        {/* Right Sidebar (Gamification) */}
-        {showRightSidebar && (
-          <aside className="hidden lg:flex flex-col w-[320px] border-l bg-card/50 p-4 gap-4 overflow-y-auto">
-            {/* Widget 1: Magic Mentor */}
-            <div className="bg-gradient-to-br from-[#6600ff] to-[#cc00ff] rounded-xs border border-white/10 p-4 overflow-hidden relative group cursor-pointer hover:shadow-lg transition-all shadow-md" data-testid="widget-mentor">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-white/20 to-transparent rounded-full -mr-20 -mt-20 blur-3xl transition-all" />
-            
-            <div className="relative z-10 flex flex-col">
-              {/* Image and Badge on same line */}
-              <div className="flex items-center justify-center gap-2 mb-3">
-                {/* Mentor Image */}
-                <div className="relative flex-shrink-0">
-                  <div className="absolute inset-0 bg-white/20 blur-xl rounded-full" />
-                  <img src={MagicMentor} alt="Magic Mentor" className="w-16 h-16 rounded-full border-2 border-white/30 relative z-10 shadow-lg object-cover" />
-                </div>
-                
-                {/* VIP Level Badge */}
-                <div className="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 rounded-lg px-2 py-1 cursor-pointer hover:bg-white/20 transition-colors backdrop-blur-sm">
-                  <Sparkles className="w-4 h-4 text-yellow-300 flex-shrink-0" strokeWidth={1.5} />
-                  <Link href="/profile">
-                    <span className="text-[10px] font-bold text-white">Level <span className="text-yellow-300 font-black">12</span></span>
-                  </Link>
-                </div>
-              </div>
-
-              {/* Tagline */}
-              <p className="text-base text-white mb-3 italic font-bold text-center drop-shadow-sm">"Rock Your Dreams!"</p>
-
-              {/* Ask Magic Mentor Button */}
-              <Button 
-                onClick={() => setIsAiOpen(true)}
-                className="w-full rounded-lg h-10 font-bold text-sm bg-[#6600ff] text-white border border-white/30 hover:bg-[#F5F3FF] hover:text-[#6600ff] hover:border-[#6600ff] hover:-translate-y-0.5 shadow-[0_0_30px_rgba(255,255,255,0.6)] hover:shadow-[0_0_42px_rgba(255,255,255,0.72)] transition-all duration-300"
-                data-testid="button-ask-mentor"
-              >
-                <Sparkles className="w-4 h-4 mr-1.5" strokeWidth={2} /> Ask Magic Mentor
-              </Button>
-            </div>
-          </div>
-
-          {/* Widget 2: Streaks */}
-          <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xs border border-blue-100 hover:border-blue-200 transition-colors p-4" data-testid="widget-streaks">
-            {/* Header + Days on one line */}
-            <div className="flex items-center justify-between gap-2 mb-4">
-              <div className="flex items-center gap-2">
-                <Flame className="w-5 h-5 text-blue-500 fill-blue-500" />
-                <h4 className="font-bold text-xs uppercase text-[#2563EB]">Streak</h4>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-2xl font-black text-blue-500">{CURRENT_USER.streak}</span>
-                <span className="text-xs font-bold text-blue-400">Days</span>
-              </div>
-            </div>
-
-            {/* Day Circles */}
-            <div className="flex justify-between gap-1.5">
-              {STREAK_DATA.map((d, i) => (
-                <div key={i} className={cn(
-                  "w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all",
-                  d.active ? "bg-blue-500 text-white shadow-md" : "bg-blue-200 text-blue-400 font-bold"
-                )}>
-                  {d.day}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Widget 3: Current Focus */}
-          <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow bg-card relative" data-testid="widget-focus">
-            <div className="p-4 pb-5">
-              <h4 className="font-bold text-xs uppercase text-muted-foreground mb-3">Current Focus</h4>
-              <div className="flex justify-between items-center">
-                <p className="text-sm font-medium text-muted-foreground">Finance Sovereignty</p>
-                <span className="font-bold text-love-money text-sm">80%</span>
-              </div>
-            </div>
-            <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-muted">
-              <div className="bg-love-money h-full" style={{ width: '80%' }}></div>
-            </div>
-          </Card>
-
-          {/* Widget 4: Upcoming Event */}
-          <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow bg-card" data-testid="widget-event">
-            <div className="p-4">
-              <h4 className="font-bold text-xs uppercase text-muted-foreground mb-2">Upcoming Event</h4>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Full Moon Ceremony</p>
-                  <p className="text-xs text-muted-foreground">Nov 30</p>
-                </div>
-                <span className="text-lg">🌙</span>
-              </div>
-            </div>
-          </Card>
-
-          {/* Widget 5: Poll of the Day - Removed */}
-          
-          {/* Widget 6: Who to Follow */}
-          <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow bg-card" data-testid="widget-follow">
-            <div className="p-4">
-              <h4 className="font-bold text-xs uppercase text-muted-foreground mb-3">Who to Follow</h4>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-sm">
-                    👤
-                  </div>
-                  <div>
-                    <p className="text-base font-medium text-muted-foreground">Alex Luna</p>
-                  </div>
-                </div>
-                <Button className="rounded-lg px-6 font-bold h-10 bg-love-body text-white border border-transparent transition-all" data-testid="button-follow">
-                  Follow
-                </Button>
-              </div>
-            </div>
-          </Card>
-        </aside>
-        )}
       </div>
 
       {/* Mobile Bottom Nav */}
@@ -403,6 +264,16 @@ export default function Layout({ children, showRightSidebar = true }: { children
           );
         })}
       </nav>
+
+      {/* Floating Magic Mentor Button (Bottom Right) */}
+      <button
+        onClick={() => setIsAiOpen(true)}
+        className="fixed bottom-20 lg:bottom-6 right-4 lg:right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-[#6600ff] to-[#cc00ff] shadow-lg hover:shadow-xl transition-all hover:scale-105 flex items-center justify-center group"
+        aria-label="Open Magic Mentor"
+        data-testid="button-magic-mentor-floating"
+      >
+        <Sparkles className="w-6 h-6 text-white group-hover:rotate-12 transition-transform" />
+      </button>
 
       <AiBuddy open={isAiOpen} onOpenChange={setIsAiOpen} />
     </div>
