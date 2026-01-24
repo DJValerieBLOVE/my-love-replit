@@ -251,20 +251,35 @@ export function MasterpieceDashboard() {
     },
     {
       id: "ai-mentor",
-      title: "AI Mentor",
-      subtitle: "Ready to guide",
+      title: "Magic Mentor",
+      subtitle: "Your focus areas",
       image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1200&h=800&fit=crop",
       backContent: (
-        <div className="text-center space-y-3">
-          <div className="text-4xl text-muted-foreground">AI</div>
-          <div className="font-medium">Magic Mentor</div>
-          <div className="text-sm text-muted-foreground">
-            Your AI coach is ready to help you grow
+        <div className="space-y-3">
+          <div className="text-sm font-medium text-center">Top 3 Focus Areas</div>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
+              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: "#a2f005" }} />
+              <span className="text-sm font-medium">Mission</span>
+              <span className="text-xs text-muted-foreground ml-auto">Active</span>
+            </div>
+            <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
+              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: "#00d81c" }} />
+              <span className="text-sm font-medium">Money</span>
+              <span className="text-xs text-muted-foreground ml-auto">Growing</span>
+            </div>
+            <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
+              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: "#6600ff" }} />
+              <span className="text-sm font-medium">Body</span>
+              <span className="text-xs text-muted-foreground ml-auto">Improving</span>
+            </div>
           </div>
-          <div className="text-xs text-muted-foreground">Online now</div>
+          <div className="text-xs text-center text-muted-foreground pt-1">
+            Ask Magic Mentor for guidance
+          </div>
         </div>
       ),
-      detailsLink: "/mentor",
+      detailsLink: "/big-dreams",
     },
     {
       id: "streak",
