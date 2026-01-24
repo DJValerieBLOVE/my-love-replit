@@ -59,7 +59,7 @@ export function FlipCard({
       >
         {/* Front of card */}
         <div
-          className="absolute inset-0 w-full h-full rounded-md overflow-hidden shadow-sm"
+          className="absolute inset-0 w-full h-full rounded-sm overflow-hidden shadow-sm"
           style={{ backfaceVisibility: "hidden" }}
         >
           <div
@@ -78,7 +78,7 @@ export function FlipCard({
 
         {/* Back of card */}
         <div
-          className="absolute inset-0 w-full h-full rounded-md overflow-hidden shadow-sm bg-white"
+          className="absolute inset-0 w-full h-full rounded-sm overflow-hidden shadow-sm bg-white"
           style={{
             backfaceVisibility: "hidden",
             transform: "rotateY(180deg)",
