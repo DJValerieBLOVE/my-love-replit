@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Pin } from "lucide-react";
 
 interface FlipCardProps {
   title: string;
@@ -26,30 +26,44 @@ export function FlipCard({
 }: FlipCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [isPinned, setIsPinned] = useState(false);
 
   const handleClick = (e: React.MouseEvent) => {
-    // On mobile/touch devices, we use click. On desktop, hover handles it but click toggles too.
-    setIsFlipped(!isFlipped);
+    if (!isPinned) {
+      setIsFlipped(!isFlipped);
+    }
   };
 
   const handleMouseEnter = () => {
-    if (window.matchMedia("(min-width: 1024px)").matches) {
+    if (window.matchMedia("(min-width: 1024px)").matches && !isPinned) {
       setIsHovered(true);
       setIsFlipped(true);
     }
   };
 
   const handleMouseLeave = () => {
-    if (window.matchMedia("(min-width: 1024px)").matches) {
+    if (window.matchMedia("(min-width: 1024px)").matches && !isPinned) {
       setIsHovered(false);
       setIsFlipped(false);
+    }
+  };
+
+  const handlePinClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isPinned) {
+      setIsPinned(false);
+    } else {
+      setIsPinned(true);
+      setIsFlipped(true);
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
-      setIsFlipped(!isFlipped);
+      if (!isPinned) {
+        setIsFlipped(!isFlipped);
+      }
     }
   };
 
@@ -69,7 +83,7 @@ export function FlipCard({
       onKeyDown={handleKeyDown}
     >
       <div
-        className="relative w-full h-full transition-transform duration-[400ms] ease-in-out"
+        className="relative w-full h-full transition-transform duration-[600ms] ease-in-out"
         style={{
           transformStyle: "preserve-3d",
           transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
@@ -103,6 +117,19 @@ export function FlipCard({
           }}
         >
           <div className="flex flex-col h-full p-4 relative">
+            <button
+              onClick={handlePinClick}
+              className={cn(
+                "absolute top-2 right-2 z-10 w-7 h-7 rounded-full flex items-center justify-center transition-all",
+                isPinned 
+                  ? "bg-love-body text-white shadow-md" 
+                  : "bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600"
+              )}
+              aria-label={isPinned ? "Unpin card" : "Pin card open"}
+              data-testid="button-pin-card"
+            >
+              <Pin className={cn("w-3.5 h-3.5", isPinned && "rotate-45")} />
+            </button>
             <div className="flex-1 overflow-y-auto pb-14">{backContent}</div>
             <div className="absolute bottom-4 left-4 right-4">
               <Button

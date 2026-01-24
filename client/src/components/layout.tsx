@@ -84,12 +84,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <div className="flex items-center gap-3 text-sm">
                   <div className="flex items-center gap-1" data-testid="sats-given">
                     <span className="text-orange-600 font-medium">↑</span>
-                    <span className="font-bold text-orange-600">{CURRENT_USER.satsGiven?.toLocaleString() || 0}</span>
+                    <span className="text-orange-600">{CURRENT_USER.satsGiven?.toLocaleString() || 0}</span>
                   </div>
                   <span className="text-muted-foreground/50">|</span>
                   <div className="flex items-center gap-1" data-testid="sats-received">
                     <span className="text-green-600 font-medium">↓</span>
-                    <span className="font-bold text-green-600">{CURRENT_USER.satsReceived?.toLocaleString() || 0}</span>
+                    <span className="text-green-600">{CURRENT_USER.satsReceived?.toLocaleString() || 0}</span>
                   </div>
                 </div>
               </div>
