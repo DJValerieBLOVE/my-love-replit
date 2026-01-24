@@ -24,6 +24,8 @@ export const CURRENT_USER = {
   level: "Guide",
   streak: 12,
   walletBalance: 21000, // sats
+  satsGiven: 15420, // sats sent to others
+  satsReceived: 8750, // sats received from others
   badges: ["Early Adopter", "Zap Queen", "Mission Accomplished"],
 };
 

@@ -77,12 +77,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="flex items-center gap-2 md:gap-4">
-            {/* Wallet Balance */}
-            <Link href="/profile">
-              <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-orange-500/20 to-yellow-500/20 rounded-full border border-orange-400/40 hover:border-orange-400/60 transition-colors cursor-pointer">
+            {/* Sats Given/Received */}
+            <Link href="/wallet">
+              <div className="hidden md:flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-orange-500/10 to-yellow-500/10 rounded-full border border-orange-400/30 hover:border-orange-400/50 transition-colors cursor-pointer" data-testid="sats-display">
                 <img src={BitcoinIcon} alt="Bitcoin" className="w-5 h-5 rounded-full" />
-                <span className="font-black text-sm text-orange-500">{CURRENT_USER.walletBalance.toLocaleString()}</span>
-                <span className="text-xs font-black text-orange-500">Sats</span>
+                <div className="flex items-center gap-3 text-sm">
+                  <div className="flex items-center gap-1" data-testid="sats-given">
+                    <span className="text-orange-600 font-medium">↑</span>
+                    <span className="font-bold text-orange-600">{CURRENT_USER.satsGiven?.toLocaleString() || 0}</span>
+                  </div>
+                  <span className="text-muted-foreground/50">|</span>
+                  <div className="flex items-center gap-1" data-testid="sats-received">
+                    <span className="text-green-600 font-medium">↓</span>
+                    <span className="font-bold text-green-600">{CURRENT_USER.satsReceived?.toLocaleString() || 0}</span>
+                  </div>
+                </div>
               </div>
             </Link>
 
