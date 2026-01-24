@@ -1,8 +1,8 @@
-import { FlipCard } from "./flip-card";
+import { Music, Pin, Flame } from "lucide-react";
+import { useState as useReactState } from "react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { getDreams, getAreaProgress, getJournalEntries, CURRENT_USER_ID } from "@/lib/api";
-import { Flame } from "lucide-react";
+import { getAreaProgress, getJournalEntries, CURRENT_USER_ID } from "@/lib/api";
 
 const LOVE_COLORS = {
   "GOD/LOVE": "#eb00a8",
@@ -34,6 +34,14 @@ const AREA_ORDER = [
 
 export function MasterpieceDashboard() {
   const [, setLocation] = useLocation();
+  const [pinnedCards, setPinnedCards] = useReactState<Record<string, boolean>>({});
+
+  const togglePin = (id: string) => {
+    setPinnedCards(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
+  };
 
   const { data: journalEntries = [] } = useQuery({
     queryKey: ["journalEntries", CURRENT_USER_ID],
@@ -91,30 +99,26 @@ export function MasterpieceDashboard() {
     {
       id: "daily-love",
       title: "Daily LOVE Practice",
-      subtitle: "Vision • Value • Villain • Victory",
+      subtitle: "Vibe • Vision • Value • Villain • Victory",
       image: "https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?w=1200&h=800&fit=crop",
       backContent: (
         <div className="space-y-2 px-1">
           <div className="text-[12px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 px-2">Vibe Check</div>
           <div className="space-y-1">
-            <div className="p-2 px-3 bg-gray-50/80 rounded-md border border-gray-100/50">
-              <div className="flex items-center justify-between text-[13px] font-bold text-gray-900">
-                <span>Vision</span>
-                <span className="text-[11px] font-normal text-muted-foreground">Clear</span>
+            {[
+              { label: "Vibe", value: "High" },
+              { label: "Vision", value: "Clear" },
+              { label: "Value", value: "Grateful" },
+              { label: "Villain", value: "Conquered" },
+              { label: "Victory", value: "Claimed" }
+            ].map((item) => (
+              <div key={item.label} className="p-2 px-4 bg-gray-50/80 rounded-md border border-gray-100/50">
+                <div className="flex items-center justify-between text-[14px] text-gray-900">
+                  <span>{item.label}</span>
+                  <span className="text-[12px] text-muted-foreground">{item.value}</span>
+                </div>
               </div>
-            </div>
-            <div className="p-2 px-3 bg-gray-50/80 rounded-md border border-gray-100/50">
-              <div className="flex items-center justify-between text-[13px] font-bold text-gray-900">
-                <span>Value</span>
-                <span className="text-[11px] font-normal text-muted-foreground">Grateful</span>
-              </div>
-            </div>
-            <div className="p-2 px-3 bg-gray-50/80 rounded-md border border-gray-100/50">
-              <div className="flex items-center justify-between text-[13px] font-bold text-gray-900">
-                <span>Victory</span>
-                <span className="text-[11px] font-normal text-muted-foreground">Small Wins</span>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       ),
@@ -162,19 +166,19 @@ export function MasterpieceDashboard() {
         <div className="space-y-2 px-1">
           <div className="text-[12px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 px-2 text-center">Active Experiments</div>
           <div className="space-y-1 mt-1">
-            <div className="p-2 px-3 bg-gray-50/80 rounded-md border border-gray-100/50">
-              <div className="flex justify-between text-[13px] font-bold text-gray-900 mb-1">
+            <div className="p-2 px-4 bg-gray-50/80 rounded-md border border-gray-100/50">
+              <div className="flex justify-between text-[14px] text-gray-900 mb-1">
                 <span>Morning Routine</span>
-                <span className="text-[11px] text-muted-foreground font-medium">65%</span>
+                <span className="text-[12px] text-muted-foreground">65%</span>
               </div>
               <div className="w-full bg-gray-200/50 rounded-full h-1.5">
                 <div className="bg-love-body h-1.5 rounded-full" style={{ width: "65%" }} />
               </div>
             </div>
-            <div className="p-2 px-3 bg-gray-50/80 rounded-md border border-gray-100/50">
-              <div className="flex justify-between text-[13px] font-bold text-gray-900 mb-1">
+            <div className="p-2 px-4 bg-gray-50/80 rounded-md border border-gray-100/50">
+              <div className="flex justify-between text-[14px] text-gray-900 mb-1">
                 <span>Daily Journaling</span>
-                <span className="text-[11px] text-muted-foreground font-medium">40%</span>
+                <span className="text-[12px] text-muted-foreground">40%</span>
               </div>
               <div className="w-full bg-gray-200/50 rounded-full h-1.5">
                 <div className="bg-love-body h-1.5 rounded-full" style={{ width: "40%" }} />
@@ -186,21 +190,20 @@ export function MasterpieceDashboard() {
       detailsLink: "/experiments",
     },
     {
-      id: "podcast-day",
-      title: "Podcast of the Day",
-      subtitle: "Deep Dive: Lightning",
-      image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&h=800&fit=crop",
+      id: "song-day",
+      title: "Song of the Day",
+      subtitle: "Daily Vibe",
+      image: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1200&h=800&fit=crop",
       backContent: (
         <div className="space-y-2 px-1">
-          <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 px-2">Now Playing</div>
-          <div className="p-3 bg-gray-50/80 rounded-md border border-gray-100/50">
-            <div className="font-bold text-[13px] text-gray-900 leading-tight">Lightning Network 101</div>
-            <div className="text-[11px] text-muted-foreground mt-1">with DJ Valerie B LOVE</div>
-            <div className="mt-2 flex items-center gap-2">
-              <div className="w-full bg-gray-200 h-1 rounded-full overflow-hidden">
-                <div className="bg-orange-500 h-full w-[40%]" />
-              </div>
-              <span className="text-[10px] text-muted-foreground">12:45</span>
+          <div className="text-[12px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 px-2">Now Playing</div>
+          <div className="p-3 px-4 bg-gray-50/80 rounded-md border border-gray-100/50 flex items-center gap-3">
+            <div className="w-10 h-10 rounded bg-love-body flex items-center justify-center shrink-0">
+              <Music className="w-5 h-5 text-white" />
+            </div>
+            <div className="min-w-0">
+              <div className="text-[14px] text-gray-900 truncate leading-tight">Love is the Answer</div>
+              <div className="text-[12px] text-muted-foreground truncate">DJ Valerie B LOVE</div>
             </div>
           </div>
         </div>
@@ -234,19 +237,19 @@ export function MasterpieceDashboard() {
         <div className="space-y-2 px-1">
           <div className="text-[12px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 px-2 text-center">Current Courses</div>
           <div className="space-y-1">
-            <div className="p-2 px-3 bg-gray-50/80 rounded-md border border-gray-100/50">
+            <div className="p-2 px-4 bg-gray-50/80 rounded-md border border-gray-100/50">
               <div className="flex items-center justify-between gap-2 mb-1">
-                <div className="font-bold text-[13px] text-gray-900 truncate">11x LOVE Foundations</div>
-                <span className="text-[11px] text-muted-foreground whitespace-nowrap font-medium">75%</span>
+                <div className="text-[14px] text-gray-900 truncate">11x LOVE Foundations</div>
+                <span className="text-[12px] text-muted-foreground whitespace-nowrap">75%</span>
               </div>
               <div className="w-full bg-gray-200/50 rounded-full h-1.5">
                 <div className="bg-love-body h-1.5 rounded-full" style={{ width: "75%" }} />
               </div>
             </div>
-            <div className="p-2 px-3 bg-gray-50/80 rounded-md border border-gray-100/50">
+            <div className="p-2 px-4 bg-gray-50/80 rounded-md border border-gray-100/50">
               <div className="flex items-center justify-between gap-2 mb-1">
-                <div className="font-bold text-[13px] text-gray-900 truncate">Daily Rituals</div>
-                <span className="text-[11px] text-muted-foreground whitespace-nowrap font-medium">30%</span>
+                <div className="text-[14px] text-gray-900 truncate">Daily Rituals</div>
+                <span className="text-[12px] text-muted-foreground whitespace-nowrap">30%</span>
               </div>
               <div className="w-full bg-gray-200/50 rounded-full h-1.5">
                 <div className="bg-love-body h-1.5 rounded-full" style={{ width: "30%" }} />
@@ -258,42 +261,26 @@ export function MasterpieceDashboard() {
       detailsLink: "/learn",
     },
     {
-      id: "ai-mentor",
-      title: "Magic Mentor",
-      subtitle: "Your focus areas",
-      image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1200&h=800&fit=crop",
+      id: "podcast-day",
+      title: "Podcast of the Day",
+      subtitle: "Deep Dive: Lightning",
+      image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&h=800&fit=crop",
       backContent: (
         <div className="space-y-2 px-1">
-          <div className="text-[12px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 px-2">Top 3 Focus Areas</div>
-          <div className="space-y-1">
-            {areaProgress.length > 0 ? (
-              [...areaProgress]
-                .sort((a: any, b: any) => (b.progress || 0) - (a.progress || 0))
-                .slice(0, 3)
-                .map((area: any) => {
-                  const areaId = area.areaId || "unknown";
-                  const displayName = AREA_ORDER.find(a => a.toLowerCase().replace(/[\/\s]/g, '-') === areaId) || areaId;
-                  const color = LOVE_COLORS[displayName as keyof typeof LOVE_COLORS] || "#6600ff";
-                  const progress = area.progress || 0;
-                  const status = progress >= 80 ? "Thriving" : progress >= 50 ? "Growing" : "Building";
-                  return (
-                    <div key={area.id} className="flex items-center gap-2 p-2 px-3 bg-gray-50/80 rounded-md border border-gray-100/50">
-                      <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
-                      <span className="text-[13px] font-bold text-gray-900 capitalize truncate">{areaId.replace(/-/g, ' ')}</span>
-                      <span className="text-[11px] text-muted-foreground ml-auto whitespace-nowrap">{status}</span>
-                    </div>
-                  );
-                })
-            ) : (
-              <div className="flex items-center gap-2 p-2 px-3 bg-gray-50/80 rounded-md border border-gray-100/50">
-                <div className="w-1.5 h-1.5 rounded-full bg-muted shrink-0" />
-                <span className="text-[12px] text-muted-foreground">Set your first goal</span>
+          <div className="text-[12px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 px-2">Now Playing</div>
+          <div className="p-3 px-4 bg-gray-50/80 rounded-md border border-gray-100/50">
+            <div className="text-[14px] text-gray-900 leading-tight">Lightning Network 101</div>
+            <div className="text-[12px] text-muted-foreground mt-1">with DJ Valerie B LOVE</div>
+            <div className="mt-2 flex items-center gap-2">
+              <div className="w-full bg-gray-200 h-1 rounded-full overflow-hidden">
+                <div className="bg-orange-500 h-full w-[40%]" />
               </div>
-            )}
+              <span className="text-[10px] text-muted-foreground">12:45</span>
+            </div>
           </div>
         </div>
       ),
-      detailsLink: "/big-dreams",
+      detailsLink: "/resources",
     },
     {
       id: "streak",
@@ -307,7 +294,7 @@ export function MasterpieceDashboard() {
             <span className="text-4xl font-bold">{streak}</span>
           </div>
           <div className="text-xs text-muted-foreground">consecutive days</div>
-          <div className="text-[10px] text-muted-foreground">
+          <div className="text-[12px] text-muted-foreground">
             {streak > 0
               ? `Keep it going! You're on fire!`
               : "Start your streak today!"}
@@ -344,6 +331,8 @@ export function MasterpieceDashboard() {
             backgroundImage={card.image}
             backContent={card.backContent}
             onDetailsClick={() => setLocation(card.detailsLink)}
+            isPinned={pinnedCards[card.id]}
+            onPinToggle={() => togglePin(card.id)}
           />
         ))}
       </div>
