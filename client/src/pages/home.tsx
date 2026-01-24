@@ -4,7 +4,7 @@ import { MasterpieceDashboard } from "@/components/dashboard/masterpiece-dashboa
 export default function Home() {
   return (
     <Layout>
-      <div className="absolute inset-0 md:left-0 bg-background overflow-hidden">
+      <div className="w-full h-full bg-background overflow-hidden">
         <MasterpieceDashboard />
       </div>
     </Layout>
