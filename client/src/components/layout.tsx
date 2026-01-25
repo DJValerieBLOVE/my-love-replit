@@ -63,28 +63,43 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <ThemeCustomizer />
       
       {/* Top Navigation Bar */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl px-4 h-20 md:h-24 flex items-center justify-between">
-          <div className="flex items-center gap-4">
+      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl px-3 md:px-4 h-14 md:h-20 flex items-center justify-between">
+          <div className="flex items-center gap-2 md:gap-4">
             <Link href="/">
-              <div className="flex items-center gap-3 cursor-pointer">
-                {/* Replaced Image Logo with Circular EQ Visualizer */}
+              <div className="flex items-center gap-2 md:gap-3 cursor-pointer">
+                {/* Circular EQ Visualizer - smaller on mobile */}
                 <div className="relative flex items-center justify-center">
-                  <EqVisualizer size={70} className="" isLogo={true} />
+                  {/* Mobile: 40px logo */}
+                  <div className="block md:hidden">
+                    <EqVisualizer size={40} isLogo={true} />
+                  </div>
+                  {/* Desktop: 60px logo */}
+                  <div className="hidden md:block">
+                    <EqVisualizer size={60} isLogo={true} />
+                  </div>
                 </div>
-                <span className="font-serif font-bold text-xl tracking-tight hidden md:block text-muted-foreground">My Masterpiece</span>
+                <span className="font-serif font-bold text-lg md:text-xl tracking-tight hidden md:block text-muted-foreground">My Masterpiece</span>
               </div>
             </Link>
           </div>
 
-          {/* Center: Vertical EQ Visualizer (Sharper Corners) */}
-          {/* Added explicit padding-top to container to push it down slightly per request */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pt-2">
-            <VerticalEqVisualizer height={80} />
+          {/* Center: Vertical EQ Visualizer - HIDDEN on mobile */}
+          <div className="hidden md:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pt-2">
+            <VerticalEqVisualizer height={70} />
           </div>
 
-          <div className="flex items-center gap-2 md:gap-4">
-            {/* Sats Given/Received */}
+          <div className="flex items-center gap-1.5 md:gap-4">
+            {/* Sats Given/Received - Compact on mobile */}
             <Link href="/wallet">
+              {/* Mobile: Compact sats display */}
+              <div className="flex md:hidden items-center gap-1.5 px-2 py-1 bg-gradient-to-r from-orange-500/10 to-yellow-500/10 rounded-full border border-orange-400/30" data-testid="sats-display-mobile">
+                <img src={BitcoinIcon} alt="Bitcoin" className="w-4 h-4 rounded-full" />
+                <div className="flex items-center gap-1 text-xs">
+                  <span className="text-orange-600">↑{CURRENT_USER.satsGiven?.toLocaleString() || 0}</span>
+                  <span className="text-green-600">↓{CURRENT_USER.satsReceived?.toLocaleString() || 0}</span>
+                </div>
+              </div>
+              {/* Desktop: Full sats display */}
               <div className="hidden md:flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-orange-500/10 to-yellow-500/10 rounded-full border border-orange-400/30 hover:border-orange-400/50 transition-colors cursor-pointer" data-testid="sats-display">
                 <img src={BitcoinIcon} alt="Bitcoin" className="w-5 h-5 rounded-full" />
                 <div className="flex items-center gap-3 text-sm">
@@ -101,9 +116,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </div>
             </Link>
 
-            {/* Inbox */}
+            {/* Inbox - hidden on mobile to reduce clutter */}
             <div 
-                className="relative"
+                className="relative hidden md:block"
                 onMouseEnter={() => setInboxOpen(true)}
                 onMouseLeave={() => setInboxOpen(false)}
             >
@@ -154,7 +169,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </DropdownMenu>
             </div>
 
-            {/* Notifications */}
+            {/* Notifications - smaller on mobile */}
             <div 
                 className="relative"
                 onMouseEnter={() => setNotificationsOpen(true)}
@@ -163,11 +178,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <DropdownMenu open={notificationsOpen} onOpenChange={setNotificationsOpen} modal={false}>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className={cn(
-                    "rounded-full relative transition-colors border-none outline-none ring-0 focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:outline-none data-[state=open]:bg-[#F0E6FF] data-[state=open]:text-love-body",
+                    "rounded-full relative transition-colors border-none outline-none ring-0 focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:outline-none data-[state=open]:bg-[#F0E6FF] data-[state=open]:text-love-body w-8 h-8 md:w-10 md:h-10",
                     notificationsOpen ? "bg-[#F0E6FF] text-love-body" : "text-muted-foreground hover:bg-[#F0E6FF] hover:text-love-body"
                 )} data-testid="button-notifications">
-                  <Bell className="w-5 h-5" />
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" data-testid="notification-dot-bell"></span>
+                  <Bell className="w-4 h-4 md:w-5 md:h-5" />
+                  <span className="absolute top-0.5 right-0.5 md:top-1 md:right-1 w-1.5 h-1.5 md:w-2 md:h-2 bg-red-500 rounded-full animate-pulse" data-testid="notification-dot-bell"></span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-80" onMouseEnter={() => setNotificationsOpen(true)} onMouseLeave={() => setNotificationsOpen(false)}>
@@ -243,14 +258,26 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button
-                onClick={() => setLoginDialogOpen(true)}
-                className="bg-gradient-to-r from-[#6600ff] to-[#cc00ff] hover:from-[#5500dd] hover:to-[#bb00dd] text-white font-medium"
-                data-testid="button-login"
-              >
-                <Zap className="w-4 h-4 mr-2" />
-                Login
-              </Button>
+              <>
+                {/* Mobile: Icon-only login button */}
+                <Button
+                  onClick={() => setLoginDialogOpen(true)}
+                  size="icon"
+                  className="md:hidden bg-gradient-to-r from-[#6600ff] to-[#cc00ff] hover:from-[#5500dd] hover:to-[#bb00dd] text-white w-8 h-8"
+                  data-testid="button-login-mobile"
+                >
+                  <Zap className="w-4 h-4" />
+                </Button>
+                {/* Desktop: Full login button */}
+                <Button
+                  onClick={() => setLoginDialogOpen(true)}
+                  className="hidden md:flex bg-gradient-to-r from-[#6600ff] to-[#cc00ff] hover:from-[#5500dd] hover:to-[#bb00dd] text-white font-medium"
+                  data-testid="button-login"
+                >
+                  <Zap className="w-4 h-4 mr-2" />
+                  Login
+                </Button>
+              </>
             )}
           </div>
       </header>
@@ -285,27 +312,53 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       </div>
 
-      {/* Mobile Bottom Nav */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-background/90 backdrop-blur-lg border-t z-50 flex items-center justify-around px-2">
-        {navLinks.map((item) => {
-          const isActive = location === item.href;
+      {/* Mobile Bottom Nav - Icons only, 5 core items + More */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 h-14 bg-background/95 backdrop-blur-lg border-t z-50 flex items-center justify-around px-1 safe-area-pb">
+        {navLinks.slice(0, 5).map((item) => {
+          const isActive = location === item.href || (item.href !== "/" && location.startsWith(item.href));
           return (
             <Link key={item.href} href={item.href}>
-              <div className="flex flex-col items-center justify-center w-16 h-full cursor-pointer">
-                <div className={cn(
-                  "p-1.5 rounded-full transition-all duration-200 mb-1",
-                  isActive ? "bg-love-body/10 text-love-body" : "text-muted-foreground"
-                )}>
-                  <item.icon className={cn("w-6 h-6", isActive && "fill-current")} />
-                </div>
-                <span className={cn(
-                  "text-xs font-medium transition-colors",
-                  isActive ? "text-love-body" : "text-muted-foreground"
-                )}>{item.label}</span>
+              <div className={cn(
+                "flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-200 cursor-pointer",
+                isActive 
+                  ? "bg-love-body/15 text-love-body" 
+                  : "text-muted-foreground active:bg-muted/50"
+              )}>
+                <item.icon className={cn("w-6 h-6", isActive && "stroke-[2.5]")} strokeWidth={1.5} />
               </div>
             </Link>
           );
         })}
+        {/* More menu for remaining items */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <div className={cn(
+              "flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-200 cursor-pointer text-muted-foreground active:bg-muted/50"
+            )}>
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <circle cx="12" cy="12" r="1" />
+                <circle cx="12" cy="5" r="1" />
+                <circle cx="12" cy="19" r="1" />
+              </svg>
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" side="top" className="w-48 mb-2">
+            {navLinks.slice(5).map((item) => {
+              const isActive = location === item.href;
+              return (
+                <Link key={item.href} href={item.href}>
+                  <DropdownMenuItem className={cn(
+                    "cursor-pointer gap-3",
+                    isActive && "text-love-body bg-love-body/10"
+                  )}>
+                    <item.icon className="w-5 h-5" strokeWidth={1.5} />
+                    <span>{item.label}</span>
+                  </DropdownMenuItem>
+                </Link>
+              );
+            })}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </nav>
 
       {/* Floating Magic Mentor Button (Bottom Right) */}

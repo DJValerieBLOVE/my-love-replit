@@ -74,7 +74,7 @@ export function FlipCard({
       tabIndex={0}
       aria-label={`${title} card. ${isFlipped ? "Showing details. Press to flip back." : "Press to see details."}`}
       className={cn(
-        "relative w-full h-full cursor-pointer",
+        "relative w-full cursor-pointer min-h-[200px] sm:min-h-[180px] md:min-h-[160px] lg:min-h-[140px] aspect-[4/3] sm:aspect-[3/2]",
         className
       )}
       style={{ perspective: "1000px" }}
@@ -100,9 +100,9 @@ export function FlipCard({
             style={{ backgroundImage: `url(${backgroundImage})` }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-            <h3 className="text-lg font-bold mb-0.5">{title}</h3>
-            <p className="text-sm text-white/80">{subtitle}</p>
+          <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4 text-white">
+            <h3 className="text-base md:text-lg font-bold mb-0.5 drop-shadow-lg">{title}</h3>
+            <p className="text-xs md:text-sm text-white/90 drop-shadow-md">{subtitle}</p>
           </div>
           {frontContent && (
             <div className="absolute top-3 right-3">{frontContent}</div>
