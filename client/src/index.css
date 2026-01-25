@@ -199,6 +199,14 @@
   h2 { font-size: var(--text-3xl); font-weight: 400; letter-spacing: -0.3px; }
   h3 { font-size: var(--text-xl); font-weight: 400; }
   h4 { font-size: var(--text-base); font-weight: 400; }
+  p { font-size: 16px; line-height: 1.6; }
+  
+  /* Mobile typography */
+  @media (max-width: 1023px) {
+    h1 { font-size: 27px; letter-spacing: -0.3px; }
+    h2 { font-size: 24px; letter-spacing: -0.2px; }
+    h3 { font-size: 20px; }
+  }
   
   button {
     font-size: var(--text-sm);
