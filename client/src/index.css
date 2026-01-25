@@ -201,11 +201,12 @@
   h4 { font-size: var(--text-base); font-weight: 400; }
   p { font-size: 16px; line-height: 1.6; }
   
-  /* Mobile typography */
+  /* Mobile typography - forces consistent sizing across all pages */
   @media (max-width: 1023px) {
-    h1 { font-size: 27px; letter-spacing: -0.3px; }
-    h2 { font-size: 24px; letter-spacing: -0.2px; }
-    h3 { font-size: 20px; }
+    h1 { font-size: 27px !important; letter-spacing: -0.3px; }
+    h2 { font-size: 24px !important; letter-spacing: -0.2px; }
+    h3 { font-size: 20px !important; }
+    p { font-size: 16px !important; }
   }
   
   button {
