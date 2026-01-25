@@ -41,6 +41,12 @@
 - White cards with subtle shadows, rounded corners
 - Card flip animations for affirmation deck
 
+### Mobile Design
+- **Header**: Compact (56px), smaller EQ logo (40px), no center EQ, compact sats display
+- **Bottom nav**: Icons only, 5 core items + More menu, 48px tap targets
+- **Cards**: Taller (200px min), 4:3 aspect ratio, drop-shadow text
+- **Login**: Icon-only button (lightning bolt)
+
 ## System Architecture
 
 ### Frontend Architecture
@@ -87,11 +93,14 @@
 - Floating Magic Mentor AI button (bottom-right, mobile-friendly)
 - PostgreSQL database with full schema
 - Express API backend
+- **NIP-07 Nostr Login** - Browser extension login (Alby, nos2x)
+- **Mobile-optimized layout** - Compact header, icons-only bottom nav
 
 ### Navigation Structure
 - Left sidebar: Home, Big Dreams, Learning, Events, Communities, Resources, Leaderboard
 - Floating button: Magic Mentor AI (Sparkles icon, bottom-right corner)
 - No right sidebar (simplified home screen)
+- **Mobile bottom nav**: 5 core icons (Home, Big Dreams, Learning, Events, Communities) + More menu
 
 ### To Build (Priority Order)
 1. Streak tracking & wins display
