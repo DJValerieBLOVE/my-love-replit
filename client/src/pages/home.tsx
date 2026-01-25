@@ -1,11 +1,11 @@
 import Layout from "@/components/layout";
-import { MasterpieceDashboard } from "@/components/dashboard/masterpiece-dashboard";
+import { HeartDashboard } from "@/components/dashboard/heart-dashboard";
 
 export default function Home() {
   return (
     <Layout>
       <div className="w-full h-full bg-background overflow-hidden">
-        <MasterpieceDashboard />
+        <HeartDashboard />
       </div>
     </Layout>
   );
