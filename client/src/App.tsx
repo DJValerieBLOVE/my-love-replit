@@ -21,6 +21,9 @@ import Leaderboard from "@/pages/leaderboard";
 import Feed from "@/pages/feed";
 import AdminOnboarding from "@/pages/admin/onboarding";
 import MentorStudio from "@/pages/admin/mentor-studio";
+import HowToUse from "@/pages/how-to-use";
+import SettingsPage from "@/pages/settings";
+import RelaysPage from "@/pages/relays";
 
 function Router() {
   return (
@@ -39,6 +42,9 @@ function Router() {
       <Route path="/events/:id" component={EventDetail} />
       <Route path="/leaderboard" component={Leaderboard} />
       <Route path="/feed" component={Feed} />
+      <Route path="/how-to-use" component={HowToUse} />
+      <Route path="/settings" component={SettingsPage} />
+      <Route path="/relays" component={RelaysPage} />
       <Route path="/admin/onboarding" component={AdminOnboarding} />
       <Route path="/admin/mentor" component={MentorStudio} />
       <Route component={NotFound} />

@@ -103,8 +103,9 @@
 - **Mobile bottom nav**: 5 core icons (Home, Big Dreams, Learning, Events, Communities) + More menu
 
 ### To Build (Priority Order)
-1. Streak tracking & wins display
-2. 11x LOVE rainbow equalizer widget
+1. NIP-46 Bunker login (nsec.app integration)
+2. Lightning/Zaps integration (NWC)
+3. AI Magic Mentor integration (Claude)
 3. Nostr authentication
 4. AI Learning Buddy (enhanced) - trains on user's journal, goals, course learnings
 5. Community membership system (multi-tenant: creators can set up paid communities)
