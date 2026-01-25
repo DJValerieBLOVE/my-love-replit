@@ -111,7 +111,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
   };
 
   return (
-      <Card className="border-none shadow-sm bg-card relative overflow-visible group mb-20 lg:mb-0">
+      <Card className="border-none shadow-sm bg-card relative overflow-visible group mb-16 lg:mb-0">
           <CardContent className="p-6 pb-8 pl-[2px] pr-[2px]">
              <div className="mb-6 flex items-center gap-2 text-muted-foreground">
                  <Heart className="w-3 h-3" strokeWidth={1.5} />
