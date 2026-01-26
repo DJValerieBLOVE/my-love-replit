@@ -100,8 +100,10 @@
 - **Secure Authentication** - Nostr pubkey linked to database users, all personal data protected
 - **Mandatory Email Collection** - ProfileCompletionDialog prompts for email after Nostr login, required for 2-week trial access
 - **Share to Nostr** - Share Big Dreams, Journal entries, and completed Experiments to Nostr network with optional caption
-- **Notification Indicators** - Three styles for comparison: soft underlay (Big Dreams/Grow), breathing pulse (Events), red dot (Tribe)
+- **Notification Indicators** - Four distinct styles: lighter underlay (Big Dreams), purple icon (Grow), breathing pulse 30-100% (Events), small purple dot (Tribe)
 - **Simplified Header** - Removed mail/bell icons, cleaner navigation
+- **Social Post Actions** - Complete action buttons: Reply, Repost (with dropdown for Nostr/Group), Zap (with amount dialog), Like, Bookmark, Share
+- **Sharing Privacy Rules** - Group/community/learning posts stay private within group; only user's own original content can be shared publicly to Nostr
 
 ### Navigation Structure
 - **Desktop left sidebar**: Home, Big Dreams (with dot), Grow (with dot), Events (with dot), Tribe (with dot), Toolbox, Love Board, Feed
@@ -152,6 +154,7 @@
 - **Ownership Checks**: Users can only access their own journal entries, dreams, and progress
 - **Privacy Fields**: isPrivate and sharedClubs ready for future club-sharing features
 - **Data Isolation**: No cross-user data access possible via API
+- **Sharing Privacy Rules**: Shared utility at `client/src/lib/sharing-rules.ts` enforces: group content (community/learning) can only be reposted within group unless isOwnPost is true
 
 ## Technical Notes
 - Server runs on port 5000
