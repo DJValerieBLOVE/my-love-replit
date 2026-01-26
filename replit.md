@@ -35,17 +35,19 @@
 
 ### Visual Style
 - Purple gradient aesthetic (#6600ff to #cc00ff)
-- 9-card flip dashboard ("My Masterpiece") - like EdStr/Shakespeare screenshots
-- Left navigation sidebar (keep existing)
+- 5-pillar heart dashboard with flip cards (Mission, Health, Tribe, Wealth) + center God heart
+- Left navigation sidebar (desktop only)
 - Top header (keep existing)
-- White cards with subtle shadows, rounded corners
-- Card flip animations for affirmation deck
+- **All cards use rounded-xs** (extra small corners)
+- Card flip animations with one-at-a-time behavior and optional pin feature
+- Flipped card backs have light background (#FAF8F5), not purple
 
 ### Mobile Design
-- **Header**: Compact (56px), smaller EQ logo (40px), no center EQ, compact sats display
-- **Bottom nav**: Icons only, 5 core items + More menu, 48px tap targets
-- **Cards**: Taller (200px min), 4:3 aspect ratio, drop-shadow text
-- **Login**: Icon-only button (lightning bolt)
+- **Header**: Compact (56px), smaller EQ logo (40px), sats goes to Love Board, logo goes to Big Dreams
+- **Bottom nav**: 6 icons only (no text), no overflow menu
+- **Cards**: Taller (200px min), 4:3 aspect ratio, drop-shadow text, rounded-xs corners
+- **Login**: "Login" button text (not "Sign In")
+- **AI button**: Bottom-right, above nav bar
 
 ## System Architecture
 
@@ -97,10 +99,11 @@
 - **Mobile-optimized layout** - Compact header, icons-only bottom nav
 
 ### Navigation Structure
-- Left sidebar: Home, Big Dreams, Learning, Events, Communities, Resources, Leaderboard
+- **Desktop left sidebar**: Home, Big Dreams, Grow, Events, Tribe, Toolbox, Love Board, Feed
+- **Mobile bottom nav**: 6 icons only (Home, Grow, Events, Tribe, Toolbox, Feed) - no text labels
+- **Mobile header**: Stats goes to Love Board, center logo goes to Big Dreams
 - Floating button: Magic Mentor AI (Sparkles icon, bottom-right corner)
 - No right sidebar (simplified home screen)
-- **Mobile bottom nav**: 5 core icons (Home, Big Dreams, Learning, Events, Communities) + More menu
 
 ### To Build (Priority Order)
 1. NIP-46 Bunker login (nsec.app integration)
