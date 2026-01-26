@@ -1,14 +1,39 @@
 import Layout from "@/components/layout";
 import { LEADERBOARD_DATA } from "@/lib/mock-data";
-import { Trophy, Zap, Award, TrendingUp } from "lucide-react";
+import { Trophy, Zap, Award, TrendingUp, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useNostr } from "@/contexts/nostr-context";
+import { useQuery } from "@tanstack/react-query";
+import { getLeaderboard } from "@/lib/api";
+
+type LeaderboardUser = {
+  id: string;
+  name: string | null;
+  handle: string | null;
+  avatar: string | null;
+  level: string | null;
+  sats: number;
+  satsGiven: number;
+  satsReceived: number;
+  streak: number;
+  badges: string[] | null;
+};
 
 export default function Leaderboard() {
   const { profile, userStats } = useNostr();
+  
+  const { data: leaderboardData, isLoading, error } = useQuery<LeaderboardUser[]>({
+    queryKey: ["leaderboard"],
+    queryFn: () => getLeaderboard(20),
+  });
+  
+  const displayData = leaderboardData && leaderboardData.length > 0 
+    ? leaderboardData 
+    : LEADERBOARD_DATA;
+  
   const getRankBadge = (rank: number) => {
     if (rank === 1) return "🥇";
     if (rank === 2) return "🥈";
@@ -79,9 +104,17 @@ export default function Leaderboard() {
 
         {/* Leaderboard Table */}
         <div className="space-y-2">
-          <h2 className="font-bold text-lg px-2 text-muted-foreground">Top Guides</h2>
+          <div className="flex items-center justify-between px-2">
+            <h2 className="font-bold text-lg text-muted-foreground">Top Guides</h2>
+            {isLoading && (
+              <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Loading...</span>
+              </div>
+            )}
+          </div>
           <div className="space-y-3">
-            {LEADERBOARD_DATA.map((user, index) => {
+            {displayData.map((user, index) => {
               const rank = index + 1;
               const medal = getRankBadge(rank);
               const isCurrent = profile?.userId ? user.id === profile.userId : false;
@@ -113,8 +146,8 @@ export default function Leaderboard() {
                         "h-12 w-12 border-2",
                         rank === 1 ? "border-yellow-400" : rank === 2 ? "border-gray-400" : rank === 3 ? "border-orange-600" : "border-purple-400"
                       )}>
-                        <AvatarImage src={user.avatar} />
-                        <AvatarFallback>{user.name.split(" ").map(n => n[0]).join("")}</AvatarFallback>
+                        <AvatarImage src={user.avatar || undefined} />
+                        <AvatarFallback>{(user.name || "?").split(" ").map(n => n[0]).join("")}</AvatarFallback>
                       </Avatar>
 
                       {/* User Info */}

@@ -419,23 +419,25 @@ export class DatabaseStorage implements IStorage {
 
   // Zaps
   async createZap(zap: InsertZap): Promise<Zap> {
-    const [created] = await db.insert(zaps).values(zap).returning();
-    
-    await db.update(users)
-      .set({ satsGiven: sql`${users.satsGiven} + ${zap.amount}` })
-      .where(eq(users.id, zap.senderId));
-    
-    await db.update(users)
-      .set({ satsReceived: sql`${users.satsReceived} + ${zap.amount}` })
-      .where(eq(users.id, zap.receiverId));
-    
-    if (zap.postId) {
-      await db.update(posts)
-        .set({ zaps: sql`${posts.zaps} + ${zap.amount}` })
-        .where(eq(posts.id, zap.postId));
-    }
-    
-    return created;
+    return await db.transaction(async (tx) => {
+      const [created] = await tx.insert(zaps).values(zap).returning();
+      
+      await tx.update(users)
+        .set({ satsGiven: sql`${users.satsGiven} + ${zap.amount}` })
+        .where(eq(users.id, zap.senderId));
+      
+      await tx.update(users)
+        .set({ satsReceived: sql`${users.satsReceived} + ${zap.amount}` })
+        .where(eq(users.id, zap.receiverId));
+      
+      if (zap.postId) {
+        await tx.update(posts)
+          .set({ zaps: sql`${posts.zaps} + ${zap.amount}` })
+          .where(eq(posts.id, zap.postId));
+      }
+      
+      return created;
+    });
   }
 
   async getZapsByUser(userId: string, type: 'sent' | 'received', limit: number = 20): Promise<(Zap & { sender?: User; receiver?: User; post?: Post })[]> {
