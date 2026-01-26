@@ -111,6 +111,7 @@
 - PostgreSQL database with full schema
 - Express API backend
 - **NIP-07 Nostr Login** - Browser extension login (Alby, nos2x)
+- **NIP-46 Bunker Login** - Remote signer login via nsec.app/nsecBunker for users without extensions; session persists across page reloads
 - **Mobile-optimized layout** - Compact header, icons-only bottom nav
 - **Secure Authentication** - Nostr pubkey linked to database users, all personal data protected
 - **Mandatory Email Collection** - ProfileCompletionDialog prompts for email after Nostr login, required for 2-week trial access
@@ -131,14 +132,13 @@
 - No header mail/bell icons (removed - notifications shown contextually on nav items)
 
 ### To Build (Priority Order)
-1. NIP-46 Bunker login (nsec.app integration)
-2. Lightning/Zaps integration (NWC)
-3. AI Magic Mentor integration (Claude)
-4. AI Learning Buddy (enhanced) - trains on user's journal, goals, course learnings
-5. Community membership system (multi-tenant: creators can set up paid communities)
-6. Bitcoin rewards system
-7. User personalization: Spotify playlists, podcast RSS feeds, favorite quotes/authors
-8. Club-based sharing (isPrivate/sharedClubs enforcement)
+1. Lightning/Zaps integration (NWC)
+2. AI Magic Mentor integration (Claude)
+3. AI Learning Buddy (enhanced) - trains on user's journal, goals, course learnings
+4. Community membership system (multi-tenant: creators can set up paid communities)
+5. Bitcoin rewards system
+6. User personalization: Spotify playlists, podcast RSS feeds, favorite quotes/authors
+7. Club-based sharing (isPrivate/sharedClubs enforcement)
 
 ## Multi-Tenant Architecture
 - **Creators/coaches** can set up paid communities (limit 5 per paid plan, extra available for fee)
