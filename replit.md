@@ -98,13 +98,16 @@
 - **NIP-07 Nostr Login** - Browser extension login (Alby, nos2x)
 - **Mobile-optimized layout** - Compact header, icons-only bottom nav
 - **Secure Authentication** - Nostr pubkey linked to database users, all personal data protected
+- **Mandatory Email Collection** - ProfileCompletionDialog prompts for email after Nostr login, required for 2-week trial access
+- **Notification Dots** - Contextual indicators on sidebar nav items (Big Dreams, Grow, Events, Tribe)
+- **Simplified Header** - Removed mail/bell icons, cleaner navigation
 
 ### Navigation Structure
-- **Desktop left sidebar**: Home, Big Dreams, Grow, Events, Tribe, Toolbox, Love Board, Feed
-- **Mobile bottom nav**: 6 icons only (Home, Grow, Events, Tribe, Toolbox, Feed) - no text labels
+- **Desktop left sidebar**: Home, Big Dreams (with dot), Grow (with dot), Events (with dot), Tribe (with dot), Toolbox, Love Board, Feed
+- **Mobile bottom nav**: 6 icons only (Home, Grow, Events, Tribe, Toolbox, Feed) - no text labels, notification dots on relevant items
 - **Mobile header**: Stats goes to Love Board, center logo goes to Big Dreams
 - Floating button: Magic Mentor AI (Sparkles icon, bottom-right corner)
-- No right sidebar (simplified home screen)
+- No header mail/bell icons (removed - notifications shown contextually on nav items)
 
 ### To Build (Priority Order)
 1. NIP-46 Bunker login (nsec.app integration)
