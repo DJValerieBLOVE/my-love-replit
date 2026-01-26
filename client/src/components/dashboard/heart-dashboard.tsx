@@ -110,8 +110,8 @@ function GlowingHeart({ label, isFlipped, onClick, backImageUrl, affirmation }: 
     <div 
       className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer"
       style={{ 
-        width: "min(55vw, 55vh, 320px)", 
-        height: "min(50vw, 50vh, 300px)" 
+        width: "min(65vw, 65vh, 400px)", 
+        height: "min(60vw, 60vh, 360px)" 
       }}
       onClick={onClick}
       data-testid="heart-god-card"
@@ -122,20 +122,12 @@ function GlowingHeart({ label, isFlipped, onClick, backImageUrl, affirmation }: 
         transition={{ duration: 0.6, ease: "easeInOut" }}
         style={{ transformStyle: "preserve-3d" }}
       >
-        {/* Front - Glowing Heart with Label */}
+        {/* Front - Solid Heart with Label */}
         <motion.div 
           className="absolute inset-0"
           style={{ backfaceVisibility: "hidden" }}
-          animate={{ 
-            scale: [1, 1.03, 1],
-          }}
-          transition={{ 
-            duration: 2.5, 
-            repeat: Infinity, 
-            ease: "easeInOut" 
-          }}
         >
-          <svg viewBox="0 0 100 90" className="w-full h-full" style={{ filter: "drop-shadow(0 0 25px rgba(235, 0, 168, 0.6)) drop-shadow(0 0 50px rgba(102, 0, 255, 0.4))" }}>
+          <svg viewBox="0 0 100 90" className="w-full h-full">
             <defs>
               <linearGradient id="heartGradientMain" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stopColor="#eb00a8" />
@@ -147,7 +139,7 @@ function GlowingHeart({ label, isFlipped, onClick, backImageUrl, affirmation }: 
                 <stop offset="100%" stopColor="rgba(255,255,255,0)" />
               </linearGradient>
               <filter id="heartShadow" x="-50%" y="-50%" width="200%" height="200%">
-                <feDropShadow dx="0" dy="4" stdDeviation="8" floodColor="rgba(0,0,0,0.3)" />
+                <feDropShadow dx="0" dy="4" stdDeviation="4" floodColor="rgba(0,0,0,0.3)" />
               </filter>
             </defs>
             <path
@@ -179,16 +171,8 @@ function GlowingHeart({ label, isFlipped, onClick, backImageUrl, affirmation }: 
         <motion.div 
           className="absolute inset-0"
           style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
-          animate={{ 
-            scale: [1, 1.03, 1],
-          }}
-          transition={{ 
-            duration: 2.5, 
-            repeat: Infinity, 
-            ease: "easeInOut" 
-          }}
         >
-          <svg viewBox="0 0 100 90" className="w-full h-full" style={{ filter: "drop-shadow(0 0 25px rgba(153, 0, 255, 0.6)) drop-shadow(0 0 50px rgba(235, 0, 168, 0.4))" }}>
+          <svg viewBox="0 0 100 90" className="w-full h-full">
             <defs>
               <clipPath id="heartClip">
                 <path d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z" />
@@ -197,11 +181,8 @@ function GlowingHeart({ label, isFlipped, onClick, backImageUrl, affirmation }: 
                 <stop offset="0%" stopColor="rgba(102, 0, 255, 0.4)" />
                 <stop offset="100%" stopColor="rgba(235, 0, 168, 0.5)" />
               </linearGradient>
-              <filter id="heartShadowBack" x="-50%" y="-50%" width="200%" height="200%">
-                <feDropShadow dx="0" dy="4" stdDeviation="8" floodColor="rgba(0,0,0,0.3)" />
-              </filter>
             </defs>
-            <g clipPath="url(#heartClip)" filter="url(#heartShadowBack)">
+            <g clipPath="url(#heartClip)">
               <image
                 href={backImageUrl}
                 x="-10"
@@ -245,7 +226,7 @@ function GlowingHeart({ label, isFlipped, onClick, backImageUrl, affirmation }: 
 export function HeartDashboard() {
   const [, setLocation] = useLocation();
   const [heartFlipped, setHeartFlipped] = useState(false);
-  const [godLabel] = useState("GOD");
+  const [godLabel] = useState("God");
 
   const pillars = [
     {
@@ -310,7 +291,7 @@ export function HeartDashboard() {
         ))}
       </div>
 
-      {/* Giant Glowing Heart - Also Flips */}
+      {/* Giant Heart - Also Flips */}
       <GlowingHeart
         label={godLabel}
         isFlipped={heartFlipped}
