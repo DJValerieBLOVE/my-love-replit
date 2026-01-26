@@ -1,0 +1,288 @@
+NOSTR INTEGRATION SPECIFICATIONS FOR MY MASTERPIECE
+===================================================
+
+OVERVIEW
+--------
+This document specifies 7 Nostr features to add to the My Masterpiece app.
+The app already has NIP-07 browser extension login working.
+The Nostr context is at: client/src/contexts/nostr-context.tsx
+
+
+FEATURE 1: NIP-46 BUNKER LOGIN
+==============================
+
+Purpose: Allow secure login via remote signing (nsec.app, nsecBunker)
+
+Current State:
+- Button exists but is disabled in client/src/components/nostr-login-dialog.tsx
+- NostrContext has loginMethod type that includes "bunker"
+
+What to Build:
+1. Add nostr-tools/nip46 import to nostr-context.tsx
+2. Create a connectWithBunker() function that:
+   - Prompts user for bunker connection string (bunker://pubkey@relay)
+   - Establishes NIP-46 connection
+   - Stores connection info in localStorage
+   - Auto-reconnects on page reload
+3. Update NostrLoginDialog to:
+   - Enable the bunker button
+   - Show input field for bunker connection string
+   - Handle connection flow with loading states
+4. Add disconnect handling for bunker connections
+
+Files to Modify:
+- client/src/contexts/nostr-context.tsx
+- client/src/components/nostr-login-dialog.tsx
+
+NPM Package Needed: nostr-tools (already installed)
+
+
+FEATURE 2: NIP-57 ZAPS (LIGHTNING TIPS)
+=======================================
+
+Purpose: Send/receive Bitcoin Lightning tips on posts and profiles
+
+Current State:
+- Posts table has "zaps" column (integer for sats)
+- zapPost() API function exists in client/src/lib/api.ts
+- backend route exists: POST /api/posts/:id/zap
+
+What to Build:
+1. Create ZapButton component:
+   - Displays lightning bolt icon
+   - Shows current zap count
+   - On click, opens zap modal
+2. Create ZapModal component:
+   - Amount selector (21, 100, 500, 1000, custom)
+   - Fetches Lightning invoice from recipient's lud16
+   - Uses WebLN if available, otherwise shows QR code
+   - Publishes NIP-57 zap receipt on success
+3. Add Lightning address field to user profiles:
+   - Store in users table (add lud16 column)
+   - Display on profile page
+   - Validate NIP-05 style addresses
+4. Update FeedPost component to use ZapButton
+5. Add zap totals to leaderboard
+
+Files to Modify:
+- shared/schema.ts (add lud16 to users)
+- server/routes.ts (add Lightning verification)
+- client/src/components/feed-post.tsx
+- client/src/pages/profile.tsx
+
+New Files to Create:
+- client/src/components/zap-button.tsx
+- client/src/components/zap-modal.tsx
+- client/src/lib/lightning.ts (LNURL utilities)
+
+
+FEATURE 3: RELAY MANAGEMENT
+===========================
+
+Purpose: Let users configure which Nostr relays to use
+
+Current State:
+- Relays page exists at client/src/pages/relays.tsx
+- No actual relay management implemented
+
+What to Build:
+1. Create RelayContext or add to NostrContext:
+   - Default relays: wss://relay.damus.io, wss://nos.lol, wss://relay.nostr.band
+   - Store user's relay preferences in localStorage
+   - Track connection status per relay
+2. Update relays.tsx page:
+   - Show list of configured relays
+   - Connection status indicator (green/red dot)
+   - Add relay button with validation
+   - Remove relay button
+   - Test connection button
+3. Add relay read/write preferences:
+   - Toggle read from relay
+   - Toggle write to relay
+4. Use configured relays when publishing events
+
+Files to Modify:
+- client/src/contexts/nostr-context.tsx
+- client/src/pages/relays.tsx
+
+New Files to Create:
+- client/src/lib/relays.ts (relay utilities)
+
+
+FEATURE 4: NOSTR DATA STORAGE (OPTIONAL PUBLISHING)
+===================================================
+
+Purpose: Optionally publish journal entries as Nostr events
+
+Current State:
+- Journal entries stored in PostgreSQL
+- isPrivate field exists on journal_entries table
+- sharedClubs array exists for sharing with groups
+
+What to Build:
+1. Create Nostr event kinds for app data:
+   - Kind 30023 (long-form content) for journal entries
+   - Use "d" tag for unique identifier
+   - Encrypt content if private (NIP-04 self-encryption)
+2. Add "Publish to Nostr" toggle in Daily LOVE Practice:
+   - Default: OFF (private to database only)
+   - When ON: Publishes encrypted event to user's relays
+3. Create NostrSync service:
+   - Publish new entries when toggle is on
+   - Option to publish existing entries
+   - Delete (NIP-09) entries from relays
+4. Show Nostr sync status on entries
+
+Files to Modify:
+- client/src/components/daily-practice/active-practice-card.tsx
+- client/src/pages/journal.tsx
+- client/src/contexts/nostr-context.tsx
+
+New Files to Create:
+- client/src/lib/nostr-sync.ts
+- client/src/components/nostr-sync-toggle.tsx
+
+
+FEATURE 5: PROFILE ENHANCEMENT (NIP-01, NIP-05)
+===============================================
+
+Purpose: Fetch and display full Nostr profiles
+
+Current State:
+- Basic profile fetched (npub, pubkey)
+- Profile picture, name stored in localStorage
+- No NIP-05 verification
+
+What to Build:
+1. Fetch kind 0 (metadata) event on login:
+   - Parse JSON content for: name, about, picture, nip05, lud16, banner
+   - Store in NostrContext
+   - Cache in localStorage
+2. Add NIP-05 verification:
+   - Fetch /.well-known/nostr.json from domain
+   - Verify pubkey matches
+   - Show verified badge if valid
+3. Update profile display throughout app:
+   - Avatar component shows Nostr picture
+   - Name shows Nostr name
+   - Profile page shows full metadata
+4. Add ability to update profile:
+   - Edit form for name, about, picture, lud16
+   - Publish updated kind 0 event
+
+Files to Modify:
+- client/src/contexts/nostr-context.tsx
+- client/src/pages/profile.tsx
+- client/src/components/layout.tsx
+
+New Files to Create:
+- client/src/lib/nip05.ts (verification utilities)
+- client/src/components/verified-badge.tsx
+
+
+FEATURE 6: NIP-04 DIRECT MESSAGES (PRIVATE 1-ON-1)
+==================================================
+
+Purpose: Private encrypted messaging between users
+
+Current State:
+- No DM functionality exists
+- Messages dropdown in layout.tsx shows mock data
+
+What to Build:
+1. Create DM database tables:
+   - conversations (id, participants[], lastMessage, updatedAt)
+   - messages (id, conversationId, senderPubkey, encryptedContent, createdAt)
+2. Create DM API routes:
+   - GET /api/dm/conversations/:pubkey
+   - GET /api/dm/messages/:conversationId
+   - POST /api/dm/send
+3. Implement NIP-04 encryption:
+   - Use window.nostr.nip04.encrypt() for extension
+   - Use nostr-tools for bunker connections
+4. Create DM UI components:
+   - ConversationList (shows all chats)
+   - MessageThread (shows messages in conversation)
+   - ComposeMessage (input with send button)
+   - NewConversation (search by npub/NIP-05)
+5. Create DM page at /messages
+6. Update inbox dropdown to show real conversations
+7. NO ZAPPING inside DMs (keep private)
+
+Files to Modify:
+- shared/schema.ts (add DM tables)
+- server/routes.ts (add DM routes)
+- server/storage.ts (add DM operations)
+- client/src/components/layout.tsx (update inbox)
+- client/src/App.tsx (add /messages route)
+
+New Files to Create:
+- client/src/pages/messages.tsx
+- client/src/components/dm/conversation-list.tsx
+- client/src/components/dm/message-thread.tsx
+- client/src/components/dm/compose-message.tsx
+- client/src/lib/nip04.ts (encryption utilities)
+
+
+FEATURE 7: GROUP MESSAGING (SEMI-PUBLIC WITH ZAPS)
+==================================================
+
+Purpose: Group chats where members can see messages and zap each other
+
+Current State:
+- Clubs exist (database table, API routes)
+- No messaging in clubs
+
+What to Build:
+1. Create group message database tables:
+   - club_messages (id, clubId, senderPubkey, content, zaps, createdAt)
+   - club_members (clubId, pubkey, role, joinedAt)
+2. Create group message API routes:
+   - GET /api/clubs/:id/messages
+   - POST /api/clubs/:id/messages
+   - POST /api/clubs/:id/messages/:messageId/zap
+   - GET /api/clubs/:id/members
+   - POST /api/clubs/:id/join
+   - POST /api/clubs/:id/leave
+3. Create group chat UI:
+   - Club chat page (messages + member list)
+   - Message component with zap button
+   - Member list sidebar with Lightning addresses
+   - Join/leave club buttons
+4. Messages are NOT encrypted (semi-public)
+5. Only members can see messages
+6. Members can zap individual messages or other members
+7. Show total zaps given/received per member in group
+
+Files to Modify:
+- shared/schema.ts (add group message tables)
+- server/routes.ts (add group routes)
+- server/storage.ts (add group operations)
+- client/src/pages/club-detail.tsx
+
+New Files to Create:
+- client/src/components/club/club-chat.tsx
+- client/src/components/club/member-list.tsx
+- client/src/components/club/message-item.tsx
+
+
+IMPLEMENTATION ORDER (RECOMMENDED)
+==================================
+1. NIP-46 Bunker Login (foundation for secure auth)
+2. Profile Enhancement (need profiles for other features)
+3. Relay Management (needed for publishing)
+4. NIP-57 Zaps (core monetization feature)
+5. NIP-04 DMs (private messaging)
+6. Group Messaging (builds on zaps + messaging)
+7. Nostr Data Storage (optional, can be last)
+
+
+IMPORTANT NOTES
+===============
+- Privacy first: All features should be opt-in by default
+- DMs are ENCRYPTED (NIP-04), group chats are NOT (for zapping)
+- Use nostr-tools library for all Nostr protocol operations
+- Test with multiple browser extensions (Alby, nos2x)
+- Test NIP-46 with nsec.app
+- Handle connection errors gracefully
+- Show loading states during Nostr operations

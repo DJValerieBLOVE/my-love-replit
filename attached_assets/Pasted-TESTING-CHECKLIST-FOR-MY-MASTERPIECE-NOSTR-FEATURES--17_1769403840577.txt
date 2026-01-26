@@ -1,0 +1,105 @@
+TESTING CHECKLIST FOR MY MASTERPIECE NOSTR FEATURES
+===================================================
+
+GENERAL TESTING SETUP
+---------------------
+[ ] Install Alby browser extension
+[ ] Install nos2x browser extension (backup)
+[ ] Create nsec.app account for bunker testing
+[ ] Have Lightning wallet ready (Alby, Zeus, etc.)
+[ ] Have test sats available
+
+
+TEST 1: NIP-46 BUNKER LOGIN
+---------------------------
+[ ] Click "Connect with Bunker" button
+[ ] Enter bunker connection string from nsec.app
+[ ] Connection establishes successfully
+[ ] Profile info appears (name, picture)
+[ ] Can sign events (test by liking a post)
+[ ] Refresh page - stays logged in
+[ ] Disconnect works
+[ ] Can re-connect with same bunker
+
+
+TEST 2: NIP-57 ZAPS
+-------------------
+[ ] Zap button appears on posts
+[ ] Click zap button opens modal
+[ ] Amount selector works (21, 100, 500, 1000, custom)
+[ ] Invoice generated correctly
+[ ] WebLN payment works (if installed)
+[ ] QR code displays (if no WebLN)
+[ ] Zap count updates after payment
+[ ] Zap receipt published to Nostr
+[ ] Lightning address shows on profile
+[ ] Can add/edit own Lightning address
+
+
+TEST 3: RELAY MANAGEMENT
+------------------------
+[ ] Relays page loads
+[ ] Default relays shown
+[ ] Connection status indicators work
+[ ] Can add new relay
+[ ] Invalid relay URL rejected
+[ ] Can remove relay
+[ ] Can toggle read/write
+[ ] Settings persist after refresh
+
+
+TEST 4: NOSTR DATA STORAGE
+--------------------------
+[ ] "Publish to Nostr" toggle appears
+[ ] Default is OFF
+[ ] When ON, entry published to relays
+[ ] Encrypted content (can't read raw)
+[ ] Can delete from Nostr
+[ ] Sync status shows correctly
+
+
+TEST 5: PROFILE ENHANCEMENT
+---------------------------
+[ ] Full profile fetched on login
+[ ] Name displays correctly
+[ ] Picture displays correctly
+[ ] Bio displays on profile page
+[ ] NIP-05 verification works
+[ ] Verified badge shows when valid
+[ ] Can edit profile
+[ ] Changes publish to Nostr
+
+
+TEST 6: PRIVATE DMS (NIP-04)
+----------------------------
+[ ] Can start new conversation
+[ ] Can search by npub or NIP-05
+[ ] Messages encrypt before sending
+[ ] Messages decrypt when received
+[ ] Conversation list shows correctly
+[ ] Unread indicators work
+[ ] Real-time updates (or polling)
+[ ] NO zap buttons in DMs
+
+
+TEST 7: GROUP MESSAGING
+-----------------------
+[ ] Can join a club/group
+[ ] Can see other members
+[ ] Can send messages
+[ ] Messages visible to all members
+[ ] Non-members can't see messages
+[ ] Zap button on messages works
+[ ] Can zap other members
+[ ] Zap totals show per member
+[ ] Can leave group
+
+
+CROSS-FEATURE TESTS
+-------------------
+[ ] Extension login + all features work
+[ ] Bunker login + all features work
+[ ] Mobile responsive (test on phone)
+[ ] Dark mode (if applicable)
+[ ] No console errors
+[ ] Performance acceptable
