@@ -114,7 +114,7 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
     <div 
       className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer"
       style={{ 
-        width: "min(95vw, 95vh, 750px)", // Further increased size
+        width: "min(95vw, 95vh, 750px)", 
         height: "min(90vw, 90vh, 680px)" 
       }}
       onClick={onClick}
@@ -140,12 +140,11 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
                 <feDropShadow dx="0" dy="6" stdDeviation="10" floodColor="rgba(0,0,0,0.6)" />
               </filter>
             </defs>
-            {/* Outline - using EXACT background hex color #020817 and 10px width */}
+            {/* Outline - using background-color property which maps to CSS var */}
             <path
               d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z"
-              fill="#020817"
-              stroke="#020817"
-              strokeWidth="10"
+              className="fill-background stroke-background"
+              style={{ strokeWidth: "10px" }}
               filter="url(#heartShadow)"
             />
             <g clipPath="url(#heartClipFront)">
@@ -190,9 +189,8 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
             </defs>
             <path
               d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z"
-              fill="#020817"
-              stroke="#020817"
-              strokeWidth="10"
+              className="fill-background stroke-background"
+              style={{ strokeWidth: "10px" }}
               filter="url(#heartShadowBack)"
             />
             <g clipPath="url(#heartClip)">
