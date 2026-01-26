@@ -24,12 +24,12 @@ function FlipCard({ title, position, imageUrl, quote, progress, onClick, testId 
 
   return (
     <div 
-      className="relative cursor-pointer overflow-hidden"
+      className="relative cursor-pointer overflow-hidden rounded-xl h-full w-full"
       style={{ perspective: "1000px" }}
       data-testid={testId}
     >
       <motion.div
-        className="w-full h-full"
+        className="w-full h-full relative"
         animate={{ rotateY: isFlipped ? 180 : 0 }}
         transition={{ duration: 0.6, ease: "easeInOut" }}
         style={{ transformStyle: "preserve-3d" }}
@@ -37,7 +37,7 @@ function FlipCard({ title, position, imageUrl, quote, progress, onClick, testId 
       >
         {/* Front - Beautiful Photo */}
         <div 
-          className="absolute inset-0"
+          className="absolute inset-0 rounded-xl overflow-hidden"
           style={{ 
             backfaceVisibility: "hidden",
             backgroundImage: `url(${imageUrl})`,
@@ -60,7 +60,7 @@ function FlipCard({ title, position, imageUrl, quote, progress, onClick, testId 
 
         {/* Back - Quote + Stats */}
         <div 
-          className="absolute inset-0 flex flex-col items-center justify-center p-4"
+          className="absolute inset-0 flex flex-col items-center justify-center p-4 rounded-xl overflow-hidden"
           style={{ 
             backfaceVisibility: "hidden",
             transform: "rotateY(180deg)",
@@ -291,11 +291,10 @@ export function HeartDashboard() {
   ];
 
   return (
-    <div className="relative w-full h-full overflow-hidden bg-background">
+    <div className="relative w-full h-full overflow-hidden bg-background p-[10px]">
       {/* 4 Pillar Flip Cards */}
       <div 
-        className="grid grid-cols-2 grid-rows-2 w-full h-full"
-        style={{ gap: "2px" }}
+        className="grid grid-cols-2 grid-rows-2 w-full h-full gap-[10px]"
       >
         {pillars.map((pillar) => (
           <FlipCard
