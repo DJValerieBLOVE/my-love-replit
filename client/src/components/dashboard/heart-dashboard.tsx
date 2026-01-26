@@ -114,8 +114,8 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
     <div 
       className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer"
       style={{ 
-        width: "min(80vw, 80vh, 600px)", 
-        height: "min(75vw, 75vh, 550px)" 
+        width: "min(68vw, 68vh, 510px)", // 15% smaller than 80vw/vh
+        height: "min(64vw, 64vh, 467px)" 
       }}
       onClick={onClick}
       data-testid="heart-god-card"
@@ -140,12 +140,12 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
                 <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="rgba(0,0,0,0.5)" />
               </filter>
             </defs>
-            {/* Outline - using background color #FAFAFA and 2px width */}
+            {/* Outline - using background color #FAFAFA and 1px width */}
             <path
               d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z"
               fill="#FAFAFA"
               stroke="#FAFAFA"
-              strokeWidth="2"
+              strokeWidth="1"
               filter="url(#heartShadow)"
             />
             <g clipPath="url(#heartClipFront)">
@@ -194,7 +194,7 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
               d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z"
               fill="#FAFAFA"
               stroke="#FAFAFA"
-              strokeWidth="2"
+              strokeWidth="1"
               filter="url(#heartShadowBack)"
             />
             <g clipPath="url(#heartClip)">
@@ -289,7 +289,7 @@ export function HeartDashboard() {
   ];
 
   return (
-    <div className="relative w-full h-full overflow-hidden bg-background p-[10px]">
+    <div className="relative w-full h-full overflow-hidden bg-[#FAFAFA] p-[10px]">
       {/* 4 Pillar Flip Cards */}
       <div 
         className="grid grid-cols-2 grid-rows-2 w-full h-full gap-[10px]"
