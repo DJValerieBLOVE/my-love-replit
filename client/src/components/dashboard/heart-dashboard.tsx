@@ -24,7 +24,7 @@ function FlipCard({ title, position, imageUrl, quote, progress, onClick, testId 
 
   return (
     <div 
-      className="relative cursor-pointer overflow-hidden rounded-md h-full w-full"
+      className="relative cursor-pointer overflow-hidden rounded-sm h-full w-full"
       style={{ 
         perspective: "1000px",
         boxShadow: "0 4px 12px rgba(0,0,0,0.3)"
@@ -40,7 +40,7 @@ function FlipCard({ title, position, imageUrl, quote, progress, onClick, testId 
       >
         {/* Front - Beautiful Photo */}
         <div 
-          className="absolute inset-0 rounded-md overflow-hidden"
+          className="absolute inset-0 rounded-sm overflow-hidden"
           style={{ 
             backfaceVisibility: "hidden",
             backgroundImage: `url(${imageUrl})`,
@@ -63,7 +63,7 @@ function FlipCard({ title, position, imageUrl, quote, progress, onClick, testId 
 
         {/* Back - Quote + Stats */}
         <div 
-          className="absolute inset-0 flex flex-col items-center justify-center p-4 rounded-md overflow-hidden"
+          className="absolute inset-0 flex flex-col items-center justify-center p-4 rounded-sm overflow-hidden"
           style={{ 
             backfaceVisibility: "hidden",
             transform: "rotateY(180deg)",
