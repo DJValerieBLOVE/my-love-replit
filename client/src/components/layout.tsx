@@ -47,10 +47,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const desktopNavLinks = [
     { icon: Home, label: "Home", href: "/" },
-    { icon: Target, label: "Big Dreams", href: "/big-dreams", notificationType: "underlay-light" as const },
-    { icon: GraduationCap, label: "Grow", href: "/grow", notificationType: "icon-purple" as const },
-    { icon: Calendar, label: "Events", href: "/events", notificationType: "breathing" as const },
-    { icon: Users, label: "Tribe", href: "/community", notificationType: "dot-purple" as const },
+    { icon: Target, label: "Big Dreams", href: "/big-dreams", hasNotification: true },
+    { icon: GraduationCap, label: "Grow", href: "/grow", hasNotification: true },
+    { icon: Calendar, label: "Events", href: "/events", hasNotification: true },
+    { icon: Users, label: "Tribe", href: "/community", hasNotification: true },
     { icon: Wrench, label: "Toolbox", href: "/resources" },
     { icon: Heart, label: "Love Board", href: "/leaderboard" },
     { icon: Rss, label: "Feed", href: "/feed" },
@@ -58,9 +58,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const mobileNavLinks = [
     { icon: Home, label: "Home", href: "/" },
-    { icon: GraduationCap, label: "Grow", href: "/grow", notificationType: "icon-purple" as const },
-    { icon: Calendar, label: "Events", href: "/events", notificationType: "breathing" as const },
-    { icon: Users, label: "Tribe", href: "/community", notificationType: "dot-purple" as const },
+    { icon: GraduationCap, label: "Grow", href: "/grow", hasNotification: true },
+    { icon: Calendar, label: "Events", href: "/events", hasNotification: true },
+    { icon: Users, label: "Tribe", href: "/community", hasNotification: true },
     { icon: Wrench, label: "Toolbox", href: "/resources" },
     { icon: Rss, label: "Feed", href: "/feed" },
   ];
@@ -218,22 +218,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     : "text-muted-foreground hover:bg-love-body/5 hover:text-love-body hover:shadow-sm hover:translate-x-1"
                 )}>
                   <div className="relative">
-                    {item.notificationType === "underlay-light" && (
-                      <span 
-                        className="absolute inset-0 -m-1.5 rounded-full bg-love-body/5"
-                        data-testid={`notification-underlay-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
-                      />
-                    )}
                     <item.icon 
                       strokeWidth={1.5} 
                       className={cn(
                         "w-5 h-5 transition-transform group-hover:scale-110 relative z-10", 
-                        isActive && "opacity-100",
-                        item.notificationType === "breathing" && "animate-breathing",
-                        item.notificationType === "icon-purple" && "text-love-body"
+                        isActive && "opacity-100"
                       )} 
                     />
-                    {item.notificationType === "dot-purple" && (
+                    {item.hasNotification && (
                       <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-love-body rounded-full" data-testid={`notification-dot-${item.label.toLowerCase().replace(/\s+/g, '-')}`} />
                     )}
                   </div>
@@ -269,13 +261,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <item.icon 
                   className={cn(
                     "w-6 h-6 relative z-10", 
-                    isActive && "stroke-[2.5]",
-                    item.notificationType === "breathing" && "animate-breathing",
-                    item.notificationType === "icon-purple" && "text-love-body"
+                    isActive && "stroke-[2.5]"
                   )} 
                   strokeWidth={1.5} 
                 />
-                {item.notificationType === "dot-purple" && (
+                {item.hasNotification && (
                   <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-love-body rounded-full" data-testid={`notification-dot-mobile-${item.label.toLowerCase().replace(/\s+/g, '-')}`} />
                 )}
               </div>

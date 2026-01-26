@@ -100,7 +100,7 @@
 - **Secure Authentication** - Nostr pubkey linked to database users, all personal data protected
 - **Mandatory Email Collection** - ProfileCompletionDialog prompts for email after Nostr login, required for 2-week trial access
 - **Share to Nostr** - Share Big Dreams, Journal entries, and completed Experiments to Nostr network with optional caption
-- **Notification Indicators** - Four distinct styles: lighter underlay (Big Dreams), purple icon (Grow), breathing pulse 30-100% (Events), small purple dot (Tribe)
+- **Notification Indicators** - Simple dark purple dots on nav items with notifications (Big Dreams, Grow, Events, Tribe)
 - **Simplified Header** - Removed mail/bell icons, cleaner navigation
 - **Social Post Actions** - Complete action buttons: Reply, Repost (with dropdown for Nostr/Group), Zap (with amount dialog), Like, Bookmark, Share (with dropdown for Copy Link, X, Facebook)
 - **Sharing Privacy Rules** - Group/community/learning posts stay private within group; only user's own original content can be shared publicly to Nostr
