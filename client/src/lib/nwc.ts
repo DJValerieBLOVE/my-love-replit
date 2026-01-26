@@ -179,3 +179,90 @@ export async function lookupInvoice(
 ): Promise<NWCInvoice> {
   return sendNWCRequest(connection, "lookup_invoice", { payment_hash: paymentHash });
 }
+
+export interface LNURLPayInfo {
+  callback: string;
+  minSendable: number;
+  maxSendable: number;
+  metadata: string;
+  tag: string;
+  allowsNostr?: boolean;
+  nostrPubkey?: string;
+}
+
+export interface LNURLPayResult {
+  pr: string;
+  routes?: any[];
+  successAction?: {
+    tag: string;
+    message?: string;
+    url?: string;
+  };
+}
+
+export function lud16ToUrl(lud16: string): string | null {
+  const [name, domain] = lud16.split("@");
+  if (!name || !domain) return null;
+  return `https://${domain}/.well-known/lnurlp/${name}`;
+}
+
+export async function fetchLNURLPayInfo(lud16: string): Promise<LNURLPayInfo> {
+  const url = lud16ToUrl(lud16);
+  if (!url) {
+    throw new Error("Invalid Lightning address format");
+  }
+  
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error("Failed to fetch Lightning address info");
+  }
+  
+  const data = await response.json();
+  if (data.status === "ERROR") {
+    throw new Error(data.reason || "LNURL error");
+  }
+  
+  return data as LNURLPayInfo;
+}
+
+export async function getInvoiceFromLNURL(
+  lnurlPayInfo: LNURLPayInfo,
+  amountSats: number,
+  comment?: string
+): Promise<string> {
+  const amountMsat = amountSats * 1000;
+  
+  if (amountMsat < lnurlPayInfo.minSendable || amountMsat > lnurlPayInfo.maxSendable) {
+    throw new Error(`Amount must be between ${lnurlPayInfo.minSendable / 1000} and ${lnurlPayInfo.maxSendable / 1000} sats`);
+  }
+  
+  const url = new URL(lnurlPayInfo.callback);
+  url.searchParams.set("amount", amountMsat.toString());
+  if (comment) {
+    url.searchParams.set("comment", comment);
+  }
+  
+  const response = await fetch(url.toString());
+  if (!response.ok) {
+    throw new Error("Failed to get invoice from Lightning address");
+  }
+  
+  const data: LNURLPayResult = await response.json();
+  if (!data.pr) {
+    throw new Error("No invoice returned from Lightning address");
+  }
+  
+  return data.pr;
+}
+
+export async function zapViaLightning(
+  connection: NWCConnection,
+  recipientLud16: string,
+  amountSats: number,
+  comment?: string
+): Promise<{ preimage: string; invoice: string }> {
+  const lnurlInfo = await fetchLNURLPayInfo(recipientLud16);
+  const invoice = await getInvoiceFromLNURL(lnurlInfo, amountSats, comment);
+  const result = await payInvoice(connection, invoice);
+  return { preimage: result.preimage, invoice };
+}
