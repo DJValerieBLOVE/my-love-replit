@@ -131,20 +131,21 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
           className="absolute inset-0"
           style={{ backfaceVisibility: "hidden" }}
         >
-          <svg viewBox="-20 -20 140 130" className="w-full h-full overflow-visible">
+          <svg viewBox="-10 -10 120 110" className="w-full h-full overflow-visible">
             <defs>
               <clipPath id="heartClipFront">
                 <path d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z" />
               </clipPath>
-              <filter id="heartShadow" x="-40%" y="-40%" width="180%" height="180%">
-                <feDropShadow dx="0" dy="6" stdDeviation="10" floodColor="rgba(0,0,0,0.6)" />
+              <filter id="heartShadow" x="-30%" y="-30%" width="160%" height="160%">
+                <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="rgba(0,0,0,0.5)" />
               </filter>
             </defs>
-            {/* Outline - using background-color property which maps to CSS var */}
+            {/* Outline - using background color #FAFAFA and 4px width */}
             <path
               d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z"
-              className="fill-background stroke-background"
-              style={{ strokeWidth: "10px" }}
+              fill="#FAFAFA"
+              stroke="#FAFAFA"
+              strokeWidth="4"
               filter="url(#heartShadow)"
             />
             <g clipPath="url(#heartClipFront)">
@@ -163,10 +164,12 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
               y="50"
               textAnchor="middle"
               fill="white"
-              fontSize="18"
+              fontSize="20"
               fontFamily="Marcellus, Georgia, serif"
               fontWeight="400"
-              style={{ textShadow: "0 2px 8px rgba(0,0,0,0.9)" }}
+              style={{ 
+                textShadow: "0 2px 8px rgba(0,0,0,0.7), 0 0 20px rgba(0,0,0,0.5)" 
+              }}
             >
               {label}
             </text>
@@ -178,19 +181,20 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
           className="absolute inset-0"
           style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
         >
-          <svg viewBox="-20 -20 140 130" className="w-full h-full overflow-visible">
+          <svg viewBox="-10 -10 120 110" className="w-full h-full overflow-visible">
             <defs>
               <clipPath id="heartClip">
                 <path d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z" />
               </clipPath>
-              <filter id="heartShadowBack" x="-40%" y="-40%" width="180%" height="180%">
-                <feDropShadow dx="0" dy="6" stdDeviation="10" floodColor="rgba(0,0,0,0.6)" />
+              <filter id="heartShadowBack" x="-30%" y="-30%" width="160%" height="160%">
+                <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="rgba(0,0,0,0.5)" />
               </filter>
             </defs>
             <path
               d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z"
-              className="fill-background stroke-background"
-              style={{ strokeWidth: "10px" }}
+              fill="#FAFAFA"
+              stroke="#FAFAFA"
+              strokeWidth="4"
               filter="url(#heartShadowBack)"
             />
             <g clipPath="url(#heartClip)">
