@@ -226,7 +226,7 @@ export async function fetchLNURLPayInfo(lud16: string): Promise<LNURLPayInfo> {
 }
 
 export async function getInvoiceFromLNURL(
-  lnurlPayInfo: LNURLPayInfo,
+  lnurlPayInfo: LNURLPayInfo & { commentAllowed?: number },
   amountSats: number,
   comment?: string
 ): Promise<string> {
@@ -238,8 +238,12 @@ export async function getInvoiceFromLNURL(
   
   const url = new URL(lnurlPayInfo.callback);
   url.searchParams.set("amount", amountMsat.toString());
+  
   if (comment) {
-    url.searchParams.set("comment", comment);
+    const maxCommentLength = lnurlPayInfo.commentAllowed || 0;
+    if (maxCommentLength > 0) {
+      url.searchParams.set("comment", comment.slice(0, maxCommentLength));
+    }
   }
   
   const response = await fetch(url.toString());
@@ -247,7 +251,12 @@ export async function getInvoiceFromLNURL(
     throw new Error("Failed to get invoice from Lightning address");
   }
   
-  const data: LNURLPayResult = await response.json();
+  const data: LNURLPayResult & { status?: string; reason?: string } = await response.json();
+  
+  if (data.status === "ERROR") {
+    throw new Error(data.reason || "LNURL invoice request failed");
+  }
+  
   if (!data.pr) {
     throw new Error("No invoice returned from Lightning address");
   }
@@ -255,14 +264,78 @@ export async function getInvoiceFromLNURL(
   return data.pr;
 }
 
+export function extractPaymentHashFromBolt11(invoice: string): string | null {
+  try {
+    const invoiceLower = invoice.toLowerCase();
+    const dataStart = invoiceLower.startsWith("lnbc") ? 4 : 
+                      invoiceLower.startsWith("lntb") ? 4 :
+                      invoiceLower.startsWith("lnbcrt") ? 6 : 0;
+    if (dataStart === 0) return null;
+    
+    let idx = dataStart;
+    while (idx < invoiceLower.length && /[0-9]/.test(invoiceLower[idx])) idx++;
+    while (idx < invoiceLower.length && /[munp]/.test(invoiceLower[idx])) idx++;
+    
+    const data = invoiceLower.slice(idx);
+    const timestampEnd = data.indexOf("1");
+    if (timestampEnd === -1) return null;
+    
+    const taggedFields = data.slice(timestampEnd + 1);
+    
+    let pos = 0;
+    const bech32Chars = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
+    
+    while (pos + 2 < taggedFields.length) {
+      const tag = taggedFields[pos];
+      const len1 = bech32Chars.indexOf(taggedFields[pos + 1]);
+      const len2 = bech32Chars.indexOf(taggedFields[pos + 2]);
+      if (len1 === -1 || len2 === -1) break;
+      
+      const dataLength = len1 * 32 + len2;
+      const fieldData = taggedFields.slice(pos + 3, pos + 3 + dataLength);
+      
+      if (tag === "p" && dataLength === 52) {
+        const bits: number[] = [];
+        for (const char of fieldData) {
+          const val = bech32Chars.indexOf(char);
+          if (val === -1) break;
+          bits.push(val);
+        }
+        
+        const bytes: number[] = [];
+        let acc = 0;
+        let accBits = 0;
+        for (const bit of bits) {
+          acc = (acc << 5) | bit;
+          accBits += 5;
+          while (accBits >= 8) {
+            accBits -= 8;
+            bytes.push((acc >> accBits) & 0xff);
+          }
+        }
+        
+        return bytes.map(b => b.toString(16).padStart(2, "0")).join("");
+      }
+      
+      pos += 3 + dataLength;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export async function zapViaLightning(
   connection: NWCConnection,
   recipientLud16: string,
   amountSats: number,
   comment?: string
-): Promise<{ preimage: string; invoice: string }> {
+): Promise<{ paymentHash: string; preimage: string; invoice: string }> {
   const lnurlInfo = await fetchLNURLPayInfo(recipientLud16);
   const invoice = await getInvoiceFromLNURL(lnurlInfo, amountSats, comment);
   const result = await payInvoice(connection, invoice);
-  return { preimage: result.preimage, invoice };
+  
+  const paymentHash = extractPaymentHashFromBolt11(invoice) || result.preimage;
+  
+  return { paymentHash, preimage: result.preimage, invoice };
 }

@@ -28,7 +28,7 @@ import { toast } from "sonner";
 import { isGroupContent, canSharePublicly, getGroupName, type ShareablePost } from "@/lib/sharing-rules";
 import { useNostr } from "@/contexts/nostr-context";
 import { zapPost } from "@/lib/api";
-import { loadNWCConnection, payInvoice } from "@/lib/nwc";
+import { loadNWCConnection, zapViaLightning } from "@/lib/nwc";
 import {
   Dialog,
   DialogContent,
@@ -177,15 +177,49 @@ export function FeedPost({ post }: FeedPostProps) {
     setIsZapping(true);
     
     try {
-      await zapPost(post.id, post.author.id, zapAmount, zapComment || undefined);
+      const nwcConnection = loadNWCConnection();
+      let paymentHash: string | undefined;
+      
+      if (nwcConnection && post.author.lud16) {
+        try {
+          const result = await zapViaLightning(
+            nwcConnection,
+            post.author.lud16,
+            zapAmount,
+            zapComment || undefined
+          );
+          paymentHash = result.paymentHash;
+          
+          toast.success("Lightning Zap Sent! ⚡", {
+            description: `You sent ${zapAmount} sats to ${post.author.name} via Lightning`,
+          });
+        } catch (lightningError: any) {
+          console.error("Lightning payment failed:", lightningError);
+          toast.error("Lightning payment failed", {
+            description: lightningError.message || "Recording zap to database instead"
+          });
+        }
+      } else if (!nwcConnection) {
+        toast.info("No wallet connected", {
+          description: "Connect a Lightning wallet in the Wallet page for real payments"
+        });
+      } else if (!post.author.lud16) {
+        toast.info("Recipient has no Lightning address", {
+          description: "Recording zap to community leaderboard only"
+        });
+      }
+      
+      await zapPost(post.id, post.author.id, zapAmount, zapComment || undefined, paymentHash);
       
       setZaps(prev => prev + zapAmount);
       setIsZapped(true);
       setIsZapOpen(false);
       
-      toast.success("Zap Recorded! ⚡", {
-        description: `You sent ${zapAmount} sats to ${post.author.name}`,
-      });
+      if (!paymentHash) {
+        toast.success("Zap Recorded! ⚡", {
+          description: `${zapAmount} sats recorded for ${post.author.name}`,
+        });
+      }
       
       setZapComment("");
       setZapAmount(21);
