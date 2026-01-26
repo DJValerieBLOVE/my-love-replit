@@ -8,7 +8,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Zap, Key, Shield, ExternalLink, Loader2, CheckCircle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Zap, Key, Shield, ExternalLink, Loader2, CheckCircle, UserPlus, ArrowLeft } from "lucide-react";
 
 interface NostrLoginDialogProps {
   open: boolean;
@@ -16,9 +17,11 @@ interface NostrLoginDialogProps {
 }
 
 export function NostrLoginDialog({ open, onOpenChange }: NostrLoginDialogProps) {
-  const { connectWithExtension, error, isLoading } = useNostr();
+  const { connectWithExtension, connectWithBunker, error, isLoading } = useNostr();
   const [hasExtension, setHasExtension] = useState<boolean | null>(null);
   const [connectSuccess, setConnectSuccess] = useState(false);
+  const [showBunkerInput, setShowBunkerInput] = useState(false);
+  const [bunkerUrl, setBunkerUrl] = useState("");
 
   const checkForExtension = () => {
     setHasExtension(!!window.nostr);
@@ -35,8 +38,30 @@ export function NostrLoginDialog({ open, onOpenChange }: NostrLoginDialogProps) 
     }
   };
 
+  const handleBunkerLogin = async () => {
+    if (!bunkerUrl.trim()) return;
+    const success = await connectWithBunker(bunkerUrl.trim());
+    if (success) {
+      setConnectSuccess(true);
+      setTimeout(() => {
+        onOpenChange(false);
+        setConnectSuccess(false);
+        setShowBunkerInput(false);
+        setBunkerUrl("");
+      }, 1500);
+    }
+  };
+
+  const handleDialogClose = (open: boolean) => {
+    if (!open) {
+      setShowBunkerInput(false);
+      setBunkerUrl("");
+    }
+    onOpenChange(open);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleDialogClose}>
       <DialogContent className="sm:max-w-md" onOpenAutoFocus={checkForExtension}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-2xl font-serif">
@@ -54,6 +79,63 @@ export function NostrLoginDialog({ open, onOpenChange }: NostrLoginDialogProps) 
               <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
             <p className="text-lg font-medium text-green-600">Connected!</p>
+          </div>
+        ) : showBunkerInput ? (
+          <div className="flex flex-col gap-4 py-4">
+            <Button
+              variant="ghost"
+              onClick={() => setShowBunkerInput(false)}
+              className="w-fit -ml-2"
+              data-testid="button-back-to-login"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+            
+            <div className="space-y-3">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Bunker Connection URL</label>
+                <Input
+                  placeholder="bunker://..."
+                  value={bunkerUrl}
+                  onChange={(e) => setBunkerUrl(e.target.value)}
+                  className="h-12"
+                  data-testid="input-bunker-url"
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Get your connection URL from{" "}
+                <a
+                  href="https://nsec.app"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-love-body hover:underline"
+                >
+                  nsec.app
+                </a>
+                {" "}or your bunker app.
+              </p>
+            </div>
+
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-700">
+                {error}
+              </div>
+            )}
+
+            <Button
+              onClick={handleBunkerLogin}
+              disabled={isLoading || !bunkerUrl.trim()}
+              className="w-full h-12 bg-gradient-to-r from-[#6600ff] to-[#cc00ff] hover:from-[#5500dd] hover:to-[#bb00dd] text-white"
+              data-testid="button-connect-bunker"
+            >
+              {isLoading ? (
+                <Loader2 className="w-5 h-5 animate-spin mr-2" />
+              ) : (
+                <Shield className="w-5 h-5 mr-2" />
+              )}
+              Connect
+            </Button>
           </div>
         ) : (
           <div className="flex flex-col gap-4 py-4">
@@ -110,24 +192,56 @@ export function NostrLoginDialog({ open, onOpenChange }: NostrLoginDialogProps) 
                 <span className="w-full border-t border-muted" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">Coming Soon</span>
+                <span className="bg-background px-2 text-muted-foreground">Or</span>
               </div>
             </div>
 
-            <div className="flex flex-col gap-2 opacity-50">
-              <Button variant="outline" disabled className="w-full h-12" data-testid="button-login-bunker">
-                <Shield className="w-4 h-4 mr-2" />
-                Connect with Bunker (NIP-46)
-              </Button>
-              <p className="text-xs text-muted-foreground text-center">
-                For maximum security with nsec.app or nsecBunker
-              </p>
+            <Button
+              variant="outline"
+              onClick={() => setShowBunkerInput(true)}
+              className="w-full h-12"
+              data-testid="button-login-bunker"
+            >
+              <Shield className="w-4 h-4 mr-2" />
+              Connect with Bunker (NIP-46)
+            </Button>
+            <p className="text-xs text-muted-foreground text-center -mt-2">
+              For maximum security with nsec.app or nsecBunker
+            </p>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-muted" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">New to Nostr?</span>
+              </div>
             </div>
 
-            <div className="mt-4 p-4 bg-muted/30 rounded-lg">
+            <a
+              href="https://nsec.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full"
+            >
+              <Button
+                variant="outline"
+                className="w-full h-12 border-dashed"
+                data-testid="button-create-account"
+              >
+                <UserPlus className="w-4 h-4 mr-2" />
+                Create New Account
+                <ExternalLink className="w-3 h-3 ml-2" />
+              </Button>
+            </a>
+            <p className="text-xs text-muted-foreground text-center -mt-2">
+              Set up your Nostr identity with nsec.app - no extension required
+            </p>
+
+            <div className="mt-2 p-4 bg-muted/30 rounded-lg">
               <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
                 <Zap className="w-4 h-4 text-love-family" />
-                New to Nostr?
+                What is Nostr?
               </h4>
               <p className="text-xs text-muted-foreground leading-relaxed">
                 Nostr is a decentralized protocol where YOU own your identity. No company controls your account. 

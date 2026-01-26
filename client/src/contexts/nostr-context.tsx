@@ -1,5 +1,8 @@
-import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
-import { nip19 } from "nostr-tools";
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode, useRef } from "react";
+import { nip19, generateSecretKey, getPublicKey } from "nostr-tools";
+import { BunkerSigner, parseBunkerInput } from "nostr-tools/nip46";
+import { SimplePool } from "nostr-tools/pool";
+import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 import { loginWithNostr, getProfileStatus, getCurrentUser } from "@/lib/api";
 
 interface UserStats {
@@ -31,6 +34,7 @@ interface NostrContextType {
   loginMethod: "extension" | "bunker" | "ncryptsec" | null;
   error: string | null;
   connectWithExtension: () => Promise<boolean>;
+  connectWithBunker: (bunkerUrl: string) => Promise<boolean>;
   disconnect: () => void;
   signEvent: (event: any) => Promise<any>;
   isAdmin: boolean;
@@ -63,6 +67,9 @@ export function NostrProvider({ children }: { children: ReactNode }) {
   const [loginMethod, setLoginMethod] = useState<"extension" | "bunker" | "ncryptsec" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [needsProfileCompletion, setNeedsProfileCompletion] = useState(false);
+  
+  const bunkerSignerRef = useRef<BunkerSigner | null>(null);
+  const poolRef = useRef<SimplePool | null>(null);
 
   const refreshUserStats = useCallback(async () => {
     try {
@@ -82,6 +89,58 @@ export function NostrProvider({ children }: { children: ReactNode }) {
       console.error("Failed to refresh user stats:", e);
     }
   }, []);
+
+  const checkBunkerSession = useCallback(async () => {
+    const savedMethod = localStorage.getItem("nostr_login_method");
+    const savedPubkey = localStorage.getItem("nostr_pubkey");
+    const bunkerSession = localStorage.getItem("nostr_bunker_session");
+    
+    if (savedMethod === "bunker" && savedPubkey && bunkerSession) {
+      try {
+        const session = JSON.parse(bunkerSession);
+        const localSecretKey = hexToBytes(session.localSecretKey);
+        
+        const pool = new SimplePool();
+        poolRef.current = pool;
+        
+        const bunkerPointer = {
+          pubkey: session.remotePubkey,
+          relays: session.relays,
+          secret: session.secret || "",
+        };
+        
+        const signer = BunkerSigner.fromBunker(localSecretKey, bunkerPointer, { pool });
+        await signer.connect();
+        bunkerSignerRef.current = signer;
+        
+        const npub = nip19.npubEncode(savedPubkey);
+        setProfile({
+          npub,
+          pubkey: savedPubkey,
+          name: localStorage.getItem("nostr_name") || undefined,
+          picture: localStorage.getItem("nostr_picture") || undefined,
+        });
+        setIsConnected(true);
+        setLoginMethod("bunker");
+        
+        try {
+          const status = await getProfileStatus();
+          setNeedsProfileCompletion(!status.profileComplete);
+        } catch {
+          setNeedsProfileCompletion(false);
+        }
+        
+        await refreshUserStats();
+        return true;
+      } catch (e) {
+        console.error("Failed to restore bunker session:", e);
+        localStorage.removeItem("nostr_bunker_session");
+        localStorage.removeItem("nostr_pubkey");
+        localStorage.removeItem("nostr_login_method");
+      }
+    }
+    return false;
+  }, [refreshUserStats]);
 
   const checkExtension = useCallback(async () => {
     if (typeof window !== "undefined" && window.nostr) {
@@ -121,9 +180,17 @@ export function NostrProvider({ children }: { children: ReactNode }) {
   }, [refreshUserStats]);
 
   useEffect(() => {
-    const timer = setTimeout(checkExtension, 100);
+    const initSession = async () => {
+      const bunkerRestored = await checkBunkerSession();
+      if (!bunkerRestored) {
+        await checkExtension();
+      } else {
+        setIsLoading(false);
+      }
+    };
+    const timer = setTimeout(initSession, 100);
     return () => clearTimeout(timer);
-  }, [checkExtension]);
+  }, [checkBunkerSession, checkExtension]);
 
   const connectWithExtension = useCallback(async (): Promise<boolean> => {
     setError(null);
@@ -174,14 +241,94 @@ export function NostrProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
       return false;
     }
-  }, []);
+  }, [refreshUserStats]);
+
+  const connectWithBunker = useCallback(async (bunkerUrl: string): Promise<boolean> => {
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      const bunkerPointer = await parseBunkerInput(bunkerUrl);
+      if (!bunkerPointer) {
+        setError("Invalid bunker URL. Please check your connection string from nsec.app.");
+        setIsLoading(false);
+        return false;
+      }
+
+      const localSecretKey = generateSecretKey();
+      
+      const pool = new SimplePool();
+      poolRef.current = pool;
+      
+      const signer = BunkerSigner.fromBunker(localSecretKey, bunkerPointer, { pool });
+      
+      await signer.connect();
+      bunkerSignerRef.current = signer;
+      
+      const pubkey = await signer.getPublicKey();
+      const npub = nip19.npubEncode(pubkey);
+      
+      const user = await loginWithNostr(pubkey, {
+        name: localStorage.getItem("nostr_name") || undefined,
+        picture: localStorage.getItem("nostr_picture") || undefined,
+      });
+      
+      const sessionData = {
+        localSecretKey: bytesToHex(localSecretKey),
+        remotePubkey: bunkerPointer.pubkey,
+        relays: bunkerPointer.relays,
+        secret: bunkerPointer.secret || "",
+      };
+      localStorage.setItem("nostr_bunker_session", JSON.stringify(sessionData));
+      localStorage.setItem("nostr_pubkey", pubkey);
+      localStorage.setItem("nostr_login_method", "bunker");
+      localStorage.setItem("nostr_user_id", user.id);
+      
+      setProfile({
+        npub,
+        pubkey,
+        userId: user.id,
+        name: user.name,
+        picture: user.avatar,
+      });
+      setIsConnected(true);
+      setLoginMethod("bunker");
+      
+      try {
+        const status = await getProfileStatus();
+        setNeedsProfileCompletion(!status.profileComplete);
+      } catch {
+        setNeedsProfileCompletion(!user.email);
+      }
+      
+      await refreshUserStats();
+      
+      setIsLoading(false);
+      return true;
+    } catch (e: any) {
+      console.error("Bunker connection error:", e);
+      setError(e.message || "Failed to connect with bunker. Please try again.");
+      setIsLoading(false);
+      return false;
+    }
+  }, [refreshUserStats]);
 
   const disconnect = useCallback(() => {
+    if (bunkerSignerRef.current) {
+      bunkerSignerRef.current.close();
+      bunkerSignerRef.current = null;
+    }
+    if (poolRef.current) {
+      poolRef.current.close([]);
+      poolRef.current = null;
+    }
+    
     localStorage.removeItem("nostr_pubkey");
     localStorage.removeItem("nostr_login_method");
     localStorage.removeItem("nostr_name");
     localStorage.removeItem("nostr_picture");
     localStorage.removeItem("nostr_user_id");
+    localStorage.removeItem("nostr_bunker_session");
     setProfile(null);
     setUserStats(null);
     setIsConnected(false);
@@ -190,10 +337,13 @@ export function NostrProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signEvent = useCallback(async (event: any) => {
-    if (!window.nostr) {
-      throw new Error("No Nostr extension available");
+    if (bunkerSignerRef.current) {
+      return bunkerSignerRef.current.signEvent(event);
     }
-    return window.nostr.signEvent(event);
+    if (window.nostr) {
+      return window.nostr.signEvent(event);
+    }
+    throw new Error("No Nostr signer available");
   }, []);
 
   const markProfileComplete = useCallback(() => {
@@ -212,6 +362,7 @@ export function NostrProvider({ children }: { children: ReactNode }) {
         loginMethod,
         error,
         connectWithExtension,
+        connectWithBunker,
         disconnect,
         signEvent,
         isAdmin,
