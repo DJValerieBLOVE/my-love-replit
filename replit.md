@@ -97,6 +97,7 @@
 - Express API backend
 - **NIP-07 Nostr Login** - Browser extension login (Alby, nos2x)
 - **Mobile-optimized layout** - Compact header, icons-only bottom nav
+- **Secure Authentication** - Nostr pubkey linked to database users, all personal data protected
 
 ### Navigation Structure
 - **Desktop left sidebar**: Home, Big Dreams, Grow, Events, Tribe, Toolbox, Love Board, Feed
@@ -109,12 +110,11 @@
 1. NIP-46 Bunker login (nsec.app integration)
 2. Lightning/Zaps integration (NWC)
 3. AI Magic Mentor integration (Claude)
-3. Nostr authentication
 4. AI Learning Buddy (enhanced) - trains on user's journal, goals, course learnings
 5. Community membership system (multi-tenant: creators can set up paid communities)
-6. Lightning/Zaps integration
-7. Bitcoin rewards system
-8. User personalization: Spotify playlists, podcast RSS feeds, favorite quotes/authors
+6. Bitcoin rewards system
+7. User personalization: Spotify playlists, podcast RSS feeds, favorite quotes/authors
+8. Club-based sharing (isPrivate/sharedClubs enforcement)
 
 ## Multi-Tenant Architecture
 - **Creators/coaches** can set up paid communities (limit 5 per paid plan, extra available for fee)
@@ -141,10 +141,18 @@
 - `DATABASE_URL`: PostgreSQL connection string (required)
 - Future: `ADMIN_NPUB`, `SESSION_SECRET`, `OPENROUTER_API_KEY`
 
+## Security Architecture
+- **Authentication**: Nostr NIP-07 via browser extensions (Alby, nos2x)
+- **User Identity**: Users linked to database via nostrPubkey field
+- **API Protection**: authMiddleware validates x-nostr-pubkey header on all personal data routes
+- **Ownership Checks**: Users can only access their own journal entries, dreams, and progress
+- **Privacy Fields**: isPrivate and sharedClubs ready for future club-sharing features
+- **Data Isolation**: No cross-user data access possible via API
+
 ## Technical Notes
-- Test user ID from seed: e9594e8a-3846-4517-b815-b8b0756b084e (CURRENT_USER_ID)
 - Server runs on port 5000
 - vite.config.ts is fragile - avoid direct edits
+- Auth flow: Login button -> NIP-07 extension -> pubkey sent to /api/auth/nostr -> user created/updated -> pubkey stored in context -> sent with all API requests
 
 ## Backup Info
 - Replit checkpoints are automatic
