@@ -45,7 +45,7 @@ function FlipCard({ title, position, imageUrl, quote, progress, onClick, testId 
             backgroundPosition: "center",
           }}
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-black/20 via-transparent to-black/40" />
+          <div className="absolute inset-0 bg-gradient-to-br from-black/20 via-transparent to-black/40 pl-[10px] pr-[10px] pt-[10px] pb-[10px] ml-[10px] mr-[10px] mt-[10px] mb-[10px]" />
           <div className={`absolute ${labelPositions[position]}`}>
             <h3 
               className="text-white text-lg md:text-2xl lg:text-3xl font-normal tracking-wide"
