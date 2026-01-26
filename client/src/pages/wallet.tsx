@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowUpRight, ArrowDownLeft, Zap, History, QrCode, Link as LinkIcon, Check } from "lucide-react";
-import { CURRENT_USER } from "@/lib/mock-data";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useNostr } from "@/contexts/nostr-context";
 
 const data = [
   { name: 'Mon', sats: 4000 },
@@ -22,6 +22,7 @@ const data = [
 export default function Wallet() {
   const [zbdGamertag, setZbdGamertag] = useState("");
   const [isConnected, setIsConnected] = useState(false);
+  const { userStats } = useNostr();
 
   const handleConnectZBD = () => {
     if (!zbdGamertag) return;
@@ -52,7 +53,7 @@ export default function Wallet() {
               <span className="font-medium text-sm tracking-wider uppercase">Total Balance</span>
             </div>
             <div className="text-4xl font-bold font-mono mb-6">
-              {CURRENT_USER.walletBalance.toLocaleString()} <span className="text-lg opacity-80">sats</span>
+              {(userStats?.walletBalance || 0).toLocaleString()} <span className="text-lg opacity-80">sats</span>
             </div>
             
             <div className="flex gap-3">

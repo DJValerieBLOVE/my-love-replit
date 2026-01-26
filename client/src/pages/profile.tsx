@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CURRENT_USER, LEADERBOARD_DATA, STREAK_DATA, LOVE_CODE_AREAS } from "@/lib/mock-data";
+import { LEADERBOARD_DATA, STREAK_DATA, LOVE_CODE_AREAS } from "@/lib/mock-data";
+import { useNostr } from "@/contexts/nostr-context";
 import { 
   Trophy, 
   Zap, 
@@ -24,7 +25,18 @@ import BitcoinIcon from "../assets/bitcoin_icon.png";
 import SatsIcon from "@assets/generated_images/sats_icon.png";
 
 export default function Profile() {
-  const user = CURRENT_USER;
+  const { profile, userStats } = useNostr();
+  
+  const user = {
+    id: profile?.userId || "guest",
+    name: profile?.name || "Guest",
+    avatar: profile?.picture || "",
+    level: userStats?.level || "Explorer",
+    sats: userStats?.sats || 0,
+    streak: userStats?.streak || 0,
+    walletBalance: userStats?.walletBalance || 0,
+    badges: userStats?.badges || [],
+  };
 
   return (
     <Layout>

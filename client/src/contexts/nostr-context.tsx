@@ -1,6 +1,16 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 import { nip19 } from "nostr-tools";
-import { loginWithNostr, getProfileStatus } from "@/lib/api";
+import { loginWithNostr, getProfileStatus, getCurrentUser } from "@/lib/api";
+
+interface UserStats {
+  sats: number;
+  level: string;
+  streak: number;
+  walletBalance: number;
+  satsGiven: number;
+  satsReceived: number;
+  badges: string[];
+}
 
 interface NostrProfile {
   npub: string;
@@ -17,6 +27,7 @@ interface NostrContextType {
   isConnected: boolean;
   isLoading: boolean;
   profile: NostrProfile | null;
+  userStats: UserStats | null;
   loginMethod: "extension" | "bunker" | "ncryptsec" | null;
   error: string | null;
   connectWithExtension: () => Promise<boolean>;
@@ -25,6 +36,7 @@ interface NostrContextType {
   isAdmin: boolean;
   needsProfileCompletion: boolean;
   markProfileComplete: () => void;
+  refreshUserStats: () => Promise<void>;
 }
 
 const NostrContext = createContext<NostrContextType | undefined>(undefined);
@@ -47,9 +59,29 @@ export function NostrProvider({ children }: { children: ReactNode }) {
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [profile, setProfile] = useState<NostrProfile | null>(null);
+  const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [loginMethod, setLoginMethod] = useState<"extension" | "bunker" | "ncryptsec" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [needsProfileCompletion, setNeedsProfileCompletion] = useState(false);
+
+  const refreshUserStats = useCallback(async () => {
+    try {
+      const user = await getCurrentUser();
+      if (user) {
+        setUserStats({
+          sats: user.sats || 0,
+          level: user.level || "Explorer",
+          streak: user.streak || 0,
+          walletBalance: user.walletBalance || 0,
+          satsGiven: user.satsGiven || 0,
+          satsReceived: user.satsReceived || 0,
+          badges: user.badges || [],
+        });
+      }
+    } catch (e) {
+      console.error("Failed to refresh user stats:", e);
+    }
+  }, []);
 
   const checkExtension = useCallback(async () => {
     if (typeof window !== "undefined" && window.nostr) {
@@ -76,6 +108,8 @@ export function NostrProvider({ children }: { children: ReactNode }) {
             } catch {
               setNeedsProfileCompletion(false);
             }
+            
+            await refreshUserStats();
           }
         } catch (e) {
           localStorage.removeItem("nostr_pubkey");
@@ -84,7 +118,7 @@ export function NostrProvider({ children }: { children: ReactNode }) {
       }
     }
     setIsLoading(false);
-  }, []);
+  }, [refreshUserStats]);
 
   useEffect(() => {
     const timer = setTimeout(checkExtension, 100);
@@ -131,6 +165,8 @@ export function NostrProvider({ children }: { children: ReactNode }) {
         setNeedsProfileCompletion(!user.email);
       }
       
+      await refreshUserStats();
+      
       setIsLoading(false);
       return true;
     } catch (e: any) {
@@ -147,6 +183,7 @@ export function NostrProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem("nostr_picture");
     localStorage.removeItem("nostr_user_id");
     setProfile(null);
+    setUserStats(null);
     setIsConnected(false);
     setLoginMethod(null);
     setError(null);
@@ -171,6 +208,7 @@ export function NostrProvider({ children }: { children: ReactNode }) {
         isConnected,
         isLoading,
         profile,
+        userStats,
         loginMethod,
         error,
         connectWithExtension,
@@ -179,6 +217,7 @@ export function NostrProvider({ children }: { children: ReactNode }) {
         isAdmin,
         needsProfileCompletion,
         markProfileComplete,
+        refreshUserStats,
       }}
     >
       {children}

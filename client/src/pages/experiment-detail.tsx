@@ -19,7 +19,7 @@ import {
   Trophy
 } from "lucide-react";
 import { Link, useRoute } from "wouter";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FeedPost } from "@/components/feed-post";
 import confetti from 'canvas-confetti';
@@ -35,11 +35,12 @@ import {
 import { EqVisualizer } from "@/components/eq-visualizer";
 import { toast } from "sonner";
 import Layout from "@/components/layout";
-import { EXPERIMENTS, CURRENT_USER } from "@/lib/mock-data";
+import { EXPERIMENTS } from "@/lib/mock-data";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useNostr } from "@/contexts/nostr-context";
 
 import { Quiz, Question } from "@/components/quiz";
 import { SurprisePortal } from "@/components/surprise-portal";
@@ -47,10 +48,18 @@ import { SurprisePortal } from "@/components/surprise-portal";
 export default function ExperimentDetail() {
   const [, params] = useRoute("/experiments/:id");
   const experiment = EXPERIMENTS.find(m => m.id === params?.id);
+  const { profile, userStats } = useNostr();
   const [newComment, setNewComment] = useState("");
-  const [localWalletBalance, setLocalWalletBalance] = useState(CURRENT_USER.walletBalance);
+  const [localWalletBalance, setLocalWalletBalance] = useState(0);
   const [showPortal, setShowPortal] = useState(false);
   const [showQuiz, setShowQuiz] = useState(false);
+
+  // Sync localWalletBalance when userStats loads asynchronously
+  useEffect(() => {
+    if (userStats?.walletBalance !== undefined) {
+      setLocalWalletBalance(userStats.walletBalance);
+    }
+  }, [userStats?.walletBalance]);
 
   // Sample Quiz Data (Mock)
   const SAMPLE_QUIZ: Question[] = [
@@ -247,9 +256,9 @@ export default function ExperimentDetail() {
       setComments([{
         id: String(comments.length + 1),
         author: {
-          name: CURRENT_USER.name,
-          handle: CURRENT_USER.handle,
-          avatar: CURRENT_USER.avatar
+          name: profile?.name || "You",
+          handle: profile?.npub ? `@${profile.npub.slice(0, 8)}` : "@user",
+          avatar: profile?.picture || ""
         },
         content: newComment,
         timestamp: "1m",
@@ -262,7 +271,7 @@ export default function ExperimentDetail() {
   };
 
   return (
-    <Layout showRightSidebar={false}>
+    <Layout>
       <div className="flex flex-col lg:flex-row h-full min-h-[calc(100vh-100px)]">
         {/* Left Column: Main Content */}
         <div className="flex-1 p-4 lg:p-8 lg:pr-12 overflow-y-auto">
@@ -370,7 +379,7 @@ export default function ExperimentDetail() {
             {/* Comment Input */}
             <div className="flex gap-4 mb-8">
               <img 
-                src={CURRENT_USER.avatar} 
+                src={profile?.picture || ""} 
                 alt="Your avatar"
                 className="w-10 h-10 rounded-full border border-border"
               />

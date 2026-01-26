@@ -10,12 +10,15 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { LOVE_CODE_AREAS, CURRENT_USER } from "@/lib/mock-data";
+import { LOVE_CODE_AREAS } from "@/lib/mock-data";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState } from "react";
+import { useNostr } from "@/contexts/nostr-context";
 
 export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.ReactNode, open?: boolean, onOpenChange?: (open: boolean) => void }) {
   const [chatMessage, setChatMessage] = useState("");
+  const { profile } = useNostr();
+  const userName = profile?.name?.split(' ')[0] || "Friend";
   
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -48,7 +51,7 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
             <div className="flex gap-2 pt-2">
               <input 
                 type="text" 
-                placeholder={`Aloha ${CURRENT_USER.name.split(' ')[0]} ~ Ask me anything...`}
+                placeholder={`Aloha ${userName} ~ Ask me anything...`}
                 value={chatMessage}
                 onChange={(e) => setChatMessage(e.target.value)}
                 className="flex-1 px-4 py-3 rounded-xl border border-white bg-[#F4F4F5] text-sm text-[#4D3D5C] placeholder:text-[#4D3D5C] focus:outline-none focus:ring-2 focus:ring-white shadow-[0_0_30px_rgba(255,255,255,0.6),0_4px_12px_rgba(0,0,0,0.1)] transition-all"

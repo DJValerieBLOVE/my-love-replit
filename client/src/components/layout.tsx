@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { CURRENT_USER } from "@/lib/mock-data";
 import BitcoinIcon from "../assets/bitcoin_icon.png";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeCustomizer } from "@/components/theme-customizer";
@@ -43,7 +42,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
-  const { isConnected, profile, disconnect, isAdmin, isLoading, needsProfileCompletion, markProfileComplete } = useNostr();
+  const { isConnected, profile, userStats, disconnect, isAdmin, isLoading, needsProfileCompletion, markProfileComplete } = useNostr();
 
   const desktopNavLinks = [
     { icon: Home, label: "Home", href: "/" },
@@ -77,8 +76,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <Link href="/leaderboard" className="md:hidden">
               <div className="flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-orange-500/10 to-yellow-500/10 rounded-full border border-orange-400/30" data-testid="sats-display-mobile">
                 <div className="flex items-center gap-1 text-[11px]">
-                  <span className="text-orange-600">↑{CURRENT_USER.satsGiven?.toLocaleString() || 0}</span>
-                  <span className="text-green-600">↓{CURRENT_USER.satsReceived?.toLocaleString() || 0}</span>
+                  <span className="text-orange-600">↑{userStats?.satsGiven?.toLocaleString() || 0}</span>
+                  <span className="text-green-600">↓{userStats?.satsReceived?.toLocaleString() || 0}</span>
                 </div>
               </div>
             </Link>
@@ -114,12 +113,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <div className="flex items-center gap-3 text-sm">
                   <div className="flex items-center gap-1" data-testid="sats-given">
                     <span className="text-orange-600 font-medium">↑</span>
-                    <span className="text-orange-600">{CURRENT_USER.satsGiven?.toLocaleString() || 0}</span>
+                    <span className="text-orange-600">{userStats?.satsGiven?.toLocaleString() || 0}</span>
                   </div>
                   <span className="text-muted-foreground/50">|</span>
                   <div className="flex items-center gap-1" data-testid="sats-received">
                     <span className="text-green-600 font-medium">↓</span>
-                    <span className="text-green-600">{CURRENT_USER.satsReceived?.toLocaleString() || 0}</span>
+                    <span className="text-green-600">{userStats?.satsReceived?.toLocaleString() || 0}</span>
                   </div>
                 </div>
               </div>
@@ -131,7 +130,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Avatar className="h-8 w-8 md:h-9 md:w-9 shrink-0 cursor-pointer ring-2 ring-primary/20 transition-all hover:ring-primary" data-testid="avatar-user">
-                    <AvatarImage src={profile?.picture || CURRENT_USER.avatar} />
+                    <AvatarImage src={profile?.picture} />
                     <AvatarFallback>{profile?.name?.[0] || profile?.npub?.slice(-2).toUpperCase() || "?"}</AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>

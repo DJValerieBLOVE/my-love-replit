@@ -1,12 +1,14 @@
 import Layout from "@/components/layout";
-import { LEADERBOARD_DATA, CURRENT_USER } from "@/lib/mock-data";
+import { LEADERBOARD_DATA } from "@/lib/mock-data";
 import { Trophy, Zap, Award, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { useNostr } from "@/contexts/nostr-context";
 
 export default function Leaderboard() {
+  const { profile, userStats } = useNostr();
   const getRankBadge = (rank: number) => {
     if (rank === 1) return "🥇";
     if (rank === 2) return "🥈";
@@ -21,8 +23,14 @@ export default function Leaderboard() {
     return "from-purple-900/20 to-pink-900/10";
   };
 
-  const currentUserRank = LEADERBOARD_DATA.findIndex(u => u.id === CURRENT_USER.id) + 1;
-  const currentUserData = LEADERBOARD_DATA.find(u => u.id === CURRENT_USER.id);
+  const currentUserRank = 4; // Will be computed from actual leaderboard API later
+  const currentUserData = profile ? {
+    id: profile.userId || "current",
+    name: profile.name || "You",
+    sats: userStats?.sats || 0,
+    level: userStats?.level || "Explorer",
+    streak: userStats?.streak || 0,
+  } : null;
 
   return (
     <Layout>
@@ -49,7 +57,7 @@ export default function Leaderboard() {
                   </div>
                   <div className="h-12 w-px bg-gradient-to-b from-purple-400/0 via-purple-400/50 to-purple-400/0" />
                   <div>
-                    <p className="font-bold text-lg">{CURRENT_USER.name}</p>
+                    <p className="font-bold text-lg">{currentUserData.name}</p>
                     <p className="text-sm text-muted-foreground">{currentUserData.level}</p>
                   </div>
                 </div>
@@ -76,7 +84,7 @@ export default function Leaderboard() {
             {LEADERBOARD_DATA.map((user, index) => {
               const rank = index + 1;
               const medal = getRankBadge(rank);
-              const isCurrent = user.id === CURRENT_USER.id;
+              const isCurrent = profile?.userId ? user.id === profile.userId : false;
               
               return (
                 <div

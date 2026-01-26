@@ -2,19 +2,21 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, Sparkles, Image as ImageIcon, Smile } from "lucide-react";
-import { CURRENT_USER } from "@/lib/mock-data";
+import { useNostr } from "@/contexts/nostr-context";
 
 interface CreatePostProps {
   placeholder?: string;
 }
 
 export function CreatePost({ placeholder = "Share something with the community..." }: CreatePostProps) {
+  const { profile } = useNostr();
+  
   return (
     <Card className="border-none shadow-sm bg-card mb-6">
       <CardContent className="p-4 flex gap-4">
         <Avatar className="w-10 h-10 border border-border">
-          <AvatarImage src={CURRENT_USER.avatar} />
-          <AvatarFallback>{CURRENT_USER.name[0]}</AvatarFallback>
+          <AvatarImage src={profile?.picture} />
+          <AvatarFallback>{profile?.name?.[0] || "?"}</AvatarFallback>
         </Avatar>
         <div className="flex-1">
           <input 
