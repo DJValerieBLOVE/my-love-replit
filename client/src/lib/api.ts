@@ -243,3 +243,53 @@ export async function getZapStats() {
   if (!response.ok) throw new Error("Failed to fetch zap stats");
   return response.json();
 }
+
+// AI Magic Mentor
+export interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export interface AiChatResponse {
+  response: string;
+  usage: {
+    inputTokens: number;
+    outputTokens: number;
+  };
+  limits?: {
+    used: number;
+    limit: number;
+  };
+}
+
+export async function getAiStatus(): Promise<{ available: boolean; model: string }> {
+  const response = await fetch("/api/ai/status");
+  if (!response.ok) throw new Error("Failed to check AI status");
+  return response.json();
+}
+
+export async function sendAiMessage(messages: ChatMessage[]): Promise<AiChatResponse> {
+  const response = await authFetch("/api/ai/chat", {
+    method: "POST",
+    body: JSON.stringify({ messages }),
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || "Failed to get AI response");
+  }
+  return response.json();
+}
+
+export async function updateAiProfile(profile: {
+  coreGoals?: string;
+  currentChallenges?: string;
+  interestsTags?: string[];
+  communicationStyle?: string;
+}) {
+  const response = await authFetch("/api/ai/profile", {
+    method: "PATCH",
+    body: JSON.stringify(profile),
+  });
+  if (!response.ok) throw new Error("Failed to update AI profile");
+  return response.json();
+}

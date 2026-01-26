@@ -16,6 +16,10 @@ import {
   insertZapSchema,
   updateEmailSchema,
 } from "@shared/schema";
+import { chat, validateApiKey, type ChatMessage, type UserContext } from "./anthropic";
+
+const FREE_TIER_DAILY_LIMIT = parseInt(process.env.FREE_TIER_DAILY_LIMIT || "5");
+const MAX_TOKENS_PER_REQUEST = parseInt(process.env.MAX_TOKENS_PER_REQUEST || "2000");
 
 export async function registerRoutes(
   httpServer: Server,
@@ -651,6 +655,148 @@ export async function registerRoutes(
       res.json(usersWithoutPasswords);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch leaderboard" });
+    }
+  });
+
+  // ===== AI MAGIC MENTOR ROUTES =====
+
+  // Check if AI is available
+  app.get("/api/ai/status", (req, res) => {
+    res.json({ 
+      available: validateApiKey(),
+      model: "claude-haiku-4-5"
+    });
+  });
+
+  // Chat with Magic Mentor - requires auth
+  app.post("/api/ai/chat", authMiddleware, async (req, res) => {
+    try {
+      const { messages } = req.body as { messages: ChatMessage[] };
+      
+      if (!messages || !Array.isArray(messages) || messages.length === 0) {
+        return res.status(400).json({ error: "Messages array is required" });
+      }
+
+      if (!validateApiKey()) {
+        return res.status(503).json({ error: "AI service not configured" });
+      }
+
+      // Get user for context
+      const user = await storage.getUser(req.userId!);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // BYOK validation (must have key set)
+      if (user.tier === "byok" && !user.userApiKey) {
+        return res.status(400).json({ error: "BYOK tier requires an API key. Please add your Anthropic API key in settings." });
+      }
+      
+      // BYOK users use their own key
+      const userApiKey = user.tier === "byok" && user.userApiKey ? user.userApiKey : undefined;
+
+      // Phase 1: Reserve a slot atomically BEFORE calling AI
+      // This enforces limits with row-level lock to prevent race conditions
+      // For paid tier, reserves MAX_TOKENS_PER_REQUEST tokens upfront (worst case)
+      const reserveResult = await storage.reserveAiUsageSlot({
+        userId: user.id,
+        tier: user.tier || "free",
+        freeTierLimit: FREE_TIER_DAILY_LIMIT,
+        estimatedTokens: MAX_TOKENS_PER_REQUEST + 500, // Reserve max output + estimated input
+      });
+
+      if (!reserveResult.success) {
+        return res.status(reserveResult.errorCode).json({ error: reserveResult.error });
+      }
+
+      const tier = user.tier || "free";
+      const tokensReserved = reserveResult.tokensReserved;
+
+      // Get user's recent journal entries and dreams for context
+      const recentJournals = await storage.getJournalEntries(user.id, 5);
+      const dreams = await storage.getDreamsByUser(user.id);
+
+      const userContext: UserContext = {
+        name: user.name,
+        coreGoals: user.coreGoals || undefined,
+        currentChallenges: user.currentChallenges || undefined,
+        interestsTags: user.interestsTags || undefined,
+        communicationStyle: user.communicationStyle || undefined,
+        recentJournalEntries: recentJournals.map(j => ({
+          date: j.date.toISOString().split('T')[0],
+          vibe: j.vibeRating?.toString() || "",
+          vision: j.goal || "",
+          value: j.gratitude || "",
+          villain: j.lesson || "",
+          victory: j.blessing || "",
+        })),
+        dreams: dreams.map(d => ({
+          area: d.areaId,
+          dream: d.dream || "",
+        })),
+      };
+
+      // Call AI with configurable max tokens
+      let result;
+      try {
+        result = await chat(messages, userContext, userApiKey, MAX_TOKENS_PER_REQUEST);
+      } catch (aiError: any) {
+        // AI call failed - release the reserved slot (and refund tokens for paid tier)
+        await storage.releaseAiUsageSlot(user.id, tier, tokensReserved);
+        console.error("AI call failed:", aiError);
+        return res.status(500).json({ error: "Failed to get AI response", details: aiError.message });
+      }
+
+      // Phase 2: Finalize usage (log + adjust token balance for paid tier)
+      try {
+        await storage.finalizeAiUsage({
+          userId: user.id,
+          inputTokens: result.inputTokens,
+          outputTokens: result.outputTokens,
+          model: "claude-haiku-4-5",
+          tier,
+          tokensReserved,
+        });
+      } catch (finalizeError) {
+        // If finalization fails, still return the AI response but log the error
+        // The reservation stands (user consumed the slot) but actual usage wasn't logged
+        console.error("Failed to finalize AI usage:", finalizeError);
+        // Don't refund - the AI call succeeded, user consumed the service
+      }
+
+      res.json({
+        response: result.response,
+        usage: {
+          inputTokens: result.inputTokens,
+          outputTokens: result.outputTokens,
+        },
+        limits: user.tier === "free" ? {
+          used: reserveResult.dailyUsed,
+          limit: reserveResult.dailyLimit,
+        } : undefined,
+      });
+
+    } catch (error: any) {
+      console.error("AI chat error:", error);
+      res.status(500).json({ error: "Failed to get AI response", details: error.message });
+    }
+  });
+
+  // Update user AI profile
+  app.patch("/api/ai/profile", authMiddleware, async (req, res) => {
+    try {
+      const { coreGoals, currentChallenges, interestsTags, communicationStyle } = req.body;
+      
+      const updated = await storage.updateUserAiProfile(req.userId!, {
+        coreGoals,
+        currentChallenges,
+        interestsTags,
+        communicationStyle,
+      });
+
+      res.json(updated);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update AI profile" });
     }
   });
 

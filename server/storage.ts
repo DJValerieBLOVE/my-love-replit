@@ -1,6 +1,6 @@
 import {
   users, journalEntries, dreams, areaProgress, experiments, userExperiments,
-  experimentNotes, discoveryNotes, events, posts, clubs, zaps,
+  experimentNotes, discoveryNotes, events, posts, clubs, zaps, aiUsageLogs,
   type User, type InsertUser,
   type JournalEntry, type InsertJournalEntry,
   type Dream, type InsertDream,
@@ -90,6 +90,34 @@ export interface IStorage {
   createZap(zap: InsertZap): Promise<Zap>;
   getZapsByUser(userId: string, type: 'sent' | 'received', limit?: number): Promise<(Zap & { sender?: User; receiver?: User; post?: Post })[]>;
   getUserZapStats(userId: string): Promise<{ satsGiven: number; satsReceived: number }>;
+
+  // AI Usage
+  logAiUsage(log: { userId: string; inputTokens: number; outputTokens: number; model: string }): Promise<void>;
+  updateUserDailyMessages(userId: string, count: number, resetAt?: Date): Promise<void>;
+  deductUserTokens(userId: string, tokens: number): Promise<void>;
+  updateUserAiProfile(userId: string, profile: { coreGoals?: string; currentChallenges?: string; interestsTags?: string[]; communicationStyle?: string }): Promise<User | undefined>;
+  
+  // Phase 1: Reserve a slot atomically - checks limits and increments counter BEFORE AI call
+  // For paid tier, reserves estimated tokens (deducted upfront)
+  reserveAiUsageSlot(params: {
+    userId: string;
+    tier: string;
+    freeTierLimit: number;
+    estimatedTokens?: number; // For paid tier, reserve this many tokens
+  }): Promise<{ success: true; dailyUsed: number; dailyLimit: number; tokensReserved?: number } | { success: false; error: string; errorCode: number }>;
+  
+  // Phase 2: Finalize usage - log actual tokens and adjust balance for paid tier
+  finalizeAiUsage(params: {
+    userId: string;
+    inputTokens: number;
+    outputTokens: number;
+    model: string;
+    tier: string;
+    tokensReserved?: number; // For paid tier, the amount reserved in phase 1
+  }): Promise<void>;
+
+  // Rollback: Release a reserved slot if AI call fails
+  releaseAiUsageSlot(userId: string, tier: string, tokensReserved?: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -468,6 +496,201 @@ export class DatabaseStorage implements IStorage {
     }).from(users).where(eq(users.id, userId));
     
     return user || { satsGiven: 0, satsReceived: 0 };
+  }
+
+  // AI Usage Methods
+  async logAiUsage(log: { userId: string; inputTokens: number; outputTokens: number; model: string }): Promise<void> {
+    await db.execute(sql`
+      INSERT INTO ai_usage_logs (user_id, input_tokens, output_tokens, model)
+      VALUES (${log.userId}, ${log.inputTokens}, ${log.outputTokens}, ${log.model})
+    `);
+  }
+
+  async updateUserDailyMessages(userId: string, count: number, resetAt?: Date): Promise<void> {
+    if (resetAt) {
+      await db.update(users)
+        .set({ 
+          dailyMessagesUsed: count,
+          dailyMessagesResetAt: resetAt,
+        })
+        .where(eq(users.id, userId));
+    } else {
+      await db.update(users)
+        .set({ dailyMessagesUsed: count })
+        .where(eq(users.id, userId));
+    }
+  }
+
+  async deductUserTokens(userId: string, tokens: number): Promise<void> {
+    await db.update(users)
+      .set({ tokenBalance: sql`GREATEST(0, ${users.tokenBalance} - ${tokens})` })
+      .where(eq(users.id, userId));
+  }
+
+  async updateUserAiProfile(userId: string, profile: { coreGoals?: string; currentChallenges?: string; interestsTags?: string[]; communicationStyle?: string }): Promise<User | undefined> {
+    const updates: Record<string, any> = {};
+    if (profile.coreGoals !== undefined) updates.coreGoals = profile.coreGoals;
+    if (profile.currentChallenges !== undefined) updates.currentChallenges = profile.currentChallenges;
+    if (profile.interestsTags !== undefined) updates.interestsTags = profile.interestsTags;
+    if (profile.communicationStyle !== undefined) updates.communicationStyle = profile.communicationStyle;
+
+    if (Object.keys(updates).length === 0) return this.getUser(userId);
+
+    const [updated] = await db.update(users)
+      .set(updates)
+      .where(eq(users.id, userId))
+      .returning();
+    return updated;
+  }
+
+  // Estimated tokens to reserve for paid tier (covers typical request)
+  private static readonly ESTIMATED_TOKENS_RESERVE = 2000;
+
+  // Phase 1: Reserve a slot atomically - checks limits and increments counter BEFORE AI call
+  // For paid tier, reserves estimated tokens upfront
+  async reserveAiUsageSlot(params: {
+    userId: string;
+    tier: string;
+    freeTierLimit: number;
+    estimatedTokens?: number;
+  }): Promise<{ success: true; dailyUsed: number; dailyLimit: number; tokensReserved?: number } | { success: false; error: string; errorCode: number }> {
+    const { userId, tier, freeTierLimit, estimatedTokens } = params;
+    const now = new Date();
+    const tokensToReserve = tier === "paid" ? (estimatedTokens || DatabaseStorage.ESTIMATED_TOKENS_RESERVE) : 0;
+
+    try {
+      const result = await db.transaction(async (tx) => {
+        // Lock the user row to prevent concurrent modifications
+        const [user] = await tx.execute(sql`
+          SELECT id, tier, token_balance, daily_messages_used, daily_messages_reset_at
+          FROM users
+          WHERE id = ${userId}
+          FOR UPDATE
+        `);
+
+        if (!user) {
+          return { success: false as const, error: "User not found", errorCode: 404 };
+        }
+
+        const userRow = user as any;
+        const resetTime = userRow.daily_messages_reset_at ? new Date(userRow.daily_messages_reset_at) : null;
+        const needsReset = !resetTime || (now.getTime() - resetTime.getTime()) > 24 * 60 * 60 * 1000;
+        const currentDailyUsed = needsReset ? 0 : (userRow.daily_messages_used || 0);
+        const currentBalance = userRow.token_balance || 0;
+
+        // Enforce limits atomically
+        if (tier === "free") {
+          if (currentDailyUsed >= freeTierLimit) {
+            return { 
+              success: false as const, 
+              error: "Daily message limit reached", 
+              errorCode: 429 
+            };
+          }
+        } else if (tier === "paid") {
+          if (currentBalance < tokensToReserve) {
+            return { 
+              success: false as const, 
+              error: "Token balance insufficient. Please add more credits.", 
+              errorCode: 402 
+            };
+          }
+        }
+
+        // Reserve the slot by incrementing daily message count
+        const newDailyUsed = needsReset ? 1 : currentDailyUsed + 1;
+        
+        await tx.update(users)
+          .set({ 
+            dailyMessagesUsed: newDailyUsed,
+            dailyMessagesResetAt: needsReset ? now : resetTime,
+          })
+          .where(eq(users.id, userId));
+
+        // For paid tier, reserve tokens by deducting upfront
+        if (tier === "paid") {
+          await tx.execute(sql`
+            UPDATE users 
+            SET token_balance = GREATEST(0, token_balance - ${tokensToReserve})
+            WHERE id = ${userId}
+          `);
+        }
+
+        return { 
+          success: true as const, 
+          dailyUsed: newDailyUsed, 
+          dailyLimit: freeTierLimit,
+          tokensReserved: tier === "paid" ? tokensToReserve : undefined
+        };
+      });
+
+      return result;
+    } catch (error: any) {
+      console.error("AI slot reservation error:", error);
+      return { success: false, error: "Failed to reserve AI usage slot", errorCode: 500 };
+    }
+  }
+
+  // Phase 2: Finalize usage - log actual tokens and adjust balance for paid tier
+  async finalizeAiUsage(params: {
+    userId: string;
+    inputTokens: number;
+    outputTokens: number;
+    model: string;
+    tier: string;
+    tokensReserved?: number;
+  }): Promise<void> {
+    const { userId, inputTokens, outputTokens, model, tier, tokensReserved } = params;
+    const actualTokensUsed = inputTokens + outputTokens;
+
+    await db.transaction(async (tx) => {
+      // Log the AI usage
+      await tx.insert(aiUsageLogs).values({
+        userId,
+        inputTokens,
+        outputTokens,
+        model,
+      });
+
+      // For paid tier, adjust balance: refund excess reserved tokens or deduct additional
+      if (tier === "paid" && tokensReserved !== undefined) {
+        const difference = tokensReserved - actualTokensUsed;
+        if (difference !== 0) {
+          // Positive difference = refund, negative difference = additional deduction
+          await tx.execute(sql`
+            UPDATE users 
+            SET token_balance = GREATEST(0, token_balance + ${difference})
+            WHERE id = ${userId}
+          `);
+        }
+      }
+    });
+  }
+
+  // Rollback: Release a reserved slot if AI call fails
+  async releaseAiUsageSlot(userId: string, tier: string, tokensReserved?: number): Promise<void> {
+    try {
+      await db.transaction(async (tx) => {
+        // Decrement daily messages used (but don't go below 0)
+        await tx.execute(sql`
+          UPDATE users 
+          SET daily_messages_used = GREATEST(0, COALESCE(daily_messages_used, 1) - 1)
+          WHERE id = ${userId}
+        `);
+
+        // For paid tier, refund reserved tokens
+        if (tier === "paid" && tokensReserved) {
+          await tx.execute(sql`
+            UPDATE users 
+            SET token_balance = token_balance + ${tokensReserved}
+            WHERE id = ${userId}
+          `);
+        }
+      });
+    } catch (error) {
+      console.error("Failed to release AI usage slot:", error);
+      // Don't throw - this is best effort cleanup
+    }
   }
 }
 

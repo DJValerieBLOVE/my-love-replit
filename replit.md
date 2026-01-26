@@ -73,12 +73,27 @@
 - **Migrations**: Drizzle Kit with output to `./migrations`
 - **Key Entities**: Users, JournalEntries, Dreams, AreaProgress, Experiments, UserExperiments, Events, Posts, Clubs
 
+### AI Integration (Magic Mentor)
+- **Model**: Claude Haiku 4.5 (hardcoded, ONLY Haiku)
+- **SDK**: Direct Anthropic SDK (NOT OpenRouter)
+- **Location**: `server/anthropic.ts`
+- **Context**: System prompt includes user's profile, journal entries, and dreams
+- **Security**: XML delimiters + user input wrapping for prompt injection protection
+- **Three-tier access**:
+  - Free: 5 messages/day (configurable via FREE_TIER_DAILY_LIMIT env var)
+  - Paid: Token balance system with upfront reservation
+  - BYOK: Users can provide their own Anthropic API key
+- **Concurrency Safety**: Two-phase atomic approach with row-level locks
+  - Phase 1: Reserve slot + tokens before AI call (SELECT FOR UPDATE)
+  - Phase 2: Finalize usage + adjust balance after AI succeeds
+  - Rollback: Release slot + refund tokens on AI failure
+- **Tables**: `ai_usage_logs` for token tracking, user fields for tier/balance
+
 ### Future Tech Stack (Per Spec)
 - **Identity**: Nostr (NDK library) - user owns keys
 - **Payments**: Lightning (WebLN/NWC) - non-custodial
 - **Zaps**: Nostr NIP-57
 - **AI Memory**: Voy/Orama (browser) - local vector store
-- **AI Model**: OpenRouter API (Claude Sonnet 3.5 default)
 - **Mobile**: PWA first
 
 ## Key Features

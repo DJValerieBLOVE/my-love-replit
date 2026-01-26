@@ -27,6 +27,17 @@ export const users = pgTable("users", {
   buddyDescription: text("buddy_description"),
   labInterests: text("lab_interests").array().default(sql`ARRAY[]::text[]`).notNull(),
   trialStartedAt: timestamp("trial_started_at"),
+  // AI Profile fields for Magic Mentor personalization
+  coreGoals: text("core_goals"),
+  currentChallenges: text("current_challenges"),
+  interestsTags: text("interests_tags").array().default(sql`ARRAY[]::text[]`).notNull(),
+  communicationStyle: text("communication_style").default("warm"),
+  // Billing/tier fields
+  tier: text("tier").default("free").notNull(), // free, paid, byok
+  tokenBalance: integer("token_balance").default(0).notNull(),
+  dailyMessagesUsed: integer("daily_messages_used").default(0).notNull(),
+  dailyMessagesResetAt: timestamp("daily_messages_reset_at"),
+  userApiKey: text("user_api_key"), // For BYOK users
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -277,3 +288,21 @@ export const insertZapSchema = createInsertSchema(zaps).omit({
 
 export type InsertZap = z.infer<typeof insertZapSchema>;
 export type Zap = typeof zaps.$inferSelect;
+
+// AI Usage Logs (tracking token usage for billing)
+export const aiUsageLogs = pgTable("ai_usage_logs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  inputTokens: integer("input_tokens").notNull(),
+  outputTokens: integer("output_tokens").notNull(),
+  model: text("model").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertAiUsageLogSchema = createInsertSchema(aiUsageLogs).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertAiUsageLog = z.infer<typeof insertAiUsageLogSchema>;
+export type AiUsageLog = typeof aiUsageLogs.$inferSelect;
