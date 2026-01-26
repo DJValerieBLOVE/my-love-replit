@@ -27,7 +27,7 @@ function FlipCard({ title, position, imageUrl, quote, progress, onClick, testId 
       className="relative cursor-pointer overflow-hidden rounded-md h-full w-full"
       style={{ 
         perspective: "1000px",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
+        boxShadow: "0 4px 12px rgba(0,0,0,0.3)"
       }}
       data-testid={testId}
     >
@@ -114,8 +114,8 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
     <div 
       className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer"
       style={{ 
-        width: "min(85vw, 85vh, 600px)", // 50% bigger than 65vw/vh (roughly 85vw/vh)
-        height: "min(80vw, 80vh, 540px)" 
+        width: "min(95vw, 95vh, 750px)", // Further increased size
+        height: "min(90vw, 90vh, 680px)" 
       }}
       onClick={onClick}
       data-testid="heart-god-card"
@@ -131,20 +131,20 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
           className="absolute inset-0"
           style={{ backfaceVisibility: "hidden" }}
         >
-          <svg viewBox="-15 -15 130 120" className="w-full h-full overflow-visible">
+          <svg viewBox="-20 -20 140 130" className="w-full h-full overflow-visible">
             <defs>
               <clipPath id="heartClipFront">
                 <path d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z" />
               </clipPath>
-              <filter id="heartShadow" x="-30%" y="-30%" width="160%" height="160%">
-                <feDropShadow dx="0" dy="4" stdDeviation="8" floodColor="rgba(0,0,0,0.3)" />
+              <filter id="heartShadow" x="-40%" y="-40%" width="180%" height="180%">
+                <feDropShadow dx="0" dy="6" stdDeviation="10" floodColor="rgba(0,0,0,0.6)" />
               </filter>
             </defs>
-            {/* Outline - using 10px thickness and background color */}
+            {/* Outline - using EXACT background hex color #020817 and 10px width */}
             <path
               d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z"
-              fill="#000000" // Fallback to black which is current background color in replit.md if not using variable
-              style={{ fill: "var(--background)", stroke: "var(--background)" }}
+              fill="#020817"
+              stroke="#020817"
               strokeWidth="10"
               filter="url(#heartShadow)"
             />
@@ -157,7 +157,7 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
                 height="110"
                 preserveAspectRatio="xMidYMid slice"
               />
-              <rect x="0" y="0" width="100" height="90" fill="rgba(0,0,0,0.2)" />
+              <rect x="0" y="0" width="100" height="90" fill="rgba(0,0,0,0.15)" />
             </g>
             <text
               x="50"
@@ -179,19 +179,19 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
           className="absolute inset-0"
           style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
         >
-          <svg viewBox="-15 -15 130 120" className="w-full h-full overflow-visible">
+          <svg viewBox="-20 -20 140 130" className="w-full h-full overflow-visible">
             <defs>
               <clipPath id="heartClip">
                 <path d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z" />
               </clipPath>
-              <filter id="heartShadowBack" x="-30%" y="-30%" width="160%" height="160%">
-                <feDropShadow dx="0" dy="4" stdDeviation="8" floodColor="rgba(0,0,0,0.3)" />
+              <filter id="heartShadowBack" x="-40%" y="-40%" width="180%" height="180%">
+                <feDropShadow dx="0" dy="6" stdDeviation="10" floodColor="rgba(0,0,0,0.6)" />
               </filter>
             </defs>
             <path
               d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z"
-              fill="#000000"
-              style={{ fill: "var(--background)", stroke: "var(--background)" }}
+              fill="#020817"
+              stroke="#020817"
               strokeWidth="10"
               filter="url(#heartShadowBack)"
             />
@@ -204,7 +204,7 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
                 height="110"
                 preserveAspectRatio="xMidYMid slice"
               />
-              <rect x="0" y="0" width="100" height="90" fill="rgba(102, 0, 255, 0.2)" />
+              <rect x="0" y="0" width="100" height="90" fill="rgba(102, 0, 255, 0.15)" />
             </g>
             <text
               x="50"
