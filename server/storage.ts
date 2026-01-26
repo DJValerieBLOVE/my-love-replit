@@ -21,7 +21,9 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByHandle(handle: string): Promise<User | undefined>;
+  getUserByNostrPubkey(pubkey: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  createOrUpdateUserByPubkey(pubkey: string, data: Partial<InsertUser>): Promise<User>;
   updateUserStats(userId: string, updates: Partial<Pick<User, 'sats' | 'streak' | 'level' | 'walletBalance' | 'badges'>>): Promise<User | undefined>;
   getLeaderboard(limit?: number): Promise<User[]>;
 
@@ -99,9 +101,38 @@ export class DatabaseStorage implements IStorage {
     return user || undefined;
   }
 
+  async getUserByNostrPubkey(pubkey: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.nostrPubkey, pubkey));
+    return user || undefined;
+  }
+
   async createUser(insertUser: InsertUser): Promise<User> {
     const [user] = await db.insert(users).values(insertUser).returning();
     return user;
+  }
+
+  async createOrUpdateUserByPubkey(pubkey: string, data: Partial<InsertUser>): Promise<User> {
+    const existing = await this.getUserByNostrPubkey(pubkey);
+    
+    if (existing) {
+      const [updated] = await db.update(users)
+        .set({ ...data, nostrPubkey: pubkey })
+        .where(eq(users.id, existing.id))
+        .returning();
+      return updated;
+    } else {
+      const shortPubkey = pubkey.slice(0, 8);
+      const [created] = await db.insert(users).values({
+        nostrPubkey: pubkey,
+        username: data.username || `nostr_${shortPubkey}`,
+        name: data.name || `Nostr User`,
+        handle: data.handle || `@${shortPubkey}`,
+        avatar: data.avatar,
+        nip05: data.nip05,
+        lud16: data.lud16,
+      }).returning();
+      return created;
+    }
   }
 
   async updateUserStats(userId: string, updates: Partial<Pick<User, 'sats' | 'streak' | 'level' | 'walletBalance' | 'badges'>>): Promise<User | undefined> {

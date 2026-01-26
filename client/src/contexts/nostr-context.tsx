@@ -1,9 +1,11 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 import { nip19 } from "nostr-tools";
+import { loginWithNostr } from "@/lib/api";
 
 interface NostrProfile {
   npub: string;
   pubkey: string;
+  userId?: string;
   name?: string;
   picture?: string;
   about?: string;
@@ -93,12 +95,21 @@ export function NostrProvider({ children }: { children: ReactNode }) {
       const pubkey = await window.nostr.getPublicKey();
       const npub = nip19.npubEncode(pubkey);
       
+      const user = await loginWithNostr(pubkey, {
+        name: localStorage.getItem("nostr_name") || undefined,
+        picture: localStorage.getItem("nostr_picture") || undefined,
+      });
+      
       localStorage.setItem("nostr_pubkey", pubkey);
       localStorage.setItem("nostr_login_method", "extension");
+      localStorage.setItem("nostr_user_id", user.id);
       
       setProfile({
         npub,
         pubkey,
+        userId: user.id,
+        name: user.name,
+        picture: user.avatar,
       });
       setIsConnected(true);
       setLoginMethod("extension");
@@ -116,6 +127,7 @@ export function NostrProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem("nostr_login_method");
     localStorage.removeItem("nostr_name");
     localStorage.removeItem("nostr_picture");
+    localStorage.removeItem("nostr_user_id");
     setProfile(null);
     setIsConnected(false);
     setLoginMethod(null);

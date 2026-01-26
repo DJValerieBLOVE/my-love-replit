@@ -10,30 +10,34 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import WhiteLogo from "@assets/white transparent vector and png art  11x LOVE logo _1764365495719.png";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getDreams, getAreaProgress, saveDream, CURRENT_USER_ID } from "@/lib/api";
+import { getDreams, getAreaProgress, saveDream } from "@/lib/api";
+import { useNostr } from "@/contexts/nostr-context";
 import { toast } from "sonner";
 
 export default function BigDreams() {
   const queryClient = useQueryClient();
+  const { isConnected } = useNostr();
   const [editingDreams, setEditingDreams] = useState<Record<string, string>>({});
 
   // Fetch dreams and area progress from API
   const { data: dreams = [], isLoading: dreamsLoading } = useQuery({
-    queryKey: ["dreams", CURRENT_USER_ID],
-    queryFn: () => getDreams(CURRENT_USER_ID),
+    queryKey: ["dreams"],
+    queryFn: () => getDreams(),
+    enabled: isConnected,
   });
 
   const { data: progress = [], isLoading: progressLoading } = useQuery({
-    queryKey: ["areaProgress", CURRENT_USER_ID],
-    queryFn: () => getAreaProgress(CURRENT_USER_ID),
+    queryKey: ["areaProgress"],
+    queryFn: () => getAreaProgress(),
+    enabled: isConnected,
   });
 
   // Mutation to save dream
   const saveDreamMutation = useMutation({
     mutationFn: ({ areaId, dream }: { areaId: string; dream: string }) =>
-      saveDream(CURRENT_USER_ID, areaId, dream),
+      saveDream(areaId, dream),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["dreams", CURRENT_USER_ID] });
+      queryClient.invalidateQueries({ queryKey: ["dreams"] });
       toast.success("Dream saved successfully!");
     },
     onError: () => {

@@ -39,7 +39,8 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getJournalEntries, CURRENT_USER_ID } from "@/lib/api";
+import { getJournalEntries } from "@/lib/api";
+import { useNostr } from "@/contexts/nostr-context";
 
 const SAVED_EXPERIMENTS = [
   {
@@ -111,10 +112,12 @@ const BOOKMARKS = [
 
 export default function Resources() {
   const [activeTab, setActiveTab] = useState("lab-notes");
+  const { isConnected } = useNostr();
 
   const { data: journalEntries = [] } = useQuery({
-    queryKey: ["journalEntries", CURRENT_USER_ID],
-    queryFn: () => getJournalEntries(CURRENT_USER_ID, 10),
+    queryKey: ["journalEntries"],
+    queryFn: () => getJournalEntries(10),
+    enabled: isConnected,
   });
 
   return (

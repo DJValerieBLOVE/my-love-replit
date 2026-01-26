@@ -19,11 +19,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ActivePracticeCard } from "@/components/daily-practice/active-practice-card";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getJournalEntries, createJournalEntry, updateJournalEntry, deleteJournalEntry, CURRENT_USER_ID } from "@/lib/api";
+import { getJournalEntries, createJournalEntry, updateJournalEntry, deleteJournalEntry } from "@/lib/api";
+import { useNostr } from "@/contexts/nostr-context";
 import { toast } from "sonner";
 
 export default function LabNotes() {
   const queryClient = useQueryClient();
+  const { isConnected, profile } = useNostr();
   const [isPracticing, setIsPracticing] = useState(false);
   const [practiceData, setPracticeData] = useState<any>(null);
   const [dayCompleted, setDayCompleted] = useState(false);
@@ -37,15 +39,16 @@ export default function LabNotes() {
 
   // Fetch journal entries from API
   const { data: apiEntries = [], isLoading: entriesLoading } = useQuery({
-    queryKey: ["journalEntries", CURRENT_USER_ID],
-    queryFn: () => getJournalEntries(CURRENT_USER_ID, 50),
+    queryKey: ["journalEntries"],
+    queryFn: () => getJournalEntries(50),
+    enabled: isConnected,
   });
 
   // Create journal entry mutation
   const createEntryMutation = useMutation({
     mutationFn: createJournalEntry,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["journalEntries", CURRENT_USER_ID] });
+      queryClient.invalidateQueries({ queryKey: ["journalEntries"] });
       toast.success("Daily LOVE Practice saved!");
       setDayCompleted(true);
       setTimeout(() => setDayCompleted(false), 5000);
@@ -60,7 +63,7 @@ export default function LabNotes() {
     mutationFn: ({ id, entry }: { id: string; entry: any }) =>
       updateJournalEntry(id, entry),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["journalEntries", CURRENT_USER_ID] });
+      queryClient.invalidateQueries({ queryKey: ["journalEntries"] });
       toast.success("Entry updated!");
     },
     onError: () => {
@@ -176,9 +179,8 @@ export default function LabNotes() {
       origin: { y: 0.6 }
     });
 
-    // Prepare entry for backend
+    // Prepare entry for backend (userId is set by backend from auth)
     const entry = {
-      userId: CURRENT_USER_ID,
       date: new Date(),
       vibeRating: parseInt(data.morningVibe) || parseInt(data.eveningVibe) || 5,
       gratitude: data.gratitude || "",

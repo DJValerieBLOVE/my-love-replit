@@ -1,7 +1,8 @@
 import { FlipCard } from "./flip-card";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { getDreams, getAreaProgress, getJournalEntries, CURRENT_USER_ID } from "@/lib/api";
+import { getAreaProgress, getJournalEntries } from "@/lib/api";
+import { useNostr } from "@/contexts/nostr-context";
 import { Flame } from "lucide-react";
 
 const LOVE_COLORS = {
@@ -34,15 +35,18 @@ const AREA_ORDER = [
 
 export function MasterpieceDashboard() {
   const [, setLocation] = useLocation();
+  const { isConnected } = useNostr();
 
   const { data: journalEntries = [] } = useQuery({
-    queryKey: ["journalEntries", CURRENT_USER_ID],
-    queryFn: () => getJournalEntries(CURRENT_USER_ID),
+    queryKey: ["journalEntries"],
+    queryFn: () => getJournalEntries(),
+    enabled: isConnected,
   });
 
   const { data: areaProgress = [] } = useQuery({
-    queryKey: ["areaProgress", CURRENT_USER_ID],
-    queryFn: () => getAreaProgress(CURRENT_USER_ID),
+    queryKey: ["areaProgress"],
+    queryFn: () => getAreaProgress(),
+    enabled: isConnected,
   });
 
   const calculateStreak = () => {

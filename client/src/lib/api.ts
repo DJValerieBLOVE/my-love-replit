@@ -1,29 +1,66 @@
-// API service for making backend calls
 const API_BASE = "";
 
-// Test user ID from seed (this should come from auth in production)
-export const CURRENT_USER_ID = "e9594e8a-3846-4517-b815-b8b0756b084e";
+function getAuthHeaders(): HeadersInit {
+  const pubkey = localStorage.getItem("nostr_pubkey");
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+  };
+  if (pubkey) {
+    headers["x-nostr-pubkey"] = pubkey;
+  }
+  return headers;
+}
 
-// ===== JOURNAL ENTRIES =====
+async function authFetch(url: string, options: RequestInit = {}): Promise<Response> {
+  const headers = {
+    ...getAuthHeaders(),
+    ...options.headers,
+  };
+  return fetch(url, { ...options, headers });
+}
 
-export async function getJournalEntries(userId: string, limit?: number) {
-  const url = limit ? `/api/journal/${userId}?limit=${limit}` : `/api/journal/${userId}`;
-  const response = await fetch(url);
+export async function loginWithNostr(pubkey: string, profile?: { name?: string; picture?: string; nip05?: string; lud16?: string }) {
+  const response = await fetch("/api/auth/nostr", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ pubkey, ...profile }),
+  });
+  if (!response.ok) throw new Error("Failed to authenticate");
+  return response.json();
+}
+
+export async function getCurrentUser() {
+  const response = await authFetch("/api/auth/me");
+  if (!response.ok) {
+    if (response.status === 401) return null;
+    throw new Error("Failed to fetch current user");
+  }
+  return response.json();
+}
+
+export async function getJournalEntries(limit?: number) {
+  const url = limit ? `/api/journal?limit=${limit}` : "/api/journal";
+  const response = await authFetch(url);
   if (!response.ok) throw new Error("Failed to fetch journal entries");
   return response.json();
 }
 
-export async function getJournalEntryByDate(userId: string, date: Date) {
+export async function getJournalEntryByDate(date: Date) {
+  const pubkey = localStorage.getItem("nostr_pubkey");
+  if (!pubkey) throw new Error("Not authenticated");
+  
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Not authenticated");
+  
   const dateStr = date.toISOString().split('T')[0];
-  const response = await fetch(`/api/journal/${userId}/date/${dateStr}`);
+  const response = await authFetch(`/api/journal/${user.id}/date/${dateStr}`);
   if (!response.ok) throw new Error("Failed to fetch journal entry");
   return response.json();
 }
 
 export async function createJournalEntry(entry: any) {
-  const response = await fetch("/api/journal", {
+  const response = await authFetch("/api/journal", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(entry),
   });
   if (!response.ok) throw new Error("Failed to create journal entry");
@@ -31,9 +68,8 @@ export async function createJournalEntry(entry: any) {
 }
 
 export async function updateJournalEntry(id: string, entry: any) {
-  const response = await fetch(`/api/journal/${id}`, {
+  const response = await authFetch(`/api/journal/${id}`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(entry),
   });
   if (!response.ok) throw new Error("Failed to update journal entry");
@@ -41,54 +77,49 @@ export async function updateJournalEntry(id: string, entry: any) {
 }
 
 export async function deleteJournalEntry(id: string) {
-  const response = await fetch(`/api/journal/${id}`, { method: "DELETE" });
+  const response = await authFetch(`/api/journal/${id}`, { method: "DELETE" });
   if (!response.ok) throw new Error("Failed to delete journal entry");
   return response.ok;
 }
 
-// ===== DREAMS =====
-
-export async function getDreams(userId: string) {
-  const response = await fetch(`/api/dreams/${userId}`);
+export async function getDreams() {
+  const response = await authFetch("/api/dreams");
   if (!response.ok) throw new Error("Failed to fetch dreams");
   return response.json();
 }
 
-export async function getDreamByArea(userId: string, areaId: string) {
-  const response = await fetch(`/api/dreams/${userId}/area/${areaId}`);
+export async function getDreamByArea(areaId: string) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Not authenticated");
+  
+  const response = await authFetch(`/api/dreams/${user.id}/area/${areaId}`);
   if (!response.ok) throw new Error("Failed to fetch dream");
   return response.json();
 }
 
-export async function saveDream(userId: string, areaId: string, dream: string) {
-  const response = await fetch("/api/dreams", {
+export async function saveDream(areaId: string, dream: string) {
+  const response = await authFetch("/api/dreams", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ userId, areaId, dream }),
+    body: JSON.stringify({ areaId, dream }),
   });
   if (!response.ok) throw new Error("Failed to save dream");
   return response.json();
 }
 
-// ===== AREA PROGRESS =====
-
-export async function getAreaProgress(userId: string) {
-  const response = await fetch(`/api/progress/${userId}`);
+export async function getAreaProgress() {
+  const response = await authFetch("/api/progress");
   if (!response.ok) throw new Error("Failed to fetch area progress");
   return response.json();
 }
 
-export async function updateAreaProgress(userId: string, areaId: string, progress: number) {
-  const response = await fetch("/api/progress", {
+export async function updateAreaProgress(areaId: string, progress: number) {
+  const response = await authFetch("/api/progress", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ userId, areaId, progress }),
+    body: JSON.stringify({ areaId, progress }),
   });
   if (!response.ok) throw new Error("Failed to update area progress");
   return response.json();
 }
-
-// ===== EXPERIMENTS =====
 
 export async function getAllExperiments() {
   const response = await fetch("/api/experiments");
@@ -96,23 +127,20 @@ export async function getAllExperiments() {
   return response.json();
 }
 
-export async function getUserExperiments(userId: string) {
-  const response = await fetch(`/api/user-experiments/${userId}`);
+export async function getUserExperiments() {
+  const response = await authFetch("/api/user-experiments");
   if (!response.ok) throw new Error("Failed to fetch user experiments");
   return response.json();
 }
 
-export async function enrollInExperiment(userId: string, experimentId: string) {
-  const response = await fetch("/api/user-experiments", {
+export async function enrollInExperiment(experimentId: string) {
+  const response = await authFetch("/api/user-experiments", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ userId, experimentId, completedDiscoveries: 0, progress: 0 }),
+    body: JSON.stringify({ experimentId, completedDiscoveries: 0, progress: 0 }),
   });
   if (!response.ok) throw new Error("Failed to enroll in experiment");
   return response.json();
 }
-
-// ===== EVENTS =====
 
 export async function getAllEvents() {
   const response = await fetch("/api/events");
@@ -120,42 +148,36 @@ export async function getAllEvents() {
   return response.json();
 }
 
-// ===== POSTS =====
-
 export async function getRecentPosts(limit?: number) {
   const url = limit ? `/api/posts?limit=${limit}` : "/api/posts";
-  const response = await fetch(url);
+  const response = await authFetch(url);
   if (!response.ok) throw new Error("Failed to fetch posts");
   return response.json();
 }
 
-export async function createPost(authorId: string, content: string, image?: string) {
-  const response = await fetch("/api/posts", {
+export async function createPost(content: string, image?: string) {
+  const response = await authFetch("/api/posts", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ authorId, content, image }),
+    body: JSON.stringify({ content, image }),
   });
   if (!response.ok) throw new Error("Failed to create post");
   return response.json();
 }
 
 export async function likePost(postId: string) {
-  const response = await fetch(`/api/posts/${postId}/like`, { method: "POST" });
+  const response = await authFetch(`/api/posts/${postId}/like`, { method: "POST" });
   if (!response.ok) throw new Error("Failed to like post");
   return response.json();
 }
 
 export async function zapPost(postId: string, amount: number) {
-  const response = await fetch(`/api/posts/${postId}/zap`, {
+  const response = await authFetch(`/api/posts/${postId}/zap`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ amount }),
   });
   if (!response.ok) throw new Error("Failed to zap post");
   return response.json();
 }
-
-// ===== CLUBS =====
 
 export async function getAllClubs() {
   const response = await fetch("/api/clubs");
@@ -163,10 +185,8 @@ export async function getAllClubs() {
   return response.json();
 }
 
-// ===== USERS =====
-
 export async function getUser(userId: string) {
-  const response = await fetch(`/api/users/${userId}`);
+  const response = await authFetch(`/api/users/${userId}`);
   if (!response.ok) throw new Error("Failed to fetch user");
   return response.json();
 }
@@ -178,10 +198,12 @@ export async function getLeaderboard(limit?: number) {
   return response.json();
 }
 
-export async function updateUserStats(userId: string, updates: any) {
-  const response = await fetch(`/api/users/${userId}/stats`, {
+export async function updateUserStats(updates: any) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Not authenticated");
+  
+  const response = await authFetch(`/api/users/${user.id}/stats`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(updates),
   });
   if (!response.ok) throw new Error("Failed to update user stats");

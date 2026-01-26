@@ -6,11 +6,14 @@ import { z } from "zod";
 // Users table
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  nostrPubkey: text("nostr_pubkey").unique(),
   username: text("username").notNull().unique(),
-  password: text("password").notNull(),
+  password: text("password"),
   name: text("name").notNull(),
   handle: text("handle").notNull().unique(),
   avatar: text("avatar"),
+  nip05: text("nip05"),
+  lud16: text("lud16"),
   sats: integer("sats").default(0).notNull(),
   level: text("level").default("Initiate").notNull(),
   streak: integer("streak").default(0).notNull(),
@@ -23,11 +26,13 @@ export const users = pgTable("users", {
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
+  nostrPubkey: true,
   username: true,
-  password: true,
   name: true,
   handle: true,
   avatar: true,
+  nip05: true,
+  lud16: true,
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
