@@ -99,7 +99,8 @@
 - **Mobile-optimized layout** - Compact header, icons-only bottom nav
 - **Secure Authentication** - Nostr pubkey linked to database users, all personal data protected
 - **Mandatory Email Collection** - ProfileCompletionDialog prompts for email after Nostr login, required for 2-week trial access
-- **Notification Dots** - Contextual indicators on sidebar nav items (Big Dreams, Grow, Events, Tribe)
+- **Share to Nostr** - Share Big Dreams, Journal entries, and completed Experiments to Nostr network with optional caption
+- **Notification Indicators** - Three styles for comparison: soft underlay (Big Dreams/Grow), breathing pulse (Events), red dot (Tribe)
 - **Simplified Header** - Removed mail/bell icons, cleaner navigation
 
 ### Navigation Structure
