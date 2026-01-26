@@ -3,13 +3,15 @@ import { EXPERIMENTS } from "@/lib/mock-data";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { PlayCircle, CheckCircle, Lock, BookOpen, Search, Clock, Users, Star } from "lucide-react";
+import { PlayCircle, CheckCircle, Lock, BookOpen, Search, Clock, Users, Star, Share2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ShareConfirmationDialog } from "@/components/share-confirmation-dialog";
+import { useNostr } from "@/contexts/nostr-context";
 
 const COURSES = [
   {
@@ -61,6 +63,17 @@ export default function Learning() {
   const [searchQuery, setSearchQuery] = useState("");
   const [levelFilter, setLevelFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [shareDialog, setShareDialog] = useState<{
+    open: boolean;
+    experiment: typeof EXPERIMENTS[0] | null;
+  }>({ open: false, experiment: null });
+  const { isConnected } = useNostr();
+
+  const handleShareExperiment = (experiment: typeof EXPERIMENTS[0], e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShareDialog({ open: true, experiment });
+  };
 
   const filteredCourses = COURSES.filter((course) => {
     const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -220,15 +233,28 @@ export default function Learning() {
                         with {experiment.guide}
                       </p>
                       
-                      <Button className="w-full gap-2" data-testid={`button-experiment-${experiment.id}`}>
-                        {experiment.progress === 0 ? (
-                          <><BookOpen className="w-4 h-4" /> Start Learning</>
-                        ) : experiment.progress === 100 ? (
-                          <><CheckCircle className="w-4 h-4" /> Completed</>
-                        ) : (
-                          <><PlayCircle className="w-4 h-4" /> Resume</>
+                      <div className="flex gap-2">
+                        <Button className="flex-1 gap-2" data-testid={`button-experiment-${experiment.id}`}>
+                          {experiment.progress === 0 ? (
+                            <><BookOpen className="w-4 h-4" /> Start Learning</>
+                          ) : experiment.progress === 100 ? (
+                            <><CheckCircle className="w-4 h-4" /> Completed</>
+                          ) : (
+                            <><PlayCircle className="w-4 h-4" /> Resume</>
+                          )}
+                        </Button>
+                        {isConnected && experiment.progress === 100 && (
+                          <Button 
+                            variant="outline"
+                            size="icon"
+                            onClick={(e) => handleShareExperiment(experiment, e)}
+                            className="shrink-0"
+                            data-testid={`button-share-experiment-${experiment.id}`}
+                          >
+                            <Share2 className="w-4 h-4" />
+                          </Button>
                         )}
-                      </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 </Link>
@@ -249,6 +275,16 @@ export default function Learning() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {shareDialog.experiment && (
+        <ShareConfirmationDialog
+          open={shareDialog.open}
+          onOpenChange={(open) => setShareDialog(prev => ({ ...prev, open }))}
+          contentType="experiment"
+          contentTitle={`Completed: ${shareDialog.experiment.title}`}
+          contentPreview={`I just completed the ${shareDialog.experiment.title} experiment with ${shareDialog.experiment.guide}! 🎉`}
+        />
+      )}
     </Layout>
   );
 }
