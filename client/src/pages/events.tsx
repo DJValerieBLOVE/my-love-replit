@@ -94,7 +94,7 @@ export default function Events() {
 
           {/* Sidebar Calendar - 1 Column Wide */}
           <div className="hidden lg:block sticky top-4">
-            <Card className="border-none shadow-md bg-card">
+            <Card className="border-none shadow-md bg-card rounded-sm">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-4 px-2">
                   <span className="font-bold text-lg text-muted-foreground">November 2025</span>
