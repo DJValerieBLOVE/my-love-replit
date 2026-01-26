@@ -2,23 +2,22 @@ import { Link, useLocation } from "wouter";
 import { 
   Home, 
   Users,
-  BookOpen,
   Bell,
   Calendar,
   Target,
   Sparkles,
-  Trophy,
+  Heart,
   Mail,
   Flame,
-  Heart,
-  Lightbulb,
   Rss,
   LogOut,
   Zap,
   Settings,
   HelpCircle,
   Radio,
-  User
+  User,
+  GraduationCap,
+  Wrench
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -51,14 +50,23 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const { isConnected, profile, disconnect, isAdmin, isLoading } = useNostr();
 
-  const navLinks = [
+  const desktopNavLinks = [
     { icon: Home, label: "Home", href: "/" },
     { icon: Target, label: "Big Dreams", href: "/big-dreams" },
-    { icon: Lightbulb, label: "Learning", href: "/learning" },
+    { icon: GraduationCap, label: "Grow", href: "/learning" },
     { icon: Calendar, label: "Events", href: "/events" },
-    { icon: Users, label: "Communities", href: "/community" },
-    { icon: BookOpen, label: "Library", href: "/resources" },
-    { icon: Trophy, label: "Leaderboard", href: "/leaderboard" },
+    { icon: Users, label: "Tribe", href: "/community" },
+    { icon: Wrench, label: "Toolbox", href: "/resources" },
+    { icon: Heart, label: "Love Board", href: "/leaderboard" },
+    { icon: Rss, label: "Feed", href: "/feed" },
+  ];
+
+  const mobileNavLinks = [
+    { icon: Home, label: "Home", href: "/" },
+    { icon: GraduationCap, label: "Grow", href: "/learning" },
+    { icon: Calendar, label: "Events", href: "/events" },
+    { icon: Users, label: "Tribe", href: "/community" },
+    { icon: Wrench, label: "Toolbox", href: "/resources" },
     { icon: Rss, label: "Feed", href: "/feed" },
   ];
 
@@ -68,10 +76,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       
       {/* Top Navigation Bar */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl px-3 md:px-4 h-14 md:h-20 flex items-center justify-between">
-          {/* LEFT: Sats on mobile, Logo+Text on desktop */}
+          {/* LEFT: Sats on mobile (goes to Love Board), Logo+Text on desktop */}
           <div className="flex items-center gap-2 md:gap-4">
-            {/* Mobile: Sats on left */}
-            <Link href="/wallet" className="md:hidden">
+            {/* Mobile: Sats on left - now goes to Love Board */}
+            <Link href="/leaderboard" className="md:hidden">
               <div className="flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-orange-500/10 to-yellow-500/10 rounded-full border border-orange-400/30" data-testid="sats-display-mobile">
                 <div className="flex items-center gap-1 text-[11px]">
                   <span className="text-orange-600">↑{CURRENT_USER.satsGiven?.toLocaleString() || 0}</span>
@@ -90,10 +98,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </Link>
           </div>
 
-          {/* CENTER: Logo on mobile, Vertical EQ on desktop */}
+          {/* CENTER: Logo on mobile (goes to Big Dreams), Vertical EQ on desktop */}
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-            {/* Mobile: Centered logo */}
-            <Link href="/" className="md:hidden">
+            {/* Mobile: Centered logo - now goes to Big Dreams */}
+            <Link href="/big-dreams" className="md:hidden">
               <EqVisualizer size={40} isLogo={true} />
             </Link>
             {/* Desktop: Vertical EQ */}
@@ -216,7 +224,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                    </DropdownMenuItem>
                    <DropdownMenuItem className="cursor-pointer gap-3 p-3 focus:bg-love-body/5 focus:text-love-body focus:shadow-sm focus:translate-x-1 transition-all duration-300">
                       <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground mt-0.5 shrink-0">
-                        <Trophy className="w-4 h-4" />
+                        <Target className="w-4 h-4" />
                       </div>
                       <div className="flex flex-col gap-1">
                         <p className="text-xs leading-snug"><span className="font-bold">Goal Met</span> You hit 80% on Finance Sovereignty!</p>
@@ -297,7 +305,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 className="bg-gradient-to-r from-[#6600ff] to-[#cc00ff] hover:from-[#5500dd] hover:to-[#bb00dd] text-white font-medium text-xs md:text-sm px-3 md:px-4 h-8 md:h-9"
                 data-testid="button-login"
               >
-                Sign In
+                Login
               </Button>
             )}
           </div>
@@ -306,9 +314,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <NostrLoginDialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen} />
 
       <div className="flex-1 flex overflow-hidden">
-        {/* Left Sidebar (Navigation) */}
+        {/* Left Sidebar (Navigation) - Desktop only */}
         <aside className="hidden lg:flex flex-col w-[240px] border-r bg-card/50 p-4 gap-2">
-          {navLinks.map((item) => {
+          {desktopNavLinks.map((item) => {
             const isActive = location === item.href || (item.href !== "/" && location.startsWith(item.href));
             return (
               <Link key={item.href} href={item.href}>
@@ -333,9 +341,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       </div>
 
-      {/* Mobile Bottom Nav - Icons only, 5 core items + More */}
+      {/* Mobile Bottom Nav - 6 icons only, no text, no 3-dot menu */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 h-14 bg-background/95 backdrop-blur-lg border-t z-50 flex items-center justify-around px-1 safe-area-pb">
-        {navLinks.slice(0, 5).map((item) => {
+        {mobileNavLinks.map((item) => {
           const isActive = location === item.href || (item.href !== "/" && location.startsWith(item.href));
           return (
             <Link key={item.href} href={item.href}>
@@ -353,45 +361,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </Link>
           );
         })}
-        {/* More menu for remaining items */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <div 
-              className={cn(
-                "flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-200 cursor-pointer text-muted-foreground active:bg-muted/50"
-              )}
-              data-testid="nav-mobile-more"
-            >
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <circle cx="12" cy="12" r="1" />
-                <circle cx="12" cy="5" r="1" />
-                <circle cx="12" cy="19" r="1" />
-              </svg>
-            </div>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" side="top" className="w-48 mb-2">
-            {navLinks.slice(5).map((item) => {
-              const isActive = location === item.href;
-              return (
-                <Link key={item.href} href={item.href}>
-                  <DropdownMenuItem 
-                    className={cn(
-                      "cursor-pointer gap-3",
-                      isActive && "text-love-body bg-love-body/10"
-                    )}
-                    data-testid={`nav-more-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
-                  >
-                    <item.icon className="w-5 h-5" strokeWidth={1.5} />
-                    <span>{item.label}</span>
-                  </DropdownMenuItem>
-                </Link>
-              );
-            })}
-          </DropdownMenuContent>
-        </DropdownMenu>
       </nav>
 
-      {/* Floating Magic Mentor Button (Bottom Right) */}
+      {/* Floating Magic Mentor Button (Bottom Right) - consistent position */}
       <button
         onClick={() => setIsAiOpen(true)}
         className="fixed bottom-20 lg:bottom-6 right-4 lg:right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-[#6600ff] to-[#cc00ff] shadow-lg hover:shadow-xl transition-all hover:scale-105 flex items-center justify-center group"
