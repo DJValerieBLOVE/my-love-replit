@@ -24,8 +24,11 @@ function FlipCard({ title, position, imageUrl, quote, progress, onClick, testId 
 
   return (
     <div 
-      className="relative cursor-pointer overflow-hidden rounded-md h-full w-full shadow-lg"
-      style={{ perspective: "1000px" }}
+      className="relative cursor-pointer overflow-hidden rounded-md h-full w-full"
+      style={{ 
+        perspective: "1000px",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.15)" // Standard card shadow
+      }}
       data-testid={testId}
     >
       <motion.div
@@ -123,26 +126,26 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
         transition={{ duration: 0.6, ease: "easeInOut" }}
         style={{ transformStyle: "preserve-3d" }}
       >
-        {/* Front - Heart with Image, Label, and White Outline */}
+        {/* Front - Heart with Image, Label, and Background-matching Outline */}
         <motion.div 
           className="absolute inset-0"
           style={{ backfaceVisibility: "hidden" }}
         >
-          <svg viewBox="-5 -5 110 100" className="w-full h-full">
+          <svg viewBox="-5 -5 110 100" className="w-full h-full overflow-visible">
             <defs>
               <clipPath id="heartClipFront">
                 <path d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z" />
               </clipPath>
-              <filter id="heartShadow" x="-50%" y="-50%" width="200%" height="200%">
-                <feDropShadow dx="0" dy="8" stdDeviation="12" floodColor="rgba(0,0,0,0.5)" />
+              <filter id="heartShadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="rgba(0,0,0,0.3)" />
               </filter>
             </defs>
-            {/* White Outline and Shadow Layer */}
+            {/* Outline - using background color (var(--background)) */}
             <path
               d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z"
-              fill="white"
-              stroke="white"
-              strokeWidth="4"
+              fill="var(--background)"
+              stroke="var(--background)"
+              strokeWidth="2"
               filter="url(#heartShadow)"
             />
             <g clipPath="url(#heartClipFront)">
@@ -171,25 +174,25 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
           </svg>
         </motion.div>
 
-        {/* Back - Image + Affirmation + White Outline */}
+        {/* Back - Image + Affirmation + Background-matching Outline */}
         <motion.div 
           className="absolute inset-0"
           style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
         >
-          <svg viewBox="-5 -5 110 100" className="w-full h-full">
+          <svg viewBox="-5 -5 110 100" className="w-full h-full overflow-visible">
             <defs>
               <clipPath id="heartClip">
                 <path d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z" />
               </clipPath>
-              <filter id="heartShadowBack" x="-50%" y="-50%" width="200%" height="200%">
-                <feDropShadow dx="0" dy="8" stdDeviation="12" floodColor="rgba(0,0,0,0.5)" />
+              <filter id="heartShadowBack" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="rgba(0,0,0,0.3)" />
               </filter>
             </defs>
             <path
               d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z"
-              fill="white"
-              stroke="white"
-              strokeWidth="4"
+              fill="var(--background)"
+              stroke="var(--background)"
+              strokeWidth="2"
               filter="url(#heartShadowBack)"
             />
             <g clipPath="url(#heartClip)">
