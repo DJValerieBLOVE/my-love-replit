@@ -22,6 +22,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getJournalEntries, createJournalEntry, updateJournalEntry, deleteJournalEntry } from "@/lib/api";
 import { useNostr } from "@/contexts/nostr-context";
 import { toast } from "sonner";
+import { ShareConfirmationDialog } from "@/components/share-confirmation-dialog";
 
 export default function LabNotes() {
   const queryClient = useQueryClient();
@@ -73,7 +74,15 @@ export default function LabNotes() {
 
   const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
   const [showMissedCheckinAlert, setShowMissedCheckinAlert] = useState(true); 
+  const [shareDialog, setShareDialog] = useState<{
+    open: boolean;
+    entry: JournalEntry | null;
+  }>({ open: false, entry: null });
   const todaysPlaylist = getPlaylistForToday();
+
+  const handleShareEntry = (entry: JournalEntry) => {
+    setShareDialog({ open: true, entry });
+  };
 
   // Combine real journal entries with mock entries for other types
   // Mock entries for non-daily-practice types (temporarily keep until we implement those)
@@ -605,8 +614,20 @@ export default function LabNotes() {
       <EntryDetailModal 
         entry={selectedEntry} 
         isOpen={!!selectedEntry} 
-        onClose={() => setSelectedEntry(null)} 
+        onClose={() => setSelectedEntry(null)}
+        onShare={handleShareEntry}
+        canShare={isConnected}
       />
+
+      {shareDialog.entry && (
+        <ShareConfirmationDialog
+          open={shareDialog.open}
+          onOpenChange={(open) => setShareDialog(prev => ({ ...prev, open }))}
+          contentType="journal"
+          contentTitle={`Daily LOVE Practice - ${shareDialog.entry.date}`}
+          contentPreview={shareDialog.entry.gratitude || shareDialog.entry.vision || shareDialog.entry.content}
+        />
+      )}
     </Layout>
   );
 }

@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Calendar, Clock, Sparkles, Beaker, Lightbulb, Heart } from "lucide-react";
+import { Calendar, Clock, Sparkles, Beaker, Lightbulb, Heart, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
@@ -48,9 +48,11 @@ interface EntryDetailModalProps {
   entry: JournalEntry | null;
   isOpen: boolean;
   onClose: () => void;
+  onShare?: (entry: JournalEntry) => void;
+  canShare?: boolean;
 }
 
-export function EntryDetailModal({ entry, isOpen, onClose }: EntryDetailModalProps) {
+export function EntryDetailModal({ entry, isOpen, onClose, onShare, canShare = false }: EntryDetailModalProps) {
   if (!entry) return null;
 
   const renderHeaderIcon = () => {
@@ -100,18 +102,32 @@ export function EntryDetailModal({ entry, isOpen, onClose }: EntryDetailModalPro
                   : (entry.experimentTitle || entry.ahaMoment || "Untitled Entry")}
               </h1>
 
-              <div className="flex flex-wrap gap-4 text-sm text-muted-foreground items-center">
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4" />
-                  <span>{entry.date}</span>
+              <div className="flex flex-wrap gap-4 text-sm text-muted-foreground items-center justify-between">
+                <div className="flex flex-wrap gap-4 items-center">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    <span>{entry.date}</span>
+                  </div>
+                  <div className="flex gap-2">
+                    {entry.tags.map(tag => (
+                      <Badge key={tag} variant="outline" className="font-normal bg-muted/50">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
-                <div className="flex gap-2 ml-2">
-                  {entry.tags.map(tag => (
-                    <Badge key={tag} variant="outline" className="font-normal bg-muted/50">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
+                {onShare && canShare && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onShare(entry)}
+                    className="text-muted-foreground hover:text-love-body"
+                    data-testid="button-share-journal"
+                  >
+                    <Share2 className="w-4 h-4 mr-1" />
+                    Share
+                  </Button>
+                )}
               </div>
             </div>
 

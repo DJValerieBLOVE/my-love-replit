@@ -1,7 +1,7 @@
 import Layout from "@/components/layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Target, Sparkles, CheckCircle, PenLine } from "lucide-react";
+import { Target, Sparkles, CheckCircle, PenLine, Share2 } from "lucide-react";
 import { useState } from "react";
 import { FiveVsWizard } from "@/components/daily-practice/five-vs-wizard";
 import { LOVE_CODE_AREAS } from "@/lib/mock-data";
@@ -13,11 +13,18 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getDreams, getAreaProgress, saveDream } from "@/lib/api";
 import { useNostr } from "@/contexts/nostr-context";
 import { toast } from "sonner";
+import { ShareConfirmationDialog, ShareContentType } from "@/components/share-confirmation-dialog";
 
 export default function BigDreams() {
   const queryClient = useQueryClient();
   const { isConnected } = useNostr();
   const [editingDreams, setEditingDreams] = useState<Record<string, string>>({});
+  const [shareDialog, setShareDialog] = useState<{
+    open: boolean;
+    areaName: string;
+    dreamText: string;
+    progress: number;
+  }>({ open: false, areaName: "", dreamText: "", progress: 0 });
 
   // Fetch dreams and area progress from API
   const { data: dreams = [], isLoading: dreamsLoading } = useQuery({
@@ -117,7 +124,24 @@ export default function BigDreams() {
                               />
                             </div>
 
-                            <div className="flex justify-end">
+                            <div className="flex justify-end gap-2">
+                              {isConnected && currentDream && currentProgress > 0 && (
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm"
+                                  onClick={() => setShareDialog({
+                                    open: true,
+                                    areaName: area.name,
+                                    dreamText: currentDream,
+                                    progress: currentProgress,
+                                  })}
+                                  className="text-muted-foreground hover:text-love-body"
+                                  data-testid={`button-share-dream-${area.id}`}
+                                >
+                                  <Share2 className="w-4 h-4 mr-1" />
+                                  Share
+                                </Button>
+                              )}
                               <Button 
                                 variant="ghost" 
                                 size="sm"
@@ -137,6 +161,14 @@ export default function BigDreams() {
             </section>
           </div>
       </div>
+
+      <ShareConfirmationDialog
+        open={shareDialog.open}
+        onOpenChange={(open) => setShareDialog(prev => ({ ...prev, open }))}
+        contentType="dream"
+        contentTitle={`${shareDialog.areaName} Dream (${shareDialog.progress}% Realized)`}
+        contentPreview={shareDialog.dreamText}
+      />
     </Layout>
   );
 }
