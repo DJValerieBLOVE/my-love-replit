@@ -10,7 +10,7 @@ export default function Community() {
   return (
     <Layout>
       <div className="relative h-48 md:h-64 w-full overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent z-10 pt-[20px] pb-[20px]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent z-10 pt-[0px] pb-[0px]" />
         <img 
           src={CommunityCover} 
           alt="Community" 
