@@ -8,7 +8,7 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Community from "@/pages/community";
 import ClubDetail from "@/pages/club-detail";
-import Learning from "@/pages/learning";
+import Grow from "@/pages/grow";
 import ExperimentDetail from "@/pages/experiment-detail";
 import BigDreams from "@/pages/big-dreams";
 import Resources from "@/pages/resources";
@@ -31,8 +31,8 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/community" component={Community} />
       <Route path="/community/:id" component={ClubDetail} />
-      <Route path="/learning" component={Learning} />
-      <Route path="/learning/:id" component={ExperimentDetail} />
+      <Route path="/grow" component={Grow} />
+      <Route path="/grow/:id" component={ExperimentDetail} />
       <Route path="/big-dreams" component={BigDreams} />
       <Route path="/resources" component={Resources} />
       <Route path="/journal" component={Journal} />

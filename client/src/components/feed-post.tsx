@@ -14,7 +14,9 @@ import {
   Minus,
   Plus,
   Quote,
-  Users
+  Users,
+  Copy,
+  ExternalLink
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -133,10 +135,20 @@ export function FeedPost({ post }: FeedPostProps) {
     setLikes(prev => isLiked ? prev - 1 : prev + 1);
   };
 
-  const handleShare = () => {
-    toast("Share options coming soon!", {
-      description: "You'll be able to share to Nostr and other platforms",
-    });
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(`${window.location.origin}/post/${post.id}`);
+    toast.success("Link copied!");
+  };
+
+  const handleShareToX = () => {
+    const text = encodeURIComponent(post.content.slice(0, 200));
+    const url = encodeURIComponent(`${window.location.origin}/post/${post.id}`);
+    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, "_blank");
+  };
+
+  const handleShareToFacebook = () => {
+    const url = encodeURIComponent(`${window.location.origin}/post/${post.id}`);
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, "_blank");
   };
 
   const handleZap = () => {
@@ -422,14 +434,52 @@ export function FeedPost({ post }: FeedPostProps) {
               </Button>
 
               {/* 6. Share */}
-              <Button 
-                variant="ghost" 
-                onClick={handleShare}
-                className="text-muted-foreground hover:text-love-soul hover:bg-love-soul-light px-2 gap-1.5 min-w-[50px]"
-                data-testid={`button-share-${post.id}`}
-              >
-                <Share2 className="w-[18px] h-[18px]" strokeWidth={1.5} />
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    className="text-muted-foreground hover:text-love-soul hover:bg-love-soul-light px-2 gap-1.5 min-w-[50px]"
+                    data-testid={`button-share-${post.id}`}
+                  >
+                    <Share2 className="w-[18px] h-[18px]" strokeWidth={1.5} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem
+                    onClick={handleCopyLink}
+                    className="cursor-pointer"
+                    data-testid={`button-copy-link-${post.id}`}
+                  >
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copy Link
+                  </DropdownMenuItem>
+                  {canRepostPublic && (
+                    <>
+                      <DropdownMenuItem
+                        onClick={handleShareToX}
+                        className="cursor-pointer"
+                        data-testid={`button-share-x-${post.id}`}
+                      >
+                        <ExternalLink className="w-4 h-4 mr-2" />
+                        Share to X
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={handleShareToFacebook}
+                        className="cursor-pointer"
+                        data-testid={`button-share-facebook-${post.id}`}
+                      >
+                        <ExternalLink className="w-4 h-4 mr-2" />
+                        Share to Facebook
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                  {!canRepostPublic && (
+                    <div className="px-2 py-1.5 text-xs text-muted-foreground">
+                      Group content - sharing limited
+                    </div>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>

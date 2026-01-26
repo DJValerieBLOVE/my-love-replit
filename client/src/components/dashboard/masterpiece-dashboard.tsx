@@ -187,7 +187,7 @@ export function MasterpieceDashboard() {
           </div>
         </div>
       ),
-      detailsLink: "/experiments",
+      detailsLink: "/grow",
     },
     {
       id: "podcast-day",
@@ -259,7 +259,7 @@ export function MasterpieceDashboard() {
           </div>
         </div>
       ),
-      detailsLink: "/learn",
+      detailsLink: "/grow",
     },
     {
       id: "song-day",

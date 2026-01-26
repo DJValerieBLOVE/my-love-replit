@@ -58,7 +58,7 @@ const COURSES = [
   },
 ];
 
-export default function Learning() {
+export default function Grow() {
   const [activeTab, setActiveTab] = useState("courses");
   const [searchQuery, setSearchQuery] = useState("");
   const [levelFilter, setLevelFilter] = useState("all");
@@ -92,7 +92,7 @@ export default function Learning() {
     <Layout>
       <div className="max-w-6xl mx-auto p-4 lg:p-8 space-y-6">
         <div>
-          <h1 className="text-2xl font-serif font-bold text-muted-foreground">Learn</h1>
+          <h1 className="text-2xl font-serif font-bold text-muted-foreground">Grow</h1>
           <p className="text-muted-foreground">Courses, experiments, and skill-building adventures</p>
         </div>
 
@@ -145,7 +145,7 @@ export default function Learning() {
           <TabsContent value="courses">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredCourses.map((course) => (
-                <Link key={course.id} href={`/learning/${course.id}`}>
+                <Link key={course.id} href={`/grow/${course.id}`}>
                   <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 group border-none shadow-sm bg-card cursor-pointer flex flex-col h-full">
                     {/* Course Header with Gradient */}
                     <div className={`relative h-32 bg-gradient-to-br ${course.color} flex items-center justify-center`}>
@@ -202,7 +202,7 @@ export default function Learning() {
           <TabsContent value="experiments">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredExperiments.map((experiment) => (
-                <Link key={experiment.id} href={`/learning/${experiment.id}`}>
+                <Link key={experiment.id} href={`/grow/${experiment.id}`}>
                   <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 group border-none shadow-sm bg-card cursor-pointer flex flex-col">
                     <div className="h-[2px] w-full bg-primary" />
                     <div className="relative h-48 overflow-hidden">

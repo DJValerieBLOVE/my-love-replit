@@ -102,12 +102,15 @@
 - **Share to Nostr** - Share Big Dreams, Journal entries, and completed Experiments to Nostr network with optional caption
 - **Notification Indicators** - Four distinct styles: lighter underlay (Big Dreams), purple icon (Grow), breathing pulse 30-100% (Events), small purple dot (Tribe)
 - **Simplified Header** - Removed mail/bell icons, cleaner navigation
-- **Social Post Actions** - Complete action buttons: Reply, Repost (with dropdown for Nostr/Group), Zap (with amount dialog), Like, Bookmark, Share
+- **Social Post Actions** - Complete action buttons: Reply, Repost (with dropdown for Nostr/Group), Zap (with amount dialog), Like, Bookmark, Share (with dropdown for Copy Link, X, Facebook)
 - **Sharing Privacy Rules** - Group/community/learning posts stay private within group; only user's own original content can be shared publicly to Nostr
+- **Post Composer with Media** - Create posts with image, GIF, and video upload support; preview and remove media before posting
+- **External Sharing** - Share public posts to X/Twitter, Facebook, or copy link
 
 ### Navigation Structure
 - **Desktop left sidebar**: Home, Big Dreams (with dot), Grow (with dot), Events (with dot), Tribe (with dot), Toolbox, Love Board, Feed
 - **Mobile bottom nav**: 6 icons only (Home, Grow, Events, Tribe, Toolbox, Feed) - no text labels, notification dots on relevant items
+- **Grow page**: /grow route, contains Courses and Experiments tabs (formerly /learning)
 - **Mobile header**: Stats goes to Love Board, center logo goes to Big Dreams
 - Floating button: Magic Mentor AI (Sparkles icon, bottom-right corner)
 - No header mail/bell icons (removed - notifications shown contextually on nav items)

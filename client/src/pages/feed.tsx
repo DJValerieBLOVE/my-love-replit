@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Zap, Share2, MoreHorizontal, Radio, Calendar, UserPlus, Repeat2, Bookmark, Quote, Users } from "lucide-react";
+import { Heart, MessageCircle, Zap, Share2, MoreHorizontal, Radio, Calendar, UserPlus, Repeat2, Bookmark, Quote, Users, Image, Film, Smile, X, Link2, Copy, ExternalLink } from "lucide-react";
 import { Link } from "wouter";
 import {
   DropdownMenu,
@@ -166,6 +166,141 @@ const WHO_TO_FOLLOW = [
     avatar: "https://images.unsplash.com/photo-1599566150163-29194dcabd36?w=100&h=100&fit=crop",
   },
 ];
+
+type MediaItem = {
+  type: "image" | "gif" | "video";
+  url: string;
+  file?: File;
+};
+
+function PostComposer() {
+  const [content, setContent] = useState("");
+  const [media, setMedia] = useState<MediaItem[]>([]);
+  const [isPosting, setIsPosting] = useState(false);
+
+  const handleFileSelect = (type: "image" | "video") => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = type === "image" ? "image/*" : "video/*";
+    input.multiple = type === "image";
+    input.onchange = (e) => {
+      const files = (e.target as HTMLInputElement).files;
+      if (files) {
+        Array.from(files).forEach((file) => {
+          const url = URL.createObjectURL(file);
+          setMedia((prev) => [...prev, { type, url, file }]);
+        });
+      }
+    };
+    input.click();
+  };
+
+  const handleGifSelect = () => {
+    toast("GIF picker coming soon!");
+  };
+
+  const removeMedia = (index: number) => {
+    setMedia((prev) => {
+      const newMedia = [...prev];
+      if (newMedia[index].url.startsWith("blob:")) {
+        URL.revokeObjectURL(newMedia[index].url);
+      }
+      newMedia.splice(index, 1);
+      return newMedia;
+    });
+  };
+
+  const handlePost = async () => {
+    if (!content.trim() && media.length === 0) return;
+    setIsPosting(true);
+    setTimeout(() => {
+      toast.success("Posted to Nostr!");
+      setContent("");
+      setMedia([]);
+      setIsPosting(false);
+    }, 1000);
+  };
+
+  return (
+    <Card className="p-4 mb-6">
+      <div className="flex gap-3">
+        <Avatar className="w-10 h-10">
+          <AvatarFallback>ME</AvatarFallback>
+        </Avatar>
+        <div className="flex-1">
+          <Textarea
+            placeholder="What's happening?"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            className="min-h-[80px] border-0 resize-none focus-visible:ring-0 p-0 text-base"
+            data-testid="textarea-post-content"
+          />
+          
+          {media.length > 0 && (
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              {media.map((item, index) => (
+                <div key={index} className="relative rounded-lg overflow-hidden bg-muted">
+                  {item.type === "video" ? (
+                    <video src={item.url} className="w-full h-32 object-cover" controls />
+                  ) : (
+                    <img src={item.url} alt="" className="w-full h-32 object-cover" />
+                  )}
+                  <button
+                    onClick={() => removeMedia(index)}
+                    className="absolute top-2 right-2 p-1 bg-black/50 rounded-full text-white hover:bg-black/70"
+                    data-testid={`button-remove-media-${index}`}
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="flex items-center justify-between mt-3 pt-3 border-t">
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleFileSelect("image")}
+                className="text-muted-foreground hover:text-love-body hover:bg-love-body-light"
+                data-testid="button-add-image"
+              >
+                <Image className="w-5 h-5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleGifSelect}
+                className="text-muted-foreground hover:text-love-mission hover:bg-love-mission-light"
+                data-testid="button-add-gif"
+              >
+                <Smile className="w-5 h-5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleFileSelect("video")}
+                className="text-muted-foreground hover:text-love-time hover:bg-love-time-light"
+                data-testid="button-add-video"
+              >
+                <Film className="w-5 h-5" />
+              </Button>
+            </div>
+            <Button
+              onClick={handlePost}
+              disabled={isPosting || (!content.trim() && media.length === 0)}
+              className="px-6"
+              data-testid="button-post"
+            >
+              {isPosting ? "Posting..." : "Post"}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
+}
 
 function PostCard({ post }: { post: FeedPost }) {
   const [isLiked, setIsLiked] = useState(false);
@@ -378,13 +513,61 @@ function PostCard({ post }: { post: FeedPost }) {
             </button>
 
             {/* Share */}
-            <button 
-              onClick={() => toast("Share options coming soon!")}
-              className="flex items-center gap-1.5 text-muted-foreground hover:text-love-soul hover:bg-love-soul-light rounded-md px-2 py-1 transition-colors text-sm ml-auto" 
-              data-testid={`button-share-${post.id}`}
-            >
-              <Share2 className="w-4 h-4" />
-            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button 
+                  className="flex items-center gap-1.5 text-muted-foreground hover:text-love-soul hover:bg-love-soul-light rounded-md px-2 py-1 transition-colors text-sm ml-auto" 
+                  data-testid={`button-share-${post.id}`}
+                >
+                  <Share2 className="w-4 h-4" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem
+                  onClick={() => {
+                    navigator.clipboard.writeText(`${window.location.origin}/post/${post.id}`);
+                    toast.success("Link copied!");
+                  }}
+                  className="cursor-pointer"
+                  data-testid={`button-copy-link-${post.id}`}
+                >
+                  <Copy className="w-4 h-4 mr-2" />
+                  Copy Link
+                </DropdownMenuItem>
+                {canRepostPublic && (
+                  <>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        const text = encodeURIComponent(post.content);
+                        const url = encodeURIComponent(`${window.location.origin}/post/${post.id}`);
+                        window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, "_blank");
+                      }}
+                      className="cursor-pointer"
+                      data-testid={`button-share-x-${post.id}`}
+                    >
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      Share to X
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        const url = encodeURIComponent(`${window.location.origin}/post/${post.id}`);
+                        window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, "_blank");
+                      }}
+                      className="cursor-pointer"
+                      data-testid={`button-share-facebook-${post.id}`}
+                    >
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      Share to Facebook
+                    </DropdownMenuItem>
+                  </>
+                )}
+                {!canRepostPublic && (
+                  <div className="px-2 py-1.5 text-xs text-muted-foreground">
+                    Group content - sharing limited
+                  </div>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
@@ -482,6 +665,8 @@ export default function Feed() {
         <div className="flex gap-8">
           {/* Main Feed */}
           <div className="flex-1 min-w-0">
+            <PostComposer />
+            
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="w-full mb-6 grid grid-cols-3">
                 <TabsTrigger value="all" data-testid="tab-all-nostr">All Nostr</TabsTrigger>
