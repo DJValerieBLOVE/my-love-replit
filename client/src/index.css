@@ -262,4 +262,18 @@
     background-color: #6600ff !important;
     color: white !important;
   }
+
+  /* Breathing pulse animation for notification indicators */
+  .animate-breathing {
+    animation: breathing 2.5s ease-in-out infinite;
+  }
+}
+
+@keyframes breathing {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
 }

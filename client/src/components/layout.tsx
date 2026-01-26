@@ -47,10 +47,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const desktopNavLinks = [
     { icon: Home, label: "Home", href: "/" },
-    { icon: Target, label: "Big Dreams", href: "/big-dreams", hasNotification: true },
-    { icon: GraduationCap, label: "Grow", href: "/learning", hasNotification: true },
-    { icon: Calendar, label: "Events", href: "/events", hasNotification: true },
-    { icon: Users, label: "Tribe", href: "/community", hasNotification: true },
+    { icon: Target, label: "Big Dreams", href: "/big-dreams", notificationType: "underlay" as const },
+    { icon: GraduationCap, label: "Grow", href: "/learning", notificationType: "underlay" as const },
+    { icon: Calendar, label: "Events", href: "/events", notificationType: "breathing" as const },
+    { icon: Users, label: "Tribe", href: "/community", notificationType: "dot" as const },
     { icon: Wrench, label: "Toolbox", href: "/resources" },
     { icon: Heart, label: "Love Board", href: "/leaderboard" },
     { icon: Rss, label: "Feed", href: "/feed" },
@@ -58,9 +58,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const mobileNavLinks = [
     { icon: Home, label: "Home", href: "/" },
-    { icon: GraduationCap, label: "Grow", href: "/learning", hasNotification: true },
-    { icon: Calendar, label: "Events", href: "/events", hasNotification: true },
-    { icon: Users, label: "Tribe", href: "/community", hasNotification: true },
+    { icon: GraduationCap, label: "Grow", href: "/learning", notificationType: "underlay" as const },
+    { icon: Calendar, label: "Events", href: "/events", notificationType: "breathing" as const },
+    { icon: Users, label: "Tribe", href: "/community", notificationType: "dot" as const },
     { icon: Wrench, label: "Toolbox", href: "/resources" },
     { icon: Rss, label: "Feed", href: "/feed" },
   ];
@@ -218,8 +218,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     : "text-muted-foreground hover:bg-love-body/5 hover:text-love-body hover:shadow-sm hover:translate-x-1"
                 )}>
                   <div className="relative">
-                    <item.icon strokeWidth={1.5} className={cn("w-5 h-5 transition-transform group-hover:scale-110", isActive && "opacity-100")} />
-                    {item.hasNotification && (
+                    {item.notificationType === "underlay" && (
+                      <span 
+                        className="absolute inset-0 -m-1.5 rounded-full bg-love-body/10"
+                        data-testid={`notification-underlay-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
+                      />
+                    )}
+                    <item.icon 
+                      strokeWidth={1.5} 
+                      className={cn(
+                        "w-5 h-5 transition-transform group-hover:scale-110 relative z-10", 
+                        isActive && "opacity-100",
+                        item.notificationType === "breathing" && "animate-breathing"
+                      )} 
+                    />
+                    {item.notificationType === "dot" && (
                       <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" data-testid={`notification-dot-${item.label.toLowerCase().replace(/\s+/g, '-')}`} />
                     )}
                   </div>
@@ -252,8 +265,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 )}
                 data-testid={`nav-mobile-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
               >
-                <item.icon className={cn("w-6 h-6", isActive && "stroke-[2.5]")} strokeWidth={1.5} />
-                {item.hasNotification && (
+                {item.notificationType === "underlay" && (
+                  <span 
+                    className="absolute inset-2 rounded-full bg-love-body/10"
+                    data-testid={`notification-underlay-mobile-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
+                  />
+                )}
+                <item.icon 
+                  className={cn(
+                    "w-6 h-6 relative z-10", 
+                    isActive && "stroke-[2.5]",
+                    item.notificationType === "breathing" && "animate-breathing"
+                  )} 
+                  strokeWidth={1.5} 
+                />
+                {item.notificationType === "dot" && (
                   <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" data-testid={`notification-dot-mobile-${item.label.toLowerCase().replace(/\s+/g, '-')}`} />
                 )}
               </div>
