@@ -143,8 +143,7 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
             {/* Outline - using CSS variable for background color and 2px width */}
             <path
               d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z"
-              fill="hsl(var(--background))"
-              stroke="hsl(var(--background))"
+              className="fill-background stroke-background"
               strokeWidth="2"
               filter="url(#heartShadow)"
             />
@@ -161,8 +160,9 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
             </g>
             <text
               x="50"
-              y="55"
+              y="44"
               textAnchor="middle"
+              dominantBaseline="middle"
               fill="white"
               fontSize="17"
               fontFamily="Marcellus, Georgia, serif"
@@ -192,8 +192,7 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
             </defs>
             <path
               d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z"
-              fill="hsl(var(--background))"
-              stroke="hsl(var(--background))"
+              className="fill-background stroke-background"
               strokeWidth="2"
               filter="url(#heartShadowBack)"
             />
