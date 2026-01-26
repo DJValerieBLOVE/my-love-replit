@@ -18,13 +18,13 @@ function FlipCard({ title, position, imageUrl, quote, progress, onClick, testId 
   const labelPositions = {
     "top-left": "top-3 left-3 md:top-4 md:left-4",
     "top-right": "top-3 right-3 md:top-4 md:right-4",
-    "bottom-left": "top-3 left-3 md:top-4 md:left-4", // Tribe moved to top-left
-    "bottom-right": "top-3 right-3 md:top-4 md:right-4", // Wealth moved to top-right
+    "bottom-left": "top-3 left-3 md:top-4 md:left-4", 
+    "bottom-right": "top-3 right-3 md:top-4 md:right-4", 
   };
 
   return (
     <div 
-      className="relative cursor-pointer overflow-hidden rounded-md h-full w-full"
+      className="relative cursor-pointer overflow-hidden rounded-md h-full w-full shadow-lg"
       style={{ perspective: "1000px" }}
       data-testid={testId}
     >
@@ -123,25 +123,29 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
         transition={{ duration: 0.6, ease: "easeInOut" }}
         style={{ transformStyle: "preserve-3d" }}
       >
-        {/* Front - Heart with Image and Label */}
+        {/* Front - Heart with Image, Label, and White Outline */}
         <motion.div 
           className="absolute inset-0"
           style={{ backfaceVisibility: "hidden" }}
         >
-          <svg viewBox="0 0 100 90" className="w-full h-full">
+          <svg viewBox="-5 -5 110 100" className="w-full h-full">
             <defs>
               <clipPath id="heartClipFront">
                 <path d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z" />
               </clipPath>
-              <linearGradient id="heartOverlayFront" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="rgba(235, 0, 168, 0.4)" />
-                <stop offset="100%" stopColor="rgba(153, 0, 255, 0.4)" />
-              </linearGradient>
               <filter id="heartShadow" x="-50%" y="-50%" width="200%" height="200%">
-                <feDropShadow dx="0" dy="4" stdDeviation="4" floodColor="rgba(0,0,0,0.3)" />
+                <feDropShadow dx="0" dy="8" stdDeviation="12" floodColor="rgba(0,0,0,0.5)" />
               </filter>
             </defs>
-            <g clipPath="url(#heartClipFront)" filter="url(#heartShadow)">
+            {/* White Outline and Shadow Layer */}
+            <path
+              d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z"
+              fill="white"
+              stroke="white"
+              strokeWidth="4"
+              filter="url(#heartShadow)"
+            />
+            <g clipPath="url(#heartClipFront)">
               <image
                 href={frontImageUrl}
                 x="-10"
@@ -150,7 +154,7 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
                 height="110"
                 preserveAspectRatio="xMidYMid slice"
               />
-              <rect x="0" y="0" width="100" height="90" fill="url(#heartOverlayFront)" />
+              <rect x="0" y="0" width="100" height="90" fill="rgba(0,0,0,0.2)" />
             </g>
             <text
               x="50"
@@ -160,28 +164,34 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
               fontSize="18"
               fontFamily="Marcellus, Georgia, serif"
               fontWeight="400"
-              style={{ textShadow: "0 2px 8px rgba(0,0,0,0.8)" }}
+              style={{ textShadow: "0 2px 8px rgba(0,0,0,0.9)" }}
             >
               {label}
             </text>
           </svg>
         </motion.div>
 
-        {/* Back - Image + Affirmation */}
+        {/* Back - Image + Affirmation + White Outline */}
         <motion.div 
           className="absolute inset-0"
           style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
         >
-          <svg viewBox="0 0 100 90" className="w-full h-full">
+          <svg viewBox="-5 -5 110 100" className="w-full h-full">
             <defs>
               <clipPath id="heartClip">
                 <path d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z" />
               </clipPath>
-              <linearGradient id="heartOverlay" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="rgba(102, 0, 255, 0.4)" />
-                <stop offset="100%" stopColor="rgba(235, 0, 168, 0.5)" />
-              </linearGradient>
+              <filter id="heartShadowBack" x="-50%" y="-50%" width="200%" height="200%">
+                <feDropShadow dx="0" dy="8" stdDeviation="12" floodColor="rgba(0,0,0,0.5)" />
+              </filter>
             </defs>
+            <path
+              d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z"
+              fill="white"
+              stroke="white"
+              strokeWidth="4"
+              filter="url(#heartShadowBack)"
+            />
             <g clipPath="url(#heartClip)">
               <image
                 href={backImageUrl}
@@ -191,7 +201,7 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
                 height="110"
                 preserveAspectRatio="xMidYMid slice"
               />
-              <rect x="0" y="0" width="100" height="90" fill="url(#heartOverlay)" />
+              <rect x="0" y="0" width="100" height="90" fill="rgba(102, 0, 255, 0.2)" />
             </g>
             <text
               x="50"
@@ -200,7 +210,7 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
               fill="white"
               fontSize="8"
               fontFamily="Marcellus, Georgia, serif"
-              style={{ textShadow: "0 1px 3px rgba(0,0,0,0.5)" }}
+              style={{ textShadow: "0 1px 3px rgba(0,0,0,0.7)" }}
             >
               Today's Affirmation
             </text>
@@ -212,7 +222,7 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
               fontSize="9"
               fontFamily="Marcellus, Georgia, serif"
               fontWeight="400"
-              style={{ textShadow: "0 2px 4px rgba(0,0,0,0.5)" }}
+              style={{ textShadow: "0 2px 4px rgba(0,0,0,0.7)" }}
             >
               {affirmation}
             </text>
@@ -251,7 +261,7 @@ export function HeartDashboard() {
     },
     {
       id: "tribe",
-      title: "bottom-left" as const, // Internal ID is bottom-left
+      title: "bottom-left" as const,
       position: "bottom-left" as const,
       title_display: "Tribe",
       imageUrl: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&h=600&fit=crop",
@@ -262,7 +272,7 @@ export function HeartDashboard() {
     },
     {
       id: "wealth",
-      title: "bottom-right" as const, // Internal ID is bottom-right
+      title: "bottom-right" as const,
       position: "bottom-right" as const,
       title_display: "Wealth",
       imageUrl: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=800&h=600&fit=crop",
