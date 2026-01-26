@@ -13,6 +13,7 @@ import {
   insertEventSchema,
   insertPostSchema,
   insertClubSchema,
+  insertZapSchema,
   updateEmailSchema,
 } from "@shared/schema";
 
@@ -536,19 +537,51 @@ export async function registerRoutes(
   app.post("/api/posts/:id/zap", authMiddleware, async (req, res) => {
     try {
       const { id } = req.params;
-      const { amount } = req.body;
+      const { amount, comment, paymentHash, receiverId } = req.body;
       
       if (!amount || amount <= 0) {
         return res.status(400).json({ error: "Invalid zap amount" });
       }
       
-      const post = await storage.zapPost(id, amount);
-      if (!post) {
-        return res.status(404).json({ error: "Post not found" });
+      if (!receiverId) {
+        return res.status(400).json({ error: "Receiver ID required" });
       }
-      res.json(post);
+      
+      const zap = await storage.createZap({
+        senderId: req.userId!,
+        receiverId,
+        postId: id,
+        amount,
+        comment: comment || null,
+        paymentHash: paymentHash || null,
+      });
+      
+      res.json(zap);
     } catch (error) {
+      console.error("Zap error:", error);
       res.status(500).json({ error: "Failed to zap post" });
+    }
+  });
+
+  // Get user's zap history
+  app.get("/api/zaps", authMiddleware, async (req, res) => {
+    try {
+      const type = (req.query.type as 'sent' | 'received') || 'received';
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 20;
+      const zaps = await storage.getZapsByUser(req.userId!, type, limit);
+      res.json(zaps);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch zaps" });
+    }
+  });
+
+  // Get user's zap stats
+  app.get("/api/zaps/stats", authMiddleware, async (req, res) => {
+    try {
+      const stats = await storage.getUserZapStats(req.userId!);
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch zap stats" });
     }
   });
 

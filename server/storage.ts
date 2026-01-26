@@ -1,6 +1,6 @@
 import {
   users, journalEntries, dreams, areaProgress, experiments, userExperiments,
-  experimentNotes, discoveryNotes, events, posts, clubs,
+  experimentNotes, discoveryNotes, events, posts, clubs, zaps,
   type User, type InsertUser,
   type JournalEntry, type InsertJournalEntry,
   type Dream, type InsertDream,
@@ -12,6 +12,7 @@ import {
   type Event, type InsertEvent,
   type Post, type InsertPost,
   type Club, type InsertClub,
+  type Zap, type InsertZap,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, sql } from "drizzle-orm";
@@ -84,6 +85,11 @@ export interface IStorage {
   // Clubs
   getAllClubs(): Promise<Club[]>;
   createClub(club: InsertClub): Promise<Club>;
+
+  // Zaps
+  createZap(zap: InsertZap): Promise<Zap>;
+  getZapsByUser(userId: string, type: 'sent' | 'received', limit?: number): Promise<(Zap & { sender?: User; receiver?: User; post?: Post })[]>;
+  getUserZapStats(userId: string): Promise<{ satsGiven: number; satsReceived: number }>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -409,6 +415,57 @@ export class DatabaseStorage implements IStorage {
   async createClub(club: InsertClub): Promise<Club> {
     const [created] = await db.insert(clubs).values(club).returning();
     return created;
+  }
+
+  // Zaps
+  async createZap(zap: InsertZap): Promise<Zap> {
+    const [created] = await db.insert(zaps).values(zap).returning();
+    
+    await db.update(users)
+      .set({ satsGiven: sql`${users.satsGiven} + ${zap.amount}` })
+      .where(eq(users.id, zap.senderId));
+    
+    await db.update(users)
+      .set({ satsReceived: sql`${users.satsReceived} + ${zap.amount}` })
+      .where(eq(users.id, zap.receiverId));
+    
+    if (zap.postId) {
+      await db.update(posts)
+        .set({ zaps: sql`${posts.zaps} + ${zap.amount}` })
+        .where(eq(posts.id, zap.postId));
+    }
+    
+    return created;
+  }
+
+  async getZapsByUser(userId: string, type: 'sent' | 'received', limit: number = 20): Promise<(Zap & { sender?: User; receiver?: User; post?: Post })[]> {
+    const condition = type === 'sent' 
+      ? eq(zaps.senderId, userId)
+      : eq(zaps.receiverId, userId);
+    
+    const results = await db.select()
+      .from(zaps)
+      .leftJoin(users, type === 'sent' ? eq(zaps.receiverId, users.id) : eq(zaps.senderId, users.id))
+      .leftJoin(posts, eq(zaps.postId, posts.id))
+      .where(condition)
+      .orderBy(desc(zaps.createdAt))
+      .limit(limit);
+    
+    return results.map(r => ({
+      ...r.zaps,
+      sender: type === 'received' ? (r.users || undefined) : undefined,
+      receiver: type === 'sent' ? (r.users || undefined) : undefined,
+      post: r.posts || undefined,
+    }));
+  }
+
+  async getUserZapStats(userId: string): Promise<{ satsGiven: number; satsReceived: number }> {
+    const [user] = await db.select({
+      satsGiven: users.satsGiven,
+      satsReceived: users.satsReceived,
+    }).from(users).where(eq(users.id, userId));
+    
+    return user || { satsGiven: 0, satsReceived: 0 };
   }
 }
 

@@ -16,7 +16,8 @@ import {
   Quote,
   Users,
   Copy,
-  ExternalLink
+  ExternalLink,
+  AlertCircle
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import SatsIcon from "@assets/generated_images/sats_icon.png";
 import { toast } from "sonner";
 import { isGroupContent, canSharePublicly, getGroupName, type ShareablePost } from "@/lib/sharing-rules";
+import { useNostr } from "@/contexts/nostr-context";
+import { zapPost } from "@/lib/api";
+import { loadNWCConnection, payInvoice } from "@/lib/nwc";
 import {
   Dialog,
   DialogContent,
@@ -49,10 +53,12 @@ interface FeedPostProps {
   post: {
     id: string;
     author: {
+      id?: string;
       name: string;
       handle: string;
       avatar: string;
       pubkey?: string;
+      lud16?: string;
     };
     content: string;
     image?: string;
@@ -67,11 +73,13 @@ interface FeedPostProps {
 }
 
 export function FeedPost({ post }: FeedPostProps) {
+  const { isConnected, profile } = useNostr();
   const [zaps, setZaps] = useState(post.zaps);
   const [isZapped, setIsZapped] = useState(false);
   const [zapAmount, setZapAmount] = useState(21);
   const [zapComment, setZapComment] = useState("");
   const [isZapOpen, setIsZapOpen] = useState(false);
+  const [isZapping, setIsZapping] = useState(false);
   const [isReposted, setIsReposted] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
@@ -151,22 +159,44 @@ export function FeedPost({ post }: FeedPostProps) {
     window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, "_blank");
   };
 
-  const handleZap = () => {
-    setZaps(prev => prev + zapAmount);
-    setIsZapped(true);
-    setIsZapOpen(false);
+  const handleZap = async () => {
+    if (!isConnected) {
+      toast.error("Please login to zap posts", {
+        description: "Connect your Nostr account to send zaps"
+      });
+      return;
+    }
     
-    toast("Zap Sent! ⚡", {
-      description: `You sent ${zapAmount} sats to ${post.author.name}`,
-      action: {
-        label: "Undo",
-        onClick: () => setZaps(prev => prev - zapAmount),
-      },
-    });
+    if (!post.author.id) {
+      toast.error("Cannot zap this post", {
+        description: "Post author information is missing"
+      });
+      return;
+    }
     
-    // Reset for next time
-    setZapComment("");
-    setZapAmount(21);
+    setIsZapping(true);
+    
+    try {
+      await zapPost(post.id, post.author.id, zapAmount, zapComment || undefined);
+      
+      setZaps(prev => prev + zapAmount);
+      setIsZapped(true);
+      setIsZapOpen(false);
+      
+      toast.success("Zap Recorded! ⚡", {
+        description: `You sent ${zapAmount} sats to ${post.author.name}`,
+      });
+      
+      setZapComment("");
+      setZapAmount(21);
+    } catch (error: any) {
+      console.error("Zap error:", error);
+      toast.error("Failed to record zap", {
+        description: error.message || "Please try again"
+      });
+    } finally {
+      setIsZapping(false);
+    }
   };
 
   const ZAP_PRESETS = [21, 50, 100, 500, 1000, 5000];
@@ -404,9 +434,11 @@ export function FeedPost({ post }: FeedPostProps) {
                     <Button 
                       type="submit" 
                       onClick={handleZap}
-                      className="bg-love-family hover:bg-[#E65C00] text-white font-bold px-8 w-full sm:w-auto"
+                      disabled={isZapping || !isConnected}
+                      className="bg-love-family hover:bg-[#E65C00] text-white font-bold px-8 w-full sm:w-auto disabled:opacity-50"
+                      data-testid={`button-confirm-zap-${post.id}`}
                     >
-                      Zap {zapAmount} Sats ⚡
+                      {isZapping ? "Zapping..." : `Zap ${zapAmount} Sats ⚡`}
                     </Button>
                   </DialogFooter>
                 </DialogContent>

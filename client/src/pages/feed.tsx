@@ -28,10 +28,12 @@ import { isGroupContent, canSharePublicly, getGroupName, type ShareablePost } fr
 type FeedPost = {
   id: string;
   author: {
+    id?: string;
     name: string;
     handle: string;
     avatar: string;
     pubkey?: string;
+    lud16?: string;
   };
   content: string;
   timestamp: string;
@@ -47,9 +49,11 @@ const MOCK_POSTS: FeedPost[] = [
   {
     id: "1",
     author: {
+      id: "user-alex-luna",
       name: "Alex Luna",
       handle: "@alexluna",
       avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
+      lud16: "alexluna@getalby.com",
     },
     content: "Just completed my 30-day morning routine experiment! The compound effect is real. Sharing my learnings with the community later today.",
     timestamp: "2h ago",
@@ -61,9 +65,11 @@ const MOCK_POSTS: FeedPost[] = [
   {
     id: "2",
     author: {
+      id: "user-jordan-rivera",
       name: "Jordan Rivera",
       handle: "@jordanr",
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
+      lud16: "jordanr@getalby.com",
     },
     content: "Big breakthrough in my Money area today. Finally automated my savings and it feels like a weight lifted off my shoulders. Small wins add up!",
     timestamp: "4h ago",
@@ -75,6 +81,7 @@ const MOCK_POSTS: FeedPost[] = [
   {
     id: "3",
     author: {
+      id: "user-11x-love-lab",
       name: "11x LOVE LaB",
       handle: "@11xlovelab",
       avatar: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100&h=100&fit=crop",
@@ -91,6 +98,7 @@ const MOCK_POSTS: FeedPost[] = [
   {
     id: "5",
     author: {
+      id: "current-user",
       name: "You",
       handle: "@you",
       avatar: "",
@@ -111,6 +119,7 @@ const LEARNING_POSTS: FeedPost[] = [
   {
     id: "4",
     author: {
+      id: "course-11x-foundations",
       name: "11x LOVE Foundations",
       handle: "@course",
       avatar: "",

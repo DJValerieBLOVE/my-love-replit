@@ -190,15 +190,6 @@ export async function likePost(postId: string) {
   return response.json();
 }
 
-export async function zapPost(postId: string, amount: number) {
-  const response = await authFetch(`/api/posts/${postId}/zap`, {
-    method: "POST",
-    body: JSON.stringify({ amount }),
-  });
-  if (!response.ok) throw new Error("Failed to zap post");
-  return response.json();
-}
-
 export async function getAllClubs() {
   const response = await fetch("/api/clubs");
   if (!response.ok) throw new Error("Failed to fetch clubs");
@@ -227,5 +218,28 @@ export async function updateUserStats(updates: any) {
     body: JSON.stringify(updates),
   });
   if (!response.ok) throw new Error("Failed to update user stats");
+  return response.json();
+}
+
+export async function zapPost(postId: string, receiverId: string, amount: number, comment?: string, paymentHash?: string) {
+  const response = await authFetch(`/api/posts/${postId}/zap`, {
+    method: "POST",
+    body: JSON.stringify({ amount, receiverId, comment, paymentHash }),
+  });
+  if (!response.ok) throw new Error("Failed to record zap");
+  return response.json();
+}
+
+export async function getZapHistory(type: 'sent' | 'received' = 'received', limit?: number) {
+  const params = new URLSearchParams({ type });
+  if (limit) params.set('limit', limit.toString());
+  const response = await authFetch(`/api/zaps?${params}`);
+  if (!response.ok) throw new Error("Failed to fetch zap history");
+  return response.json();
+}
+
+export async function getZapStats() {
+  const response = await authFetch("/api/zaps/stats");
+  if (!response.ok) throw new Error("Failed to fetch zap stats");
   return response.json();
 }

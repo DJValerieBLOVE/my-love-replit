@@ -17,6 +17,8 @@ export const users = pgTable("users", {
   nip05: text("nip05"),
   lud16: text("lud16"),
   sats: integer("sats").default(0).notNull(),
+  satsGiven: integer("sats_given").default(0).notNull(),
+  satsReceived: integer("sats_received").default(0).notNull(),
   level: text("level").default("Initiate").notNull(),
   streak: integer("streak").default(0).notNull(),
   walletBalance: integer("wallet_balance").default(0).notNull(),
@@ -255,3 +257,23 @@ export const insertClubSchema = createInsertSchema(clubs).omit({
 
 export type InsertClub = z.infer<typeof insertClubSchema>;
 export type Club = typeof clubs.$inferSelect;
+
+// Zaps (tracking P2P Lightning transactions within community)
+export const zaps = pgTable("zaps", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  senderId: varchar("sender_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  receiverId: varchar("receiver_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  postId: varchar("post_id").references(() => posts.id, { onDelete: "set null" }),
+  amount: integer("amount").notNull(),
+  comment: text("comment"),
+  paymentHash: text("payment_hash"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertZapSchema = createInsertSchema(zaps).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertZap = z.infer<typeof insertZapSchema>;
+export type Zap = typeof zaps.$inferSelect;
