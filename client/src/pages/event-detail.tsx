@@ -47,7 +47,7 @@ export default function EventDetail() {
           {/* Left Column: Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Hero Image */}
-            <div className="relative aspect-video rounded-xl overflow-hidden shadow-md group">
+            <div className="relative aspect-video rounded-xs overflow-hidden shadow-md group">
               <img 
                 src={event.image} 
                 alt={event.title} 
@@ -101,7 +101,7 @@ export default function EventDetail() {
               <h3 className="font-serif font-bold text-xl text-muted-foreground mb-6 flex items-center gap-2">
                 <MessageSquare className="w-5 h-5" /> Discussion
               </h3>
-              <div className="bg-muted/30 rounded-lg p-6 text-center">
+              <div className="bg-muted/30 rounded-xs p-6 text-center">
                 <p className="text-muted-foreground mb-4">Join the event to participate in the discussion.</p>
                 <Button variant="outline">View 12 Comments</Button>
               </div>
@@ -161,7 +161,7 @@ export default function EventDetail() {
                 <div className="pt-4 border-t border-border">
                   {isRsvped ? (
                     <div className="space-y-3">
-                      <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg text-center">
+                      <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-xs text-center">
                         <p className="text-green-600 font-bold flex items-center justify-center gap-2">
                           <CheckCircle2 className="w-5 h-5" /> You're going!
                         </p>

@@ -387,7 +387,7 @@ export default function LabNotes() {
                                     </div>
                                     
                                     {/* Morning Vibe */}
-                                    <div className="bg-white/50 rounded-xl px-3 h-10 border border-border/40 flex justify-between items-center transition-all hover:shadow-sm">
+                                    <div className="bg-white/50 rounded-xs px-3 h-10 border border-border/40 flex justify-between items-center transition-all hover:shadow-sm">
                                         <div className="text-[15px] font-bold text-muted-foreground">Morning Vibe</div>
                                         <div className="w-16 h-8 flex items-center justify-end text-lg font-medium font-serif text-muted-foreground">
                                             {entry.morningVibe || entry.vibe}
@@ -397,7 +397,7 @@ export default function LabNotes() {
                                     {/* Morning Gratitude */}
                                     <div className="space-y-2 flex-1 flex flex-col">
                                         <label className="text-[15px] font-bold text-muted-foreground block pl-3">Morning Gratitude</label>
-                                        <div className="flex-1 bg-white border border-muted/50 rounded-xl overflow-hidden flex flex-col shadow-sm p-3">
+                                        <div className="flex-1 bg-white border border-muted/50 rounded-xs overflow-hidden flex flex-col shadow-sm p-3">
                                             <p className="text-sm font-serif text-muted-foreground italic leading-relaxed whitespace-pre-wrap">
                                                 "{entry.gratitude || "Grateful for this day..."}"
                                             </p>
@@ -482,7 +482,7 @@ export default function LabNotes() {
                                     </div>
 
                                     {/* Evening Vibe */}
-                                    <div className="bg-white/50 rounded-xl px-3 h-10 border border-border/40 flex justify-between items-center transition-all hover:shadow-sm">
+                                    <div className="bg-white/50 rounded-xs px-3 h-10 border border-border/40 flex justify-between items-center transition-all hover:shadow-sm">
                                         <div className="text-[15px] font-bold text-muted-foreground">Evening Vibe</div>
                                         <div className="w-16 h-8 flex items-center justify-end text-lg font-medium font-serif text-muted-foreground">
                                             {entry.eveningVibe || "-"}
@@ -503,7 +503,7 @@ export default function LabNotes() {
                                     {/* Lessons & Blessings */}
                                     <div className="flex-1 flex flex-col space-y-2 pt-2 border-t border-border/20">
                                         <label className="text-[15px] font-bold text-muted-foreground block pl-3">Lessons & Blessings</label>
-                                        <div className="flex-1 w-full min-h-[150px] bg-white border border-muted/50 rounded-xl p-3 shadow-sm">
+                                        <div className="flex-1 w-full min-h-[150px] bg-white border border-muted/50 rounded-xs p-3 shadow-sm">
                                             <p className="text-sm font-serif text-muted-foreground leading-6 whitespace-pre-wrap">
                                                 {entry.content}
                                             </p>
@@ -519,7 +519,7 @@ export default function LabNotes() {
                                         <FlaskConical className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
                                         <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Hypothesis</span>
                                     </div>
-                                    <div className="flex-1 bg-white border border-muted/50 rounded-xl p-3 shadow-sm">
+                                    <div className="flex-1 bg-white border border-muted/50 rounded-xs p-3 shadow-sm">
                                         <p className="text-sm font-serif text-muted-foreground italic leading-relaxed whitespace-pre-wrap">
                                             "{entry.hypothesis}"
                                         </p>
@@ -531,7 +531,7 @@ export default function LabNotes() {
                                         <Eye className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
                                         <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Observation</span>
                                     </div>
-                                    <div className="flex-1 bg-white border border-muted/50 rounded-xl p-3 shadow-sm">
+                                    <div className="flex-1 bg-white border border-muted/50 rounded-xs p-3 shadow-sm">
                                         <p className="text-sm font-serif text-muted-foreground italic leading-relaxed whitespace-pre-wrap">
                                             "{entry.observation}"
                                         </p>
@@ -543,7 +543,7 @@ export default function LabNotes() {
                                         <CheckCircle className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
                                         <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Conclusion</span>
                                     </div>
-                                    <div className="flex-1 bg-white border border-muted/50 rounded-xl p-3 shadow-sm">
+                                    <div className="flex-1 bg-white border border-muted/50 rounded-xs p-3 shadow-sm">
                                         <p className="text-sm font-serif text-muted-foreground italic leading-relaxed whitespace-pre-wrap">
                                             "{entry.conclusion}"
                                         </p>
@@ -558,7 +558,7 @@ export default function LabNotes() {
                                         <Lightbulb className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
                                         <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Aha! Moment</span>
                                     </div>
-                                    <div className="flex-1 bg-white border border-muted/50 rounded-xl p-3 shadow-sm">
+                                    <div className="flex-1 bg-white border border-muted/50 rounded-xs p-3 shadow-sm">
                                         <p className="text-sm font-serif text-muted-foreground italic leading-relaxed whitespace-pre-wrap">
                                             "{entry.ahaMoment}"
                                         </p>
@@ -570,7 +570,7 @@ export default function LabNotes() {
                                         <BookOpen className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
                                         <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Context</span>
                                     </div>
-                                    <div className="flex-1 bg-white border border-muted/50 rounded-xl p-3 shadow-sm">
+                                    <div className="flex-1 bg-white border border-muted/50 rounded-xs p-3 shadow-sm">
                                         <p className="text-sm font-serif text-muted-foreground italic leading-relaxed whitespace-pre-wrap">
                                             "{entry.context}"
                                         </p>
@@ -582,7 +582,7 @@ export default function LabNotes() {
                                         <Play className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
                                         <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Action Item</span>
                                     </div>
-                                    <div className="flex-1 bg-white border border-muted/50 rounded-xl p-3 shadow-sm">
+                                    <div className="flex-1 bg-white border border-muted/50 rounded-xs p-3 shadow-sm">
                                         <p className="text-sm font-serif text-muted-foreground italic leading-relaxed whitespace-pre-wrap">
                                             "{entry.actionItem}"
                                         </p>

@@ -166,7 +166,7 @@ function FeedSidebar() {
         </div>
         <div className="space-y-3">
           {LIVE_NOW.map((event) => (
-            <div key={event.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-[#F0E6FF] transition-colors cursor-pointer" data-testid={`live-event-${event.id}`}>
+            <div key={event.id} className="flex items-center gap-3 p-2 rounded-xs hover:bg-[#F0E6FF] transition-colors cursor-pointer" data-testid={`live-event-${event.id}`}>
               <Avatar className="w-10 h-10">
                 <AvatarImage src={event.avatar} />
                 <AvatarFallback>{event.host.slice(0, 2).toUpperCase()}</AvatarFallback>
@@ -191,7 +191,7 @@ function FeedSidebar() {
         </div>
         <div className="space-y-2">
           {UPCOMING_EVENTS.map((event) => (
-            <div key={event.id} className="p-2 rounded-lg hover:bg-[#F0E6FF] transition-colors cursor-pointer" data-testid={`upcoming-event-${event.id}`}>
+            <div key={event.id} className="p-2 rounded-xs hover:bg-[#F0E6FF] transition-colors cursor-pointer" data-testid={`upcoming-event-${event.id}`}>
               <p className="text-sm font-medium">{event.title}</p>
               <p className="text-xs text-muted-foreground">{event.date}</p>
             </div>

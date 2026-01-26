@@ -82,7 +82,7 @@ export default function Leaderboard() {
                 <div
                   key={user.id}
                   className={cn(
-                    "bg-gradient-to-r p-4 rounded-lg border transition-all group cursor-pointer hover:shadow-lg",
+                    "bg-gradient-to-r p-4 rounded-xs border transition-all group cursor-pointer hover:shadow-lg",
                     isCurrent
                       ? `${getMedalColor(rank)} border-purple-400/40 shadow-md`
                       : `${getMedalColor(rank)} border-white/10`

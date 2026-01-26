@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
+import { Pin } from "lucide-react";
 
 interface FlipCardProps {
   title: string;
@@ -10,11 +11,13 @@ interface FlipCardProps {
   progress: number;
   onClick: () => void;
   testId: string;
+  isFlipped: boolean;
+  isPinned: boolean;
+  onFlip: () => void;
+  onPin: () => void;
 }
 
-function FlipCard({ title, position, imageUrl, quote, progress, onClick, testId }: FlipCardProps) {
-  const [isFlipped, setIsFlipped] = useState(false);
-  
+function FlipCard({ title, position, imageUrl, quote, progress, onClick, testId, isFlipped, isPinned, onFlip, onPin }: FlipCardProps) {
   const labelPositions = {
     "top-left": "top-3 left-3 md:top-4 md:left-4",
     "top-right": "top-3 right-3 md:top-4 md:right-4",
@@ -36,7 +39,7 @@ function FlipCard({ title, position, imageUrl, quote, progress, onClick, testId 
         animate={{ rotateY: isFlipped ? 180 : 0 }}
         transition={{ duration: 0.6, ease: "easeInOut" }}
         style={{ transformStyle: "preserve-3d" }}
-        onClick={() => setIsFlipped(!isFlipped)}
+        onClick={onFlip}
       >
         {/* Front - Beautiful Photo */}
         <div 
@@ -61,31 +64,47 @@ function FlipCard({ title, position, imageUrl, quote, progress, onClick, testId 
           </div>
         </div>
 
-        {/* Back - Quote + Stats */}
+        {/* Back - Quote + Stats (Light background) */}
         <div 
           className="absolute inset-0 flex flex-col items-center justify-center p-4 rounded-xs overflow-hidden"
           style={{ 
             backfaceVisibility: "hidden",
             transform: "rotateY(180deg)",
-            background: "linear-gradient(135deg, #6600ff 0%, #cc00ff 100%)",
+            background: "#FAF8F5",
           }}
         >
-          <h3 className="text-white text-lg md:text-xl font-semibold mb-2 md:mb-4">{title}</h3>
+          {/* Pin button */}
+          <button
+            className={`absolute top-2 right-2 p-1.5 rounded-full transition-colors z-10 ${
+              isPinned 
+                ? "bg-[#6600ff] text-white" 
+                : "bg-muted/50 text-muted-foreground hover:bg-muted"
+            }`}
+            onClick={(e) => {
+              e.stopPropagation();
+              onPin();
+            }}
+            data-testid={`${testId}-pin-btn`}
+            title={isPinned ? "Unpin card" : "Pin card open"}
+          >
+            <Pin className="w-3 h-3 md:w-4 md:h-4" />
+          </button>
+
+          <h3 className="text-foreground text-lg md:text-xl font-semibold mb-2 md:mb-4">{title}</h3>
           <p 
-            className="text-white/90 text-xs md:text-sm text-center italic mb-3 md:mb-4 px-2"
-            style={{ textShadow: "0 1px 3px rgba(0,0,0,0.3)" }}
+            className="text-muted-foreground text-xs md:text-sm text-center italic mb-3 md:mb-4 px-2"
           >
             "{quote}"
           </p>
-          <div className="w-3/4 bg-white/20 rounded-full h-2 md:h-3 mb-2">
+          <div className="w-3/4 bg-muted rounded-full h-2 md:h-3 mb-2">
             <div 
-              className="bg-white rounded-full h-full transition-all duration-500"
+              className="bg-gradient-to-r from-[#6600ff] to-[#cc00ff] rounded-full h-full transition-all duration-500"
               style={{ width: `${progress}%` }}
             />
           </div>
-          <span className="text-white text-xs md:text-sm">{progress}% Progress</span>
+          <span className="text-foreground text-xs md:text-sm font-medium">{progress}% Progress</span>
           <button
-            className="mt-3 md:mt-4 px-3 md:px-4 py-1.5 md:py-2 bg-white/20 hover:bg-white/30 rounded-lg text-white text-xs md:text-sm transition-colors"
+            className="mt-3 md:mt-4 px-3 md:px-4 py-1.5 md:py-2 bg-gradient-to-r from-[#6600ff] to-[#cc00ff] hover:from-[#5500dd] hover:to-[#bb00dd] rounded-xs text-white text-xs md:text-sm transition-colors shadow-sm"
             onClick={(e) => {
               e.stopPropagation();
               onClick();
@@ -105,17 +124,16 @@ interface GlowingHeartProps {
   isFlipped: boolean;
   onClick: () => void;
   frontImageUrl: string;
-  backImageUrl: string;
   affirmation: string;
 }
 
-function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, affirmation }: GlowingHeartProps) {
+function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, affirmation }: GlowingHeartProps) {
   return (
     <div 
       className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer"
       style={{ 
-        width: "min(57.8vw, 57.8vh, 433.5px)", // 15% smaller than original 68vw/vh (0.85 * 68 = 57.8)
-        height: "min(54.4vw, 54.4vh, 396.95px)" // 15% smaller than original 64vw/vh (0.85 * 64 = 54.4)
+        width: "min(57.8vw, 57.8vh, 433.5px)",
+        height: "min(54.4vw, 54.4vh, 396.95px)"
       }}
       onClick={onClick}
       data-testid="heart-god-card"
@@ -177,7 +195,7 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
           </svg>
         </motion.div>
 
-        {/* Back - Image + Affirmation + Outline */}
+        {/* Back - Light background with affirmation */}
         <motion.div 
           className="absolute inset-0"
           style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
@@ -188,49 +206,51 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
                 <path d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z" />
               </clipPath>
               <filter id="heartShadowBack" x="-30%" y="-30%" width="160%" height="160%">
-                <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="rgba(0,0,0,0.5)" />
+                <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="rgba(0,0,0,0.3)" />
               </filter>
             </defs>
             <path
               d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z"
-              fill="#EBE9E6"
+              fill="#FAF8F5"
               stroke="#EBE9E6"
               strokeWidth="3"
               filter="url(#heartShadowBack)"
             />
             <g clipPath="url(#heartClip)">
-              <image
-                href={backImageUrl}
-                x="-10"
-                y="-10"
-                width="120"
-                height="110"
-                preserveAspectRatio="xMidYMid slice"
-              />
-              <rect x="0" y="0" width="100" height="90" fill="rgba(102, 0, 255, 0.15)" />
+              <rect x="0" y="0" width="100" height="90" fill="#FAF8F5" />
             </g>
             <text
               x="50"
-              y="42"
+              y="35"
               textAnchor="middle"
-              fill="white"
-              fontSize="8"
+              fill="#6600ff"
+              fontSize="7"
               fontFamily="Marcellus, Georgia, serif"
-              style={{ textShadow: "0 1px 3px rgba(0,0,0,0.7)" }}
+              fontWeight="400"
             >
               Today's Affirmation
             </text>
             <text
               x="50"
-              y="55"
+              y="48"
               textAnchor="middle"
-              fill="white"
-              fontSize="9"
+              fill="#333333"
+              fontSize="10"
               fontFamily="Marcellus, Georgia, serif"
               fontWeight="400"
-              style={{ textShadow: "0 2px 4px rgba(0,0,0,0.7)" }}
             >
               {affirmation}
+            </text>
+            <text
+              x="50"
+              y="65"
+              textAnchor="middle"
+              fill="#6600ff"
+              fontSize="6"
+              fontFamily="system-ui, sans-serif"
+              fontWeight="500"
+            >
+              ▶ Daily Practice
             </text>
           </svg>
         </motion.div>
@@ -241,8 +261,46 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
 
 export function HeartDashboard() {
   const [, setLocation] = useLocation();
-  const [heartFlipped, setHeartFlipped] = useState(false);
+  const [flippedCard, setFlippedCard] = useState<string | null>(null);
+  const [pinnedCards, setPinnedCards] = useState<Set<string>>(new Set());
   const [godLabel] = useState("God");
+
+  const handleFlip = (cardId: string) => {
+    if (pinnedCards.has(cardId)) {
+      return;
+    }
+    
+    if (flippedCard === cardId) {
+      setFlippedCard(null);
+    } else {
+      const currentFlipped = flippedCard;
+      if (currentFlipped && !pinnedCards.has(currentFlipped)) {
+        setFlippedCard(cardId);
+      } else {
+        setFlippedCard(cardId);
+      }
+    }
+  };
+
+  const handlePin = (cardId: string) => {
+    setPinnedCards(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(cardId)) {
+        newSet.delete(cardId);
+      } else {
+        newSet.add(cardId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleHeartFlip = () => {
+    if (flippedCard === "god") {
+      setFlippedCard(null);
+    } else {
+      setFlippedCard("god");
+    }
+  };
 
   const pillars = [
     {
@@ -267,9 +325,8 @@ export function HeartDashboard() {
     },
     {
       id: "tribe",
-      title: "bottom-left" as const,
+      title: "Tribe",
       position: "bottom-left" as const,
-      title_display: "Tribe",
       imageUrl: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&h=600&fit=crop",
       link: "/big-dreams?area=tribe",
       testId: "card-tribe",
@@ -278,9 +335,8 @@ export function HeartDashboard() {
     },
     {
       id: "wealth",
-      title: "bottom-right" as const,
+      title: "Wealth",
       position: "bottom-right" as const,
-      title_display: "Wealth",
       imageUrl: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=800&h=600&fit=crop",
       link: "/big-dreams?area=wealth",
       testId: "card-wealth",
@@ -298,13 +354,17 @@ export function HeartDashboard() {
         {pillars.map((pillar) => (
           <FlipCard
             key={pillar.id}
-            title={pillar.title_display || pillar.title}
+            title={pillar.title}
             position={pillar.position}
             imageUrl={pillar.imageUrl}
             quote={pillar.quote}
             progress={pillar.progress}
             onClick={() => setLocation(pillar.link)}
             testId={pillar.testId}
+            isFlipped={flippedCard === pillar.id || pinnedCards.has(pillar.id)}
+            isPinned={pinnedCards.has(pillar.id)}
+            onFlip={() => handleFlip(pillar.id)}
+            onPin={() => handlePin(pillar.id)}
           />
         ))}
       </div>
@@ -312,10 +372,9 @@ export function HeartDashboard() {
       {/* Giant Heart - Also Flips */}
       <GlowingHeart
         label={godLabel}
-        isFlipped={heartFlipped}
-        onClick={() => setHeartFlipped(!heartFlipped)}
+        isFlipped={flippedCard === "god"}
+        onClick={handleHeartFlip}
         frontImageUrl="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&h=800&fit=crop"
-        backImageUrl="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
         affirmation="You are LOVED"
       />
     </div>

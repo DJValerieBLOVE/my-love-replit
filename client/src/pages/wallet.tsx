@@ -104,7 +104,7 @@ export default function Wallet() {
                 </Button>
               </div>
             ) : (
-              <div className="flex items-center justify-between bg-green-500/10 border border-green-500/20 rounded-lg p-4">
+              <div className="flex items-center justify-between bg-green-500/10 border border-green-500/20 rounded-xs p-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
                     <Check className="w-6 h-6 text-green-600" />

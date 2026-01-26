@@ -302,7 +302,7 @@ export default function ExperimentDetail() {
           </div>
 
           {/* Video Player / Hero */}
-          <div className="relative rounded-xl overflow-hidden aspect-video bg-black mb-8 shadow-lg ring-1 ring-border/50 group">
+          <div className="relative rounded-xs overflow-hidden aspect-video bg-black mb-8 shadow-lg ring-1 ring-border/50 group">
              <img 
               src={experiment.image} 
               alt={experiment.title}
@@ -324,7 +324,7 @@ export default function ExperimentDetail() {
              const currentDiscovery = discoveries.find(d => !d.completed && !d.locked);
              if (currentDiscovery) {
                 return (
-                   <div className="mb-12 p-6 bg-card border border-border rounded-xl shadow-sm transition-all">
+                   <div className="mb-12 p-6 bg-card border border-border rounded-xs shadow-sm transition-all">
                       {!showQuiz ? (
                          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                             <div>
@@ -500,7 +500,7 @@ export default function ExperimentDetail() {
           </DialogHeader>
           
           <div className="py-6 space-y-6">
-             <div className="p-4 bg-yellow-500/10 rounded-xl border border-yellow-500/20">
+             <div className="p-4 bg-yellow-500/10 rounded-xs border border-yellow-500/20">
                 <p className="text-sm text-muted-foreground uppercase font-bold tracking-widest mb-1">Total Earned</p>
                 <p className="text-4xl font-bold text-yellow-600 dark:text-yellow-400 flex items-center justify-center gap-2">
                    <Zap className="w-8 h-8 fill-current" />
