@@ -18,13 +18,13 @@ function FlipCard({ title, position, imageUrl, quote, progress, onClick, testId 
   const labelPositions = {
     "top-left": "top-3 left-3 md:top-4 md:left-4",
     "top-right": "top-3 right-3 md:top-4 md:right-4",
-    "bottom-left": "bottom-3 left-3 md:bottom-4 md:left-4",
-    "bottom-right": "bottom-3 right-3 md:bottom-4 md:right-4",
+    "bottom-left": "top-3 left-3 md:top-4 md:left-4", // Tribe moved to top-left
+    "bottom-right": "top-3 right-3 md:top-4 md:right-4", // Wealth moved to top-right
   };
 
   return (
     <div 
-      className="relative cursor-pointer overflow-hidden rounded-xl h-full w-full"
+      className="relative cursor-pointer overflow-hidden rounded-md h-full w-full"
       style={{ perspective: "1000px" }}
       data-testid={testId}
     >
@@ -37,7 +37,7 @@ function FlipCard({ title, position, imageUrl, quote, progress, onClick, testId 
       >
         {/* Front - Beautiful Photo */}
         <div 
-          className="absolute inset-0 rounded-xl overflow-hidden"
+          className="absolute inset-0 rounded-md overflow-hidden"
           style={{ 
             backfaceVisibility: "hidden",
             backgroundImage: `url(${imageUrl})`,
@@ -60,7 +60,7 @@ function FlipCard({ title, position, imageUrl, quote, progress, onClick, testId 
 
         {/* Back - Quote + Stats */}
         <div 
-          className="absolute inset-0 flex flex-col items-center justify-center p-4 rounded-xl overflow-hidden"
+          className="absolute inset-0 flex flex-col items-center justify-center p-4 rounded-md overflow-hidden"
           style={{ 
             backfaceVisibility: "hidden",
             transform: "rotateY(180deg)",
@@ -101,17 +101,18 @@ interface GlowingHeartProps {
   label: string;
   isFlipped: boolean;
   onClick: () => void;
+  frontImageUrl: string;
   backImageUrl: string;
   affirmation: string;
 }
 
-function GlowingHeart({ label, isFlipped, onClick, backImageUrl, affirmation }: GlowingHeartProps) {
+function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, affirmation }: GlowingHeartProps) {
   return (
     <div 
       className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer"
       style={{ 
-        width: "min(65vw, 65vh, 400px)", 
-        height: "min(60vw, 60vh, 360px)" 
+        width: "min(65vw, 65vh, 450px)", 
+        height: "min(60vw, 60vh, 410px)" 
       }}
       onClick={onClick}
       data-testid="heart-god-card"
@@ -122,45 +123,44 @@ function GlowingHeart({ label, isFlipped, onClick, backImageUrl, affirmation }: 
         transition={{ duration: 0.6, ease: "easeInOut" }}
         style={{ transformStyle: "preserve-3d" }}
       >
-        {/* Front - Solid Heart with Label */}
+        {/* Front - Heart with Image and Label */}
         <motion.div 
           className="absolute inset-0"
           style={{ backfaceVisibility: "hidden" }}
         >
           <svg viewBox="0 0 100 90" className="w-full h-full">
             <defs>
-              <linearGradient id="heartGradientMain" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#eb00a8" />
-                <stop offset="50%" stopColor="#cc00ff" />
-                <stop offset="100%" stopColor="#9900ff" />
-              </linearGradient>
-              <linearGradient id="heartShine" x1="0%" y1="0%" x2="50%" y2="50%">
-                <stop offset="0%" stopColor="rgba(255,255,255,0.4)" />
-                <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+              <clipPath id="heartClipFront">
+                <path d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z" />
+              </clipPath>
+              <linearGradient id="heartOverlayFront" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="rgba(235, 0, 168, 0.4)" />
+                <stop offset="100%" stopColor="rgba(153, 0, 255, 0.4)" />
               </linearGradient>
               <filter id="heartShadow" x="-50%" y="-50%" width="200%" height="200%">
                 <feDropShadow dx="0" dy="4" stdDeviation="4" floodColor="rgba(0,0,0,0.3)" />
               </filter>
             </defs>
-            <path
-              d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z"
-              fill="url(#heartGradientMain)"
-              filter="url(#heartShadow)"
-            />
-            <path
-              d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z"
-              fill="url(#heartShine)"
-              style={{ mixBlendMode: "overlay" }}
-            />
+            <g clipPath="url(#heartClipFront)" filter="url(#heartShadow)">
+              <image
+                href={frontImageUrl}
+                x="-10"
+                y="-10"
+                width="120"
+                height="110"
+                preserveAspectRatio="xMidYMid slice"
+              />
+              <rect x="0" y="0" width="100" height="90" fill="url(#heartOverlayFront)" />
+            </g>
             <text
               x="50"
               y="50"
               textAnchor="middle"
               fill="white"
-              fontSize="20"
+              fontSize="18"
               fontFamily="Marcellus, Georgia, serif"
               fontWeight="400"
-              style={{ textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}
+              style={{ textShadow: "0 2px 8px rgba(0,0,0,0.8)" }}
             >
               {label}
             </text>
@@ -251,8 +251,9 @@ export function HeartDashboard() {
     },
     {
       id: "tribe",
-      title: "Tribe",
+      title: "bottom-left" as const, // Internal ID is bottom-left
       position: "bottom-left" as const,
+      title_display: "Tribe",
       imageUrl: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&h=600&fit=crop",
       link: "/big-dreams?area=tribe",
       testId: "card-tribe",
@@ -261,8 +262,9 @@ export function HeartDashboard() {
     },
     {
       id: "wealth",
-      title: "Wealth",
+      title: "bottom-right" as const, // Internal ID is bottom-right
       position: "bottom-right" as const,
+      title_display: "Wealth",
       imageUrl: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=800&h=600&fit=crop",
       link: "/big-dreams?area=wealth",
       testId: "card-wealth",
@@ -280,7 +282,7 @@ export function HeartDashboard() {
         {pillars.map((pillar) => (
           <FlipCard
             key={pillar.id}
-            title={pillar.title}
+            title={pillar.title_display || pillar.title}
             position={pillar.position}
             imageUrl={pillar.imageUrl}
             quote={pillar.quote}
@@ -296,6 +298,7 @@ export function HeartDashboard() {
         label={godLabel}
         isFlipped={heartFlipped}
         onClick={() => setHeartFlipped(!heartFlipped)}
+        frontImageUrl="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&h=800&fit=crop"
         backImageUrl="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"
         affirmation="You are LOVED"
       />
