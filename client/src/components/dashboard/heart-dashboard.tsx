@@ -114,8 +114,8 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
     <div 
       className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer"
       style={{ 
-        width: "min(95vw, 95vh, 750px)", 
-        height: "min(90vw, 90vh, 680px)" 
+        width: "min(80vw, 80vh, 600px)", 
+        height: "min(75vw, 75vh, 550px)" 
       }}
       onClick={onClick}
       data-testid="heart-god-card"
@@ -131,7 +131,7 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
           className="absolute inset-0"
           style={{ backfaceVisibility: "hidden" }}
         >
-          <svg viewBox="-10 -10 120 110" className="w-full h-full overflow-visible">
+          <svg viewBox="-5 -5 110 100" className="w-full h-full overflow-visible">
             <defs>
               <clipPath id="heartClipFront">
                 <path d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z" />
@@ -140,12 +140,12 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
                 <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="rgba(0,0,0,0.5)" />
               </filter>
             </defs>
-            {/* Outline - using background color #FAFAFA and 4px width */}
+            {/* Outline - using background color #FAFAFA and 2px width */}
             <path
               d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z"
               fill="#FAFAFA"
               stroke="#FAFAFA"
-              strokeWidth="4"
+              strokeWidth="2"
               filter="url(#heartShadow)"
             />
             <g clipPath="url(#heartClipFront)">
@@ -161,7 +161,7 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
             </g>
             <text
               x="50"
-              y="50"
+              y="55"
               textAnchor="middle"
               fill="white"
               fontSize="20"
@@ -181,7 +181,7 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
           className="absolute inset-0"
           style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
         >
-          <svg viewBox="-10 -10 120 110" className="w-full h-full overflow-visible">
+          <svg viewBox="-5 -5 110 100" className="w-full h-full overflow-visible">
             <defs>
               <clipPath id="heartClip">
                 <path d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z" />
@@ -194,7 +194,7 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
               d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z"
               fill="#FAFAFA"
               stroke="#FAFAFA"
-              strokeWidth="4"
+              strokeWidth="2"
               filter="url(#heartShadowBack)"
             />
             <g clipPath="url(#heartClip)">
