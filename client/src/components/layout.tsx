@@ -2,13 +2,10 @@ import { Link, useLocation } from "wouter";
 import { 
   Home, 
   Users,
-  Bell,
   Calendar,
   Target,
   Sparkles,
   Heart,
-  Mail,
-  Flame,
   Rss,
   LogOut,
   Zap,
@@ -23,7 +20,6 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { CURRENT_USER } from "@/lib/mock-data";
 import BitcoinIcon from "../assets/bitcoin_icon.png";
-import MagicMentor from "@assets/djvalerieblove_twirling_bitcoin_goddess_colorful_vivid_psyche_4e0fb7f6-b95b-488f-9d18-eb77e7dd0a60_1_1764334332945.png";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeCustomizer } from "@/components/theme-customizer";
 import { useState } from "react";
@@ -45,17 +41,15 @@ import { VerticalEqVisualizer } from "@/components/vertical-eq-visualizer";
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [isAiOpen, setIsAiOpen] = useState(false);
-  const [inboxOpen, setInboxOpen] = useState(false);
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const { isConnected, profile, disconnect, isAdmin, isLoading } = useNostr();
 
   const desktopNavLinks = [
     { icon: Home, label: "Home", href: "/" },
-    { icon: Target, label: "Big Dreams", href: "/big-dreams" },
-    { icon: GraduationCap, label: "Grow", href: "/learning" },
-    { icon: Calendar, label: "Events", href: "/events" },
-    { icon: Users, label: "Tribe", href: "/community" },
+    { icon: Target, label: "Big Dreams", href: "/big-dreams", hasNotification: true },
+    { icon: GraduationCap, label: "Grow", href: "/learning", hasNotification: true },
+    { icon: Calendar, label: "Events", href: "/events", hasNotification: true },
+    { icon: Users, label: "Tribe", href: "/community", hasNotification: true },
     { icon: Wrench, label: "Toolbox", href: "/resources" },
     { icon: Heart, label: "Love Board", href: "/leaderboard" },
     { icon: Rss, label: "Feed", href: "/feed" },
@@ -63,9 +57,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const mobileNavLinks = [
     { icon: Home, label: "Home", href: "/" },
-    { icon: GraduationCap, label: "Grow", href: "/learning" },
-    { icon: Calendar, label: "Events", href: "/events" },
-    { icon: Users, label: "Tribe", href: "/community" },
+    { icon: GraduationCap, label: "Grow", href: "/learning", hasNotification: true },
+    { icon: Calendar, label: "Events", href: "/events", hasNotification: true },
+    { icon: Users, label: "Tribe", href: "/community", hasNotification: true },
     { icon: Wrench, label: "Toolbox", href: "/resources" },
     { icon: Rss, label: "Feed", href: "/feed" },
   ];
@@ -110,7 +104,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
 
-          {/* RIGHT: Bell, Mail, Avatar (mobile & desktop) */}
+          {/* RIGHT: Sats + Avatar */}
           <div className="flex items-center gap-1 md:gap-4">
             {/* Desktop: Sats display */}
             <Link href="/wallet" className="hidden md:block">
@@ -129,116 +123,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </div>
               </div>
             </Link>
-
-            {/* Inbox - visible on both mobile and desktop */}
-            <div 
-                className="relative"
-                onMouseEnter={() => setInboxOpen(true)}
-                onMouseLeave={() => setInboxOpen(false)}
-            >
-            <DropdownMenu open={inboxOpen} onOpenChange={setInboxOpen} modal={false}>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className={cn(
-                    "rounded-full relative transition-colors border-none outline-none ring-0 focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:outline-none data-[state=open]:bg-[#F0E6FF] data-[state=open]:text-love-body w-8 h-8 md:w-10 md:h-10",
-                    inboxOpen ? "bg-[#F0E6FF] text-love-body" : "text-muted-foreground hover:bg-[#F0E6FF] hover:text-love-body"
-                )} data-testid="button-inbox">
-                  <Mail className="w-4 h-4 md:w-5 md:h-5" />
-                  <span className="absolute top-0.5 right-0.5 md:top-1 md:right-1 w-1.5 h-1.5 md:w-2 md:h-2 bg-red-500 rounded-full animate-pulse" data-testid="notification-dot-inbox"></span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80" onMouseEnter={() => setInboxOpen(true)} onMouseLeave={() => setInboxOpen(false)}>
-                <DropdownMenuLabel>Messages</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <div className="max-h-[300px] overflow-y-auto">
-                   {/* Mock Messages */}
-                   <DropdownMenuItem className="cursor-pointer items-start gap-3 p-3 focus:bg-love-body/5 focus:text-love-body focus:shadow-sm focus:translate-x-1 transition-all duration-300">
-                      <Avatar className="w-8 h-8 mt-0.5">
-                        <AvatarImage src={MagicMentor} />
-                        <AvatarFallback>MM</AvatarFallback>
-                      </Avatar>
-                      <div className="flex flex-col gap-1">
-                        <div className="flex justify-between items-center w-full">
-                            <span className="font-bold text-sm">Magic Mentor</span>
-                            <span className="text-[10px] text-muted-foreground">2m ago</span>
-                        </div>
-                        <p className="text-xs text-muted-foreground line-clamp-2 leading-snug">Keep up the great work! Your consistency is inspiring. Remember to take a moment for yourself today.</p>
-                      </div>
-                   </DropdownMenuItem>
-                   <DropdownMenuItem className="cursor-pointer items-start gap-3 p-3 focus:bg-love-body/5 focus:text-love-body focus:shadow-sm focus:translate-x-1 transition-all duration-300">
-                      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground font-bold text-xs mt-0.5 shrink-0">SJ</div>
-                      <div className="flex flex-col gap-1">
-                         <div className="flex justify-between items-center w-full">
-                            <span className="font-bold text-sm">Sarah J.</span>
-                            <span className="text-[10px] text-muted-foreground">1h ago</span>
-                        </div>
-                        <p className="text-xs text-muted-foreground line-clamp-2 leading-snug">Are you going to the Full Moon event? I was thinking we could carpool.</p>
-                      </div>
-                   </DropdownMenuItem>
-                </div>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="justify-center text-primary font-medium cursor-pointer focus:bg-primary/5 focus:text-primary">
-                  View All Messages
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            </div>
-
-            {/* Notifications - smaller on mobile */}
-            <div 
-                className="relative"
-                onMouseEnter={() => setNotificationsOpen(true)}
-                onMouseLeave={() => setNotificationsOpen(false)}
-            >
-            <DropdownMenu open={notificationsOpen} onOpenChange={setNotificationsOpen} modal={false}>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className={cn(
-                    "rounded-full relative transition-colors border-none outline-none ring-0 focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:outline-none data-[state=open]:bg-[#F0E6FF] data-[state=open]:text-love-body w-8 h-8 md:w-10 md:h-10",
-                    notificationsOpen ? "bg-[#F0E6FF] text-love-body" : "text-muted-foreground hover:bg-[#F0E6FF] hover:text-love-body"
-                )} data-testid="button-notifications">
-                  <Bell className="w-4 h-4 md:w-5 md:h-5" />
-                  <span className="absolute top-0.5 right-0.5 md:top-1 md:right-1 w-1.5 h-1.5 md:w-2 md:h-2 bg-red-500 rounded-full animate-pulse" data-testid="notification-dot-bell"></span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80" onMouseEnter={() => setNotificationsOpen(true)} onMouseLeave={() => setNotificationsOpen(false)}>
-                <DropdownMenuLabel>Notifications</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <div className="max-h-[300px] overflow-y-auto">
-                   {/* Mock Notifications */}
-                   <DropdownMenuItem className="cursor-pointer gap-3 p-3 focus:bg-love-body/5 focus:text-love-body focus:shadow-sm focus:translate-x-1 transition-all duration-300">
-                      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground mt-0.5 shrink-0">
-                        <Flame className="w-4 h-4" />
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <p className="text-xs leading-snug"><span className="font-bold">Streak Saved!</span> You completed your practice just in time.</p>
-                        <span className="text-[10px] text-muted-foreground">Just now</span>
-                      </div>
-                   </DropdownMenuItem>
-                   <DropdownMenuItem className="cursor-pointer gap-3 p-3 focus:bg-love-body/5 focus:text-love-body focus:shadow-sm focus:translate-x-1 transition-all duration-300">
-                      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground mt-0.5 shrink-0">
-                        <Heart className="w-4 h-4" />
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <p className="text-xs leading-snug"><span className="font-bold">Alex Luna</span> liked your discovery note.</p>
-                        <span className="text-[10px] text-muted-foreground">2h ago</span>
-                      </div>
-                   </DropdownMenuItem>
-                   <DropdownMenuItem className="cursor-pointer gap-3 p-3 focus:bg-love-body/5 focus:text-love-body focus:shadow-sm focus:translate-x-1 transition-all duration-300">
-                      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground mt-0.5 shrink-0">
-                        <Target className="w-4 h-4" />
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <p className="text-xs leading-snug"><span className="font-bold">Goal Met</span> You hit 80% on Finance Sovereignty!</p>
-                        <span className="text-[10px] text-muted-foreground">5h ago</span>
-                      </div>
-                   </DropdownMenuItem>
-                </div>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="justify-center text-primary font-medium cursor-pointer focus:bg-primary/5 focus:text-primary">
-                  View All Notifications
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            </div>
 
             {isLoading ? (
               <div className="h-8 w-8 md:h-9 md:w-9 rounded-full bg-muted animate-pulse" />
@@ -321,12 +205,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             return (
               <Link key={item.href} href={item.href}>
                 <div className={cn(
-                  "flex items-center gap-3 px-4 py-1.5 rounded-lg transition-all duration-300 cursor-pointer group font-serif sidebar-menu text-base",
+                  "flex items-center gap-3 px-4 py-1.5 rounded-lg transition-all duration-300 cursor-pointer group font-serif sidebar-menu text-base relative",
                   isActive 
                     ? "bg-love-body/10 text-love-body shadow-md shadow-love-body/10 border border-love-body/10" 
                     : "text-muted-foreground hover:bg-love-body/5 hover:text-love-body hover:shadow-sm hover:translate-x-1"
                 )}>
-                  <item.icon strokeWidth={1.5} className={cn("w-5 h-5 transition-transform group-hover:scale-110", isActive && "opacity-100")} />
+                  <div className="relative">
+                    <item.icon strokeWidth={1.5} className={cn("w-5 h-5 transition-transform group-hover:scale-110", isActive && "opacity-100")} />
+                    {item.hasNotification && (
+                      <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" data-testid={`notification-dot-${item.label.toLowerCase().replace(/\s+/g, '-')}`} />
+                    )}
+                  </div>
                   <span>{item.label}</span>
                 </div>
               </Link>
@@ -349,7 +238,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <Link key={item.href} href={item.href}>
               <div 
                 className={cn(
-                  "flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-200 cursor-pointer",
+                  "flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-200 cursor-pointer relative",
                   isActive 
                     ? "bg-love-body/15 text-love-body" 
                     : "text-muted-foreground active:bg-muted/50"
@@ -357,6 +246,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 data-testid={`nav-mobile-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
               >
                 <item.icon className={cn("w-6 h-6", isActive && "stroke-[2.5]")} strokeWidth={1.5} />
+                {item.hasNotification && (
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" data-testid={`notification-dot-mobile-${item.label.toLowerCase().replace(/\s+/g, '-')}`} />
+                )}
               </div>
             </Link>
           );
