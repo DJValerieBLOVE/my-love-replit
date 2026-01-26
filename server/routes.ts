@@ -13,6 +13,7 @@ import {
   insertEventSchema,
   insertPostSchema,
   insertClubSchema,
+  updateEmailSchema,
 } from "@shared/schema";
 
 export async function registerRoutes(
@@ -57,6 +58,48 @@ export async function registerRoutes(
       res.json(userWithoutPassword);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch user" });
+    }
+  });
+
+  // Update user email (required for trial access)
+  app.post("/api/auth/email", authMiddleware, async (req, res) => {
+    try {
+      const result = updateEmailSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ error: result.error.errors[0]?.message || "Invalid email" });
+      }
+      
+      const { email } = result.data;
+      
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser && existingUser.id !== req.userId) {
+        return res.status(400).json({ error: "This email is already in use" });
+      }
+      
+      const user = await storage.updateUserEmail(req.userId!, email);
+      const { password, ...userWithoutPassword } = user;
+      res.json(userWithoutPassword);
+    } catch (error) {
+      console.error("Email update error:", error);
+      res.status(500).json({ error: "Failed to update email" });
+    }
+  });
+
+  // Check if user profile is complete (has email)
+  app.get("/api/auth/profile-status", authMiddleware, async (req, res) => {
+    try {
+      const user = await storage.getUser(req.userId!);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      
+      res.json({
+        profileComplete: !!user.email,
+        hasEmail: !!user.email,
+        trialStartedAt: user.trialStartedAt,
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to check profile status" });
     }
   });
   

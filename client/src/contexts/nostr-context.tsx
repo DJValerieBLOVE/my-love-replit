@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 import { nip19 } from "nostr-tools";
-import { loginWithNostr } from "@/lib/api";
+import { loginWithNostr, getProfileStatus } from "@/lib/api";
 
 interface NostrProfile {
   npub: string;
@@ -23,6 +23,8 @@ interface NostrContextType {
   disconnect: () => void;
   signEvent: (event: any) => Promise<any>;
   isAdmin: boolean;
+  needsProfileCompletion: boolean;
+  markProfileComplete: () => void;
 }
 
 const NostrContext = createContext<NostrContextType | undefined>(undefined);
@@ -47,6 +49,7 @@ export function NostrProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<NostrProfile | null>(null);
   const [loginMethod, setLoginMethod] = useState<"extension" | "bunker" | "ncryptsec" | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [needsProfileCompletion, setNeedsProfileCompletion] = useState(false);
 
   const checkExtension = useCallback(async () => {
     if (typeof window !== "undefined" && window.nostr) {
@@ -66,6 +69,13 @@ export function NostrProvider({ children }: { children: ReactNode }) {
             });
             setIsConnected(true);
             setLoginMethod("extension");
+            
+            try {
+              const status = await getProfileStatus();
+              setNeedsProfileCompletion(!status.profileComplete);
+            } catch {
+              setNeedsProfileCompletion(false);
+            }
           }
         } catch (e) {
           localStorage.removeItem("nostr_pubkey");
@@ -113,6 +123,14 @@ export function NostrProvider({ children }: { children: ReactNode }) {
       });
       setIsConnected(true);
       setLoginMethod("extension");
+      
+      try {
+        const status = await getProfileStatus();
+        setNeedsProfileCompletion(!status.profileComplete);
+      } catch {
+        setNeedsProfileCompletion(!user.email);
+      }
+      
       setIsLoading(false);
       return true;
     } catch (e: any) {
@@ -141,6 +159,10 @@ export function NostrProvider({ children }: { children: ReactNode }) {
     return window.nostr.signEvent(event);
   }, []);
 
+  const markProfileComplete = useCallback(() => {
+    setNeedsProfileCompletion(false);
+  }, []);
+
   const isAdmin = profile?.npub === import.meta.env.VITE_ADMIN_NPUB;
 
   return (
@@ -155,6 +177,8 @@ export function NostrProvider({ children }: { children: ReactNode }) {
         disconnect,
         signEvent,
         isAdmin,
+        needsProfileCompletion,
+        markProfileComplete,
       }}
     >
       {children}

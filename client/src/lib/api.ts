@@ -38,6 +38,26 @@ export async function getCurrentUser() {
   return response.json();
 }
 
+export async function updateUserEmail(email: string) {
+  const response = await authFetch("/api/auth/email", {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({ error: "Failed to update email" }));
+    throw new Error(data.error || "Failed to update email");
+  }
+  return response.json();
+}
+
+export async function getProfileStatus() {
+  const response = await authFetch("/api/auth/profile-status");
+  if (!response.ok) {
+    throw new Error("Failed to fetch profile status");
+  }
+  return response.json();
+}
+
 export async function getJournalEntries(limit?: number) {
   const url = limit ? `/api/journal?limit=${limit}` : "/api/journal";
   const response = await authFetch(url);

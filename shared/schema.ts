@@ -11,6 +11,8 @@ export const users = pgTable("users", {
   password: text("password"),
   name: text("name").notNull(),
   handle: text("handle").notNull().unique(),
+  email: text("email"),
+  emailVerified: boolean("email_verified").default(false).notNull(),
   avatar: text("avatar"),
   nip05: text("nip05"),
   lud16: text("lud16"),
@@ -22,6 +24,7 @@ export const users = pgTable("users", {
   lookingForBuddy: boolean("looking_for_buddy").default(false).notNull(),
   buddyDescription: text("buddy_description"),
   labInterests: text("lab_interests").array().default(sql`ARRAY[]::text[]`).notNull(),
+  trialStartedAt: timestamp("trial_started_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -30,9 +33,14 @@ export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   name: true,
   handle: true,
+  email: true,
   avatar: true,
   nip05: true,
   lud16: true,
+});
+
+export const updateEmailSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;

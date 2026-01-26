@@ -22,8 +22,10 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByHandle(handle: string): Promise<User | undefined>;
   getUserByNostrPubkey(pubkey: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   createOrUpdateUserByPubkey(pubkey: string, data: Partial<InsertUser>): Promise<User>;
+  updateUserEmail(userId: string, email: string): Promise<User>;
   updateUserStats(userId: string, updates: Partial<Pick<User, 'sats' | 'streak' | 'level' | 'walletBalance' | 'badges'>>): Promise<User | undefined>;
   getLeaderboard(limit?: number): Promise<User[]>;
 
@@ -106,6 +108,11 @@ export class DatabaseStorage implements IStorage {
     return user || undefined;
   }
 
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+
   async createUser(insertUser: InsertUser): Promise<User> {
     const [user] = await db.insert(users).values(insertUser).returning();
     return user;
@@ -133,6 +140,18 @@ export class DatabaseStorage implements IStorage {
       }).returning();
       return created;
     }
+  }
+
+  async updateUserEmail(userId: string, email: string): Promise<User> {
+    const now = new Date();
+    const [user] = await db.update(users)
+      .set({ 
+        email, 
+        trialStartedAt: sql`COALESCE(${users.trialStartedAt}, ${now})` 
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
   }
 
   async updateUserStats(userId: string, updates: Partial<Pick<User, 'sats' | 'streak' | 'level' | 'walletBalance' | 'badges'>>): Promise<User | undefined> {

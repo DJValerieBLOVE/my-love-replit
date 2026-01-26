@@ -37,12 +37,13 @@ import {
 
 import { EqVisualizer } from "@/components/eq-visualizer";
 import { VerticalEqVisualizer } from "@/components/vertical-eq-visualizer";
+import { ProfileCompletionDialog } from "@/components/profile-completion-dialog";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
-  const { isConnected, profile, disconnect, isAdmin, isLoading } = useNostr();
+  const { isConnected, profile, disconnect, isAdmin, isLoading, needsProfileCompletion, markProfileComplete } = useNostr();
 
   const desktopNavLinks = [
     { icon: Home, label: "Home", href: "/" },
@@ -196,6 +197,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </header>
       
       <NostrLoginDialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen} />
+      
+      <ProfileCompletionDialog 
+        open={isConnected && needsProfileCompletion} 
+        onComplete={markProfileComplete}
+        userName={profile?.name}
+      />
 
       <div className="flex-1 flex overflow-hidden">
         {/* Left Sidebar (Navigation) - Desktop only */}
