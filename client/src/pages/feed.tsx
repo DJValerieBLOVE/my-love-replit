@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Zap, Share2, MoreHorizontal, Radio, Calendar, UserPlus, Repeat2, Bookmark, Quote } from "lucide-react";
+import { Heart, MessageCircle, Zap, Share2, MoreHorizontal, Radio, Calendar, UserPlus, Repeat2, Bookmark, Quote, Users } from "lucide-react";
 import { Link } from "wouter";
 import {
   DropdownMenu,
@@ -23,8 +23,27 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { isGroupContent, canSharePublicly, getGroupName, type ShareablePost } from "@/lib/sharing-rules";
 
-const MOCK_POSTS = [
+type FeedPost = {
+  id: string;
+  author: {
+    name: string;
+    handle: string;
+    avatar: string;
+    pubkey?: string;
+  };
+  content: string;
+  timestamp: string;
+  likes: number;
+  comments: number;
+  zaps: number;
+  source?: "nostr" | "community" | "learning";
+  community?: string;
+  isOwnPost?: boolean;
+};
+
+const MOCK_POSTS: FeedPost[] = [
   {
     id: "1",
     author: {
@@ -37,7 +56,7 @@ const MOCK_POSTS = [
     likes: 24,
     comments: 5,
     zaps: 1200,
-    source: "nostr",
+    source: "nostr" as const,
   },
   {
     id: "2",
@@ -51,7 +70,7 @@ const MOCK_POSTS = [
     likes: 42,
     comments: 8,
     zaps: 2100,
-    source: "nostr",
+    source: "nostr" as const,
   },
   {
     id: "3",
@@ -67,11 +86,28 @@ const MOCK_POSTS = [
     zaps: 5500,
     source: "community",
     community: "11x LOVE LaB",
+    isOwnPost: false,
+  },
+  {
+    id: "5",
+    author: {
+      name: "You",
+      handle: "@you",
+      avatar: "",
+    },
+    content: "My breakthrough moment today in the Body dimension - finally completed 30 days of morning workouts! Sharing this win with my community.",
+    timestamp: "1h ago",
+    likes: 12,
+    comments: 4,
+    zaps: 500,
+    source: "community",
+    community: "11x LOVE LaB",
+    isOwnPost: true,
   },
 ];
 
 const COMMUNITY_POSTS = MOCK_POSTS.filter(p => p.source === "community");
-const LEARNING_POSTS = [
+const LEARNING_POSTS: FeedPost[] = [
   {
     id: "4",
     author: {
@@ -85,7 +121,7 @@ const LEARNING_POSTS = [
     comments: 32,
     zaps: 800,
     source: "learning",
-    course: "11x LOVE Foundations",
+    community: "11x LOVE Foundations",
   },
 ];
 
@@ -131,7 +167,7 @@ const WHO_TO_FOLLOW = [
   },
 ];
 
-function PostCard({ post }: { post: typeof MOCK_POSTS[0] }) {
+function PostCard({ post }: { post: FeedPost }) {
   const [isLiked, setIsLiked] = useState(false);
   const [likes, setLikes] = useState(post.likes);
   const [isReposted, setIsReposted] = useState(false);
@@ -139,20 +175,48 @@ function PostCard({ post }: { post: typeof MOCK_POSTS[0] }) {
   const [quoteRepostOpen, setQuoteRepostOpen] = useState(false);
   const [quoteText, setQuoteText] = useState("");
 
+  const isGroupPost = isGroupContent(post);
+  const canRepostPublic = canSharePublicly(post);
+  const groupName = getGroupName(post);
+
   const handleLike = () => {
     setIsLiked(!isLiked);
     setLikes(prev => isLiked ? prev - 1 : prev + 1);
   };
 
-  const handleRepost = () => {
+  const handleRepostPublic = () => {
+    if (!canRepostPublic) {
+      toast("Cannot share publicly", { 
+        description: "Group posts can only be shared within the group" 
+      });
+      return;
+    }
+    toast("Reposted to Nostr!", { 
+      description: `You reposted ${post.author.name}'s post publicly` 
+    });
     setIsReposted(true);
-    toast("Reposted!", { description: `You reposted ${post.author.name}'s post` });
+  };
+
+  const handleRepostGroup = () => {
+    if (!isGroupPost) return;
+    toast("Reposted within group!", { 
+      description: `Shared within ${groupName}` 
+    });
+    setIsReposted(true);
   };
 
   const handleQuoteRepost = () => {
+    if (!canRepostPublic) {
+      toast("Quote shared within group!", { 
+        description: `Your quote was shared within ${groupName}` 
+      });
+    } else {
+      toast("Quote Posted to Nostr!", { 
+        description: "Your quote repost was shared publicly" 
+      });
+    }
     setIsReposted(true);
     setQuoteRepostOpen(false);
-    toast("Quote Posted!", { description: "Your quote repost was shared" });
     setQuoteText("");
   };
 
@@ -192,14 +256,44 @@ function PostCard({ post }: { post: typeof MOCK_POSTS[0] }) {
                   <Repeat2 className="w-4 h-4" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="center">
-                <DropdownMenuItem onClick={handleRepost} data-testid={`menu-repost-${post.id}`}>
-                  <Repeat2 className="w-4 h-4 mr-2" />
-                  Repost
-                </DropdownMenuItem>
+              <DropdownMenuContent align="center" className="w-56">
+                {/* Public Repost - only available for public posts */}
+                {canRepostPublic ? (
+                  <DropdownMenuItem onClick={handleRepostPublic} data-testid={`menu-repost-${post.id}`}>
+                    <Repeat2 className="w-4 h-4 mr-2" />
+                    <div>
+                      <p>Repost to Nostr</p>
+                      <p className="text-xs text-muted-foreground">Share publicly</p>
+                    </div>
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem disabled className="opacity-50 cursor-not-allowed" data-testid={`menu-repost-disabled-${post.id}`}>
+                    <Repeat2 className="w-4 h-4 mr-2" />
+                    <div>
+                      <p>Repost to Nostr</p>
+                      <p className="text-xs text-muted-foreground">Only your own content can go public</p>
+                    </div>
+                  </DropdownMenuItem>
+                )}
+                {/* Group Repost - only for group posts */}
+                {isGroupPost && (
+                  <DropdownMenuItem onClick={handleRepostGroup} data-testid={`menu-repost-group-${post.id}`}>
+                    <Users className="w-4 h-4 mr-2" />
+                    <div>
+                      <p>Repost within Group</p>
+                      <p className="text-xs text-muted-foreground">{groupName}</p>
+                    </div>
+                  </DropdownMenuItem>
+                )}
+                {/* Quote Repost */}
                 <DropdownMenuItem onClick={() => setQuoteRepostOpen(true)} data-testid={`menu-quote-repost-${post.id}`}>
                   <Quote className="w-4 h-4 mr-2" />
-                  Quote Repost
+                  <div>
+                    <p>Quote Repost</p>
+                    <p className="text-xs text-muted-foreground">
+                      {canRepostPublic ? "Add your thoughts" : "Within group only"}
+                    </p>
+                  </div>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -209,8 +303,21 @@ function PostCard({ post }: { post: typeof MOCK_POSTS[0] }) {
               <DialogContent className="sm:max-w-md">
                 <DialogHeader>
                   <DialogTitle className="font-serif text-xl">Quote Repost</DialogTitle>
-                  <DialogDescription>Add your thoughts to this post</DialogDescription>
+                  <DialogDescription>
+                    {isGroupPost && !post.isOwnPost
+                      ? `Add your thoughts - will be shared within ${groupName} only`
+                      : "Add your thoughts to share publicly"
+                    }
+                  </DialogDescription>
                 </DialogHeader>
+                {isGroupPost && !post.isOwnPost && (
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-start gap-2">
+                    <Users className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
+                    <p className="text-sm text-amber-800">
+                      This post is from a private group. Your quote will only be visible within that group.
+                    </p>
+                  </div>
+                )}
                 <div className="space-y-4 py-4">
                   <Textarea 
                     placeholder="What are your thoughts?"

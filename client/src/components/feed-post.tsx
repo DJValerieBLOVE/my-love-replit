@@ -13,7 +13,8 @@ import {
   Bookmark,
   Minus,
   Plus,
-  Quote
+  Quote,
+  Users
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import SatsIcon from "@assets/generated_images/sats_icon.png";
 import { toast } from "sonner";
+import { isGroupContent, canSharePublicly, getGroupName, type ShareablePost } from "@/lib/sharing-rules";
 import {
   Dialog,
   DialogContent,
@@ -48,6 +50,7 @@ interface FeedPostProps {
       name: string;
       handle: string;
       avatar: string;
+      pubkey?: string;
     };
     content: string;
     image?: string;
@@ -55,6 +58,9 @@ interface FeedPostProps {
     comments: number;
     zaps: number;
     timestamp: string;
+    source?: "nostr" | "community" | "learning";
+    community?: string;
+    isOwnPost?: boolean;
   };
 }
 
@@ -71,19 +77,45 @@ export function FeedPost({ post }: FeedPostProps) {
   const [quoteRepostOpen, setQuoteRepostOpen] = useState(false);
   const [quoteText, setQuoteText] = useState("");
 
-  const handleRepost = () => {
-    setIsReposted(true);
-    toast("Reposted!", {
-      description: `You reposted ${post.author.name}'s post`,
+  const isGroupPost = isGroupContent(post);
+  const canRepostPublic = canSharePublicly(post);
+  const groupName = getGroupName(post);
+
+  const handleRepostPublic = () => {
+    if (!canRepostPublic) {
+      toast.error("Cannot share publicly", {
+        description: "Group posts can only be shared within the group",
+      });
+      return;
+    }
+    toast("Reposted to Nostr!", {
+      description: `You reposted ${post.author.name}'s post publicly`,
     });
+    setIsReposted(true);
+  };
+
+  const handleRepostGroup = () => {
+    if (!isGroupPost) {
+      return;
+    }
+    toast("Reposted within group!", {
+      description: `Shared within ${groupName}`,
+    });
+    setIsReposted(true);
   };
 
   const handleQuoteRepost = () => {
+    if (!canRepostPublic) {
+      toast("Quote shared within group!", {
+        description: `Your quote was shared within ${groupName}`,
+      });
+    } else {
+      toast("Quote Posted to Nostr!", {
+        description: "Your quote repost was shared publicly",
+      });
+    }
     setIsReposted(true);
     setQuoteRepostOpen(false);
-    toast("Quote Posted!", {
-      description: "Your quote repost was shared",
-    });
     setQuoteText("");
   };
 
@@ -183,14 +215,44 @@ export function FeedPost({ post }: FeedPostProps) {
                     <Repeat2 className="w-[22px] h-[22px]" strokeWidth={1.5} />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="center" className="w-48">
-                  <DropdownMenuItem onClick={handleRepost} data-testid={`menu-repost-${post.id}`}>
-                    <Repeat2 className="w-4 h-4 mr-2" />
-                    Repost
-                  </DropdownMenuItem>
+                <DropdownMenuContent align="center" className="w-56">
+                  {/* Public Repost - only available for public posts or own group content */}
+                  {canRepostPublic ? (
+                    <DropdownMenuItem onClick={handleRepostPublic} data-testid={`menu-repost-${post.id}`}>
+                      <Repeat2 className="w-4 h-4 mr-2" />
+                      <div>
+                        <p>Repost to Nostr</p>
+                        <p className="text-xs text-muted-foreground">Share publicly</p>
+                      </div>
+                    </DropdownMenuItem>
+                  ) : (
+                    <DropdownMenuItem disabled className="opacity-50 cursor-not-allowed" data-testid={`menu-repost-disabled-${post.id}`}>
+                      <Repeat2 className="w-4 h-4 mr-2" />
+                      <div>
+                        <p>Repost to Nostr</p>
+                        <p className="text-xs text-muted-foreground">Only your own content can go public</p>
+                      </div>
+                    </DropdownMenuItem>
+                  )}
+                  {/* Group Repost - only for group posts */}
+                  {isGroupPost && (
+                    <DropdownMenuItem onClick={handleRepostGroup} data-testid={`menu-repost-group-${post.id}`}>
+                      <Users className="w-4 h-4 mr-2" />
+                      <div>
+                        <p>Repost within Group</p>
+                        <p className="text-xs text-muted-foreground">{post.community || "Group members only"}</p>
+                      </div>
+                    </DropdownMenuItem>
+                  )}
+                  {/* Quote Repost */}
                   <DropdownMenuItem onClick={() => setQuoteRepostOpen(true)} data-testid={`menu-quote-repost-${post.id}`}>
                     <Quote className="w-4 h-4 mr-2" />
-                    Quote Repost
+                    <div>
+                      <p>Quote Repost</p>
+                      <p className="text-xs text-muted-foreground">
+                        {canRepostPublic ? "Add your thoughts" : "Within group only"}
+                      </p>
+                    </div>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -200,8 +262,21 @@ export function FeedPost({ post }: FeedPostProps) {
                 <DialogContent className="sm:max-w-md">
                   <DialogHeader>
                     <DialogTitle className="font-serif text-xl">Quote Repost</DialogTitle>
-                    <DialogDescription>Add your thoughts to this post</DialogDescription>
+                    <DialogDescription>
+                      {isGroupPost && !post.isOwnPost 
+                        ? `Add your thoughts - will be shared within ${post.community || "the group"} only`
+                        : "Add your thoughts to this post"
+                      }
+                    </DialogDescription>
                   </DialogHeader>
+                  {isGroupPost && !post.isOwnPost && (
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-start gap-2">
+                      <Users className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
+                      <p className="text-sm text-amber-800">
+                        This post is from a private group. Your quote will only be visible within that group.
+                      </p>
+                    </div>
+                  )}
                   <div className="space-y-4 py-4">
                     <Textarea 
                       placeholder="What are your thoughts?"
