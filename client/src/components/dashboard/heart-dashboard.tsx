@@ -114,8 +114,8 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
     <div 
       className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer"
       style={{ 
-        width: "min(68vw, 68vh, 510px)", // 15% smaller than 80vw/vh
-        height: "min(64vw, 64vh, 467px)" 
+        width: "min(57.8vw, 57.8vh, 433.5px)", // 15% smaller than original 68vw/vh (0.85 * 68 = 57.8)
+        height: "min(54.4vw, 54.4vh, 396.95px)" // 15% smaller than original 64vw/vh (0.85 * 64 = 54.4)
       }}
       onClick={onClick}
       data-testid="heart-god-card"
@@ -140,12 +140,12 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
                 <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="rgba(0,0,0,0.5)" />
               </filter>
             </defs>
-            {/* Outline - using background color #FAFAFA and 1px width */}
+            {/* Outline - using background color #FAFAFA and 2px width */}
             <path
               d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z"
               fill="#FAFAFA"
               stroke="#FAFAFA"
-              strokeWidth="1"
+              strokeWidth="2"
               filter="url(#heartShadow)"
             />
             <g clipPath="url(#heartClipFront)">
@@ -194,7 +194,7 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
               d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z"
               fill="#FAFAFA"
               stroke="#FAFAFA"
-              strokeWidth="1"
+              strokeWidth="2"
               filter="url(#heartShadowBack)"
             />
             <g clipPath="url(#heartClip)">
