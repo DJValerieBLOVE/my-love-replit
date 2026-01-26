@@ -9,10 +9,11 @@ import {
   Zap,
   MessageSquare,
   Repeat2,
-  Share,
+  Share2,
   Bookmark,
   Minus,
-  Plus
+  Plus,
+  Quote
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -30,8 +31,15 @@ import {
   DialogFooter,
   DialogClose
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 interface FeedPostProps {
   post: {
@@ -56,6 +64,48 @@ export function FeedPost({ post }: FeedPostProps) {
   const [zapAmount, setZapAmount] = useState(21);
   const [zapComment, setZapComment] = useState("");
   const [isZapOpen, setIsZapOpen] = useState(false);
+  const [isReposted, setIsReposted] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likes, setLikes] = useState(post.likes);
+  const [quoteRepostOpen, setQuoteRepostOpen] = useState(false);
+  const [quoteText, setQuoteText] = useState("");
+
+  const handleRepost = () => {
+    setIsReposted(true);
+    toast("Reposted!", {
+      description: `You reposted ${post.author.name}'s post`,
+    });
+  };
+
+  const handleQuoteRepost = () => {
+    setIsReposted(true);
+    setQuoteRepostOpen(false);
+    toast("Quote Posted!", {
+      description: "Your quote repost was shared",
+    });
+    setQuoteText("");
+  };
+
+  const handleBookmark = () => {
+    setIsBookmarked(!isBookmarked);
+    toast(isBookmarked ? "Removed from bookmarks" : "Bookmarked!", {
+      description: isBookmarked 
+        ? "Post removed from your saved items" 
+        : "Post saved to your bookmarks",
+    });
+  };
+
+  const handleLike = () => {
+    setIsLiked(!isLiked);
+    setLikes(prev => isLiked ? prev - 1 : prev + 1);
+  };
+
+  const handleShare = () => {
+    toast("Share options coming soon!", {
+      description: "You'll be able to share to Nostr and other platforms",
+    });
+  };
 
   const handleZap = () => {
     setZaps(prev => prev + zapAmount);
@@ -111,17 +161,80 @@ export function FeedPost({ post }: FeedPostProps) {
             )}
 
             <div className="flex items-center justify-between mt-4 pt-2 border-t border-border px-2 h-12">
-              {/* 1. Comment */}
-              <Button variant="ghost" className="text-muted-foreground hover:text-love-time hover:bg-love-time-light px-2 gap-1.5 min-w-[60px]">
+              {/* 1. Reply/Comment */}
+              <Button 
+                variant="ghost" 
+                onClick={() => toast("Reply feature coming soon!", { description: "You'll be able to reply to this post" })}
+                className="text-muted-foreground hover:text-love-time hover:bg-love-time-light px-2 gap-1.5 min-w-[60px]"
+                data-testid={`button-reply-${post.id}`}
+              >
                 <MessageSquare className="w-[18px] h-[18px]" strokeWidth={1.5} />
                 <span className="text-sm font-medium">{post.comments > 0 ? post.comments : ""}</span>
               </Button>
 
-              {/* 2. Repost */}
-              <Button variant="ghost" className="text-muted-foreground hover:text-love-mission hover:bg-love-mission-light px-2 gap-1.5 min-w-[60px]">
-                <Repeat2 className="w-[22px] h-[22px]" strokeWidth={1.5} />
-                <span className="text-sm font-medium"></span>
-              </Button>
+              {/* 2. Repost with dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    className={`px-2 gap-1.5 min-w-[60px] ${isReposted ? 'text-love-mission' : 'text-muted-foreground hover:text-love-mission hover:bg-love-mission-light'}`}
+                    data-testid={`button-repost-${post.id}`}
+                  >
+                    <Repeat2 className="w-[22px] h-[22px]" strokeWidth={1.5} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="center" className="w-48">
+                  <DropdownMenuItem onClick={handleRepost} data-testid={`menu-repost-${post.id}`}>
+                    <Repeat2 className="w-4 h-4 mr-2" />
+                    Repost
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setQuoteRepostOpen(true)} data-testid={`menu-quote-repost-${post.id}`}>
+                    <Quote className="w-4 h-4 mr-2" />
+                    Quote Repost
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Quote Repost Dialog */}
+              <Dialog open={quoteRepostOpen} onOpenChange={setQuoteRepostOpen}>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle className="font-serif text-xl">Quote Repost</DialogTitle>
+                    <DialogDescription>Add your thoughts to this post</DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                    <Textarea 
+                      placeholder="What are your thoughts?"
+                      value={quoteText}
+                      onChange={(e) => setQuoteText(e.target.value)}
+                      className="min-h-[100px]"
+                      data-testid={`textarea-quote-${post.id}`}
+                    />
+                    <Card className="p-3 bg-muted/50">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Avatar className="w-6 h-6">
+                          <AvatarImage src={post.author.avatar} />
+                          <AvatarFallback>{post.author.name[0]}</AvatarFallback>
+                        </Avatar>
+                        <span className="font-medium">{post.author.name}</span>
+                      </div>
+                      <p className="text-sm mt-2 line-clamp-2">{post.content}</p>
+                    </Card>
+                  </div>
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="ghost">Cancel</Button>
+                    </DialogClose>
+                    <Button 
+                      onClick={handleQuoteRepost}
+                      className="bg-gradient-to-r from-[#6600ff] to-[#cc00ff] text-white"
+                      data-testid={`button-submit-quote-${post.id}`}
+                    >
+                      Post
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
 
               {/* 3. Zap (Center, Largest) - Now with Dialog */}
               <Dialog open={isZapOpen} onOpenChange={setIsZapOpen}>
@@ -213,14 +326,34 @@ export function FeedPost({ post }: FeedPostProps) {
               </Dialog>
 
               {/* 4. Like */}
-              <Button variant="ghost" className="text-muted-foreground hover:text-love-romance hover:bg-love-romance-light px-2 gap-1.5 min-w-[60px]">
-                <Heart className="w-[18px] h-[18px]" strokeWidth={1.5} />
-                <span className="text-sm font-medium">{post.likes > 0 ? post.likes : ""}</span>
+              <Button 
+                variant="ghost" 
+                onClick={handleLike}
+                className={`px-2 gap-1.5 min-w-[60px] ${isLiked ? 'text-love-romance' : 'text-muted-foreground hover:text-love-romance hover:bg-love-romance-light'}`}
+                data-testid={`button-like-${post.id}`}
+              >
+                <Heart className="w-[18px] h-[18px]" strokeWidth={1.5} fill={isLiked ? "currentColor" : "none"} />
+                <span className="text-sm font-medium">{likes > 0 ? likes : ""}</span>
               </Button>
 
-              {/* 5. Share/Bookmark */}
-              <Button variant="ghost" className="text-muted-foreground hover:text-love-body hover:bg-love-body-light px-2 gap-1.5 min-w-[60px]">
-                <Bookmark className="w-[20px] h-[20px]" strokeWidth={1.5} />
+              {/* 5. Bookmark */}
+              <Button 
+                variant="ghost" 
+                onClick={handleBookmark}
+                className={`px-2 gap-1.5 min-w-[50px] ${isBookmarked ? 'text-love-body' : 'text-muted-foreground hover:text-love-body hover:bg-love-body-light'}`}
+                data-testid={`button-bookmark-${post.id}`}
+              >
+                <Bookmark className="w-[18px] h-[18px]" strokeWidth={1.5} fill={isBookmarked ? "currentColor" : "none"} />
+              </Button>
+
+              {/* 6. Share */}
+              <Button 
+                variant="ghost" 
+                onClick={handleShare}
+                className="text-muted-foreground hover:text-love-soul hover:bg-love-soul-light px-2 gap-1.5 min-w-[50px]"
+                data-testid={`button-share-${post.id}`}
+              >
+                <Share2 className="w-[18px] h-[18px]" strokeWidth={1.5} />
               </Button>
             </div>
           </div>

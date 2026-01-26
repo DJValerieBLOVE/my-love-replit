@@ -4,8 +4,25 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Zap, Share2, MoreHorizontal, Radio, Calendar, UserPlus } from "lucide-react";
+import { Heart, MessageCircle, Zap, Share2, MoreHorizontal, Radio, Calendar, UserPlus, Repeat2, Bookmark, Quote } from "lucide-react";
 import { Link } from "wouter";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogClose
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 
 const MOCK_POSTS = [
   {
@@ -115,6 +132,35 @@ const WHO_TO_FOLLOW = [
 ];
 
 function PostCard({ post }: { post: typeof MOCK_POSTS[0] }) {
+  const [isLiked, setIsLiked] = useState(false);
+  const [likes, setLikes] = useState(post.likes);
+  const [isReposted, setIsReposted] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [quoteRepostOpen, setQuoteRepostOpen] = useState(false);
+  const [quoteText, setQuoteText] = useState("");
+
+  const handleLike = () => {
+    setIsLiked(!isLiked);
+    setLikes(prev => isLiked ? prev - 1 : prev + 1);
+  };
+
+  const handleRepost = () => {
+    setIsReposted(true);
+    toast("Reposted!", { description: `You reposted ${post.author.name}'s post` });
+  };
+
+  const handleQuoteRepost = () => {
+    setIsReposted(true);
+    setQuoteRepostOpen(false);
+    toast("Quote Posted!", { description: "Your quote repost was shared" });
+    setQuoteText("");
+  };
+
+  const handleBookmark = () => {
+    setIsBookmarked(!isBookmarked);
+    toast(isBookmarked ? "Removed from bookmarks" : "Bookmarked!");
+  };
+
   return (
     <Card className="p-4 hover:shadow-md transition-shadow" data-testid={`post-${post.id}`}>
       <div className="flex gap-3">
@@ -132,20 +178,104 @@ function PostCard({ post }: { post: typeof MOCK_POSTS[0] }) {
             </Button>
           </div>
           <p className="text-sm mt-1 leading-relaxed">{post.content}</p>
-          <div className="flex items-center gap-6 mt-3">
-            <button className="flex items-center gap-1.5 text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF] rounded-md px-2 py-1 transition-colors text-sm" data-testid={`button-like-${post.id}`}>
-              <Heart className="w-4 h-4" />
-              <span data-testid={`count-likes-${post.id}`}>{post.likes}</span>
-            </button>
-            <button className="flex items-center gap-1.5 text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF] rounded-md px-2 py-1 transition-colors text-sm" data-testid={`button-comment-${post.id}`}>
+          <div className="flex items-center gap-4 mt-3 pt-2 border-t border-border">
+            {/* Reply */}
+            <button className="flex items-center gap-1.5 text-muted-foreground hover:text-love-time hover:bg-love-time-light rounded-md px-2 py-1 transition-colors text-sm" data-testid={`button-reply-${post.id}`}>
               <MessageCircle className="w-4 h-4" />
-              <span data-testid={`count-comments-${post.id}`}>{post.comments}</span>
+              <span>{post.comments > 0 ? post.comments : ""}</span>
             </button>
-            <button className="flex items-center gap-1.5 text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF] rounded-md px-2 py-1 transition-colors text-sm" data-testid={`button-zap-${post.id}`}>
-              <Zap className="w-4 h-4" />
-              <span data-testid={`count-zaps-${post.id}`}>{post.zaps.toLocaleString()}</span>
+            
+            {/* Repost dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className={`flex items-center gap-1.5 rounded-md px-2 py-1 transition-colors text-sm ${isReposted ? 'text-love-mission' : 'text-muted-foreground hover:text-love-mission hover:bg-love-mission-light'}`} data-testid={`button-repost-${post.id}`}>
+                  <Repeat2 className="w-4 h-4" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="center">
+                <DropdownMenuItem onClick={handleRepost} data-testid={`menu-repost-${post.id}`}>
+                  <Repeat2 className="w-4 h-4 mr-2" />
+                  Repost
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setQuoteRepostOpen(true)} data-testid={`menu-quote-repost-${post.id}`}>
+                  <Quote className="w-4 h-4 mr-2" />
+                  Quote Repost
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Quote Repost Dialog */}
+            <Dialog open={quoteRepostOpen} onOpenChange={setQuoteRepostOpen}>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="font-serif text-xl">Quote Repost</DialogTitle>
+                  <DialogDescription>Add your thoughts to this post</DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <Textarea 
+                    placeholder="What are your thoughts?"
+                    value={quoteText}
+                    onChange={(e) => setQuoteText(e.target.value)}
+                    className="min-h-[100px]"
+                    data-testid={`textarea-quote-${post.id}`}
+                  />
+                  <Card className="p-3 bg-muted/50">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Avatar className="w-6 h-6">
+                        <AvatarImage src={post.author.avatar} />
+                        <AvatarFallback>{post.author.name.slice(0, 1).toUpperCase()}</AvatarFallback>
+                      </Avatar>
+                      <span className="font-medium">{post.author.name}</span>
+                    </div>
+                    <p className="text-sm mt-2 line-clamp-2">{post.content}</p>
+                  </Card>
+                </div>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button variant="ghost">Cancel</Button>
+                  </DialogClose>
+                  <Button 
+                    onClick={handleQuoteRepost}
+                    className="bg-gradient-to-r from-[#6600ff] to-[#cc00ff] text-white"
+                    data-testid={`button-submit-quote-${post.id}`}
+                  >
+                    Post
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            {/* Zap */}
+            <button className="flex items-center gap-1.5 text-muted-foreground hover:text-love-family hover:bg-love-family-light rounded-md px-2 py-1 transition-colors text-sm" data-testid={`button-zap-${post.id}`}>
+              <Zap className="w-5 h-5" />
+              <span data-testid={`count-zaps-${post.id}`}>{post.zaps > 0 ? post.zaps.toLocaleString() : ""}</span>
             </button>
-            <button className="flex items-center gap-1.5 text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF] rounded-md px-2 py-1 transition-colors text-sm ml-auto" data-testid={`button-share-${post.id}`}>
+
+            {/* Like */}
+            <button 
+              onClick={handleLike}
+              className={`flex items-center gap-1.5 rounded-md px-2 py-1 transition-colors text-sm ${isLiked ? 'text-love-romance' : 'text-muted-foreground hover:text-love-romance hover:bg-love-romance-light'}`} 
+              data-testid={`button-like-${post.id}`}
+            >
+              <Heart className="w-4 h-4" fill={isLiked ? "currentColor" : "none"} />
+              <span data-testid={`count-likes-${post.id}`}>{likes > 0 ? likes : ""}</span>
+            </button>
+
+            {/* Bookmark */}
+            <button 
+              onClick={handleBookmark}
+              className={`flex items-center gap-1.5 rounded-md px-2 py-1 transition-colors text-sm ${isBookmarked ? 'text-love-body' : 'text-muted-foreground hover:text-love-body hover:bg-love-body-light'}`} 
+              data-testid={`button-bookmark-${post.id}`}
+            >
+              <Bookmark className="w-4 h-4" fill={isBookmarked ? "currentColor" : "none"} />
+            </button>
+
+            {/* Share */}
+            <button 
+              onClick={() => toast("Share options coming soon!")}
+              className="flex items-center gap-1.5 text-muted-foreground hover:text-love-soul hover:bg-love-soul-light rounded-md px-2 py-1 transition-colors text-sm ml-auto" 
+              data-testid={`button-share-${post.id}`}
+            >
               <Share2 className="w-4 h-4" />
             </button>
           </div>
