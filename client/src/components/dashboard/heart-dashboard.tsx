@@ -293,7 +293,7 @@ export function HeartDashboard() {
     <div className="relative w-full h-full overflow-hidden bg-background p-[10px]">
       {/* 4 Pillar Flip Cards */}
       <div 
-        className="grid grid-cols-2 grid-rows-2 w-full h-full gap-[10px]"
+        className="grid grid-cols-2 grid-rows-2 w-full h-full gap-[5px] md:gap-[10px]"
       >
         {pillars.map((pillar) => (
           <FlipCard
