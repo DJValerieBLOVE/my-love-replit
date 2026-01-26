@@ -1,8 +1,8 @@
 # PROJECT MANIFEST
 
 **Last Updated:** 2026-01-26
-**Current Phase:** Phase 0 - Audit Complete
-**Active Task:** GAP Analysis Complete - Ready for GO execution
+**Current Phase:** Phase 3 - Feature Build-Out
+**Active Task:** Core Feature Completion Done - Ready for Community Features
 
 ---
 
@@ -11,20 +11,21 @@
 | Metric | Count |
 |--------|-------|
 | Total Features Specified | 32 |
-| Complete | 27 (84%) |
-| Partial | 2 (6%) |
+| Complete | 28 (88%) |
+| Partial | 1 (3%) |
 | Not Started | 3 (9%) |
-| Code Health Issues | 2 |
+| Code Health Issues | 1 |
 
 ---
 
 ## EXECUTIVE SUMMARY
 
-1. **Core app structure is solid** - Full CRUD backend, PostgreSQL database with 12 tables, Nostr NIP-07 authentication working
+1. **Core app structure is solid** - Full CRUD backend, PostgreSQL database with 12 tables, Nostr authentication working
 2. **Frontend is well-built** - 22 pages/routes, shadcn/ui components, mobile-responsive layout, proper routing
 3. **AI Magic Mentor COMPLETE** - Claude Haiku 4.5 via direct Anthropic SDK, three-tier access (free/paid/BYOK)
-4. **Key gap: Lightning payments** - Zap UI exists but no NWC/WebLN backend integration
-5. **Mock data removed** - Components now use real authenticated user data
+4. **Lightning payments COMPLETE** - NWC integration for zaps and wallet, non-custodial user wallets
+5. **NIP-46 Bunker Login COMPLETE** - nsec.app integration for users without browser extensions
+6. **Mock data removed** - Components now use real authenticated user data
 
 ---
 
@@ -41,7 +42,7 @@
 
 ## FEATURE MATRIX
 
-### COMPLETE (22 Features)
+### COMPLETE (28 Features)
 
 | Feature | Location | Confidence | Notes |
 |---------|----------|------------|-------|
@@ -72,13 +73,13 @@
 | Wallet Page | `/wallet`, `client/src/pages/wallet.tsx` | 100% | UI layout, ZBD gamertag input, balance display from real user data |
 | Lightning/NWC Integration | `client/src/lib/nwc.ts`, `client/src/pages/wallet.tsx` | 100% | Non-custodial user wallet connection, real balance, payments |
 | Zap Payments | `client/src/components/feed-post.tsx`, `client/src/lib/nwc.ts` | 100% | LNURL-pay, BOLT11 payment hash extraction, graceful fallback |
+| NIP-46 Bunker Login | `client/src/contexts/nostr-context.tsx`, `client/src/components/nostr-login-dialog.tsx` | 100% | nsec.app integration, bunker connection flow, session persistence |
 
-### PARTIAL (2 Features)
+### PARTIAL (1 Feature)
 
 | Feature | What Exists | What's Missing | Completion |
 |---------|-------------|----------------|------------|
 | NIP-07 Nostr Login | Extension-based auth, localStorage persistence | NDK library, cryptographic signature verification, event signing validation | 70% |
-| NIP-46 Bunker Login | Button exists (disabled) | nsec.app integration, bunker connection flow | 5% |
 
 ### NOT STARTED (3 Features)
 
@@ -98,7 +99,6 @@
 |-------|----------|----------|
 | No cryptographic signature verification | `client/src/contexts/nostr-context.tsx` | HIGH |
 | TODO: Admin check for experiments | `server/routes.ts:288` | LOW |
-| NIP-46 bunker login not implemented | `client/src/components/nostr-login-dialog.tsx` | LOW |
 
 ### Security Notes
 
@@ -126,7 +126,7 @@
 |-------|------|-------------|-----------|--------|
 | 0 | Critical Blockers | 0 | 0 | Complete |
 | 1 | Infrastructure & Integrations | 5 | 5 | Complete |
-| 2 | Core Feature Completion | 5 | 4 | In Progress |
+| 2 | Core Feature Completion | 5 | 5 | Complete |
 | 3 | Feature Build-Out | 5 | 0 | Not Started |
 | 4 | Admin & Operations | 2 | 0 | Not Started |
 | 5 | Hardening & Code Health | 3 | 0 | Not Started |
@@ -269,17 +269,19 @@
 - Effort: L (4-8hr)
 - Completed: Jan 2026
 
-**[P2-05] NIP-46 Bunker Login**
+**[P2-05] NIP-46 Bunker Login** ✅ COMPLETE
 - Description: Enable NIP-46 bunker login for maximum security
 - Audit Reference: Partial feature - NIP-46 Bunker Login
 - Files: `client/src/components/nostr-login-dialog.tsx`, `client/src/contexts/nostr-context.tsx`
 - Dependencies: None
 - Blocked By: None
 - Acceptance Criteria:
-  - [ ] Bunker button enabled
-  - [ ] Can connect via nsec.app or nsecBunker
-  - [ ] Auth flow completes and persists
+  - [x] Bunker button enabled
+  - [x] Can connect via nsec.app or nsecBunker
+  - [x] Auth flow completes and persists
+  - [x] Create New Account option links to nsec.app
 - Effort: L (4-8hr)
+- Completed: Jan 2026
 
 ### PHASE 3: FEATURE BUILD-OUT
 
@@ -454,13 +456,19 @@
 - Connect/disconnect wallet UI
 - Real-time balance from connected wallet
 
+**[P2-05] NIP-46 Bunker Login** - nsec.app integration
+- Bunker button enabled with URL input
+- BunkerSigner via nostr-tools NIP-46 module
+- Session persistence for reconnection
+- Create New Account option for new users
+
 ---
 
 ## CURRENT FOCUS
 
-- **Active:** Lightning/NWC Integration Complete - Ready for NIP-46 or Club Sharing
+- **Active:** NIP-46 Bunker Login Complete - Ready for Club Sharing or Community Features
 - **Started:** 2026-01-26
-- **Notes:** Non-custodial Lightning payments working. Users connect their own NWC wallet, zaps make real Lightning payments.
+- **Notes:** NIP-46 bunker login working via nsec.app. Users can connect without browser extension. Session persists across page reloads.
 
 ---
 
@@ -474,10 +482,10 @@
 
 ## UP NEXT QUEUE
 
-1. [P2-05] NIP-46 Bunker Login (nsec.app integration)
-2. [P3-03] Club-Based Sharing Enforcement
-3. [P3-01] Community Membership System
-4. [P3-02] Bitcoin Rewards System
+1. [P3-03] Club-Based Sharing Enforcement
+2. [P3-01] Community Membership System
+3. [P3-02] Bitcoin Rewards System
+4. [P3-04] AI Memory System
 
 ---
 
@@ -494,6 +502,8 @@
 | 2026-01-26 | Non-custodial wallets (user provides NWC) | No app-wide wallet needed, users control their own funds |
 | 2026-01-26 | LNURL-pay for invoice generation | Standard protocol, works with any Lightning address |
 | 2026-01-26 | Graceful fallback for zaps | If no wallet/lud16, record in database only |
+| 2026-01-26 | NIP-46 via nostr-tools BunkerSigner | Built-in support in nostr-tools v2, no extra dependency |
+| 2026-01-26 | Store bunker session in localStorage | Ephemeral key is safe to store, user's nsec stays in bunker |
 
 ---
 
@@ -501,7 +511,7 @@
 
 | Issue | Impact | Priority |
 |-------|--------|----------|
-| NIP-46 bunker login disabled | Low - NIP-07 works fine | Low |
+| None currently | - | - |
 
 ---
 
@@ -583,6 +593,5 @@ Note: P1-04 (Replace Mock Data) depends on P1-03 (API Endpoints) - must be seque
 
 | Task | Risk | Mitigation |
 |------|------|------------|
-| P1-02 NWC Setup | NWC protocol complexity | Start with simple invoice generation |
-| P2-05 NIP-46 | Less documented than NIP-07 | Test with multiple bunker providers |
 | P3-03 AI Memory | Browser storage limits | Implement pruning strategy early |
+| P3-01 Community Memberships | Payment/subscription complexity | Start with simple one-time payments |
