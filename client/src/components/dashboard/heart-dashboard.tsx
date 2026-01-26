@@ -140,11 +140,10 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
                 <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="rgba(0,0,0,0.5)" />
               </filter>
             </defs>
-            {/* Outline - matching background #FAFAFA with 3px width */}
+            {/* Outline - matching theme background with 3px width */}
             <path
               d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z"
-              fill="#FAFAFA"
-              stroke="#FAFAFA"
+              className="fill-[hsl(var(--background))] stroke-[hsl(var(--background))]"
               strokeWidth="3"
               filter="url(#heartShadow)"
             />
@@ -193,8 +192,7 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, backImageUrl, 
             </defs>
             <path
               d="M50 88 C20 60, 0 40, 0 25 C0 10, 15 0, 30 0 C40 0, 48 8, 50 15 C52 8, 60 0, 70 0 C85 0, 100 10, 100 25 C100 40, 80 60, 50 88Z"
-              fill="#FAFAFA"
-              stroke="#FAFAFA"
+              className="fill-[hsl(var(--background))] stroke-[hsl(var(--background))]"
               strokeWidth="3"
               filter="url(#heartShadowBack)"
             />
