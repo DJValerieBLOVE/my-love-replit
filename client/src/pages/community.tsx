@@ -10,7 +10,7 @@ export default function Community() {
   return (
     <Layout>
       <div className="relative h-48 md:h-64 w-full overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent z-10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent z-10 pt-[20px] pb-[20px]" />
         <img 
           src={CommunityCover} 
           alt="Community" 
@@ -21,7 +21,6 @@ export default function Community() {
           <p className="text-muted-foreground max-w-md">Intimate spaces to connect and grow.</p>
         </div>
       </div>
-
       <div className="max-w-4xl mx-auto p-4 lg:p-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {CLUBS.map((space) => (
