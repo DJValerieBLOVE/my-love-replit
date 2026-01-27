@@ -10,6 +10,8 @@ import Community from "@/pages/community";
 import ClubDetail from "@/pages/club-detail";
 import Grow from "@/pages/grow";
 import ExperimentDetail from "@/pages/experiment-detail";
+import CourseBuilder from "@/pages/course-builder";
+import CourseDetail from "@/pages/course-detail";
 import BigDreams from "@/pages/big-dreams";
 import Resources from "@/pages/resources";
 import Journal from "@/pages/journal";
@@ -32,6 +34,8 @@ function Router() {
       <Route path="/community" component={Community} />
       <Route path="/community/:id" component={ClubDetail} />
       <Route path="/grow" component={Grow} />
+      <Route path="/grow/create" component={CourseBuilder} />
+      <Route path="/grow/course/:id" component={CourseDetail} />
       <Route path="/grow/:id" component={ExperimentDetail} />
       <Route path="/big-dreams" component={BigDreams} />
       <Route path="/resources" component={Resources} />

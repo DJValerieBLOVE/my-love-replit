@@ -1,6 +1,8 @@
 import {
   users, journalEntries, dreams, areaProgress, experiments, userExperiments,
   experimentNotes, discoveryNotes, events, posts, clubs, zaps, aiUsageLogs,
+  courses, lessons, courseEnrollments, lessonComments, courseComments,
+  communities, communityMemberships, communityPosts,
   type User, type InsertUser,
   type JournalEntry, type InsertJournalEntry,
   type Dream, type InsertDream,
@@ -13,6 +15,14 @@ import {
   type Post, type InsertPost,
   type Club, type InsertClub,
   type Zap, type InsertZap,
+  type Course, type InsertCourse,
+  type Lesson, type InsertLesson,
+  type CourseEnrollment, type InsertCourseEnrollment,
+  type LessonComment, type InsertLessonComment,
+  type CourseComment, type InsertCourseComment,
+  type Community, type InsertCommunity,
+  type CommunityMembership, type InsertCommunityMembership,
+  type CommunityPost, type InsertCommunityPost,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, sql } from "drizzle-orm";
@@ -118,6 +128,61 @@ export interface IStorage {
 
   // Rollback: Release a reserved slot if AI call fails
   releaseAiUsageSlot(userId: string, tier: string, tokensReserved?: number): Promise<void>;
+
+  // Courses
+  getAllCourses(options?: { published?: boolean }): Promise<(Course & { creator: User })[]>;
+  getCoursesByCreator(creatorId: string): Promise<Course[]>;
+  getCourse(id: string): Promise<(Course & { creator: User; lessons: Lesson[] }) | undefined>;
+  createCourse(course: InsertCourse): Promise<Course>;
+  updateCourse(id: string, course: Partial<InsertCourse>): Promise<Course | undefined>;
+  deleteCourse(id: string): Promise<boolean>;
+
+  // Lessons
+  getLessonsByCourse(courseId: string): Promise<Lesson[]>;
+  getLesson(id: string): Promise<Lesson | undefined>;
+  createLesson(lesson: InsertLesson): Promise<Lesson>;
+  updateLesson(id: string, lesson: Partial<InsertLesson>): Promise<Lesson | undefined>;
+  deleteLesson(id: string): Promise<boolean>;
+  reorderLessons(courseId: string, lessonIds: string[]): Promise<void>;
+
+  // Course Enrollments
+  getEnrollmentsByCourse(courseId: string): Promise<(CourseEnrollment & { user: User })[]>;
+  getEnrollmentsByUser(userId: string): Promise<(CourseEnrollment & { course: Course })[]>;
+  getEnrollment(userId: string, courseId: string): Promise<CourseEnrollment | undefined>;
+  enrollInCourse(enrollment: InsertCourseEnrollment): Promise<CourseEnrollment>;
+  updateEnrollmentProgress(id: string, updates: { progress?: number; completedLessons?: string[]; completedAt?: Date }): Promise<CourseEnrollment | undefined>;
+  unenrollFromCourse(userId: string, courseId: string): Promise<boolean>;
+
+  // Course & Lesson Comments
+  getCourseComments(courseId: string): Promise<(CourseComment & { author: User })[]>;
+  createCourseComment(comment: InsertCourseComment): Promise<CourseComment>;
+  getLessonComments(lessonId: string): Promise<(LessonComment & { author: User })[]>;
+  createLessonComment(comment: InsertLessonComment): Promise<LessonComment>;
+
+  // Communities
+  getAllCommunities(options?: { active?: boolean }): Promise<(Community & { creator: User })[]>;
+  getCommunitiesByCreator(creatorId: string): Promise<Community[]>;
+  getCommunity(id: string): Promise<(Community & { creator: User }) | undefined>;
+  getCommunityBySlug(slug: string): Promise<(Community & { creator: User }) | undefined>;
+  createCommunity(community: InsertCommunity): Promise<Community>;
+  updateCommunity(id: string, community: Partial<InsertCommunity>): Promise<Community | undefined>;
+  deleteCommunity(id: string): Promise<boolean>;
+
+  // Community Memberships
+  getCommunityMembers(communityId: string, status?: string): Promise<(CommunityMembership & { user: User })[]>;
+  getUserCommunities(userId: string): Promise<(CommunityMembership & { community: Community })[]>;
+  getMembership(userId: string, communityId: string): Promise<CommunityMembership | undefined>;
+  requestMembership(membership: InsertCommunityMembership): Promise<CommunityMembership>;
+  updateMembership(id: string, updates: Partial<InsertCommunityMembership>): Promise<CommunityMembership | undefined>;
+  approveMembership(id: string): Promise<CommunityMembership | undefined>;
+  rejectMembership(id: string): Promise<CommunityMembership | undefined>;
+  removeMember(userId: string, communityId: string): Promise<boolean>;
+
+  // Community Posts
+  getCommunityPosts(communityId: string, limit?: number): Promise<(CommunityPost & { author: User })[]>;
+  createCommunityPost(post: InsertCommunityPost): Promise<CommunityPost>;
+  likeCommunityPost(postId: string): Promise<CommunityPost | undefined>;
+  zapCommunityPost(postId: string, amount: number): Promise<CommunityPost | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -691,6 +756,394 @@ export class DatabaseStorage implements IStorage {
       console.error("Failed to release AI usage slot:", error);
       // Don't throw - this is best effort cleanup
     }
+  }
+
+  // ============= COURSES =============
+
+  async getAllCourses(options?: { published?: boolean }): Promise<(Course & { creator: User })[]> {
+    let query = db.select()
+      .from(courses)
+      .leftJoin(users, eq(courses.creatorId, users.id))
+      .orderBy(desc(courses.createdAt));
+    
+    if (options?.published !== undefined) {
+      const results = await db.select()
+        .from(courses)
+        .leftJoin(users, eq(courses.creatorId, users.id))
+        .where(eq(courses.isPublished, options.published))
+        .orderBy(desc(courses.createdAt));
+      return results.map(r => ({ ...r.courses, creator: r.users! }));
+    }
+    
+    const results = await query;
+    return results.map(r => ({ ...r.courses, creator: r.users! }));
+  }
+
+  async getCoursesByCreator(creatorId: string): Promise<Course[]> {
+    return await db.select().from(courses)
+      .where(eq(courses.creatorId, creatorId))
+      .orderBy(desc(courses.createdAt));
+  }
+
+  async getCourse(id: string): Promise<(Course & { creator: User; lessons: Lesson[] }) | undefined> {
+    const [result] = await db.select()
+      .from(courses)
+      .leftJoin(users, eq(courses.creatorId, users.id))
+      .where(eq(courses.id, id));
+    
+    if (!result) return undefined;
+    
+    const courseLessons = await db.select()
+      .from(lessons)
+      .where(eq(lessons.courseId, id))
+      .orderBy(lessons.order);
+    
+    return {
+      ...result.courses,
+      creator: result.users!,
+      lessons: courseLessons,
+    };
+  }
+
+  async createCourse(course: InsertCourse): Promise<Course> {
+    const [created] = await db.insert(courses).values(course).returning();
+    return created;
+  }
+
+  async updateCourse(id: string, course: Partial<InsertCourse>): Promise<Course | undefined> {
+    const [updated] = await db.update(courses)
+      .set({ ...course, updatedAt: new Date() })
+      .where(eq(courses.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteCourse(id: string): Promise<boolean> {
+    const result = await db.delete(courses).where(eq(courses.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // ============= LESSONS =============
+
+  async getLessonsByCourse(courseId: string): Promise<Lesson[]> {
+    return await db.select().from(lessons)
+      .where(eq(lessons.courseId, courseId))
+      .orderBy(lessons.order);
+  }
+
+  async getLesson(id: string): Promise<Lesson | undefined> {
+    const [lesson] = await db.select().from(lessons).where(eq(lessons.id, id));
+    return lesson || undefined;
+  }
+
+  async createLesson(lesson: InsertLesson): Promise<Lesson> {
+    const [created] = await db.insert(lessons).values(lesson).returning();
+    // Update course total lessons count
+    await db.update(courses)
+      .set({ totalLessons: sql`${courses.totalLessons} + 1` })
+      .where(eq(courses.id, lesson.courseId));
+    return created;
+  }
+
+  async updateLesson(id: string, lesson: Partial<InsertLesson>): Promise<Lesson | undefined> {
+    const [updated] = await db.update(lessons)
+      .set({ ...lesson, updatedAt: new Date() })
+      .where(eq(lessons.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteLesson(id: string): Promise<boolean> {
+    const [lesson] = await db.select().from(lessons).where(eq(lessons.id, id));
+    if (!lesson) return false;
+    
+    const result = await db.delete(lessons).where(eq(lessons.id, id));
+    // Update course total lessons count
+    await db.update(courses)
+      .set({ totalLessons: sql`GREATEST(0, ${courses.totalLessons} - 1)` })
+      .where(eq(courses.id, lesson.courseId));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  async reorderLessons(courseId: string, lessonIds: string[]): Promise<void> {
+    await db.transaction(async (tx) => {
+      for (let i = 0; i < lessonIds.length; i++) {
+        await tx.update(lessons)
+          .set({ order: i })
+          .where(and(eq(lessons.id, lessonIds[i]), eq(lessons.courseId, courseId)));
+      }
+    });
+  }
+
+  // ============= COURSE ENROLLMENTS =============
+
+  async getEnrollmentsByCourse(courseId: string): Promise<(CourseEnrollment & { user: User })[]> {
+    const results = await db.select()
+      .from(courseEnrollments)
+      .leftJoin(users, eq(courseEnrollments.userId, users.id))
+      .where(eq(courseEnrollments.courseId, courseId))
+      .orderBy(desc(courseEnrollments.enrolledAt));
+    return results.map(r => ({ ...r.course_enrollments, user: r.users! }));
+  }
+
+  async getEnrollmentsByUser(userId: string): Promise<(CourseEnrollment & { course: Course })[]> {
+    const results = await db.select()
+      .from(courseEnrollments)
+      .leftJoin(courses, eq(courseEnrollments.courseId, courses.id))
+      .where(eq(courseEnrollments.userId, userId))
+      .orderBy(desc(courseEnrollments.lastAccessedAt));
+    return results.map(r => ({ ...r.course_enrollments, course: r.courses! }));
+  }
+
+  async getEnrollment(userId: string, courseId: string): Promise<CourseEnrollment | undefined> {
+    const [enrollment] = await db.select().from(courseEnrollments)
+      .where(and(eq(courseEnrollments.userId, userId), eq(courseEnrollments.courseId, courseId)));
+    return enrollment || undefined;
+  }
+
+  async enrollInCourse(enrollment: InsertCourseEnrollment): Promise<CourseEnrollment> {
+    const [created] = await db.insert(courseEnrollments).values(enrollment).returning();
+    // Increment course enrollment count
+    await db.update(courses)
+      .set({ totalEnrollments: sql`${courses.totalEnrollments} + 1` })
+      .where(eq(courses.id, enrollment.courseId));
+    return created;
+  }
+
+  async updateEnrollmentProgress(id: string, updates: { progress?: number; completedLessons?: string[]; completedAt?: Date }): Promise<CourseEnrollment | undefined> {
+    const [updated] = await db.update(courseEnrollments)
+      .set({ ...updates, lastAccessedAt: new Date() })
+      .where(eq(courseEnrollments.id, id))
+      .returning();
+    return updated;
+  }
+
+  async unenrollFromCourse(userId: string, courseId: string): Promise<boolean> {
+    const result = await db.delete(courseEnrollments)
+      .where(and(eq(courseEnrollments.userId, userId), eq(courseEnrollments.courseId, courseId)));
+    if (result.rowCount && result.rowCount > 0) {
+      await db.update(courses)
+        .set({ totalEnrollments: sql`GREATEST(0, ${courses.totalEnrollments} - 1)` })
+        .where(eq(courses.id, courseId));
+      return true;
+    }
+    return false;
+  }
+
+  // ============= COURSE & LESSON COMMENTS =============
+
+  async getCourseComments(courseId: string): Promise<(CourseComment & { author: User })[]> {
+    const results = await db.select()
+      .from(courseComments)
+      .leftJoin(users, eq(courseComments.authorId, users.id))
+      .where(eq(courseComments.courseId, courseId))
+      .orderBy(desc(courseComments.createdAt));
+    return results.map(r => ({ ...r.course_comments, author: r.users! }));
+  }
+
+  async createCourseComment(comment: InsertCourseComment): Promise<CourseComment> {
+    const [created] = await db.insert(courseComments).values(comment).returning();
+    return created;
+  }
+
+  async getLessonComments(lessonId: string): Promise<(LessonComment & { author: User })[]> {
+    const results = await db.select()
+      .from(lessonComments)
+      .leftJoin(users, eq(lessonComments.authorId, users.id))
+      .where(eq(lessonComments.lessonId, lessonId))
+      .orderBy(desc(lessonComments.createdAt));
+    return results.map(r => ({ ...r.lesson_comments, author: r.users! }));
+  }
+
+  async createLessonComment(comment: InsertLessonComment): Promise<LessonComment> {
+    const [created] = await db.insert(lessonComments).values(comment).returning();
+    return created;
+  }
+
+  // ============= COMMUNITIES =============
+
+  async getAllCommunities(options?: { active?: boolean }): Promise<(Community & { creator: User })[]> {
+    if (options?.active !== undefined) {
+      const results = await db.select()
+        .from(communities)
+        .leftJoin(users, eq(communities.creatorId, users.id))
+        .where(eq(communities.isActive, options.active))
+        .orderBy(desc(communities.createdAt));
+      return results.map(r => ({ ...r.communities, creator: r.users! }));
+    }
+    
+    const results = await db.select()
+      .from(communities)
+      .leftJoin(users, eq(communities.creatorId, users.id))
+      .orderBy(desc(communities.createdAt));
+    return results.map(r => ({ ...r.communities, creator: r.users! }));
+  }
+
+  async getCommunitiesByCreator(creatorId: string): Promise<Community[]> {
+    return await db.select().from(communities)
+      .where(eq(communities.creatorId, creatorId))
+      .orderBy(desc(communities.createdAt));
+  }
+
+  async getCommunity(id: string): Promise<(Community & { creator: User }) | undefined> {
+    const [result] = await db.select()
+      .from(communities)
+      .leftJoin(users, eq(communities.creatorId, users.id))
+      .where(eq(communities.id, id));
+    
+    if (!result) return undefined;
+    return { ...result.communities, creator: result.users! };
+  }
+
+  async getCommunityBySlug(slug: string): Promise<(Community & { creator: User }) | undefined> {
+    const [result] = await db.select()
+      .from(communities)
+      .leftJoin(users, eq(communities.creatorId, users.id))
+      .where(eq(communities.slug, slug));
+    
+    if (!result) return undefined;
+    return { ...result.communities, creator: result.users! };
+  }
+
+  async createCommunity(community: InsertCommunity): Promise<Community> {
+    const [created] = await db.insert(communities).values(community).returning();
+    // Auto-add creator as admin member
+    await db.insert(communityMemberships).values({
+      userId: community.creatorId,
+      communityId: created.id,
+      role: "admin",
+      status: "approved",
+    });
+    return created;
+  }
+
+  async updateCommunity(id: string, community: Partial<InsertCommunity>): Promise<Community | undefined> {
+    const [updated] = await db.update(communities)
+      .set({ ...community, updatedAt: new Date() })
+      .where(eq(communities.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteCommunity(id: string): Promise<boolean> {
+    const result = await db.delete(communities).where(eq(communities.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // ============= COMMUNITY MEMBERSHIPS =============
+
+  async getCommunityMembers(communityId: string, status?: string): Promise<(CommunityMembership & { user: User })[]> {
+    if (status) {
+      const results = await db.select()
+        .from(communityMemberships)
+        .leftJoin(users, eq(communityMemberships.userId, users.id))
+        .where(and(eq(communityMemberships.communityId, communityId), eq(communityMemberships.status, status)))
+        .orderBy(desc(communityMemberships.createdAt));
+      return results.map(r => ({ ...r.community_memberships, user: r.users! }));
+    }
+    
+    const results = await db.select()
+      .from(communityMemberships)
+      .leftJoin(users, eq(communityMemberships.userId, users.id))
+      .where(eq(communityMemberships.communityId, communityId))
+      .orderBy(desc(communityMemberships.createdAt));
+    return results.map(r => ({ ...r.community_memberships, user: r.users! }));
+  }
+
+  async getUserCommunities(userId: string): Promise<(CommunityMembership & { community: Community })[]> {
+    const results = await db.select()
+      .from(communityMemberships)
+      .leftJoin(communities, eq(communityMemberships.communityId, communities.id))
+      .where(and(eq(communityMemberships.userId, userId), eq(communityMemberships.status, "approved")))
+      .orderBy(desc(communityMemberships.joinedAt));
+    return results.map(r => ({ ...r.community_memberships, community: r.communities! }));
+  }
+
+  async getMembership(userId: string, communityId: string): Promise<CommunityMembership | undefined> {
+    const [membership] = await db.select().from(communityMemberships)
+      .where(and(eq(communityMemberships.userId, userId), eq(communityMemberships.communityId, communityId)));
+    return membership || undefined;
+  }
+
+  async requestMembership(membership: InsertCommunityMembership): Promise<CommunityMembership> {
+    const [created] = await db.insert(communityMemberships).values(membership).returning();
+    return created;
+  }
+
+  async updateMembership(id: string, updates: Partial<InsertCommunityMembership>): Promise<CommunityMembership | undefined> {
+    const [updated] = await db.update(communityMemberships)
+      .set(updates)
+      .where(eq(communityMemberships.id, id))
+      .returning();
+    return updated;
+  }
+
+  async approveMembership(id: string): Promise<CommunityMembership | undefined> {
+    const [updated] = await db.update(communityMemberships)
+      .set({ status: "approved", joinedAt: new Date() })
+      .where(eq(communityMemberships.id, id))
+      .returning();
+    
+    if (updated) {
+      // Increment member count
+      await db.update(communities)
+        .set({ memberCount: sql`${communities.memberCount} + 1` })
+        .where(eq(communities.id, updated.communityId));
+    }
+    return updated;
+  }
+
+  async rejectMembership(id: string): Promise<CommunityMembership | undefined> {
+    const [updated] = await db.update(communityMemberships)
+      .set({ status: "rejected" })
+      .where(eq(communityMemberships.id, id))
+      .returning();
+    return updated;
+  }
+
+  async removeMember(userId: string, communityId: string): Promise<boolean> {
+    const result = await db.delete(communityMemberships)
+      .where(and(eq(communityMemberships.userId, userId), eq(communityMemberships.communityId, communityId)));
+    if (result.rowCount && result.rowCount > 0) {
+      await db.update(communities)
+        .set({ memberCount: sql`GREATEST(0, ${communities.memberCount} - 1)` })
+        .where(eq(communities.id, communityId));
+      return true;
+    }
+    return false;
+  }
+
+  // ============= COMMUNITY POSTS =============
+
+  async getCommunityPosts(communityId: string, limit: number = 50): Promise<(CommunityPost & { author: User })[]> {
+    const results = await db.select()
+      .from(communityPosts)
+      .leftJoin(users, eq(communityPosts.authorId, users.id))
+      .where(eq(communityPosts.communityId, communityId))
+      .orderBy(desc(communityPosts.isPinned), desc(communityPosts.createdAt))
+      .limit(limit);
+    return results.map(r => ({ ...r.community_posts, author: r.users! }));
+  }
+
+  async createCommunityPost(post: InsertCommunityPost): Promise<CommunityPost> {
+    const [created] = await db.insert(communityPosts).values(post).returning();
+    return created;
+  }
+
+  async likeCommunityPost(postId: string): Promise<CommunityPost | undefined> {
+    const [updated] = await db.update(communityPosts)
+      .set({ likes: sql`${communityPosts.likes} + 1` })
+      .where(eq(communityPosts.id, postId))
+      .returning();
+    return updated;
+  }
+
+  async zapCommunityPost(postId: string, amount: number): Promise<CommunityPost | undefined> {
+    const [updated] = await db.update(communityPosts)
+      .set({ zaps: sql`${communityPosts.zaps} + ${amount}` })
+      .where(eq(communityPosts.id, postId))
+      .returning();
+    return updated;
   }
 }
 

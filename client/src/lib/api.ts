@@ -293,3 +293,222 @@ export async function updateAiProfile(profile: {
   if (!response.ok) throw new Error("Failed to update AI profile");
   return response.json();
 }
+
+// Course API
+export async function getAllCourses() {
+  const response = await fetch("/api/courses");
+  if (!response.ok) throw new Error("Failed to fetch courses");
+  return response.json();
+}
+
+export async function getMyCourses() {
+  const response = await authFetch("/api/courses/my");
+  if (!response.ok) throw new Error("Failed to fetch your courses");
+  return response.json();
+}
+
+export async function getEnrolledCourses() {
+  const response = await authFetch("/api/courses/enrolled");
+  if (!response.ok) throw new Error("Failed to fetch enrolled courses");
+  return response.json();
+}
+
+export async function getCourse(id: string) {
+  const response = await fetch(`/api/courses/${id}`);
+  if (!response.ok) throw new Error("Failed to fetch course");
+  return response.json();
+}
+
+export async function createCourse(course: any) {
+  const response = await authFetch("/api/courses", {
+    method: "POST",
+    body: JSON.stringify(course),
+  });
+  if (!response.ok) throw new Error("Failed to create course");
+  return response.json();
+}
+
+export async function updateCourse(id: string, course: any) {
+  const response = await authFetch(`/api/courses/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(course),
+  });
+  if (!response.ok) throw new Error("Failed to update course");
+  return response.json();
+}
+
+export async function deleteCourse(id: string) {
+  const response = await authFetch(`/api/courses/${id}`, { method: "DELETE" });
+  if (!response.ok) throw new Error("Failed to delete course");
+  return response.ok;
+}
+
+// Lesson API
+export async function createLesson(courseId: string, lesson: any) {
+  const response = await authFetch(`/api/courses/${courseId}/lessons`, {
+    method: "POST",
+    body: JSON.stringify(lesson),
+  });
+  if (!response.ok) throw new Error("Failed to create lesson");
+  return response.json();
+}
+
+export async function updateLesson(id: string, lesson: any) {
+  const response = await authFetch(`/api/lessons/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(lesson),
+  });
+  if (!response.ok) throw new Error("Failed to update lesson");
+  return response.json();
+}
+
+export async function deleteLesson(id: string) {
+  const response = await authFetch(`/api/lessons/${id}`, { method: "DELETE" });
+  if (!response.ok) throw new Error("Failed to delete lesson");
+  return response.ok;
+}
+
+// Enrollment API
+export async function enrollInCourse(courseId: string) {
+  const response = await authFetch(`/api/courses/${courseId}/enroll`, { method: "POST" });
+  if (!response.ok) throw new Error("Failed to enroll in course");
+  return response.json();
+}
+
+export async function unenrollFromCourse(courseId: string) {
+  const response = await authFetch(`/api/courses/${courseId}/enroll`, { method: "DELETE" });
+  if (!response.ok) throw new Error("Failed to unenroll from course");
+  return response.ok;
+}
+
+export async function getCourseEnrollment(courseId: string) {
+  const response = await authFetch(`/api/courses/${courseId}/enrollment`);
+  if (!response.ok) throw new Error("Failed to fetch enrollment");
+  return response.json();
+}
+
+export async function updateCourseEnrollment(courseId: string, updates: any) {
+  const response = await authFetch(`/api/courses/${courseId}/enrollment`, {
+    method: "PATCH",
+    body: JSON.stringify(updates),
+  });
+  if (!response.ok) throw new Error("Failed to update enrollment");
+  return response.json();
+}
+
+// Community API
+export async function getAllCommunities() {
+  const response = await fetch("/api/communities");
+  if (!response.ok) throw new Error("Failed to fetch communities");
+  return response.json();
+}
+
+export async function getMyCommunities() {
+  const response = await authFetch("/api/communities/my");
+  if (!response.ok) throw new Error("Failed to fetch your communities");
+  return response.json();
+}
+
+export async function getCreatedCommunities() {
+  const response = await authFetch("/api/communities/created");
+  if (!response.ok) throw new Error("Failed to fetch created communities");
+  return response.json();
+}
+
+export async function getCommunity(id: string) {
+  const response = await fetch(`/api/communities/${id}`);
+  if (!response.ok) throw new Error("Failed to fetch community");
+  return response.json();
+}
+
+export async function getCommunityBySlug(slug: string) {
+  const response = await fetch(`/api/communities/slug/${slug}`);
+  if (!response.ok) throw new Error("Failed to fetch community");
+  return response.json();
+}
+
+export async function createCommunity(community: any) {
+  const response = await authFetch("/api/communities", {
+    method: "POST",
+    body: JSON.stringify(community),
+  });
+  if (!response.ok) throw new Error("Failed to create community");
+  return response.json();
+}
+
+export async function updateCommunity(id: string, community: any) {
+  const response = await authFetch(`/api/communities/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(community),
+  });
+  if (!response.ok) throw new Error("Failed to update community");
+  return response.json();
+}
+
+export async function joinCommunity(id: string, approvalAnswers?: string[]) {
+  const response = await authFetch(`/api/communities/${id}/join`, {
+    method: "POST",
+    body: JSON.stringify({ approvalAnswers }),
+  });
+  if (!response.ok) throw new Error("Failed to join community");
+  return response.json();
+}
+
+export async function leaveCommunity(id: string) {
+  const response = await authFetch(`/api/communities/${id}/membership`, { method: "DELETE" });
+  if (!response.ok) throw new Error("Failed to leave community");
+  return response.ok;
+}
+
+export async function getCommunityMembership(id: string) {
+  const response = await authFetch(`/api/communities/${id}/membership`);
+  if (!response.ok) throw new Error("Failed to fetch membership");
+  return response.json();
+}
+
+export async function getCommunityPosts(id: string, limit?: number) {
+  const url = limit ? `/api/communities/${id}/posts?limit=${limit}` : `/api/communities/${id}/posts`;
+  const response = await authFetch(url);
+  if (!response.ok) throw new Error("Failed to fetch posts");
+  return response.json();
+}
+
+export async function createCommunityPost(communityId: string, content: string, image?: string) {
+  const response = await authFetch(`/api/communities/${communityId}/posts`, {
+    method: "POST",
+    body: JSON.stringify({ content, image }),
+  });
+  if (!response.ok) throw new Error("Failed to create post");
+  return response.json();
+}
+
+// Course Comments API
+export async function getCourseComments(courseId: string) {
+  const response = await fetch(`/api/courses/${courseId}/comments`);
+  if (!response.ok) throw new Error("Failed to fetch comments");
+  return response.json();
+}
+
+export async function createCourseComment(courseId: string, content: string, parentId?: string) {
+  const response = await authFetch(`/api/courses/${courseId}/comments`, {
+    method: "POST",
+    body: JSON.stringify({ content, parentId }),
+  });
+  if (!response.ok) throw new Error("Failed to add comment");
+  return response.json();
+}
+
+export async function getLessonComments(lessonId: string) {
+  const response = await fetch(`/api/lessons/${lessonId}/comments`);
+  if (!response.ok) throw new Error("Failed to fetch comments");
+  return response.json();
+}
+
+export async function createLessonComment(lessonId: string, content: string, parentId?: string) {
+  const response = await authFetch(`/api/lessons/${lessonId}/comments`, {
+    method: "POST",
+    body: JSON.stringify({ content, parentId }),
+  });
+  if (!response.ok) throw new Error("Failed to add comment");
+  return response.json();
+}

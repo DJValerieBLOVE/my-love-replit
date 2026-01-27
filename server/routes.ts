@@ -15,6 +15,14 @@ import {
   insertClubSchema,
   insertZapSchema,
   updateEmailSchema,
+  insertCourseSchema,
+  insertLessonSchema,
+  insertCourseEnrollmentSchema,
+  insertCourseCommentSchema,
+  insertLessonCommentSchema,
+  insertCommunitySchema,
+  insertCommunityMembershipSchema,
+  insertCommunityPostSchema,
 } from "@shared/schema";
 import { chat, validateApiKey, type ChatMessage, type UserContext } from "./anthropic";
 
@@ -797,6 +805,773 @@ export async function registerRoutes(
       res.json(updated);
     } catch (error) {
       res.status(500).json({ error: "Failed to update AI profile" });
+    }
+  });
+
+  // ===== COURSE ROUTES =====
+
+  // Get all published courses
+  app.get("/api/courses", async (req, res) => {
+    try {
+      const courses = await storage.getAllCourses({ published: true });
+      res.json(courses);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch courses" });
+    }
+  });
+
+  // Get courses created by current user
+  app.get("/api/courses/my", authMiddleware, async (req, res) => {
+    try {
+      const courses = await storage.getCoursesByCreator(req.userId!);
+      res.json(courses);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch your courses" });
+    }
+  });
+
+  // Get enrolled courses for current user
+  app.get("/api/courses/enrolled", authMiddleware, async (req, res) => {
+    try {
+      const enrollments = await storage.getEnrollmentsByUser(req.userId!);
+      res.json(enrollments);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch enrolled courses" });
+    }
+  });
+
+  // Get single course with lessons
+  app.get("/api/courses/:id", async (req, res) => {
+    try {
+      const course = await storage.getCourse(req.params.id);
+      if (!course) {
+        return res.status(404).json({ error: "Course not found" });
+      }
+      res.json(course);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch course" });
+    }
+  });
+
+  // Create a course
+  app.post("/api/courses", authMiddleware, async (req, res) => {
+    try {
+      const result = insertCourseSchema.safeParse({
+        ...req.body,
+        creatorId: req.userId,
+      });
+      if (!result.success) {
+        return res.status(400).json({ error: result.error.errors[0]?.message });
+      }
+      const course = await storage.createCourse(result.data);
+      res.status(201).json(course);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to create course" });
+    }
+  });
+
+  // Update a course (owner only)
+  app.patch("/api/courses/:id", authMiddleware, async (req, res) => {
+    try {
+      const course = await storage.getCourse(req.params.id);
+      if (!course) {
+        return res.status(404).json({ error: "Course not found" });
+      }
+      if (course.creatorId !== req.userId) {
+        return res.status(403).json({ error: "Not authorized to edit this course" });
+      }
+      const updated = await storage.updateCourse(req.params.id, req.body);
+      res.json(updated);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update course" });
+    }
+  });
+
+  // Delete a course (owner only)
+  app.delete("/api/courses/:id", authMiddleware, async (req, res) => {
+    try {
+      const course = await storage.getCourse(req.params.id);
+      if (!course) {
+        return res.status(404).json({ error: "Course not found" });
+      }
+      if (course.creatorId !== req.userId) {
+        return res.status(403).json({ error: "Not authorized to delete this course" });
+      }
+      await storage.deleteCourse(req.params.id);
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete course" });
+    }
+  });
+
+  // ===== LESSON ROUTES =====
+
+  // Get lessons for a course
+  app.get("/api/courses/:courseId/lessons", async (req, res) => {
+    try {
+      const lessons = await storage.getLessonsByCourse(req.params.courseId);
+      res.json(lessons);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch lessons" });
+    }
+  });
+
+  // Get single lesson
+  app.get("/api/lessons/:id", async (req, res) => {
+    try {
+      const lesson = await storage.getLesson(req.params.id);
+      if (!lesson) {
+        return res.status(404).json({ error: "Lesson not found" });
+      }
+      res.json(lesson);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch lesson" });
+    }
+  });
+
+  // Create a lesson (course owner only)
+  app.post("/api/courses/:courseId/lessons", authMiddleware, async (req, res) => {
+    try {
+      const course = await storage.getCourse(req.params.courseId);
+      if (!course) {
+        return res.status(404).json({ error: "Course not found" });
+      }
+      if (course.creatorId !== req.userId) {
+        return res.status(403).json({ error: "Not authorized to add lessons" });
+      }
+      const result = insertLessonSchema.safeParse({
+        ...req.body,
+        courseId: req.params.courseId,
+      });
+      if (!result.success) {
+        return res.status(400).json({ error: result.error.errors[0]?.message });
+      }
+      const lesson = await storage.createLesson(result.data);
+      res.status(201).json(lesson);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to create lesson" });
+    }
+  });
+
+  // Update a lesson (course owner only)
+  app.patch("/api/lessons/:id", authMiddleware, async (req, res) => {
+    try {
+      const lesson = await storage.getLesson(req.params.id);
+      if (!lesson) {
+        return res.status(404).json({ error: "Lesson not found" });
+      }
+      const course = await storage.getCourse(lesson.courseId);
+      if (!course || course.creatorId !== req.userId) {
+        return res.status(403).json({ error: "Not authorized to edit this lesson" });
+      }
+      const updated = await storage.updateLesson(req.params.id, req.body);
+      res.json(updated);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update lesson" });
+    }
+  });
+
+  // Delete a lesson (course owner only)
+  app.delete("/api/lessons/:id", authMiddleware, async (req, res) => {
+    try {
+      const lesson = await storage.getLesson(req.params.id);
+      if (!lesson) {
+        return res.status(404).json({ error: "Lesson not found" });
+      }
+      const course = await storage.getCourse(lesson.courseId);
+      if (!course || course.creatorId !== req.userId) {
+        return res.status(403).json({ error: "Not authorized to delete this lesson" });
+      }
+      await storage.deleteLesson(req.params.id);
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete lesson" });
+    }
+  });
+
+  // Reorder lessons (course owner only)
+  app.post("/api/courses/:courseId/lessons/reorder", authMiddleware, async (req, res) => {
+    try {
+      const course = await storage.getCourse(req.params.courseId);
+      if (!course) {
+        return res.status(404).json({ error: "Course not found" });
+      }
+      if (course.creatorId !== req.userId) {
+        return res.status(403).json({ error: "Not authorized to reorder lessons" });
+      }
+      const { lessonIds } = req.body;
+      if (!Array.isArray(lessonIds)) {
+        return res.status(400).json({ error: "lessonIds must be an array" });
+      }
+      await storage.reorderLessons(req.params.courseId, lessonIds);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to reorder lessons" });
+    }
+  });
+
+  // ===== COURSE ENROLLMENT ROUTES =====
+
+  // Enroll in a course
+  app.post("/api/courses/:courseId/enroll", authMiddleware, async (req, res) => {
+    try {
+      const course = await storage.getCourse(req.params.courseId);
+      if (!course) {
+        return res.status(404).json({ error: "Course not found" });
+      }
+      
+      // Check access type requirements
+      if (course.accessType === "paid" && course.price > 0) {
+        // For paid courses, check if payment was provided
+        const { paymentProof } = req.body;
+        if (!paymentProof) {
+          return res.status(402).json({ 
+            error: "Payment required",
+            price: course.price,
+            message: "This course requires payment. Please complete payment first."
+          });
+        }
+        // TODO: Verify payment proof with Lightning backend
+      }
+      
+      if (course.accessType === "community" && course.communityId) {
+        // For community-locked courses, verify membership
+        const membership = await storage.getMembership(req.userId!, course.communityId);
+        if (!membership || membership.status !== "approved") {
+          return res.status(403).json({
+            error: "Community membership required",
+            communityId: course.communityId,
+            message: "You must be a member of the community to access this course."
+          });
+        }
+      }
+      
+      const existing = await storage.getEnrollment(req.userId!, req.params.courseId);
+      if (existing) {
+        return res.status(400).json({ error: "Already enrolled in this course" });
+      }
+      const enrollment = await storage.enrollInCourse({
+        userId: req.userId!,
+        courseId: req.params.courseId,
+      });
+      res.status(201).json(enrollment);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to enroll in course" });
+    }
+  });
+
+  // Unenroll from a course
+  app.delete("/api/courses/:courseId/enroll", authMiddleware, async (req, res) => {
+    try {
+      const success = await storage.unenrollFromCourse(req.userId!, req.params.courseId);
+      if (!success) {
+        return res.status(404).json({ error: "Enrollment not found" });
+      }
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Failed to unenroll" });
+    }
+  });
+
+  // Get my enrollment for a course
+  app.get("/api/courses/:courseId/enrollment", authMiddleware, async (req, res) => {
+    try {
+      const enrollment = await storage.getEnrollment(req.userId!, req.params.courseId);
+      res.json(enrollment || null);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch enrollment" });
+    }
+  });
+
+  // Update enrollment progress (mark lesson complete)
+  app.patch("/api/courses/:courseId/enrollment", authMiddleware, async (req, res) => {
+    try {
+      const enrollment = await storage.getEnrollment(req.userId!, req.params.courseId);
+      if (!enrollment) {
+        return res.status(404).json({ error: "Enrollment not found" });
+      }
+      
+      // Validate and deduplicate completed lessons
+      const { completedLessons, progress, completedAt } = req.body;
+      
+      if (completedLessons !== undefined) {
+        if (!Array.isArray(completedLessons)) {
+          return res.status(400).json({ error: "completedLessons must be an array" });
+        }
+        // Ensure no duplicates by using Set
+        const uniqueLessons = [...new Set(completedLessons)];
+        const course = await storage.getCourse(req.params.courseId);
+        if (!course) {
+          return res.status(404).json({ error: "Course not found" });
+        }
+        
+        // Calculate accurate progress from unique lessons
+        const totalLessons = course.totalLessons || 1;
+        const calculatedProgress = Math.min(100, Math.round((uniqueLessons.length / totalLessons) * 100));
+        
+        const updated = await storage.updateEnrollmentProgress(enrollment.id, {
+          completedLessons: uniqueLessons,
+          progress: calculatedProgress,
+          completedAt: calculatedProgress >= 100 ? new Date() : undefined,
+        });
+        return res.json(updated);
+      }
+      
+      // Progress update only
+      if (typeof progress !== "number" || progress < 0 || progress > 100) {
+        return res.status(400).json({ error: "progress must be a number between 0 and 100" });
+      }
+      
+      const updated = await storage.updateEnrollmentProgress(enrollment.id, {
+        progress,
+        completedAt: completedAt ? new Date(completedAt) : undefined,
+      });
+      res.json(updated);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update progress" });
+    }
+  });
+
+  // Get enrollees for a course (creator only)
+  app.get("/api/courses/:courseId/enrollees", authMiddleware, async (req, res) => {
+    try {
+      const course = await storage.getCourse(req.params.courseId);
+      if (!course) {
+        return res.status(404).json({ error: "Course not found" });
+      }
+      if (course.creatorId !== req.userId) {
+        return res.status(403).json({ error: "Not authorized to view enrollees" });
+      }
+      const enrollees = await storage.getEnrollmentsByCourse(req.params.courseId);
+      res.json(enrollees);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch enrollees" });
+    }
+  });
+
+  // ===== COURSE/LESSON COMMENT ROUTES =====
+
+  // Get comments for a course
+  app.get("/api/courses/:courseId/comments", async (req, res) => {
+    try {
+      const comments = await storage.getCourseComments(req.params.courseId);
+      res.json(comments);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch comments" });
+    }
+  });
+
+  // Add comment to a course
+  app.post("/api/courses/:courseId/comments", authMiddleware, async (req, res) => {
+    try {
+      const result = insertCourseCommentSchema.safeParse({
+        ...req.body,
+        courseId: req.params.courseId,
+        authorId: req.userId,
+      });
+      if (!result.success) {
+        return res.status(400).json({ error: result.error.errors[0]?.message });
+      }
+      const comment = await storage.createCourseComment(result.data);
+      res.status(201).json(comment);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to add comment" });
+    }
+  });
+
+  // Get comments for a lesson
+  app.get("/api/lessons/:lessonId/comments", async (req, res) => {
+    try {
+      const comments = await storage.getLessonComments(req.params.lessonId);
+      res.json(comments);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch comments" });
+    }
+  });
+
+  // Add comment to a lesson
+  app.post("/api/lessons/:lessonId/comments", authMiddleware, async (req, res) => {
+    try {
+      const result = insertLessonCommentSchema.safeParse({
+        ...req.body,
+        lessonId: req.params.lessonId,
+        authorId: req.userId,
+      });
+      if (!result.success) {
+        return res.status(400).json({ error: result.error.errors[0]?.message });
+      }
+      const comment = await storage.createLessonComment(result.data);
+      res.status(201).json(comment);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to add comment" });
+    }
+  });
+
+  // ===== COMMUNITY ROUTES =====
+
+  // Get all active communities
+  app.get("/api/communities", async (req, res) => {
+    try {
+      const communities = await storage.getAllCommunities({ active: true });
+      res.json(communities);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch communities" });
+    }
+  });
+
+  // Get communities I'm a member of
+  app.get("/api/communities/my", authMiddleware, async (req, res) => {
+    try {
+      const memberships = await storage.getUserCommunities(req.userId!);
+      res.json(memberships);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch your communities" });
+    }
+  });
+
+  // Get communities I created
+  app.get("/api/communities/created", authMiddleware, async (req, res) => {
+    try {
+      const communities = await storage.getCommunitiesByCreator(req.userId!);
+      res.json(communities);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch created communities" });
+    }
+  });
+
+  // Get single community by ID
+  app.get("/api/communities/:id", async (req, res) => {
+    try {
+      const community = await storage.getCommunity(req.params.id);
+      if (!community) {
+        return res.status(404).json({ error: "Community not found" });
+      }
+      res.json(community);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch community" });
+    }
+  });
+
+  // Get community by slug
+  app.get("/api/communities/slug/:slug", async (req, res) => {
+    try {
+      const community = await storage.getCommunityBySlug(req.params.slug);
+      if (!community) {
+        return res.status(404).json({ error: "Community not found" });
+      }
+      res.json(community);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch community" });
+    }
+  });
+
+  // Create a community
+  app.post("/api/communities", authMiddleware, async (req, res) => {
+    try {
+      const slug = req.body.slug || req.body.name?.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      const result = insertCommunitySchema.safeParse({
+        ...req.body,
+        slug,
+        creatorId: req.userId,
+      });
+      if (!result.success) {
+        return res.status(400).json({ error: result.error.errors[0]?.message });
+      }
+      const community = await storage.createCommunity(result.data);
+      res.status(201).json(community);
+    } catch (error: any) {
+      if (error.code === "23505") {
+        return res.status(400).json({ error: "A community with this name already exists" });
+      }
+      res.status(500).json({ error: "Failed to create community" });
+    }
+  });
+
+  // Update a community (creator only)
+  app.patch("/api/communities/:id", authMiddleware, async (req, res) => {
+    try {
+      const community = await storage.getCommunity(req.params.id);
+      if (!community) {
+        return res.status(404).json({ error: "Community not found" });
+      }
+      if (community.creatorId !== req.userId) {
+        return res.status(403).json({ error: "Not authorized to edit this community" });
+      }
+      const updated = await storage.updateCommunity(req.params.id, req.body);
+      res.json(updated);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update community" });
+    }
+  });
+
+  // Delete a community (creator only)
+  app.delete("/api/communities/:id", authMiddleware, async (req, res) => {
+    try {
+      const community = await storage.getCommunity(req.params.id);
+      if (!community) {
+        return res.status(404).json({ error: "Community not found" });
+      }
+      if (community.creatorId !== req.userId) {
+        return res.status(403).json({ error: "Not authorized to delete this community" });
+      }
+      await storage.deleteCommunity(req.params.id);
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete community" });
+    }
+  });
+
+  // ===== COMMUNITY MEMBERSHIP ROUTES =====
+
+  // Request to join a community
+  app.post("/api/communities/:id/join", authMiddleware, async (req, res) => {
+    try {
+      const community = await storage.getCommunity(req.params.id);
+      if (!community) {
+        return res.status(404).json({ error: "Community not found" });
+      }
+      
+      const existing = await storage.getMembership(req.userId!, req.params.id);
+      if (existing) {
+        if (existing.status === "approved") {
+          return res.status(400).json({ error: "Already a member" });
+        }
+        if (existing.status === "pending") {
+          return res.status(400).json({ error: "Join request already pending" });
+        }
+        if (existing.status === "banned") {
+          return res.status(403).json({ error: "You are banned from this community" });
+        }
+      }
+
+      const { approvalAnswers } = req.body;
+      const status = community.accessType === "public" ? "approved" : "pending";
+      
+      const membership = await storage.requestMembership({
+        userId: req.userId!,
+        communityId: req.params.id,
+        status,
+        approvalAnswers,
+      });
+
+      // Auto-approve for public communities
+      if (status === "approved") {
+        await storage.approveMembership(membership.id);
+      }
+
+      res.status(201).json(membership);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to join community" });
+    }
+  });
+
+  // Leave a community
+  app.delete("/api/communities/:id/membership", authMiddleware, async (req, res) => {
+    try {
+      const community = await storage.getCommunity(req.params.id);
+      if (!community) {
+        return res.status(404).json({ error: "Community not found" });
+      }
+      if (community.creatorId === req.userId) {
+        return res.status(400).json({ error: "Creator cannot leave their own community" });
+      }
+      const success = await storage.removeMember(req.userId!, req.params.id);
+      if (!success) {
+        return res.status(404).json({ error: "Membership not found" });
+      }
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Failed to leave community" });
+    }
+  });
+
+  // Get my membership status for a community
+  app.get("/api/communities/:id/membership", authMiddleware, async (req, res) => {
+    try {
+      const membership = await storage.getMembership(req.userId!, req.params.id);
+      res.json(membership || null);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch membership" });
+    }
+  });
+
+  // Get community members (approved)
+  app.get("/api/communities/:id/members", async (req, res) => {
+    try {
+      const members = await storage.getCommunityMembers(req.params.id, "approved");
+      res.json(members);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch members" });
+    }
+  });
+
+  // Get pending join requests (creator/admin only)
+  app.get("/api/communities/:id/requests", authMiddleware, async (req, res) => {
+    try {
+      const community = await storage.getCommunity(req.params.id);
+      if (!community) {
+        return res.status(404).json({ error: "Community not found" });
+      }
+      
+      const membership = await storage.getMembership(req.userId!, req.params.id);
+      if (!membership || (membership.role !== "admin" && membership.role !== "moderator")) {
+        return res.status(403).json({ error: "Not authorized" });
+      }
+      
+      const requests = await storage.getCommunityMembers(req.params.id, "pending");
+      res.json(requests);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch join requests" });
+    }
+  });
+
+  // Approve a join request (admin/moderator only)
+  app.post("/api/communities/:communityId/members/:memberId/approve", authMiddleware, async (req, res) => {
+    try {
+      const community = await storage.getCommunity(req.params.communityId);
+      if (!community) {
+        return res.status(404).json({ error: "Community not found" });
+      }
+      
+      const myMembership = await storage.getMembership(req.userId!, req.params.communityId);
+      if (!myMembership || (myMembership.role !== "admin" && myMembership.role !== "moderator")) {
+        return res.status(403).json({ error: "Not authorized" });
+      }
+      
+      const updated = await storage.approveMembership(req.params.memberId);
+      res.json(updated);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to approve member" });
+    }
+  });
+
+  // Reject a join request (admin/moderator only)
+  app.post("/api/communities/:communityId/members/:memberId/reject", authMiddleware, async (req, res) => {
+    try {
+      const community = await storage.getCommunity(req.params.communityId);
+      if (!community) {
+        return res.status(404).json({ error: "Community not found" });
+      }
+      
+      const myMembership = await storage.getMembership(req.userId!, req.params.communityId);
+      if (!myMembership || (myMembership.role !== "admin" && myMembership.role !== "moderator")) {
+        return res.status(403).json({ error: "Not authorized" });
+      }
+      
+      const updated = await storage.rejectMembership(req.params.memberId);
+      res.json(updated);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to reject member" });
+    }
+  });
+
+  // Remove a member (admin only)
+  app.delete("/api/communities/:communityId/members/:userId", authMiddleware, async (req, res) => {
+    try {
+      const community = await storage.getCommunity(req.params.communityId);
+      if (!community) {
+        return res.status(404).json({ error: "Community not found" });
+      }
+      
+      const myMembership = await storage.getMembership(req.userId!, req.params.communityId);
+      if (!myMembership || myMembership.role !== "admin") {
+        return res.status(403).json({ error: "Not authorized" });
+      }
+      
+      if (req.params.userId === community.creatorId) {
+        return res.status(400).json({ error: "Cannot remove the community creator" });
+      }
+      
+      const success = await storage.removeMember(req.params.userId, req.params.communityId);
+      if (!success) {
+        return res.status(404).json({ error: "Member not found" });
+      }
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Failed to remove member" });
+    }
+  });
+
+  // ===== COMMUNITY POST ROUTES =====
+
+  // Get posts in a community (members only for private communities)
+  app.get("/api/communities/:id/posts", optionalAuth, async (req, res) => {
+    try {
+      const community = await storage.getCommunity(req.params.id);
+      if (!community) {
+        return res.status(404).json({ error: "Community not found" });
+      }
+      
+      // For non-public communities, check membership
+      if (community.accessType !== "public") {
+        if (!req.userId) {
+          return res.status(401).json({ error: "Authentication required" });
+        }
+        const membership = await storage.getMembership(req.userId, req.params.id);
+        if (!membership || membership.status !== "approved") {
+          return res.status(403).json({ error: "Not a member of this community" });
+        }
+      }
+      
+      const limit = parseInt(req.query.limit as string) || 50;
+      const posts = await storage.getCommunityPosts(req.params.id, limit);
+      res.json(posts);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch posts" });
+    }
+  });
+
+  // Create a post in a community (members only)
+  app.post("/api/communities/:id/posts", authMiddleware, async (req, res) => {
+    try {
+      const membership = await storage.getMembership(req.userId!, req.params.id);
+      if (!membership || membership.status !== "approved") {
+        return res.status(403).json({ error: "Not a member of this community" });
+      }
+      
+      const result = insertCommunityPostSchema.safeParse({
+        ...req.body,
+        communityId: req.params.id,
+        authorId: req.userId,
+      });
+      if (!result.success) {
+        return res.status(400).json({ error: result.error.errors[0]?.message });
+      }
+      
+      const post = await storage.createCommunityPost(result.data);
+      res.status(201).json(post);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to create post" });
+    }
+  });
+
+  // Like a community post
+  app.post("/api/community-posts/:id/like", authMiddleware, async (req, res) => {
+    try {
+      const updated = await storage.likeCommunityPost(req.params.id);
+      if (!updated) {
+        return res.status(404).json({ error: "Post not found" });
+      }
+      res.json(updated);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to like post" });
+    }
+  });
+
+  // Zap a community post
+  app.post("/api/community-posts/:id/zap", authMiddleware, async (req, res) => {
+    try {
+      const { amount } = req.body;
+      if (!amount || amount < 1) {
+        return res.status(400).json({ error: "Invalid zap amount" });
+      }
+      const updated = await storage.zapCommunityPost(req.params.id, amount);
+      if (!updated) {
+        return res.status(404).json({ error: "Post not found" });
+      }
+      res.json(updated);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to zap post" });
     }
   });
 
