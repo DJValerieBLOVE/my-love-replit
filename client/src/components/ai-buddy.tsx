@@ -2,22 +2,34 @@ import {
   Sparkles, 
   Target,
   Send,
-  Loader2,
-  AlertCircle
+  Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { LOVE_CODE_AREAS } from "@/lib/mock-data";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState, useRef, useEffect } from "react";
 import { useNostr } from "@/contexts/nostr-context";
-import { sendAiMessage, type ChatMessage } from "@/lib/api";
+import { sendAiMessage, getDreams, type ChatMessage } from "@/lib/api";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+
+const LOVE_CODE_COLORS: Record<string, { color: string; hex: string }> = {
+  god: { color: "bg-[#eb00a8]", hex: "#eb00a8" },
+  romance: { color: "bg-[#e60023]", hex: "#e60023" },
+  family: { color: "bg-[#ff6600]", hex: "#ff6600" },
+  community: { color: "bg-[#ffdf00]", hex: "#ffdf00" },
+  mission: { color: "bg-[#a2f005]", hex: "#a2f005" },
+  money: { color: "bg-[#00d81c]", hex: "#00d81c" },
+  time: { color: "bg-[#00ccff]", hex: "#00ccff" },
+  environment: { color: "bg-[#0033ff]", hex: "#0033ff" },
+  body: { color: "bg-[#6600ff]", hex: "#6600ff" },
+  mind: { color: "bg-[#9900ff]", hex: "#9900ff" },
+  soul: { color: "bg-[#cc00ff]", hex: "#cc00ff" },
+};
 
 export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.ReactNode, open?: boolean, onOpenChange?: (open: boolean) => void }) {
   const [chatMessage, setChatMessage] = useState("");
@@ -27,6 +39,12 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { profile, isConnected } = useNostr();
   const userName = profile?.name?.split(' ')[0] || "Friend";
+
+  const { data: dreams = [] } = useQuery({
+    queryKey: ["dreams"],
+    queryFn: getDreams,
+    enabled: isConnected,
+  });
   
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -190,27 +208,36 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
                 </div>
 
                 <div className="space-y-4">
-                  {LOVE_CODE_AREAS.slice(0, 5).map((area) => (
-                    <div key={area.id} className="group space-y-2 p-3 rounded-xl hover:bg-muted/30 transition-colors">
-                      <div className="flex justify-between items-start gap-4">
-                        <div className="space-y-1 flex-1">
-                          <div className="flex items-center gap-2">
-                            <div className={`w-2 h-2 rounded-full ${area.color}`} />
-                            <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{area.name}</span>
+                  {dreams.length > 0 ? (
+                    dreams.slice(0, 5).map((dream: any) => {
+                      const areaColors = LOVE_CODE_COLORS[dream.areaId] || { color: "bg-[#6600ff]", hex: "#6600ff" };
+                      return (
+                        <div key={dream.id} className="group space-y-2 p-3 rounded-xl hover:bg-muted/30 transition-colors">
+                          <div className="flex justify-between items-start gap-4">
+                            <div className="space-y-1 flex-1">
+                              <div className="flex items-center gap-2">
+                                <div className={`w-2 h-2 rounded-full`} style={{ backgroundColor: areaColors.hex }} />
+                                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{dream.areaId}</span>
+                              </div>
+                              <p className="text-sm font-serif text-[#4D3D5C] line-clamp-2 leading-relaxed">"{dream.description || 'Set your dream...'}"</p>
+                            </div>
+                            <span className="text-xs font-medium text-muted-foreground tabular-nums bg-muted/50 px-2 py-1 rounded-md">{dream.progress || 0}%</span>
                           </div>
-                          <p className="text-sm font-serif text-[#4D3D5C] line-clamp-2 leading-relaxed">"{area.dream}"</p>
+                          
+                          <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                            <div 
+                              className="h-full rounded-full transition-all duration-500"
+                              style={{ width: `${dream.progress || 0}%`, backgroundColor: areaColors.hex }}
+                            />
+                          </div>
                         </div>
-                        <span className="text-xs font-medium text-muted-foreground tabular-nums bg-muted/50 px-2 py-1 rounded-md">{area.progress}%</span>
-                      </div>
-                      
-                      <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                        <div 
-                          className={`h-full rounded-full transition-all duration-500`} 
-                          style={{ width: `${area.progress}%`, backgroundColor: area.hex }}
-                        />
-                      </div>
-                    </div>
-                  ))}
+                      );
+                    })
+                  ) : (
+                    <p className="text-sm text-muted-foreground text-center py-4">
+                      No dreams yet. Visit Big Dreams to set your goals!
+                    </p>
+                  )}
                 </div>
               </div>
             )}
