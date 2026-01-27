@@ -711,6 +711,58 @@ export async function registerRoutes(
     }
   });
 
+  // Get public profile with content (courses, experiments, communities)
+  app.get("/api/users/:id/profile", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const user = await storage.getUser(id);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      
+      // Get user's published content
+      const experiments = await storage.getExperimentsByCreator(id);
+      const courses = await storage.getCoursesByCreator(id);
+      const communities = await storage.getCommunitiesByCreator(id);
+      
+      // Return public profile data (no password, email, etc.)
+      // Only show public communities
+      const publicCommunities = communities.filter(c => c.accessType === "public");
+      
+      const publicProfile = {
+        id: user.id,
+        name: user.name,
+        handle: user.handle,
+        avatar: user.avatar,
+        nip05: user.nip05,
+        level: user.level,
+        sats: user.sats,
+        streak: user.streak,
+        badges: user.badges,
+        satsGiven: user.satsGiven,
+        satsReceived: user.satsReceived,
+        lookingForBuddy: user.lookingForBuddy,
+        buddyDescription: user.buddyDescription,
+        labInterests: user.labInterests,
+        createdAt: user.createdAt,
+        content: {
+          experiments: experiments.filter(e => e.isPublished),
+          courses: courses.filter(c => c.isPublished),
+          communities: publicCommunities,
+        },
+        stats: {
+          experimentsCount: experiments.filter(e => e.isPublished).length,
+          coursesCount: courses.filter(c => c.isPublished).length,
+          communitiesCount: publicCommunities.length,
+        }
+      };
+      
+      res.json(publicProfile);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch profile" });
+    }
+  });
+
   // Update user stats
   app.patch("/api/users/:id/stats", async (req, res) => {
     try {

@@ -49,6 +49,7 @@ function Router() {
       <Route path="/journal" component={Journal} />
       <Route path="/wallet" component={Wallet} />
       <Route path="/profile" component={Profile} />
+      <Route path="/profile/:userId" component={Profile} />
       <Route path="/creator" component={CreatorDashboard} />
       <Route path="/events" component={Events} />
       <Route path="/events/:id" component={EventDetail} />

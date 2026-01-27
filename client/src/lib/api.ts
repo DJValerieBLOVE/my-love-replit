@@ -225,6 +225,12 @@ export async function getCourseEnrollees(courseId: string) {
   return response.json();
 }
 
+export async function getPublicProfile(userId: string) {
+  const response = await fetch(`/api/users/${userId}/profile`);
+  if (!response.ok) throw new Error("Failed to fetch profile");
+  return response.json();
+}
+
 export async function getAllEvents() {
   const response = await fetch("/api/events");
   if (!response.ok) throw new Error("Failed to fetch events");
