@@ -2,7 +2,7 @@
 
 ## Overview
 
-**My Masterpiece** is a spiritual, gamified personal growth app where users design their own dashboard, earn Bitcoin for progress, consume courses/podcasts/music in one place, connect with collaborators, journal privately, and get coached by an AI that remembers them forever — powered by a hybrid Nostr + Database architecture with Lightning payments.
+**My Masterpiece** is a spiritual personal growth app where users design their own dashboard, consume courses/podcasts/music in one place, connect with collaborators, journal privately, and get coached by an AI that remembers them forever — powered by a hybrid Nostr + Database architecture with Lightning payments for peer-to-peer zapping.
 
 **One-Liner:** Notion + Obsidian + Mighty Networks + Spotify + Nostr + Lightning + AI Coach + Pinterest Vision Board = My Masterpiece
 
@@ -138,17 +138,16 @@
 - **Aggregate Feed** (/feed) - Combined global + community posts with source filtering tabs (All Posts, Communities, Learning)
 
 ### Navigation Structure
-- **Desktop left sidebar**: Home, Big Dreams (with dot), Grow (with dot), Events (with dot), Tribe (with dot), Toolbox, Love Board, Feed
-- **Mobile bottom nav**: 6 icons only (Home, Grow, Events, Tribe, Toolbox, Feed) - no text labels, notification dots on relevant items
-- **Grow page**: /grow route, contains Courses and Experiments tabs (formerly /learning)
+- **Desktop left sidebar**: Home, Big Dreams (with dot), Experiments (with dot), Events (with dot), Tribe (with dot), Toolbox, Love Board, Feed
+- **Mobile navigation**: Hamburger slide-out menu from left (web browser standard pattern)
+- **Experiments page**: /experiments route, contains Courses and Experiments tabs
 - **Mobile header**: Stats goes to Love Board, center logo goes to Big Dreams
 - Floating button: Magic Mentor AI (Sparkles icon, bottom-right corner)
 - No header mail/bell icons (removed - notifications shown contextually on nav items)
 
 ### To Build (Current Priority)
-1. **Mobile Navigation Redesign** - Replace bottom nav with hamburger slide-out menu (web browser pattern)
-2. **Mobile Card Flip Fix** - Ensure heart overlay doesn't cover flipped card content
-3. **Bitcoin Rewards System** - Sats for journal entries, experiments, streaks
+1. **Mobile Navigation Redesign** - Replace bottom nav with hamburger slide-out menu (web browser pattern) ✓ DONE
+2. **Mobile Card Flip Fix** - Ensure heart overlay doesn't cover flipped card content ✓ DONE
 
 ### Future Features
 - Lightning/Zaps integration (NWC)
