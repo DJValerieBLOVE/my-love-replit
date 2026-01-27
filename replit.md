@@ -127,6 +127,11 @@
 - **Course Access Control** - Public/community/paid access types with proper enrollment validation
 - **Community Infrastructure** - Schema and API for communities with memberships, roles (admin/moderator/member), and join approval workflows
 - **Multi-tenant Data Model** - Courses and experiments can be linked to communities, communities have access types (public/approval/paid)
+- **Community UI** - Full community pages with real API data:
+  - Community listing page (/community) - shows all communities with access type badges, member counts
+  - Community create page (/community/create) - form with access type selector (public/approval/paid)
+  - Community detail page (/community/:id) - join/leave, posts feed, create post for members
+  - Community admin page (/community/:id/admin) - member management, approve/reject requests, role management
 
 ### Navigation Structure
 - **Desktop left sidebar**: Home, Big Dreams (with dot), Grow (with dot), Events (with dot), Tribe (with dot), Toolbox, Love Board, Feed

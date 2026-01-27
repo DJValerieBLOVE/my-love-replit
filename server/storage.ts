@@ -172,10 +172,13 @@ export interface IStorage {
   getCommunityMembers(communityId: string, status?: string): Promise<(CommunityMembership & { user: User })[]>;
   getUserCommunities(userId: string): Promise<(CommunityMembership & { community: Community })[]>;
   getMembership(userId: string, communityId: string): Promise<CommunityMembership | undefined>;
+  getMembershipById(id: string): Promise<CommunityMembership | undefined>;
   requestMembership(membership: InsertCommunityMembership): Promise<CommunityMembership>;
   updateMembership(id: string, updates: Partial<InsertCommunityMembership>): Promise<CommunityMembership | undefined>;
   approveMembership(id: string): Promise<CommunityMembership | undefined>;
   rejectMembership(id: string): Promise<CommunityMembership | undefined>;
+  updateMemberRole(id: string, role: string): Promise<CommunityMembership | undefined>;
+  deleteMembership(id: string): Promise<boolean>;
   removeMember(userId: string, communityId: string): Promise<boolean>;
 
   // Community Posts
@@ -1065,6 +1068,12 @@ export class DatabaseStorage implements IStorage {
     return membership || undefined;
   }
 
+  async getMembershipById(id: string): Promise<CommunityMembership | undefined> {
+    const [membership] = await db.select().from(communityMemberships)
+      .where(eq(communityMemberships.id, id));
+    return membership || undefined;
+  }
+
   async requestMembership(membership: InsertCommunityMembership): Promise<CommunityMembership> {
     const [created] = await db.insert(communityMemberships).values(membership).returning();
     return created;
@@ -1099,6 +1108,29 @@ export class DatabaseStorage implements IStorage {
       .where(eq(communityMemberships.id, id))
       .returning();
     return updated;
+  }
+
+  async updateMemberRole(id: string, role: string): Promise<CommunityMembership | undefined> {
+    const [updated] = await db.update(communityMemberships)
+      .set({ role })
+      .where(eq(communityMemberships.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteMembership(id: string): Promise<boolean> {
+    const membership = await this.getMembershipById(id);
+    if (!membership) return false;
+    
+    const result = await db.delete(communityMemberships)
+      .where(eq(communityMemberships.id, id));
+    
+    if (result.rowCount && result.rowCount > 0 && membership.status === "approved") {
+      await db.update(communities)
+        .set({ memberCount: sql`GREATEST(0, ${communities.memberCount} - 1)` })
+        .where(eq(communities.id, membership.communityId));
+    }
+    return result.rowCount ? result.rowCount > 0 : false;
   }
 
   async removeMember(userId: string, communityId: string): Promise<boolean> {

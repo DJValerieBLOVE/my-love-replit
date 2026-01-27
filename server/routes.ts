@@ -1492,6 +1492,105 @@ export async function registerRoutes(
     }
   });
 
+  // ===== MEMBERSHIP ROUTES (by membership ID) =====
+
+  // Approve a join request by membership ID
+  app.post("/api/memberships/:membershipId/approve", authMiddleware, async (req, res) => {
+    try {
+      const membership = await storage.getMembershipById(req.params.membershipId);
+      if (!membership) {
+        return res.status(404).json({ error: "Membership not found" });
+      }
+      
+      const myMembership = await storage.getMembership(req.userId!, membership.communityId);
+      if (!myMembership || (myMembership.role !== "admin" && myMembership.role !== "moderator")) {
+        return res.status(403).json({ error: "Not authorized" });
+      }
+      
+      const updated = await storage.approveMembership(req.params.membershipId);
+      res.json(updated);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to approve member" });
+    }
+  });
+
+  // Reject a join request by membership ID
+  app.post("/api/memberships/:membershipId/reject", authMiddleware, async (req, res) => {
+    try {
+      const membership = await storage.getMembershipById(req.params.membershipId);
+      if (!membership) {
+        return res.status(404).json({ error: "Membership not found" });
+      }
+      
+      const myMembership = await storage.getMembership(req.userId!, membership.communityId);
+      if (!myMembership || (myMembership.role !== "admin" && myMembership.role !== "moderator")) {
+        return res.status(403).json({ error: "Not authorized" });
+      }
+      
+      const updated = await storage.rejectMembership(req.params.membershipId);
+      res.json(updated);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to reject member" });
+    }
+  });
+
+  // Update member role by membership ID
+  app.patch("/api/memberships/:membershipId/role", authMiddleware, async (req, res) => {
+    try {
+      const { role } = req.body;
+      if (!role || !["member", "moderator", "admin"].includes(role)) {
+        return res.status(400).json({ error: "Invalid role" });
+      }
+      
+      const membership = await storage.getMembershipById(req.params.membershipId);
+      if (!membership) {
+        return res.status(404).json({ error: "Membership not found" });
+      }
+      
+      const myMembership = await storage.getMembership(req.userId!, membership.communityId);
+      if (!myMembership || myMembership.role !== "admin") {
+        return res.status(403).json({ error: "Only admins can change roles" });
+      }
+      
+      const updated = await storage.updateMemberRole(req.params.membershipId, role);
+      res.json(updated);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update role" });
+    }
+  });
+
+  // Remove member by membership ID
+  app.delete("/api/memberships/:membershipId", authMiddleware, async (req, res) => {
+    try {
+      const membership = await storage.getMembershipById(req.params.membershipId);
+      if (!membership) {
+        return res.status(404).json({ error: "Membership not found" });
+      }
+      
+      const community = await storage.getCommunity(membership.communityId);
+      if (!community) {
+        return res.status(404).json({ error: "Community not found" });
+      }
+      
+      const myMembership = await storage.getMembership(req.userId!, membership.communityId);
+      if (!myMembership || myMembership.role !== "admin") {
+        return res.status(403).json({ error: "Only admins can remove members" });
+      }
+      
+      if (membership.userId === community.creatorId) {
+        return res.status(400).json({ error: "Cannot remove the community creator" });
+      }
+      
+      const success = await storage.deleteMembership(req.params.membershipId);
+      if (!success) {
+        return res.status(404).json({ error: "Failed to remove member" });
+      }
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Failed to remove member" });
+    }
+  });
+
   // ===== COMMUNITY POST ROUTES =====
 
   // Get posts in a community (members only for private communities)

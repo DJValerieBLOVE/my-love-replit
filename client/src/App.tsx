@@ -7,6 +7,8 @@ import { NostrProvider } from "@/contexts/nostr-context";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Community from "@/pages/community";
+import CommunityCreate from "@/pages/community-create";
+import CommunityAdmin from "@/pages/community-admin";
 import ClubDetail from "@/pages/club-detail";
 import Grow from "@/pages/grow";
 import ExperimentDetail from "@/pages/experiment-detail";
@@ -32,6 +34,8 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/community" component={Community} />
+      <Route path="/community/create" component={CommunityCreate} />
+      <Route path="/community/:id/admin" component={CommunityAdmin} />
       <Route path="/community/:id" component={ClubDetail} />
       <Route path="/grow" component={Grow} />
       <Route path="/grow/create" component={CourseBuilder} />

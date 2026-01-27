@@ -512,3 +512,43 @@ export async function createLessonComment(lessonId: string, content: string, par
   if (!response.ok) throw new Error("Failed to add comment");
   return response.json();
 }
+
+// Community Admin API
+export async function getCommunityMembers(communityId: string) {
+  const response = await authFetch(`/api/communities/${communityId}/members`);
+  if (!response.ok) throw new Error("Failed to fetch members");
+  return response.json();
+}
+
+export async function getPendingJoinRequests(communityId: string) {
+  const response = await authFetch(`/api/communities/${communityId}/requests`);
+  if (!response.ok) throw new Error("Failed to fetch requests");
+  return response.json();
+}
+
+export async function approveJoinRequest(membershipId: string) {
+  const response = await authFetch(`/api/memberships/${membershipId}/approve`, { method: "POST" });
+  if (!response.ok) throw new Error("Failed to approve");
+  return response.json();
+}
+
+export async function rejectJoinRequest(membershipId: string) {
+  const response = await authFetch(`/api/memberships/${membershipId}/reject`, { method: "POST" });
+  if (!response.ok) throw new Error("Failed to reject");
+  return response.json();
+}
+
+export async function updateMemberRole(membershipId: string, role: string) {
+  const response = await authFetch(`/api/memberships/${membershipId}/role`, {
+    method: "PATCH",
+    body: JSON.stringify({ role }),
+  });
+  if (!response.ok) throw new Error("Failed to update role");
+  return response.json();
+}
+
+export async function removeCommunityMember(membershipId: string) {
+  const response = await authFetch(`/api/memberships/${membershipId}`, { method: "DELETE" });
+  if (!response.ok) throw new Error("Failed to remove member");
+  return response.ok;
+}
