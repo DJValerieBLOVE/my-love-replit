@@ -3,7 +3,7 @@ import {
   Home, 
   Users,
   Calendar,
-  Target,
+  Flame,
   Sparkles,
   Heart,
   Rss,
@@ -13,8 +13,8 @@ import {
   HelpCircle,
   Radio,
   User,
-  GraduationCap,
-  Archive,
+  FlaskConical,
+  BookOpen,
   Menu,
   X
 } from "lucide-react";
@@ -56,22 +56,22 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const desktopNavLinks = [
     { icon: Home, label: "Home", href: "/" },
-    { icon: Target, label: "Big Dreams", href: "/big-dreams", hasNotification: true },
-    { icon: GraduationCap, label: "Experiments", href: "/experiments", hasNotification: true },
+    { icon: Flame, label: "Big Dreams", href: "/big-dreams", hasNotification: true },
+    { icon: FlaskConical, label: "Experiments", href: "/experiments", hasNotification: true },
     { icon: Calendar, label: "Events", href: "/events", hasNotification: true },
     { icon: Users, label: "Tribe", href: "/community", hasNotification: true },
-    { icon: Archive, label: "Vault", href: "/vault" },
+    { icon: BookOpen, label: "Vault", href: "/vault" },
     { icon: Heart, label: "Love Board", href: "/leaderboard" },
     { icon: Rss, label: "Feed", href: "/feed" },
   ];
 
   const mobileNavLinks = [
     { icon: Home, label: "Home", href: "/" },
-    { icon: Target, label: "Big Dreams", href: "/big-dreams", hasNotification: true },
-    { icon: GraduationCap, label: "Experiments", href: "/experiments", hasNotification: true },
+    { icon: Flame, label: "Big Dreams", href: "/big-dreams", hasNotification: true },
+    { icon: FlaskConical, label: "Experiments", href: "/experiments", hasNotification: true },
     { icon: Calendar, label: "Events", href: "/events", hasNotification: true },
     { icon: Users, label: "Tribe", href: "/community", hasNotification: true },
-    { icon: Archive, label: "Vault", href: "/vault" },
+    { icon: BookOpen, label: "Vault", href: "/vault" },
     { icon: Heart, label: "Love Board", href: "/leaderboard" },
     { icon: Rss, label: "Feed", href: "/feed" },
   ];
