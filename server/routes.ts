@@ -581,6 +581,63 @@ export async function registerRoutes(
 
   // ===== POSTS (Feed) =====
   
+  // Get aggregate feed (combines global posts + community posts user can see)
+  app.get("/api/feed", optionalAuth, async (req, res) => {
+    try {
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
+      const source = req.query.source as string | undefined;
+      
+      const globalPosts = await storage.getRecentPosts(limit);
+      let communityPosts: any[] = [];
+      
+      if (req.userId) {
+        // Get communities user is member of
+        const userCommunities = await storage.getUserCommunities(req.userId);
+        
+        // Get posts from each community
+        for (const community of userCommunities) {
+          const posts = await storage.getCommunityPosts(community.id);
+          const postsWithCommunity = posts.map(post => ({
+            ...post,
+            source: "community" as const,
+            communityName: community.name,
+            communityId: community.id,
+          }));
+          communityPosts = [...communityPosts, ...postsWithCommunity];
+        }
+      }
+      
+      // Transform global posts to include source
+      const globalWithSource = globalPosts.map(post => ({
+        ...post,
+        source: "nostr" as const,
+      }));
+      
+      // Filter by source if specified
+      let allPosts: any[];
+      if (source === "nostr") {
+        allPosts = globalWithSource;
+      } else if (source === "community") {
+        allPosts = communityPosts;
+      } else if (source === "learning") {
+        // Future: filter for learning-related posts
+        allPosts = [];
+      } else {
+        // Combine all sources
+        allPosts = [...globalWithSource, ...communityPosts];
+      }
+      
+      // Sort by createdAt descending and limit
+      allPosts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      allPosts = allPosts.slice(0, limit);
+      
+      res.json(allPosts);
+    } catch (error) {
+      console.error("Feed error:", error);
+      res.status(500).json({ error: "Failed to fetch feed" });
+    }
+  });
+
   // Get recent posts (public - with optional auth for enhanced features)
   app.get("/api/posts", optionalAuth, async (req, res) => {
     try {

@@ -244,6 +244,16 @@ export async function getRecentPosts(limit?: number) {
   return response.json();
 }
 
+export async function getAggregateFeed(options?: { limit?: number; source?: "nostr" | "community" | "learning" }) {
+  const params = new URLSearchParams();
+  if (options?.limit) params.set("limit", options.limit.toString());
+  if (options?.source) params.set("source", options.source);
+  const url = `/api/feed${params.toString() ? `?${params.toString()}` : ""}`;
+  const response = await authFetch(url);
+  if (!response.ok) throw new Error("Failed to fetch feed");
+  return response.json();
+}
+
 export async function createPost(content: string, image?: string) {
   const response = await authFetch("/api/posts", {
     method: "POST",

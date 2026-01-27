@@ -1,10 +1,12 @@
 import Layout from "@/components/layout";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getAggregateFeed } from "@/lib/api";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Zap, Share2, MoreHorizontal, Radio, Calendar, UserPlus, Repeat2, Bookmark, Quote, Users, Image, Film, Smile, X, Link2, Copy, ExternalLink } from "lucide-react";
+import { Heart, MessageCircle, Zap, Share2, MoreHorizontal, Radio, Calendar, UserPlus, Repeat2, Bookmark, Quote, Users, Image, Film, Smile, X, Link2, Copy, ExternalLink, Loader2 } from "lucide-react";
 import { Link } from "wouter";
 import {
   DropdownMenu,
@@ -665,6 +667,56 @@ function FeedSidebar() {
 export default function Feed() {
   const [activeTab, setActiveTab] = useState("all");
 
+  const { data: allPosts = [], isLoading: allLoading } = useQuery({
+    queryKey: ["feed", "all"],
+    queryFn: () => getAggregateFeed({ limit: 50 }),
+  });
+
+  const { data: communityPosts = [], isLoading: communityLoading } = useQuery({
+    queryKey: ["feed", "community"],
+    queryFn: () => getAggregateFeed({ limit: 50, source: "community" }),
+  });
+
+  const formatTimestamp = (date: string | Date) => {
+    const d = new Date(date);
+    const now = new Date();
+    const diffMs = now.getTime() - d.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffHours / 24);
+    
+    if (diffHours < 1) return "just now";
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return d.toLocaleDateString();
+  };
+
+  const transformPost = (post: any): FeedPost => ({
+    id: post.id,
+    author: {
+      id: post.author?.id || post.authorId,
+      name: post.author?.name || "Unknown",
+      handle: `@${post.author?.handle || post.author?.username || "user"}`,
+      avatar: post.author?.avatar || "",
+      pubkey: post.author?.nostrPubkey,
+      lud16: post.author?.lud16,
+    },
+    content: post.content,
+    timestamp: formatTimestamp(post.createdAt),
+    likes: post.likes || 0,
+    comments: post.comments || 0,
+    zaps: post.zaps || 0,
+    source: post.source || "nostr",
+    community: post.communityName,
+    isOwnPost: false,
+  });
+
+  const allTransformed = (allPosts as any[]).map(transformPost);
+  const communityTransformed = (communityPosts as any[]).map(transformPost);
+
+  // Fallback to mock posts when no real data
+  const displayAllPosts = allTransformed.length > 0 ? allTransformed : MOCK_POSTS;
+  const displayCommunityPosts = communityTransformed.length > 0 ? communityTransformed : COMMUNITY_POSTS;
+
   return (
     <Layout>
       <div className="max-w-6xl mx-auto p-4 lg:p-6">
@@ -678,20 +730,35 @@ export default function Feed() {
             
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="w-full mb-6 grid grid-cols-3">
-                <TabsTrigger value="all" data-testid="tab-all-nostr">All Nostr</TabsTrigger>
+                <TabsTrigger value="all" data-testid="tab-all-nostr">All Posts</TabsTrigger>
                 <TabsTrigger value="communities" data-testid="tab-communities">Communities</TabsTrigger>
                 <TabsTrigger value="learning" data-testid="tab-learning">Learning</TabsTrigger>
               </TabsList>
 
               <TabsContent value="all" className="space-y-4">
-                {MOCK_POSTS.map((post) => (
-                  <PostCard key={post.id} post={post} />
-                ))}
+                {allLoading ? (
+                  <div className="flex justify-center py-12">
+                    <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                  </div>
+                ) : displayAllPosts.length > 0 ? (
+                  displayAllPosts.map((post) => (
+                    <PostCard key={post.id} post={post} />
+                  ))
+                ) : (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <p>No posts yet.</p>
+                    <p className="text-sm mt-2">Be the first to share something!</p>
+                  </div>
+                )}
               </TabsContent>
 
               <TabsContent value="communities" className="space-y-4">
-                {COMMUNITY_POSTS.length > 0 ? (
-                  COMMUNITY_POSTS.map((post) => (
+                {communityLoading ? (
+                  <div className="flex justify-center py-12">
+                    <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                  </div>
+                ) : displayCommunityPosts.length > 0 ? (
+                  displayCommunityPosts.map((post) => (
                     <PostCard key={post.id} post={post} />
                   ))
                 ) : (
