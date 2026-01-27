@@ -13,6 +13,7 @@ import ClubDetail from "@/pages/club-detail";
 import Grow from "@/pages/grow";
 import ExperimentDetail from "@/pages/experiment-detail";
 import CourseBuilder from "@/pages/course-builder";
+import ExperimentBuilder from "@/pages/experiment-builder";
 import CourseDetail from "@/pages/course-detail";
 import BigDreams from "@/pages/big-dreams";
 import Resources from "@/pages/resources";
@@ -39,6 +40,7 @@ function Router() {
       <Route path="/community/:id" component={ClubDetail} />
       <Route path="/grow" component={Grow} />
       <Route path="/grow/create" component={CourseBuilder} />
+      <Route path="/experiments/create" component={ExperimentBuilder} />
       <Route path="/grow/course/:id" component={CourseDetail} />
       <Route path="/grow/:id" component={ExperimentDetail} />
       <Route path="/big-dreams" component={BigDreams} />

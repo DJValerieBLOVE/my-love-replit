@@ -298,10 +298,24 @@ export async function registerRoutes(
     }
   });
 
-  // Create experiment (admin only - TODO: add admin check)
+  // Get single experiment
+  app.get("/api/experiments/:id", async (req, res) => {
+    try {
+      const experiment = await storage.getExperiment(req.params.id);
+      if (!experiment) {
+        return res.status(404).json({ error: "Experiment not found" });
+      }
+      res.json(experiment);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch experiment" });
+    }
+  });
+
+  // Create experiment (any authenticated user can create)
   app.post("/api/experiments", authMiddleware, async (req, res) => {
     try {
-      const validated = insertExperimentSchema.parse(req.body);
+      const data = { ...req.body, creatorId: req.userId };
+      const validated = insertExperimentSchema.parse(data);
       const experiment = await storage.createExperiment(validated);
       res.status(201).json(experiment);
     } catch (error: any) {

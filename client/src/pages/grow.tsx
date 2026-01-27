@@ -1,17 +1,19 @@
 import Layout from "@/components/layout";
-import { EXPERIMENTS } from "@/lib/mock-data";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { PlayCircle, CheckCircle, Lock, BookOpen, Search, Clock, Users, Star, Share2 } from "lucide-react";
+import { PlayCircle, CheckCircle, Lock, BookOpen, Search, Clock, Users, Star, Share2, Plus, FlaskConical, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ShareConfirmationDialog } from "@/components/share-confirmation-dialog";
 import { useNostr } from "@/contexts/nostr-context";
+import { useQuery } from "@tanstack/react-query";
+import { getAllExperiments } from "@/lib/api";
+import type { Experiment } from "@shared/schema";
 
 const COURSES = [
   {
@@ -59,17 +61,23 @@ const COURSES = [
 ];
 
 export default function Grow() {
+  const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState("courses");
   const [searchQuery, setSearchQuery] = useState("");
   const [levelFilter, setLevelFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [shareDialog, setShareDialog] = useState<{
     open: boolean;
-    experiment: typeof EXPERIMENTS[0] | null;
+    experiment: Experiment | null;
   }>({ open: false, experiment: null });
   const { isConnected } = useNostr();
 
-  const handleShareExperiment = (experiment: typeof EXPERIMENTS[0], e: React.MouseEvent) => {
+  const { data: experiments = [], isLoading: experimentsLoading } = useQuery({
+    queryKey: ["experiments"],
+    queryFn: getAllExperiments,
+  });
+
+  const handleShareExperiment = (experiment: Experiment, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setShareDialog({ open: true, experiment });
@@ -83,7 +91,7 @@ export default function Grow() {
     return matchesSearch && matchesLevel && matchesCategory;
   });
 
-  const filteredExperiments = EXPERIMENTS.filter((exp) => {
+  const filteredExperiments = (experiments as Experiment[]).filter((exp) => {
     const matchesSearch = exp.title.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesSearch;
   });
@@ -200,78 +208,81 @@ export default function Grow() {
 
           {/* Experiments Tab */}
           <TabsContent value="experiments">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredExperiments.map((experiment) => (
-                <Link key={experiment.id} href={`/grow/${experiment.id}`}>
-                  <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 group border-none shadow-sm bg-card cursor-pointer flex flex-col">
-                    <div className="h-[2px] w-full bg-primary" />
-                    <div className="relative h-48 overflow-hidden">
-                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors z-10" />
-                      <img 
-                        src={experiment.image} 
-                        alt={experiment.title} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <Badge className="absolute top-3 right-3 z-20 bg-white/90 text-black hover:bg-white font-normal" data-testid={`badge-${experiment.id}`}>
-                        {experiment.category}
-                      </Badge>
-                      {experiment.progress > 0 && (
-                        <div className="absolute bottom-3 left-3 right-3 z-20">
-                          <div className="flex justify-between text-xs text-white font-medium mb-1 shadow-sm">
-                            <span>{experiment.progress}% Complete</span>
-                            <span>{experiment.completedDiscoveries}/{experiment.totalDiscoveries}</span>
-                          </div>
-                          <Progress value={experiment.progress} className="h-1.5 bg-white/30 [&>div]:bg-white" />
-                        </div>
-                      )}
-                    </div>
-                    <CardContent className="p-5">
-                      <h3 className="font-bold text-lg leading-tight mb-1 text-muted-foreground group-hover:text-primary transition-colors" data-testid={`text-experiment-${experiment.id}`}>
-                        {experiment.title}
-                      </h3>
-                      <p className="text-base text-muted-foreground mb-4" data-testid={`text-guide-${experiment.id}`}>
-                        with {experiment.guide}
-                      </p>
-                      
-                      <div className="flex gap-2">
-                        <Button className="flex-1 gap-2" data-testid={`button-experiment-${experiment.id}`}>
-                          {experiment.progress === 0 ? (
-                            <><BookOpen className="w-4 h-4" /> Start Learning</>
-                          ) : experiment.progress === 100 ? (
-                            <><CheckCircle className="w-4 h-4" /> Completed</>
-                          ) : (
-                            <><PlayCircle className="w-4 h-4" /> Resume</>
-                          )}
-                        </Button>
-                        {isConnected && experiment.progress === 100 && (
-                          <Button 
-                            variant="outline"
-                            size="icon"
-                            onClick={(e) => handleShareExperiment(experiment, e)}
-                            className="shrink-0"
-                            data-testid={`button-share-experiment-${experiment.id}`}
-                          >
-                            <Share2 className="w-4 h-4" />
-                          </Button>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
-              
-              {/* Locked Experiment Teaser */}
-              <Card className="overflow-hidden border-dashed border-2 bg-muted/20 opacity-70 hover:opacity-100 transition-opacity">
-                <div className="h-48 bg-muted flex items-center justify-center">
-                  <Lock className="w-12 h-12 text-muted-foreground" />
-                </div>
-                <CardContent className="p-5">
-                  <h3 className="font-bold text-lg leading-tight mb-1">Advanced Lab</h3>
-                  <p className="text-base text-muted-foreground mb-4">Coming Soon</p>
-                  <Button disabled className="w-full">Locked</Button>
-                </CardContent>
-              </Card>
+            <div className="flex justify-between items-center mb-4">
+              <p className="text-sm text-muted-foreground">
+                {filteredExperiments.length} experiment{filteredExperiments.length !== 1 ? "s" : ""}
+              </p>
+              {isConnected && (
+                <Button onClick={() => setLocation("/experiments/create")} className="gap-2" data-testid="button-create-experiment">
+                  <Plus className="w-4 h-4" />
+                  Create Experiment
+                </Button>
+              )}
             </div>
+
+            {experimentsLoading ? (
+              <div className="flex justify-center py-12">
+                <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+              </div>
+            ) : filteredExperiments.length === 0 ? (
+              <Card className="p-8 text-center">
+                <FlaskConical className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                <h3 className="font-bold text-lg mb-2">No Experiments Yet</h3>
+                <p className="text-muted-foreground mb-4">Be the first to create an experiment!</p>
+                {isConnected && (
+                  <Button onClick={() => setLocation("/experiments/create")} className="gap-2">
+                    <Plus className="w-4 h-4" />
+                    Create Experiment
+                  </Button>
+                )}
+              </Card>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredExperiments.map((experiment) => (
+                  <Link key={experiment.id} href={`/experiments/${experiment.id}`}>
+                    <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 group border-none shadow-sm bg-card cursor-pointer flex flex-col h-full rounded-xs">
+                      <div className="h-[2px] w-full bg-primary" />
+                      <div className="relative h-48 overflow-hidden">
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors z-10" />
+                        {experiment.image ? (
+                          <img 
+                            src={experiment.image} 
+                            alt={experiment.title} 
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                            <FlaskConical className="w-16 h-16 text-white/50" />
+                          </div>
+                        )}
+                        <Badge className="absolute top-3 right-3 z-20 bg-white/90 text-black hover:bg-white font-normal" data-testid={`badge-${experiment.id}`}>
+                          {experiment.category}
+                        </Badge>
+                        <div className="absolute bottom-3 left-3 z-20">
+                          <span className="text-xs text-white bg-black/50 px-2 py-1 rounded">
+                            {experiment.steps?.length || 0} step{(experiment.steps?.length || 0) !== 1 ? "s" : ""}
+                          </span>
+                        </div>
+                      </div>
+                      <CardContent className="p-5 flex-1 flex flex-col">
+                        <h3 className="font-bold text-lg leading-tight mb-1 text-muted-foreground group-hover:text-primary transition-colors" data-testid={`text-experiment-${experiment.id}`}>
+                          {experiment.title}
+                        </h3>
+                        <p className="text-base text-muted-foreground mb-4" data-testid={`text-guide-${experiment.id}`}>
+                          with {experiment.guide}
+                        </p>
+                        
+                        <div className="mt-auto">
+                          <Button className="w-full gap-2" data-testid={`button-experiment-${experiment.id}`}>
+                            <FlaskConical className="w-4 h-4" /> View Experiment
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </div>

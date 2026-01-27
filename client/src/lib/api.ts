@@ -162,6 +162,33 @@ export async function enrollInExperiment(experimentId: string) {
   return response.json();
 }
 
+export async function createExperiment(data: {
+  title: string;
+  guide: string;
+  description?: string;
+  image?: string;
+  category: string;
+  loveCodeArea?: string;
+  steps?: { order: number; title: string; prompt: string; }[];
+  accessType?: string;
+  communityId?: string;
+  price?: number;
+  isPublished?: boolean;
+}) {
+  const response = await authFetch("/api/experiments", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error("Failed to create experiment");
+  return response.json();
+}
+
+export async function getExperiment(id: string) {
+  const response = await fetch(`/api/experiments/${id}`);
+  if (!response.ok) throw new Error("Failed to fetch experiment");
+  return response.json();
+}
+
 export async function getAllEvents() {
   const response = await fetch("/api/events");
   if (!response.ok) throw new Error("Failed to fetch events");
