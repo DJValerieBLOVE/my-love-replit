@@ -510,3 +510,35 @@ export const insertAiUsageLogSchema = createInsertSchema(aiUsageLogs).omit({
 
 export type InsertAiUsageLog = z.infer<typeof insertAiUsageLogSchema>;
 export type AiUsageLog = typeof aiUsageLogs.$inferSelect;
+
+// Sats Rewards - tracks all sats earned/spent
+export const satsRewards = pgTable("sats_rewards", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  action: text("action").notNull(), // journal_entry, experiment_complete, streak_7, streak_30, etc.
+  amount: integer("amount").notNull(), // positive = earned, negative = spent
+  description: text("description"),
+  relatedId: varchar("related_id"), // optional: journal entry ID, experiment ID, etc.
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertSatsRewardSchema = createInsertSchema(satsRewards).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertSatsReward = z.infer<typeof insertSatsRewardSchema>;
+export type SatsReward = typeof satsRewards.$inferSelect;
+
+// Reward action types with amounts
+export const REWARD_ACTIONS = {
+  journal_entry: { amount: 21, description: "Completed Daily LOVE Practice" },
+  experiment_step: { amount: 11, description: "Completed experiment step" },
+  experiment_complete: { amount: 111, description: "Completed experiment" },
+  dream_created: { amount: 11, description: "Set a Big Dream" },
+  streak_7: { amount: 77, description: "7-day streak bonus" },
+  streak_30: { amount: 333, description: "30-day streak bonus" },
+  streak_100: { amount: 1111, description: "100-day streak bonus" },
+  first_journal: { amount: 100, description: "First journal entry!" },
+  profile_complete: { amount: 50, description: "Completed profile" },
+} as const;
