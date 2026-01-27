@@ -243,7 +243,7 @@ function PostComposer() {
             placeholder="What's happening?"
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            className="min-h-[80px] border-0 resize-none focus-visible:ring-0 p-0 text-base"
+            className="min-h-[80px] border rounded-lg resize-none focus-visible:ring-1 px-3 py-2 text-sm"
             data-testid="textarea-post-content"
           />
           
