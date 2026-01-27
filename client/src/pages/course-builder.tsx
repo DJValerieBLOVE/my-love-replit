@@ -71,7 +71,7 @@ export default function CourseBuilder() {
         title: "Course Created",
         description: "Your course has been created successfully.",
       });
-      setLocation(`/grow/course/${course.id}`);
+      setLocation(`/experiments/course/${course.id}`);
     },
     onError: () => {
       toast({
@@ -157,7 +157,7 @@ export default function CourseBuilder() {
     <Layout>
       <div className="max-w-4xl mx-auto p-4 lg:p-8 space-y-6">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" onClick={() => setLocation("/grow")} data-testid="button-back">
+          <Button variant="ghost" size="sm" onClick={() => setLocation("/experiments")} data-testid="button-back">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
@@ -355,7 +355,7 @@ export default function CourseBuilder() {
         </Card>
 
         <div className="flex justify-end gap-4">
-          <Button variant="outline" onClick={() => setLocation("/grow")} data-testid="button-cancel">
+          <Button variant="outline" onClick={() => setLocation("/experiments")} data-testid="button-cancel">
             Cancel
           </Button>
           <Button 

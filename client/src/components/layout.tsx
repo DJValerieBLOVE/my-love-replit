@@ -57,7 +57,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const desktopNavLinks = [
     { icon: Home, label: "Home", href: "/" },
     { icon: Target, label: "Big Dreams", href: "/big-dreams", hasNotification: true },
-    { icon: GraduationCap, label: "Grow", href: "/grow", hasNotification: true },
+    { icon: GraduationCap, label: "Experiments", href: "/experiments", hasNotification: true },
     { icon: Calendar, label: "Events", href: "/events", hasNotification: true },
     { icon: Users, label: "Tribe", href: "/community", hasNotification: true },
     { icon: Wrench, label: "Toolbox", href: "/resources" },
@@ -68,7 +68,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const mobileNavLinks = [
     { icon: Home, label: "Home", href: "/" },
     { icon: Target, label: "Big Dreams", href: "/big-dreams", hasNotification: true },
-    { icon: GraduationCap, label: "Grow", href: "/grow", hasNotification: true },
+    { icon: GraduationCap, label: "Experiments", href: "/experiments", hasNotification: true },
     { icon: Calendar, label: "Events", href: "/events", hasNotification: true },
     { icon: Users, label: "Tribe", href: "/community", hasNotification: true },
     { icon: Wrench, label: "Toolbox", href: "/resources" },

@@ -28,7 +28,7 @@ const LOVE_CODE_COLORS: Record<string, string> = {
 
 export default function CourseDetail() {
   const [, setLocation] = useLocation();
-  const [, params] = useRoute("/grow/course/:id");
+  const [, params] = useRoute("/experiments/course/:id");
   const { isConnected } = useNostr();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -151,7 +151,7 @@ export default function CourseDetail() {
         <div className="max-w-6xl mx-auto p-4 lg:p-8">
           <Card className="p-8 text-center">
             <p className="text-muted-foreground mb-4">Course not found.</p>
-            <Button onClick={() => setLocation("/grow")}>Back to Grow</Button>
+            <Button onClick={() => setLocation("/experiments")}>Back to Experiments</Button>
           </Card>
         </div>
       </Layout>
@@ -168,7 +168,7 @@ export default function CourseDetail() {
     <Layout>
       <div className="max-w-6xl mx-auto p-4 lg:p-8 space-y-6">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" onClick={() => setLocation("/grow")} data-testid="button-back">
+          <Button variant="ghost" size="sm" onClick={() => setLocation("/experiments")} data-testid="button-back">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>

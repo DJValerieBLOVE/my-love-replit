@@ -193,7 +193,7 @@ export default function ExperimentBuilder() {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setLocation("/grow")}
+            onClick={() => setLocation("/experiments")}
             data-testid="button-back"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -447,7 +447,7 @@ export default function ExperimentBuilder() {
         <div className="flex justify-end gap-3">
           <Button
             variant="outline"
-            onClick={() => setLocation("/grow")}
+            onClick={() => setLocation("/experiments")}
             data-testid="button-cancel"
           >
             Cancel

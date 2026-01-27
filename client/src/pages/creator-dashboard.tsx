@@ -216,7 +216,7 @@ function CourseCard({ course, setLocation }: { course: Course; setLocation: (pat
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => setLocation(`/grow/course/${course.id}`)}
+                onClick={() => setLocation(`/experiments/course/${course.id}`)}
                 data-testid={`button-view-course-${course.id}`}
               >
                 <Eye className="w-4 h-4" />
@@ -360,7 +360,7 @@ export default function CreatorDashboard() {
               <FlaskConical className="w-4 h-4" />
               New Experiment
             </Button>
-            <Button variant="outline" onClick={() => setLocation("/grow/create")} className="gap-2" data-testid="button-new-course">
+            <Button variant="outline" onClick={() => setLocation("/experiments/course/create")} className="gap-2" data-testid="button-new-course">
               <BookOpen className="w-4 h-4" />
               New Course
             </Button>
@@ -473,7 +473,7 @@ export default function CreatorDashboard() {
                     <BookOpen className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
                     <h3 className="font-bold text-lg mb-2">No Courses Yet</h3>
                     <p className="text-muted-foreground mb-4">Create your first course to share your knowledge</p>
-                    <Button onClick={() => setLocation("/grow/create")} className="gap-2" data-testid="button-create-first-course">
+                    <Button onClick={() => setLocation("/experiments/course/create")} className="gap-2" data-testid="button-create-first-course">
                       <Plus className="w-4 h-4" />
                       Create Course
                     </Button>

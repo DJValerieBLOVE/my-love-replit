@@ -539,7 +539,7 @@ export default function Profile() {
                           title={course.title}
                           description={course.description}
                           type="course"
-                          href={`/grow/${course.id}`}
+                          href={`/experiments/course/${course.id}`}
                         />
                       ))}
                     </div>
