@@ -14,6 +14,7 @@ import Grow from "@/pages/grow";
 import ExperimentDetail from "@/pages/experiment-detail";
 import CourseBuilder from "@/pages/course-builder";
 import ExperimentBuilder from "@/pages/experiment-builder";
+import CreatorDashboard from "@/pages/creator-dashboard";
 import CourseDetail from "@/pages/course-detail";
 import BigDreams from "@/pages/big-dreams";
 import Resources from "@/pages/resources";
@@ -48,6 +49,7 @@ function Router() {
       <Route path="/journal" component={Journal} />
       <Route path="/wallet" component={Wallet} />
       <Route path="/profile" component={Profile} />
+      <Route path="/creator" component={CreatorDashboard} />
       <Route path="/events" component={Events} />
       <Route path="/events/:id" component={EventDetail} />
       <Route path="/leaderboard" component={Leaderboard} />

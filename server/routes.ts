@@ -369,6 +369,65 @@ export async function registerRoutes(
     }
   });
 
+  // ===== CREATOR DASHBOARD =====
+
+  // Get creator's experiments
+  app.get("/api/creator/experiments", authMiddleware, async (req, res) => {
+    try {
+      const experiments = await storage.getExperimentsByCreator(req.userId!);
+      res.json(experiments);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch creator experiments" });
+    }
+  });
+
+  // Get creator's courses
+  app.get("/api/creator/courses", authMiddleware, async (req, res) => {
+    try {
+      const courses = await storage.getCoursesByCreator(req.userId!);
+      res.json(courses);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch creator courses" });
+    }
+  });
+
+  // Get creator's communities
+  app.get("/api/creator/communities", authMiddleware, async (req, res) => {
+    try {
+      const communities = await storage.getCommunitiesByCreator(req.userId!);
+      res.json(communities);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch creator communities" });
+    }
+  });
+
+  // Get creator analytics
+  app.get("/api/creator/analytics", authMiddleware, async (req, res) => {
+    try {
+      const analytics = await storage.getCreatorAnalytics(req.userId!);
+      res.json(analytics);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch creator analytics" });
+    }
+  });
+
+  // Get experiment participants (creator only)
+  app.get("/api/experiments/:id/participants", authMiddleware, async (req, res) => {
+    try {
+      const experiment = await storage.getExperiment(req.params.id);
+      if (!experiment) {
+        return res.status(404).json({ error: "Experiment not found" });
+      }
+      if (experiment.creatorId !== req.userId) {
+        return res.status(403).json({ error: "Not authorized" });
+      }
+      const participants = await storage.getExperimentParticipants(req.params.id);
+      res.json(participants);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch participants" });
+    }
+  });
+
   // ===== EXPERIMENT NOTES =====
   
   // Get authenticated user's experiment notes

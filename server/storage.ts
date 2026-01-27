@@ -25,7 +25,7 @@ import {
   type CommunityPost, type InsertCommunityPost,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, desc, sql } from "drizzle-orm";
+import { eq, and, desc, sql, inArray } from "drizzle-orm";
 
 export interface IStorage {
   // Users
@@ -64,6 +64,8 @@ export interface IStorage {
   getAllExperiments(): Promise<Experiment[]>;
   getExperiment(id: string): Promise<Experiment | undefined>;
   createExperiment(experiment: InsertExperiment): Promise<Experiment>;
+  getExperimentsByCreator(creatorId: string): Promise<Experiment[]>;
+  getExperimentParticipants(experimentId: string): Promise<(UserExperiment & { user: { id: string; nostrPubkey: string | null; displayName: string | null; } })[]>;
 
   // User Experiments
   getUserExperiments(userId: string): Promise<(UserExperiment & { experiment: Experiment })[]>;
@@ -128,6 +130,12 @@ export interface IStorage {
 
   // Rollback: Release a reserved slot if AI call fails
   releaseAiUsageSlot(userId: string, tier: string, tokensReserved?: number): Promise<void>;
+
+  // Creator Analytics
+  getCreatorAnalytics(creatorId: string): Promise<{
+    totalCourseEnrollments: number;
+    totalExperimentEnrollments: number;
+  }>;
 
   // Courses
   getAllCourses(options?: { published?: boolean }): Promise<(Course & { creator: User })[]>;
@@ -380,6 +388,28 @@ export class DatabaseStorage implements IStorage {
   async createExperiment(experiment: InsertExperiment): Promise<Experiment> {
     const [created] = await db.insert(experiments).values(experiment).returning();
     return created;
+  }
+
+  async getExperimentsByCreator(creatorId: string): Promise<Experiment[]> {
+    return db.select().from(experiments)
+      .where(eq(experiments.creatorId, creatorId))
+      .orderBy(desc(experiments.createdAt));
+  }
+
+  async getExperimentParticipants(experimentId: string): Promise<(UserExperiment & { user: { id: string; nostrPubkey: string | null; displayName: string | null; } })[]> {
+    const results = await db.select()
+      .from(userExperiments)
+      .leftJoin(users, eq(userExperiments.userId, users.id))
+      .where(eq(userExperiments.experimentId, experimentId));
+
+    return results.map(row => ({
+      ...row.user_experiments,
+      user: {
+        id: row.users!.id,
+        nostrPubkey: row.users!.nostrPubkey,
+        displayName: row.users!.displayName,
+      },
+    }));
   }
 
   // User Experiments
@@ -759,6 +789,44 @@ export class DatabaseStorage implements IStorage {
       console.error("Failed to release AI usage slot:", error);
       // Don't throw - this is best effort cleanup
     }
+  }
+
+  // ============= CREATOR ANALYTICS =============
+
+  async getCreatorAnalytics(creatorId: string): Promise<{
+    totalCourseEnrollments: number;
+    totalExperimentEnrollments: number;
+  }> {
+    const creatorCourses = await db.select({ id: courses.id })
+      .from(courses)
+      .where(eq(courses.creatorId, creatorId));
+    
+    let totalCourseEnrollments = 0;
+    if (creatorCourses.length > 0) {
+      const courseIds = creatorCourses.map(c => c.id);
+      const enrollmentCounts = await db.select({ count: sql<number>`count(*)::int` })
+        .from(courseEnrollments)
+        .where(inArray(courseEnrollments.courseId, courseIds));
+      totalCourseEnrollments = enrollmentCounts[0]?.count || 0;
+    }
+
+    const creatorExperiments = await db.select({ id: experiments.id })
+      .from(experiments)
+      .where(eq(experiments.creatorId, creatorId));
+    
+    let totalExperimentEnrollments = 0;
+    if (creatorExperiments.length > 0) {
+      const experimentIds = creatorExperiments.map(e => e.id);
+      const experimentCounts = await db.select({ count: sql<number>`count(*)::int` })
+        .from(userExperiments)
+        .where(inArray(userExperiments.experimentId, experimentIds));
+      totalExperimentEnrollments = experimentCounts[0]?.count || 0;
+    }
+
+    return {
+      totalCourseEnrollments,
+      totalExperimentEnrollments,
+    };
   }
 
   // ============= COURSES =============

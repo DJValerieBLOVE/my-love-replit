@@ -189,6 +189,42 @@ export async function getExperiment(id: string) {
   return response.json();
 }
 
+export async function getCreatorExperiments() {
+  const response = await authFetch("/api/creator/experiments");
+  if (!response.ok) throw new Error("Failed to fetch creator experiments");
+  return response.json();
+}
+
+export async function getCreatorCourses() {
+  const response = await authFetch("/api/creator/courses");
+  if (!response.ok) throw new Error("Failed to fetch creator courses");
+  return response.json();
+}
+
+export async function getCreatorCommunities() {
+  const response = await authFetch("/api/creator/communities");
+  if (!response.ok) throw new Error("Failed to fetch creator communities");
+  return response.json();
+}
+
+export async function getCreatorAnalytics() {
+  const response = await authFetch("/api/creator/analytics");
+  if (!response.ok) throw new Error("Failed to fetch creator analytics");
+  return response.json();
+}
+
+export async function getExperimentParticipants(experimentId: string) {
+  const response = await authFetch(`/api/experiments/${experimentId}/participants`);
+  if (!response.ok) throw new Error("Failed to fetch experiment participants");
+  return response.json();
+}
+
+export async function getCourseEnrollees(courseId: string) {
+  const response = await authFetch(`/api/courses/${courseId}/enrollees`);
+  if (!response.ok) throw new Error("Failed to fetch course enrollees");
+  return response.json();
+}
+
 export async function getAllEvents() {
   const response = await fetch("/api/events");
   if (!response.ok) throw new Error("Failed to fetch events");
