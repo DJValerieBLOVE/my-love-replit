@@ -288,6 +288,13 @@ export async function getLeaderboard(limit?: number) {
   return response.json();
 }
 
+export async function getRewards(limit?: number) {
+  const url = limit ? `/api/rewards?limit=${limit}` : "/api/rewards";
+  const response = await authFetch(url);
+  if (!response.ok) throw new Error("Failed to fetch rewards");
+  return response.json();
+}
+
 export async function updateUserStats(updates: any) {
   const user = await getCurrentUser();
   if (!user) throw new Error("Not authenticated");

@@ -38,6 +38,8 @@ export const users = pgTable("users", {
   dailyMessagesUsed: integer("daily_messages_used").default(0).notNull(),
   dailyMessagesResetAt: timestamp("daily_messages_reset_at"),
   userApiKey: text("user_api_key"), // For BYOK users
+  lastJournalDate: timestamp("last_journal_date"), // For streak tracking
+  lastStreakReward: integer("last_streak_reward").default(0).notNull(), // Last streak milestone rewarded
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -510,3 +512,42 @@ export const insertAiUsageLogSchema = createInsertSchema(aiUsageLogs).omit({
 
 export type InsertAiUsageLog = z.infer<typeof insertAiUsageLogSchema>;
 export type AiUsageLog = typeof aiUsageLogs.$inferSelect;
+
+// Bitcoin Rewards tracking
+export const rewards = pgTable("rewards", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  type: text("type").notNull(), // journal, experiment_day, experiment_complete, streak_7, streak_30, streak_100
+  sats: integer("sats").notNull(),
+  description: text("description"),
+  referenceId: varchar("reference_id"), // journal entry id, experiment id, etc.
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertRewardSchema = createInsertSchema(rewards).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertReward = z.infer<typeof insertRewardSchema>;
+export type Reward = typeof rewards.$inferSelect;
+
+// Reward type constants
+export const REWARD_TYPES = {
+  JOURNAL_ENTRY: "journal",
+  EXPERIMENT_DAY: "experiment_day",
+  EXPERIMENT_COMPLETE: "experiment_complete",
+  STREAK_7: "streak_7",
+  STREAK_30: "streak_30",
+  STREAK_100: "streak_100",
+} as const;
+
+// Reward amounts in sats
+export const REWARD_AMOUNTS = {
+  JOURNAL_ENTRY: 100,
+  EXPERIMENT_DAY: 50,
+  EXPERIMENT_COMPLETE: 500,
+  STREAK_7: 200,
+  STREAK_30: 1000,
+  STREAK_100: 5000,
+} as const;

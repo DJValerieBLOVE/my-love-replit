@@ -157,7 +157,17 @@ export async function registerRoutes(
       const data = { ...req.body, userId: req.userId };
       const validated = insertJournalEntrySchema.parse(data);
       const entry = await storage.createJournalEntry(validated);
-      res.status(201).json(entry);
+      
+      const rewardResult = await storage.awardJournalEntrySats(req.userId!, entry.id);
+      
+      res.status(201).json({ 
+        entry, 
+        reward: rewardResult ? {
+          sats: rewardResult.sats,
+          streak: rewardResult.newStreak,
+          streakBonus: rewardResult.streakReward,
+        } : null
+      });
     } catch (error: any) {
       res.status(400).json({ error: error.message || "Invalid journal entry data" });
     }
@@ -359,11 +369,38 @@ export async function registerRoutes(
   app.patch("/api/user-experiments/:id", authMiddleware, async (req, res) => {
     try {
       const { id } = req.params;
+      
+      // Get prior state before updating
+      const priorState = await storage.getUserExperimentById(id);
+      if (!priorState) {
+        return res.status(404).json({ error: "User experiment not found" });
+      }
+      
+      // Verify ownership
+      if (priorState.userId !== req.userId) {
+        return res.status(403).json({ error: "Not authorized" });
+      }
+      
       const userExperiment = await storage.updateUserExperimentProgress(id, req.body);
       if (!userExperiment) {
         return res.status(404).json({ error: "User experiment not found" });
       }
-      res.json(userExperiment);
+      
+      // Award sats based on persisted state change (idempotent)
+      // Use the updated row values, not request body, for correctness
+      const rewardResult = await storage.awardExperimentProgressSats(
+        req.userId!, 
+        userExperiment.experimentId, 
+        priorState.completedDiscoveries,
+        userExperiment.completedDiscoveries,
+        priorState.progress,
+        userExperiment.progress
+      );
+      
+      res.json({ 
+        userExperiment, 
+        reward: rewardResult 
+      });
     } catch (error) {
       res.status(500).json({ error: "Failed to update experiment progress" });
     }
@@ -845,6 +882,17 @@ export async function registerRoutes(
       res.json(usersWithoutPasswords);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch leaderboard" });
+    }
+  });
+
+  // Get user rewards
+  app.get("/api/rewards", authMiddleware, async (req, res) => {
+    try {
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
+      const rewards = await storage.getUserRewards(req.userId!, limit);
+      res.json(rewards);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch rewards" });
     }
   });
 
