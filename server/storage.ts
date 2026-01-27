@@ -2,8 +2,7 @@ import {
   users, journalEntries, dreams, areaProgress, experiments, userExperiments,
   experimentNotes, discoveryNotes, events, posts, clubs, zaps, aiUsageLogs,
   courses, lessons, courseEnrollments, lessonComments, courseComments,
-  communities, communityMemberships, communityPosts, rewards,
-  REWARD_TYPES, REWARD_AMOUNTS,
+  communities, communityMemberships, communityPosts,
   type User, type InsertUser,
   type JournalEntry, type InsertJournalEntry,
   type Dream, type InsertDream,
@@ -24,10 +23,9 @@ import {
   type Community, type InsertCommunity,
   type CommunityMembership, type InsertCommunityMembership,
   type CommunityPost, type InsertCommunityPost,
-  type Reward, type InsertReward,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, desc, sql, inArray, lt, isNull } from "drizzle-orm";
+import { eq, and, desc, sql, inArray } from "drizzle-orm";
 
 export interface IStorage {
   // Users
@@ -71,7 +69,6 @@ export interface IStorage {
 
   // User Experiments
   getUserExperiments(userId: string): Promise<(UserExperiment & { experiment: Experiment })[]>;
-  getUserExperimentById(id: string): Promise<UserExperiment | undefined>;
   enrollUserInExperiment(userExperiment: InsertUserExperiment): Promise<UserExperiment>;
   updateUserExperimentProgress(id: string, updates: Partial<Pick<UserExperiment, 'completedDiscoveries' | 'progress'>>): Promise<UserExperiment | undefined>;
 
@@ -197,19 +194,6 @@ export interface IStorage {
   createCommunityPost(post: InsertCommunityPost): Promise<CommunityPost>;
   likeCommunityPost(postId: string): Promise<CommunityPost | undefined>;
   zapCommunityPost(postId: string, amount: number): Promise<CommunityPost | undefined>;
-
-  // Rewards
-  getUserRewards(userId: string, limit?: number): Promise<Reward[]>;
-  createReward(reward: InsertReward): Promise<Reward | null>;
-  awardJournalEntrySats(userId: string, journalEntryId: string): Promise<{ sats: number; newStreak: number; streakReward?: number } | null>;
-  awardExperimentProgressSats(
-    userId: string,
-    experimentId: string,
-    previousCompletedDiscoveries: number,
-    newCompletedDiscoveries: number,
-    previousProgress: number,
-    newProgress: number
-  ): Promise<{ sats: number } | null>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -439,11 +423,6 @@ export class DatabaseStorage implements IStorage {
       ...row.user_experiments,
       experiment: row.experiments!,
     }));
-  }
-
-  async getUserExperimentById(id: string): Promise<UserExperiment | undefined> {
-    const [result] = await db.select().from(userExperiments).where(eq(userExperiments.id, id));
-    return result || undefined;
   }
 
   async enrollUserInExperiment(userExperiment: InsertUserExperiment): Promise<UserExperiment> {
@@ -1265,209 +1244,6 @@ export class DatabaseStorage implements IStorage {
       .where(eq(communityPosts.id, postId))
       .returning();
     return updated;
-  }
-
-  // ============= REWARDS =============
-
-  async getUserRewards(userId: string, limit: number = 50): Promise<Reward[]> {
-    return db.select()
-      .from(rewards)
-      .where(eq(rewards.userId, userId))
-      .orderBy(desc(rewards.createdAt))
-      .limit(limit);
-  }
-
-  async createReward(reward: InsertReward): Promise<Reward | null> {
-    try {
-      const [created] = await db.insert(rewards).values(reward).returning();
-      return created;
-    } catch (error: any) {
-      // Handle unique constraint violation (duplicate reward)
-      if (error.code === '23505') {
-        return null; // Silently ignore duplicate - idempotency
-      }
-      throw error;
-    }
-  }
-
-  async awardJournalEntrySats(
-    userId: string,
-    journalEntryId: string
-  ): Promise<{ sats: number; newStreak: number; streakReward?: number } | null> {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    // Use transaction for atomicity - read user state inside transaction
-    return await db.transaction(async (tx) => {
-      // Read user with row lock for update
-      const [userRow] = await tx.execute(sql`
-        SELECT * FROM users WHERE id = ${userId} FOR UPDATE
-      `);
-      const user = userRow as any;
-      if (!user) return null;
-
-      let newStreak = 1;
-      const lastJournalDate = user.last_journal_date;
-      const userStreak = user.streak || 0;
-      const userLastStreakReward = user.last_streak_reward || 0;
-      
-      if (lastJournalDate) {
-        const lastJournal = new Date(lastJournalDate);
-        lastJournal.setHours(0, 0, 0, 0);
-        
-        if (lastJournal.getTime() === yesterday.getTime()) {
-          newStreak = userStreak + 1;
-        } else if (lastJournal.getTime() === today.getTime()) {
-          return null;
-        }
-      }
-      let totalSatsAwarded = 0;
-      let streakReward: number | undefined;
-      const journalRewardSats = REWARD_AMOUNTS.JOURNAL_ENTRY;
-      
-      // Try to create reward - handle duplicate via unique constraint
-      try {
-        const [journalReward] = await tx.insert(rewards).values({
-          userId,
-          type: REWARD_TYPES.JOURNAL_ENTRY,
-          sats: journalRewardSats,
-          description: "Daily LOVE Practice completed",
-          referenceId: journalEntryId,
-        }).returning();
-        
-        if (journalReward) {
-          totalSatsAwarded += journalRewardSats;
-        }
-      } catch (error: any) {
-        if (error.code !== '23505') throw error;
-        // Duplicate reward - continue without adding sats
-      }
-
-      const streakMilestones = [
-        { streak: 100, type: REWARD_TYPES.STREAK_100, sats: REWARD_AMOUNTS.STREAK_100 },
-        { streak: 30, type: REWARD_TYPES.STREAK_30, sats: REWARD_AMOUNTS.STREAK_30 },
-        { streak: 7, type: REWARD_TYPES.STREAK_7, sats: REWARD_AMOUNTS.STREAK_7 },
-      ];
-
-      for (const milestone of streakMilestones) {
-        if (newStreak >= milestone.streak && userLastStreakReward < milestone.streak) {
-          try {
-            const [streakResult] = await tx.insert(rewards).values({
-              userId,
-              type: milestone.type,
-              sats: milestone.sats,
-              description: `${milestone.streak}-day streak bonus`,
-              referenceId: `streak-${milestone.streak}`,
-            }).returning();
-            
-            if (streakResult) {
-              streakReward = milestone.sats;
-              totalSatsAwarded += milestone.sats;
-              
-              await tx.update(users)
-                .set({ lastStreakReward: milestone.streak })
-                .where(eq(users.id, userId));
-            }
-          } catch (error: any) {
-            if (error.code !== '23505') throw error;
-            // Duplicate streak reward - continue
-          }
-          break;
-        }
-      }
-
-      // Always update streak/lastJournalDate for valid journal entries
-      const userUpdate: Record<string, any> = {
-        streak: newStreak,
-        lastJournalDate: new Date(),
-      };
-      
-      if (totalSatsAwarded > 0) {
-        userUpdate.sats = sql`${users.sats} + ${totalSatsAwarded}`;
-      }
-      
-      await tx.update(users)
-        .set(userUpdate)
-        .where(eq(users.id, userId));
-
-      return { 
-        sats: totalSatsAwarded, 
-        newStreak, 
-        streakReward 
-      };
-    });
-  }
-
-  async awardExperimentProgressSats(
-    userId: string,
-    experimentId: string,
-    previousCompletedDiscoveries: number,
-    newCompletedDiscoveries: number,
-    previousProgress: number,
-    newProgress: number
-  ): Promise<{ sats: number } | null> {
-    // Only award if actual progress was made (completedDiscoveries increased)
-    if (newCompletedDiscoveries <= previousCompletedDiscoveries) {
-      return null;
-    }
-
-    // Use transaction for atomicity
-    return await db.transaction(async (tx) => {
-      let totalSats = 0;
-
-      // Award day reward for each new day completed
-      for (let dayNum = previousCompletedDiscoveries + 1; dayNum <= newCompletedDiscoveries; dayNum++) {
-        const dayReferenceId = `${experimentId}-day-${dayNum}`;
-        
-        try {
-          const [dayReward] = await tx.insert(rewards).values({
-            userId,
-            type: REWARD_TYPES.EXPERIMENT_DAY,
-            sats: REWARD_AMOUNTS.EXPERIMENT_DAY,
-            description: `Experiment day ${dayNum} completed`,
-            referenceId: dayReferenceId,
-          }).returning();
-          
-          if (dayReward) {
-            totalSats += REWARD_AMOUNTS.EXPERIMENT_DAY;
-          }
-        } catch (error: any) {
-          if (error.code !== '23505') throw error;
-          // Duplicate reward - continue without adding sats
-        }
-      }
-
-      // Award completion bonus only once (when transitioning from <100 to 100)
-      if (newProgress >= 100 && previousProgress < 100) {
-        try {
-          const [completionReward] = await tx.insert(rewards).values({
-            userId,
-            type: REWARD_TYPES.EXPERIMENT_COMPLETE,
-            sats: REWARD_AMOUNTS.EXPERIMENT_COMPLETE,
-            description: "Experiment completed - bonus!",
-            referenceId: experimentId,
-          }).returning();
-          
-          if (completionReward) {
-            totalSats += REWARD_AMOUNTS.EXPERIMENT_COMPLETE;
-          }
-        } catch (error: any) {
-          if (error.code !== '23505') throw error;
-          // Duplicate reward - continue
-        }
-      }
-
-      if (totalSats > 0) {
-        await tx.update(users)
-          .set({ sats: sql`${users.sats} + ${totalSats}` })
-          .where(eq(users.id, userId));
-      }
-
-      return totalSats > 0 ? { sats: totalSats } : null;
-    });
   }
 }
 

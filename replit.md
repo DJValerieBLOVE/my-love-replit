@@ -146,35 +146,9 @@
 - No header mail/bell icons (removed - notifications shown contextually on nav items)
 
 ### To Build (Current Priority)
-1. **Mobile Navigation Redesign** - ✅ COMPLETE: Hamburger slide-out menu replaces bottom nav
-2. **Mobile Card Flip Fix** - ✅ COMPLETE: Heart fades when pillar cards flipped
-3. **Bitcoin Rewards System** - ✅ COMPLETE: Sats awarded automatically
-
-## Bitcoin Rewards System
-
-### Reward Types & Amounts
-- **Daily LOVE Practice (journal entry)**: 100 sats
-- **Experiment day completed**: 50 sats
-- **Experiment fully completed**: 500 sats bonus
-- **7-day streak**: 200 sats bonus
-- **30-day streak**: 1000 sats bonus
-- **100-day streak**: 5000 sats bonus
-
-### Implementation Details
-- **Rewards table**: Tracks all sats awarded with type, amount, description, and reference ID
-- **User fields**: `lastJournalDate` and `lastStreakReward` for streak tracking
-- **Automatic awarding**: Sats given when journal entries created or experiment progress updated
-- **API response includes reward info**: Frontend receives sats earned and streak updates
-- **Streak logic**: Consecutive days increase streak; missing a day resets to 1
-- **Idempotency**: DB unique index on (user_id, type, reference_id) prevents duplicate rewards
-- **State-based logic**: Rewards computed from persisted DB state, not request body
-- **Prior state comparison**: Experiment routes get prior state before update, compare to new state
-- **Two-phase atomic approach**: Transaction wraps reward inserts + user sats updates
-- **Row-level locking**: SELECT ... FOR UPDATE prevents concurrent stale reads
-
-### API Endpoints
-- `GET /api/rewards` - Get user's reward history
-- Journal/experiment routes return reward data in response
+1. **Mobile Navigation Redesign** - Replace bottom nav with hamburger slide-out menu (web browser pattern)
+2. **Mobile Card Flip Fix** - Ensure heart overlay doesn't cover flipped card content
+3. **Bitcoin Rewards System** - Sats for journal entries, experiments, streaks
 
 ### Future Features
 - Lightning/Zaps integration (NWC)
