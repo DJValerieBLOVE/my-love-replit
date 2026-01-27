@@ -122,6 +122,11 @@
 - **Sharing Privacy Rules** - Group/community/learning posts stay private within group; only user's own original content can be shared publicly to Nostr
 - **Post Composer with Media** - Create posts with image, GIF, and video upload support; preview and remove media before posting
 - **External Sharing** - Share public posts to X/Twitter, Facebook, or copy link
+- **Course System** - Full course creation (CourseBuilder), viewing (CourseDetail), enrollment with progress tracking
+- **Course Comments** - Discussion section on courses with comment creation and display
+- **Course Access Control** - Public/community/paid access types with proper enrollment validation
+- **Community Infrastructure** - Schema and API for communities with memberships, roles (admin/moderator/member), and join approval workflows
+- **Multi-tenant Data Model** - Courses and experiments can be linked to communities, communities have access types (public/approval/paid)
 
 ### Navigation Structure
 - **Desktop left sidebar**: Home, Big Dreams (with dot), Grow (with dot), Events (with dot), Tribe (with dot), Toolbox, Love Board, Feed
