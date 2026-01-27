@@ -42,12 +42,13 @@
 - Card flip animations with one-at-a-time behavior and optional pin feature
 - Flipped card backs have light background (#FAF8F5), not purple
 
-### Mobile Design
+### Mobile Design (Redesign In Progress)
 - **Header**: Compact (56px), smaller EQ logo (40px), sats goes to Love Board, logo goes to Big Dreams
-- **Bottom nav**: 6 icons only (no text), no overflow menu
+- **Navigation**: Hamburger menu (top-left) with slide-out drawer - web browser standard pattern
 - **Cards**: Taller (200px min), 4:3 aspect ratio, drop-shadow text, rounded-xs corners
+- **Card Flip Fix**: Heart overlay must not cover flipped card content
 - **Login**: "Login" button text (not "Sign In")
-- **AI button**: Bottom-right, above nav bar
+- **AI button**: Bottom-right corner, above content
 
 ## System Architecture
 
@@ -106,13 +107,12 @@
 - Learning page (courses/experiments)
 - Communities page (clubs)
 - Events page with calendar
-- Leaderboard page
+- Leaderboard page (Love Board) with real data rankings
 - Floating Magic Mentor AI button (bottom-right, mobile-friendly)
 - PostgreSQL database with full schema
 - Express API backend
 - **NIP-07 Nostr Login** - Browser extension login (Alby, nos2x)
 - **NIP-46 Bunker Login** - Remote signer login via nsec.app/nsecBunker for users without extensions; session persists across page reloads
-- **Mobile-optimized layout** - Compact header, icons-only bottom nav
 - **Secure Authentication** - Nostr pubkey linked to database users, all personal data protected
 - **Mandatory Email Collection** - ProfileCompletionDialog prompts for email after Nostr login, required for 2-week trial access
 - **Share to Nostr** - Share Big Dreams, Journal entries, and completed Experiments to Nostr network with optional caption
@@ -132,6 +132,10 @@
   - Community create page (/community/create) - form with access type selector (public/approval/paid)
   - Community detail page (/community/:id) - join/leave, posts feed, create post for members
   - Community admin page (/community/:id/admin) - member management, approve/reject requests, role management
+- **Experiment Builder** - Full experiment creation UI with step builder, day assignments, and settings
+- **Creator Dashboard** (/creator) - Analytics showing course/experiment enrollments with real database aggregation
+- **Profile Pages** - Enhanced profiles with own content view, public profile via /profile/:userId, community filtering by accessType
+- **Aggregate Feed** (/feed) - Combined global + community posts with source filtering tabs (All Posts, Communities, Learning)
 
 ### Navigation Structure
 - **Desktop left sidebar**: Home, Big Dreams (with dot), Grow (with dot), Events (with dot), Tribe (with dot), Toolbox, Love Board, Feed
@@ -141,14 +145,16 @@
 - Floating button: Magic Mentor AI (Sparkles icon, bottom-right corner)
 - No header mail/bell icons (removed - notifications shown contextually on nav items)
 
-### To Build (Priority Order)
-1. Lightning/Zaps integration (NWC)
-2. AI Magic Mentor integration (Claude)
-3. AI Learning Buddy (enhanced) - trains on user's journal, goals, course learnings
-4. Community membership system (multi-tenant: creators can set up paid communities)
-5. Bitcoin rewards system
-6. User personalization: Spotify playlists, podcast RSS feeds, favorite quotes/authors
-7. Club-based sharing (isPrivate/sharedClubs enforcement)
+### To Build (Current Priority)
+1. **Mobile Navigation Redesign** - Replace bottom nav with hamburger slide-out menu (web browser pattern)
+2. **Mobile Card Flip Fix** - Ensure heart overlay doesn't cover flipped card content
+3. **Bitcoin Rewards System** - Sats for journal entries, experiments, streaks
+
+### Future Features
+- Lightning/Zaps integration (NWC)
+- AI Learning Buddy (enhanced) - trains on user's journal, goals, course learnings
+- User personalization: Spotify playlists, podcast RSS feeds, favorite quotes/authors
+- Club-based sharing (isPrivate/sharedClubs enforcement)
 
 ## Multi-Tenant Architecture
 - **Creators/coaches** can set up paid communities (limit 5 per paid plan, extra available for fee)

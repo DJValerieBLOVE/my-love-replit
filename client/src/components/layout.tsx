@@ -14,7 +14,9 @@ import {
   Radio,
   User,
   GraduationCap,
-  Wrench
+  Wrench,
+  Menu,
+  X
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -33,6 +35,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetClose,
+} from "@/components/ui/sheet";
 
 import { EqVisualizer } from "@/components/eq-visualizer";
 import { VerticalEqVisualizer } from "@/components/vertical-eq-visualizer";
@@ -42,6 +51,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { isConnected, profile, userStats, disconnect, isAdmin, isLoading, needsProfileCompletion, markProfileComplete } = useNostr();
 
   const desktopNavLinks = [
@@ -57,10 +67,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const mobileNavLinks = [
     { icon: Home, label: "Home", href: "/" },
+    { icon: Target, label: "Big Dreams", href: "/big-dreams", hasNotification: true },
     { icon: GraduationCap, label: "Grow", href: "/grow", hasNotification: true },
     { icon: Calendar, label: "Events", href: "/events", hasNotification: true },
     { icon: Users, label: "Tribe", href: "/community", hasNotification: true },
     { icon: Wrench, label: "Toolbox", href: "/resources" },
+    { icon: Heart, label: "Love Board", href: "/leaderboard" },
     { icon: Rss, label: "Feed", href: "/feed" },
   ];
 
@@ -70,19 +82,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       
       {/* Top Navigation Bar */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl px-3 md:px-4 h-14 md:h-20 flex items-center justify-between">
-          {/* LEFT: Sats on mobile (goes to Love Board), Logo+Text on desktop */}
+          {/* LEFT: Hamburger menu on mobile, Logo+Text on desktop */}
           <div className="flex items-center gap-2 md:gap-4">
-            {/* Mobile: Sats on left - now goes to Love Board */}
-            <Link href="/leaderboard" className="md:hidden">
-              <div className="flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-orange-500/10 to-yellow-500/10 rounded-full border border-orange-400/30" data-testid="sats-display-mobile">
-                <div className="flex items-center gap-1 text-[11px]">
-                  <span className="text-orange-600">↑{userStats?.satsGiven?.toLocaleString() || 0}</span>
-                  <span className="text-green-600">↓{userStats?.satsReceived?.toLocaleString() || 0}</span>
-                </div>
-              </div>
-            </Link>
+            {/* Mobile: Hamburger menu button */}
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="lg:hidden flex items-center justify-center w-10 h-10 rounded-lg hover:bg-muted/50 transition-colors"
+              aria-label="Open menu"
+              data-testid="button-mobile-menu"
+            >
+              <Menu className="w-6 h-6 text-muted-foreground" />
+            </button>
             {/* Desktop: Logo + Text */}
-            <Link href="/" className="hidden md:block">
+            <Link href="/" className="hidden lg:block">
               <div className="flex items-center gap-3 cursor-pointer">
                 <div className="relative flex items-center justify-center">
                   <EqVisualizer size={60} isLogo={true} />
@@ -95,11 +107,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {/* CENTER: Logo on mobile (goes to Big Dreams), Vertical EQ on desktop */}
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             {/* Mobile: Centered logo - now goes to Big Dreams */}
-            <Link href="/big-dreams" className="md:hidden">
+            <Link href="/big-dreams" className="lg:hidden">
               <EqVisualizer size={40} isLogo={true} />
             </Link>
             {/* Desktop: Vertical EQ */}
-            <div className="hidden md:block pt-2">
+            <div className="hidden lg:block pt-2">
               <VerticalEqVisualizer height={70} />
             </div>
           </div>
@@ -107,7 +119,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {/* RIGHT: Sats + Avatar */}
           <div className="flex items-center gap-1 md:gap-4">
             {/* Desktop: Sats display */}
-            <Link href="/wallet" className="hidden md:block">
+            <Link href="/wallet" className="hidden lg:block">
               <div className="flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-orange-500/10 to-yellow-500/10 rounded-full border border-orange-400/30 hover:border-orange-400/50 transition-colors cursor-pointer" data-testid="sats-display">
                 <img src={BitcoinIcon} alt="Bitcoin" className="w-5 h-5 rounded-full" />
                 <div className="flex items-center gap-3 text-sm">
@@ -242,41 +254,64 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       </div>
 
-      {/* Mobile Bottom Nav - 6 icons only, no text, no 3-dot menu */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 h-14 bg-background/95 backdrop-blur-lg border-t z-50 flex items-center justify-around px-1 safe-area-pb">
-        {mobileNavLinks.map((item) => {
-          const isActive = location === item.href || (item.href !== "/" && location.startsWith(item.href));
-          return (
-            <Link key={item.href} href={item.href}>
-              <div 
-                className={cn(
-                  "flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-200 cursor-pointer relative",
-                  isActive 
-                    ? "bg-love-body/15 text-love-body" 
-                    : "text-muted-foreground active:bg-muted/50"
-                )}
-                data-testid={`nav-mobile-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
-              >
-                <item.icon 
-                  className={cn(
-                    "w-6 h-6 relative z-10", 
-                    isActive && "stroke-[2.5]"
-                  )} 
-                  strokeWidth={1.5} 
-                />
-                {item.hasNotification && (
-                  <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-love-body rounded-full" data-testid={`notification-dot-mobile-${item.label.toLowerCase().replace(/\s+/g, '-')}`} />
-                )}
+      {/* Mobile Slide-Out Navigation Menu */}
+      <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+        <SheetContent side="left" className="w-[280px] p-0">
+          <SheetHeader className="p-4 border-b">
+            <SheetTitle className="flex items-center gap-3">
+              <EqVisualizer size={36} isLogo={true} />
+              <span className="font-serif text-lg">My Masterpiece</span>
+            </SheetTitle>
+          </SheetHeader>
+          <nav className="flex flex-col p-2">
+            {mobileNavLinks.map((item) => {
+              const isActive = location === item.href || (item.href !== "/" && location.startsWith(item.href));
+              return (
+                <SheetClose key={item.href} asChild>
+                  <Link href={item.href}>
+                    <div
+                      className={cn(
+                        "flex items-center gap-3 px-4 py-3 rounded-lg transition-all cursor-pointer relative",
+                        isActive
+                          ? "bg-love-body/10 text-love-body"
+                          : "text-muted-foreground hover:bg-muted/50"
+                      )}
+                      data-testid={`nav-mobile-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
+                    >
+                      <div className="relative">
+                        <item.icon className="w-5 h-5" strokeWidth={1.5} />
+                        {item.hasNotification && (
+                          <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-love-body rounded-full" />
+                        )}
+                      </div>
+                      <span className="font-medium">{item.label}</span>
+                    </div>
+                  </Link>
+                </SheetClose>
+              );
+            })}
+          </nav>
+          
+          {/* Sats display in mobile menu */}
+          <div className="mt-auto p-4 border-t">
+            <Link href="/leaderboard" onClick={() => setMobileMenuOpen(false)}>
+              <div className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-orange-500/10 to-yellow-500/10 rounded-lg border border-orange-400/30">
+                <img src={BitcoinIcon} alt="Bitcoin" className="w-5 h-5 rounded-full" />
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-orange-600">↑{userStats?.satsGiven?.toLocaleString() || 0}</span>
+                  <span className="text-muted-foreground/50">|</span>
+                  <span className="text-green-600">↓{userStats?.satsReceived?.toLocaleString() || 0}</span>
+                </div>
               </div>
             </Link>
-          );
-        })}
-      </nav>
+          </div>
+        </SheetContent>
+      </Sheet>
 
-      {/* Floating Magic Mentor Button (Bottom Right) - consistent position */}
+      {/* Floating Magic Mentor Button (Bottom Right) */}
       <button
         onClick={() => setIsAiOpen(true)}
-        className="fixed bottom-20 lg:bottom-6 right-4 lg:right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-[#6600ff] to-[#cc00ff] shadow-lg hover:shadow-xl transition-all hover:scale-105 flex items-center justify-center group"
+        className="fixed bottom-6 right-4 lg:right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-[#6600ff] to-[#cc00ff] shadow-lg hover:shadow-xl transition-all hover:scale-105 flex items-center justify-center group"
         aria-label="Open Magic Mentor"
         data-testid="button-magic-mentor-floating"
       >

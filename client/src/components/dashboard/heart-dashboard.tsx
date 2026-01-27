@@ -127,10 +127,16 @@ interface GlowingHeartProps {
   affirmation: string;
 }
 
-function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, affirmation }: GlowingHeartProps) {
+interface GlowingHeartWithStateProps extends GlowingHeartProps {
+  pillarCardFlipped: boolean;
+}
+
+function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, affirmation, pillarCardFlipped }: GlowingHeartWithStateProps) {
   return (
     <div 
-      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer"
+      className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-opacity duration-300 ${
+        pillarCardFlipped ? "z-0 pointer-events-none opacity-30" : "z-20"
+      }`}
       style={{ 
         width: "min(57.8vw, 57.8vh, 433.5px)",
         height: "min(54.4vw, 54.4vh, 396.95px)"
@@ -376,6 +382,7 @@ export function HeartDashboard() {
         onClick={handleHeartFlip}
         frontImageUrl="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&h=800&fit=crop"
         affirmation="You are LOVED"
+        pillarCardFlipped={(flippedCard !== null && flippedCard !== "god") || pinnedCards.size > 0}
       />
     </div>
   );
