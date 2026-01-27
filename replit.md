@@ -138,7 +138,7 @@
 - **Aggregate Feed** (/feed) - Combined global + community posts with source filtering tabs (All Posts, Communities, Learning)
 
 ### Navigation Structure
-- **Desktop left sidebar**: Home, Big Dreams (with dot), Experiments (with dot), Events (with dot), Tribe (with dot), Toolbox, Love Board, Feed
+- **Desktop left sidebar**: Home, Big Dreams (with dot), Experiments (with dot), Events (with dot), Tribe (with dot), Vault, Love Board, Feed
 - **Mobile navigation**: Hamburger slide-out menu from left (web browser standard pattern)
 - **Experiments page**: /experiments route, contains Courses and Experiments tabs
 - **Mobile header**: Stats goes to Love Board, center logo goes to Big Dreams

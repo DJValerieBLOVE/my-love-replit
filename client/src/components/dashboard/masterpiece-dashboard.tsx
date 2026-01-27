@@ -209,7 +209,7 @@ export function MasterpieceDashboard() {
           </div>
         </div>
       ),
-      detailsLink: "/resources",
+      detailsLink: "/vault",
     },
     {
       id: "buddies",
@@ -282,7 +282,7 @@ export function MasterpieceDashboard() {
           <div className="text-[10px] text-muted-foreground text-center mt-2">Swap with your favorite song</div>
         </div>
       ),
-      detailsLink: "/resources",
+      detailsLink: "/vault",
     },
     {
       id: "streak",

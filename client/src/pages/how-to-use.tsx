@@ -61,7 +61,7 @@ const sections = [
       },
       {
         title: "Resources Library",
-        description: "Access Lab Notes, your personal Toolbox, and curated Music & Meditations to support your journey."
+        description: "Access Lab Notes, your personal Vault, and curated Music & Meditations to support your journey."
       }
     ]
   },

@@ -60,7 +60,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { icon: GraduationCap, label: "Experiments", href: "/experiments", hasNotification: true },
     { icon: Calendar, label: "Events", href: "/events", hasNotification: true },
     { icon: Users, label: "Tribe", href: "/community", hasNotification: true },
-    { icon: Wrench, label: "Toolbox", href: "/resources" },
+    { icon: Wrench, label: "Vault", href: "/vault" },
     { icon: Heart, label: "Love Board", href: "/leaderboard" },
     { icon: Rss, label: "Feed", href: "/feed" },
   ];
@@ -71,7 +71,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { icon: GraduationCap, label: "Experiments", href: "/experiments", hasNotification: true },
     { icon: Calendar, label: "Events", href: "/events", hasNotification: true },
     { icon: Users, label: "Tribe", href: "/community", hasNotification: true },
-    { icon: Wrench, label: "Toolbox", href: "/resources" },
+    { icon: Wrench, label: "Vault", href: "/vault" },
     { icon: Heart, label: "Love Board", href: "/leaderboard" },
     { icon: Rss, label: "Feed", href: "/feed" },
   ];

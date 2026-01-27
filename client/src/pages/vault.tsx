@@ -110,7 +110,7 @@ const BOOKMARKS = [
   }
 ];
 
-export default function Resources() {
+export default function Vault() {
   const [activeTab, setActiveTab] = useState("lab-notes");
   const { isConnected } = useNostr();
 
@@ -126,7 +126,7 @@ export default function Resources() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-serif font-bold text-muted-foreground flex items-center gap-3">
-              <Wrench className="w-8 h-8 text-muted-foreground" /> Resources
+              <Wrench className="w-8 h-8 text-muted-foreground" /> Vault
             </h1>
             <p className="text-lg text-muted-foreground mt-1">
               Your notes, tools, playlists, and saved content all in one place.
@@ -147,7 +147,7 @@ export default function Resources() {
               <PenLine className="w-4 h-4" /> Lab Notes
             </TabsTrigger>
             <TabsTrigger value="toolbox" className="px-6 py-2 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              <Wrench className="w-4 h-4" /> My Toolbox
+              <Wrench className="w-4 h-4" /> My Vault
             </TabsTrigger>
             <TabsTrigger value="media" className="px-6 py-2 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
               <Music className="w-4 h-4" /> Music & Meditations
