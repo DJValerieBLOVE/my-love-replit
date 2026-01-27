@@ -113,7 +113,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
   return (
       <Card className="border-none shadow-sm bg-card relative overflow-visible group mb-16 lg:mb-0">
           <CardContent className="p-6 pl-[2px] pr-[2px] pt-[2px] pb-[2px]">
-             <div className="mb-6 flex items-center gap-2 text-muted-foreground">
+             <div className="mb-6 flex items-center gap-2 text-muted-foreground pl-[4px] pr-[4px] pt-[5px] pb-[5px]">
                  <Heart className="w-3 h-3" strokeWidth={1.5} />
                  <h2 className="text-xs font-medium">Daily LOVE Practice</h2>
              </div>

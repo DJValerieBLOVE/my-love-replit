@@ -1,118 +1,301 @@
 import Layout from "@/components/layout";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Music, 
-  Mic, 
-  Wrench, 
+  Headphones,
   Plus, 
   Bookmark, 
   FileText, 
-  Link as LinkIcon, 
   Download, 
   ExternalLink, 
   BookOpen,
-  MoreHorizontal,
-  Trash2,
-  Bot,
   Heart,
   PenLine,
-  FlaskConical,
-  Lightbulb,
-  Sparkles,
   Search,
   Lock,
   Sun,
-  Eye,
-  ChevronLeft,
-  CheckCircle
+  Moon,
+  ChevronRight,
+  Flame,
+  BarChart3,
+  Library,
+  Video,
+  Mic,
+  File,
+  FolderOpen,
+  Play,
+  Clock,
+  CheckCircle2,
+  Circle,
+  Sparkles
 } from "lucide-react";
 import { Link } from "wouter";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getJournalEntries } from "@/lib/api";
 import { useNostr } from "@/contexts/nostr-context";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
-const SAVED_EXPERIMENTS = [
-  {
-    id: 1,
-    title: "Morning Miracle",
-    category: "Routine",
-    image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400&h=200&fit=crop",
-    progress: 42
-  },
-  {
-    id: 2,
-    title: "Bitcoin Basics",
-    category: "Finance",
-    image: "https://images.unsplash.com/photo-1518546305927-5a5b0f98795f?w=400&h=200&fit=crop",
-    progress: 10
-  }
+// 11 LOVE Code areas for tagging
+const LOVE_AREAS = [
+  { id: "god", name: "God/Spirituality", color: "#eb00a8" },
+  { id: "mission", name: "Mission", color: "#a2f005" },
+  { id: "body", name: "Body", color: "#6600ff" },
+  { id: "mind", name: "Mind", color: "#9900ff" },
+  { id: "soul", name: "Soul", color: "#cc00ff" },
+  { id: "romance", name: "Romance", color: "#e60023" },
+  { id: "family", name: "Family", color: "#ff6600" },
+  { id: "community", name: "Community", color: "#ffdf00" },
+  { id: "money", name: "Money", color: "#00d81c" },
+  { id: "time", name: "Time", color: "#00ccff" },
+  { id: "environment", name: "Environment", color: "#0033ff" },
 ];
 
-const WORKSHEETS = [
-  {
-    id: 1,
-    title: "11x Life Audit Template",
-    type: "PDF",
-    size: "2.4 MB",
-    date: "Nov 20, 2025"
-  },
-  {
-    id: 2,
-    title: "Daily 5 V's Tracker",
-    type: "Excel",
-    size: "1.1 MB",
-    date: "Nov 22, 2025"
-  },
-  {
-    id: 3,
-    title: "Dream Journal Prompts",
-    type: "PDF",
-    size: "500 KB",
-    date: "Nov 25, 2025"
+// Generate streak data for last 90 days
+const generateStreakData = () => {
+  const data = [];
+  const today = new Date();
+  for (let i = 89; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(date.getDate() - i);
+    // Random completion: 0 = none, 1 = morning only, 2 = evening only, 3 = both
+    const completion = Math.random() > 0.3 ? (Math.random() > 0.5 ? 3 : Math.random() > 0.5 ? 1 : 2) : 0;
+    data.push({
+      date: date.toISOString().split('T')[0],
+      dayOfWeek: date.getDay(),
+      completion,
+    });
   }
+  return data;
+};
+
+const STREAK_DATA = generateStreakData();
+
+// Mock library items
+const LIBRARY_ITEMS = [
+  { id: 1, title: "The Bitcoin Standard", author: "Saifedean Ammous", type: "book", status: "reading", cover: "https://images.unsplash.com/photo-1592496431122-2349e0fbc666?w=200&h=300&fit=crop", area: "money" },
+  { id: 2, title: "Breaking the Habit of Being Yourself", author: "Dr. Joe Dispenza", type: "audiobook", status: "completed", cover: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=200&h=300&fit=crop", area: "mind" },
+  { id: 3, title: "Bitcoin Audible", author: "Guy Swann", type: "podcast", status: "listening", cover: "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=200&h=300&fit=crop", area: "money" },
+  { id: 4, title: "How Bitcoin Works", author: "YouTube", type: "video", status: "want", cover: "https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=200&h=300&fit=crop", area: "money" },
+  { id: 5, title: "11x Life Audit Template", author: "PDF", type: "document", status: "reference", cover: null, area: "mission" },
 ];
 
-const BOOKMARKS = [
-  {
-    id: 1,
-    title: "The Bitcoin Standard",
-    author: "Saifedean Ammous",
-    type: "Book",
-    url: "#",
-    cover: "https://images.unsplash.com/photo-1592496431122-2349e0fbc666?w=200&h=300&fit=crop"
-  },
-  {
-    id: 2,
-    title: "Breaking the Habit of Being Yourself",
-    author: "Dr. Joe Dispenza",
-    type: "Book",
-    url: "#",
-    cover: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=200&h=300&fit=crop"
-  },
-  {
-    id: 3,
-    title: "Introduction to Lightning Network",
-    author: "Article",
-    type: "Link",
-    url: "#",
-    cover: null
-  }
+// Music & Meditation playlists
+const PLAYLISTS = [
+  { id: 1, title: "Morning Energy", mood: "energize", tracks: 12, duration: "45 min", gradient: "from-orange-500 to-yellow-500" },
+  { id: 2, title: "Focus Flow", mood: "focus", tracks: 18, duration: "1hr 20min", gradient: "from-blue-500 to-cyan-500" },
+  { id: 3, title: "Evening Wind Down", mood: "relax", tracks: 10, duration: "35 min", gradient: "from-purple-500 to-pink-500" },
 ];
 
-export default function Vault() {
-  const [activeTab, setActiveTab] = useState("lab-notes");
+const MEDITATIONS = [
+  { id: 1, title: "Morning Intention Setting", duration: "10 min", type: "guided", gradient: "from-cyan-500 to-teal-500" },
+  { id: 2, title: "Breath of Fire", duration: "5 min", type: "breathwork", gradient: "from-red-500 to-orange-500" },
+  { id: 3, title: "Evening Gratitude", duration: "15 min", type: "guided", gradient: "from-indigo-500 to-purple-500" },
+];
+
+function StreakGrid() {
+  const currentStreak = 7; // Mock current streak
+  
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <Flame className="w-5 h-5 text-orange-500" />
+            <span className="text-2xl font-bold">{currentStreak}</span>
+            <span className="text-muted-foreground">day streak</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 rounded-sm bg-gray-200" />
+            <span>Missed</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 rounded-sm bg-purple-300" />
+            <span>Partial</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 rounded-sm bg-purple-600" />
+            <span>Complete</span>
+          </div>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-[repeat(13,1fr)] gap-1">
+        {STREAK_DATA.map((day, i) => {
+          const bgColor = day.completion === 0 
+            ? "bg-gray-100" 
+            : day.completion === 3 
+              ? "bg-purple-600" 
+              : "bg-purple-300";
+          
+          return (
+            <Tooltip key={i}>
+              <TooltipTrigger asChild>
+                <div 
+                  className={`w-full aspect-square rounded-sm ${bgColor} cursor-pointer hover:ring-2 hover:ring-purple-400 transition-all`}
+                />
+              </TooltipTrigger>
+              <TooltipContent>
+                <div className="text-xs">
+                  <p className="font-medium">{new Date(day.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</p>
+                  <p className="text-muted-foreground">
+                    {day.completion === 0 && "No check-in"}
+                    {day.completion === 1 && "Morning only ☀️"}
+                    {day.completion === 2 && "Evening only 🌙"}
+                    {day.completion === 3 && "Complete day ✨"}
+                  </p>
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function DailyLovePracticeTab() {
+  const [morningComplete, setMorningComplete] = useState(false);
+  const [eveningComplete, setEveningComplete] = useState(false);
+  const currentHour = new Date().getHours();
+  const isEvening = currentHour >= 17;
+
+  return (
+    <div className="space-y-6">
+      {/* Streak Visualization */}
+      <Card className="p-5">
+        <StreakGrid />
+      </Card>
+
+      {/* Today's Entry */}
+      <Card className="overflow-hidden">
+        <CardHeader className="bg-gradient-to-r from-[#6600ff]/10 to-[#cc00ff]/10 border-b">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg font-serif flex items-center gap-2">
+              <Heart className="w-5 h-5 text-[#eb00a8]" />
+              Today's LOVE Practice
+            </CardTitle>
+            <Badge variant="outline" className="text-xs">
+              {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          {/* Morning Section */}
+          <div className={`p-5 border-b ${morningComplete ? 'bg-green-50/50' : ''}`}>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Sun className="w-5 h-5 text-orange-500" />
+                <h3 className="font-bold">Morning Check-in</h3>
+                {morningComplete && <CheckCircle2 className="w-4 h-4 text-green-600" />}
+              </div>
+              {!morningComplete && (
+                <Button size="sm" className="gap-1" onClick={() => setMorningComplete(true)}>
+                  <Plus className="w-4 h-4" /> Start
+                </Button>
+              )}
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground">Vibe — How do I want to FEEL today?</label>
+                <Textarea placeholder="Energized, focused, grateful..." className="min-h-[60px] text-sm" disabled={morningComplete} />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground">Vision — What does my ideal day look like?</label>
+                <Textarea placeholder="I will accomplish..." className="min-h-[60px] text-sm" disabled={morningComplete} />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground">Value — What will I create/contribute?</label>
+                <Textarea placeholder="I will give value by..." className="min-h-[60px] text-sm" disabled={morningComplete} />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground">Villain — What's trying to stop me? (CLADDD)</label>
+                <Textarea placeholder="Confusion, Lies, Apathy, Disconnection, Distraction, Drifting..." className="min-h-[60px] text-sm" disabled={morningComplete} />
+              </div>
+            </div>
+          </div>
+
+          {/* Evening Section */}
+          <div className={`p-5 ${eveningComplete ? 'bg-green-50/50' : isEvening ? '' : 'opacity-60'}`}>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Moon className="w-5 h-5 text-indigo-500" />
+                <h3 className="font-bold">Evening Reflection</h3>
+                {eveningComplete && <CheckCircle2 className="w-4 h-4 text-green-600" />}
+                {!isEvening && !eveningComplete && (
+                  <Badge variant="secondary" className="text-xs">Available after 5pm</Badge>
+                )}
+              </div>
+              {isEvening && morningComplete && !eveningComplete && (
+                <Button size="sm" className="gap-1" onClick={() => setEveningComplete(true)}>
+                  <Plus className="w-4 h-4" /> Complete
+                </Button>
+              )}
+            </div>
+            
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground">Victory — What actually happened?</label>
+                <Textarea placeholder="Today I accomplished..." className="min-h-[80px] text-sm" disabled={!isEvening || eveningComplete} />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-muted-foreground">Lessons — What did I learn?</label>
+                  <Textarea placeholder="I learned that..." className="min-h-[60px] text-sm" disabled={!isEvening || eveningComplete} />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-muted-foreground">Blessings — What am I grateful for?</label>
+                  <Textarea placeholder="I'm grateful for..." className="min-h-[60px] text-sm" disabled={!isEvening || eveningComplete} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Previous Entries */}
+      <div>
+        <h3 className="font-bold text-muted-foreground mb-3 flex items-center gap-2">
+          <Clock className="w-4 h-4" /> Previous Entries
+        </h3>
+        <div className="space-y-2">
+          {[1, 2, 3].map((i) => (
+            <Card key={i} className="p-4 hover:shadow-md transition-shadow cursor-pointer">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1">
+                    <Sun className="w-4 h-4 text-orange-400" />
+                    <Moon className="w-4 h-4 text-indigo-400" />
+                  </div>
+                  <span className="font-medium text-sm">
+                    {new Date(Date.now() - i * 86400000).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+                  </span>
+                </div>
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function JournalTab() {
   const { isConnected } = useNostr();
+  const [filter, setFilter] = useState("all");
 
   const { data: journalEntries = [] } = useQuery({
     queryKey: ["journalEntries"],
@@ -121,235 +304,476 @@ export default function Vault() {
   });
 
   return (
+    <div className="space-y-6">
+      {/* Quick Actions */}
+      <div className="flex flex-wrap gap-2">
+        <Link href="/journal?startPractice=true">
+          <Button className="gap-2">
+            <Heart className="w-4 h-4" /> Daily LOVE Practice
+          </Button>
+        </Link>
+        <Button variant="outline" className="gap-2">
+          <PenLine className="w-4 h-4" /> LaB Notes
+        </Button>
+        <Button variant="outline" className="gap-2">
+          <Sparkles className="w-4 h-4" /> Free Write
+        </Button>
+      </div>
+
+      {/* Filter & Search */}
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="relative flex-1 max-w-xs">
+          <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+          <Input placeholder="Search journal..." className="pl-9" />
+        </div>
+        <div className="flex gap-1">
+          {["all", "love-practice", "lab-notes", "free-write"].map((f) => (
+            <Button
+              key={f}
+              variant={filter === f ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setFilter(f)}
+              className="text-xs"
+            >
+              {f === "all" && "All"}
+              {f === "love-practice" && "LOVE Practice"}
+              {f === "lab-notes" && "LaB Notes"}
+              {f === "free-write" && "Free Write"}
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      {/* 11 Area Tags */}
+      <div className="flex flex-wrap gap-1.5">
+        {LOVE_AREAS.map((area) => (
+          <Badge 
+            key={area.id} 
+            variant="outline" 
+            className="cursor-pointer hover:bg-muted text-xs"
+            style={{ borderColor: area.color }}
+          >
+            <div className="w-2 h-2 rounded-full mr-1.5" style={{ backgroundColor: area.color }} />
+            {area.name}
+          </Badge>
+        ))}
+      </div>
+
+      {/* Journal Entries */}
+      <div className="grid gap-3">
+        {(journalEntries as any[]).map((entry: any) => (
+          <Card key={entry.id} className="p-4 hover:shadow-md transition-shadow cursor-pointer">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 text-muted-foreground mb-1">
+                  <Heart className="w-3 h-3" />
+                  <span className="text-xs font-medium">Daily LOVE Practice</span>
+                  <Lock className="w-3 h-3 text-muted-foreground/40" />
+                </div>
+                <div className="font-serif font-bold mb-1">
+                  {new Date(entry.date).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+                </div>
+                <p className="text-sm text-muted-foreground line-clamp-2">
+                  {entry.gratitude || entry.reflection || "No content..."}
+                </p>
+              </div>
+              <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0 mt-1" />
+            </div>
+          </Card>
+        ))}
+        
+        {journalEntries.length === 0 && (
+          <Card className="border-dashed border-2 bg-muted/20">
+            <CardContent className="p-8 text-center">
+              <PenLine className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
+              <h3 className="font-bold text-lg mb-2">No journal entries yet</h3>
+              <p className="text-muted-foreground mb-4">Start your first entry to begin your journey.</p>
+              <Link href="/journal?startPractice=true">
+                <Button className="gap-2">
+                  <Heart className="w-4 h-4" /> Start Practice
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function BookmarksTab() {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="relative flex-1 max-w-xs">
+          <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+          <Input placeholder="Search bookmarks..." className="pl-9" />
+        </div>
+        <Button className="gap-2">
+          <Plus className="w-4 h-4" /> Add Bookmark
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer border-dashed border-2 flex items-center justify-center min-h-[120px]">
+          <div className="text-center">
+            <FolderOpen className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
+            <p className="text-sm text-muted-foreground">Create folder</p>
+          </div>
+        </Card>
+        
+        {[1, 2, 3, 4].map((i) => (
+          <Card key={i} className="p-4 hover:shadow-md transition-shadow cursor-pointer">
+            <div className="flex items-start gap-3">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shrink-0">
+                <Bookmark className="w-5 h-5 text-white" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className="font-medium text-sm truncate">Saved Item {i}</h4>
+                <p className="text-xs text-muted-foreground">From Experiments</p>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function AssessmentsTab() {
+  return (
+    <div className="space-y-6">
+      {/* 11x LOVE Code Assessment */}
+      <Card className="overflow-hidden">
+        <CardHeader className="bg-gradient-to-r from-[#6600ff]/10 to-[#cc00ff]/10 border-b">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg font-serif">11x LOVE Code Assessment</CardTitle>
+            <Button size="sm" variant="outline">Take Again</Button>
+          </div>
+        </CardHeader>
+        <CardContent className="p-5">
+          <div className="text-center mb-6">
+            <p className="text-muted-foreground text-sm mb-4">Your results are used to personalize your Big Dreams and AI coaching.</p>
+            {/* Radar chart placeholder */}
+            <div className="w-64 h-64 mx-auto rounded-full border-4 border-dashed border-muted flex items-center justify-center">
+              <div className="text-center">
+                <BarChart3 className="w-12 h-12 text-muted-foreground/30 mx-auto mb-2" />
+                <p className="text-sm text-muted-foreground">Radar chart coming soon</p>
+              </div>
+            </div>
+          </div>
+          
+          {/* Area scores */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            {LOVE_AREAS.map((area) => (
+              <div key={area.id} className="p-3 rounded-lg bg-muted/30 text-center">
+                <div className="w-3 h-3 rounded-full mx-auto mb-1" style={{ backgroundColor: area.color }} />
+                <p className="text-xs font-medium truncate">{area.name}</p>
+                <p className="text-lg font-bold" style={{ color: area.color }}>{Math.floor(Math.random() * 40 + 60)}%</p>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Assessment History */}
+      <div>
+        <h3 className="font-bold text-muted-foreground mb-3">Assessment History</h3>
+        <div className="space-y-2">
+          {[1, 2].map((i) => (
+            <Card key={i} className="p-4 hover:shadow-md transition-shadow cursor-pointer">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-sm">11x LOVE Code Assessment</p>
+                  <p className="text-xs text-muted-foreground">
+                    Taken {i === 1 ? "January 15, 2026" : "October 3, 2025"}
+                  </p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MusicMeditationsTab() {
+  return (
+    <div className="space-y-8">
+      {/* Now Playing */}
+      <Card className="p-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10">
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+            <Music className="w-8 h-8 text-white" />
+          </div>
+          <div className="flex-1">
+            <p className="text-xs text-muted-foreground uppercase tracking-wide">Now Playing</p>
+            <h3 className="font-bold">Morning Energy Mix</h3>
+            <p className="text-sm text-muted-foreground">High vibe instrumentals</p>
+          </div>
+          <Button size="icon" variant="ghost" className="rounded-full w-12 h-12">
+            <Play className="w-6 h-6" />
+          </Button>
+        </div>
+      </Card>
+
+      {/* Music Playlists */}
+      <section>
+        <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-muted-foreground">
+          <Music className="w-5 h-5" /> Music Playlists
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {PLAYLISTS.map((playlist) => (
+            <Card key={playlist.id} className="overflow-hidden hover:shadow-md transition-all cursor-pointer group">
+              <div className={`h-32 bg-gradient-to-br ${playlist.gradient} relative`}>
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/30">
+                  <Play className="w-10 h-10 text-white" />
+                </div>
+              </div>
+              <CardContent className="p-4">
+                <h3 className="font-bold">{playlist.title}</h3>
+                <p className="text-xs text-muted-foreground">{playlist.tracks} tracks • {playlist.duration}</p>
+              </CardContent>
+            </Card>
+          ))}
+          <Card className="border-dashed border-2 flex items-center justify-center min-h-[180px] cursor-pointer hover:bg-muted/20 transition-colors">
+            <div className="text-center p-4">
+              <Plus className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground">Add Playlist Link</p>
+              <p className="text-xs text-muted-foreground/60">Spotify, Apple Music, YouTube</p>
+            </div>
+          </Card>
+        </div>
+      </section>
+
+      {/* Meditations */}
+      <section>
+        <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-muted-foreground">
+          <Headphones className="w-5 h-5" /> Meditations
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {MEDITATIONS.map((med) => (
+            <Card key={med.id} className="overflow-hidden hover:shadow-md transition-all cursor-pointer group">
+              <div className={`h-32 bg-gradient-to-br ${med.gradient} relative`}>
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/30">
+                  <Play className="w-10 h-10 text-white" />
+                </div>
+              </div>
+              <CardContent className="p-4">
+                <h3 className="font-bold">{med.title}</h3>
+                <p className="text-xs text-muted-foreground">{med.duration} • {med.type}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function LibraryTab() {
+  const [category, setCategory] = useState("all");
+  
+  const categories = [
+    { id: "all", label: "All", icon: Library },
+    { id: "book", label: "Books", icon: BookOpen },
+    { id: "audiobook", label: "Audiobooks", icon: Headphones },
+    { id: "podcast", label: "Podcasts", icon: Mic },
+    { id: "video", label: "Videos", icon: Video },
+    { id: "document", label: "Documents", icon: File },
+  ];
+
+  const filteredItems = category === "all" 
+    ? LIBRARY_ITEMS 
+    : LIBRARY_ITEMS.filter(item => item.type === category);
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "reading":
+      case "listening":
+        return <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">In Progress</Badge>;
+      case "completed":
+        return <Badge className="bg-green-100 text-green-700 hover:bg-green-100">Completed</Badge>;
+      case "want":
+        return <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100">Want</Badge>;
+      case "reference":
+        return <Badge className="bg-purple-100 text-purple-700 hover:bg-purple-100">Reference</Badge>;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Category Filter */}
+      <div className="flex flex-wrap gap-2">
+        {categories.map((cat) => (
+          <Button
+            key={cat.id}
+            variant={category === cat.id ? "default" : "outline"}
+            size="sm"
+            onClick={() => setCategory(cat.id)}
+            className="gap-2"
+          >
+            <cat.icon className="w-4 h-4" />
+            {cat.label}
+          </Button>
+        ))}
+      </div>
+
+      {/* Add New */}
+      <Card className="p-4 border-dashed border-2">
+        <div className="flex items-center gap-4">
+          <div className="flex-1">
+            <Input placeholder="Paste a link to add (YouTube, Spotify, Audible, website...)" />
+          </div>
+          <Button className="gap-2">
+            <Plus className="w-4 h-4" /> Add
+          </Button>
+        </div>
+      </Card>
+
+      {/* Continue Section */}
+      <section>
+        <h3 className="font-bold text-muted-foreground mb-3 flex items-center gap-2">
+          <Play className="w-4 h-4" /> Continue
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredItems.filter(i => i.status === "reading" || i.status === "listening").map((item) => (
+            <Card key={item.id} className="p-4 hover:shadow-md transition-shadow cursor-pointer">
+              <div className="flex gap-3">
+                {item.cover ? (
+                  <img src={item.cover} alt={item.title} className="w-16 h-20 object-cover rounded-lg" />
+                ) : (
+                  <div className="w-16 h-20 rounded-lg bg-muted flex items-center justify-center">
+                    <File className="w-6 h-6 text-muted-foreground" />
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-medium text-sm truncate">{item.title}</h4>
+                  <p className="text-xs text-muted-foreground truncate">{item.author}</p>
+                  <div className="mt-2">{getStatusBadge(item.status)}</div>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      {/* All Items */}
+      <section>
+        <h3 className="font-bold text-muted-foreground mb-3">All Items</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredItems.map((item) => (
+            <Card key={item.id} className="p-4 hover:shadow-md transition-shadow cursor-pointer">
+              <div className="flex gap-3">
+                {item.cover ? (
+                  <img src={item.cover} alt={item.title} className="w-16 h-20 object-cover rounded-lg" />
+                ) : (
+                  <div className="w-16 h-20 rounded-lg bg-muted flex items-center justify-center">
+                    <File className="w-6 h-6 text-muted-foreground" />
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-medium text-sm truncate">{item.title}</h4>
+                  <p className="text-xs text-muted-foreground truncate">{item.author}</p>
+                  <div className="mt-2 flex items-center gap-2">
+                    {getStatusBadge(item.status)}
+                    <div 
+                      className="w-2 h-2 rounded-full" 
+                      style={{ backgroundColor: LOVE_AREAS.find(a => a.id === item.area)?.color }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
+
+export default function Vault() {
+  const [activeTab, setActiveTab] = useState("daily-love");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  return (
     <Layout>
-      <div className="max-w-6xl mx-auto p-4 lg:p-8 space-y-8">
+      <div className="max-w-6xl mx-auto p-4 lg:p-8 space-y-6">
+        {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-serif font-bold text-muted-foreground flex items-center gap-3">
-              <Wrench className="w-8 h-8 text-muted-foreground" /> Vault
+              <Lock className="w-8 h-8 text-muted-foreground" /> The Vault
             </h1>
-            <p className="text-lg text-muted-foreground mt-1">
-              Your notes, tools, playlists, and saved content all in one place.
+            <p className="text-muted-foreground mt-1">
+              Your private space for growth, reflection, and learning.
             </p>
           </div>
           <div className="flex gap-2">
-            <Link href="/admin/mentor">
-              <Button variant="outline" className="gap-2">
-                <Bot className="w-4 h-4 text-muted-foreground" /> Mentor Studio
-              </Button>
-            </Link>
+            <div className="relative">
+              <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+              <Input 
+                placeholder="Search vault..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 w-64" 
+              />
+            </div>
+            <Button variant="outline" className="gap-2">
+              <Download className="w-4 h-4" /> Export
+            </Button>
           </div>
         </div>
 
+        {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="w-full md:w-auto bg-[#FAFAFA] p-1 h-auto flex-wrap justify-start">
-            <TabsTrigger value="lab-notes" className="px-6 py-2 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              <PenLine className="w-4 h-4" /> Lab Notes
+          <TabsList className="w-full md:w-auto bg-[#FAFAFA] p-1 h-auto flex-wrap justify-start gap-1">
+            <TabsTrigger value="daily-love" className="px-4 py-2 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <Heart className="w-4 h-4" /> Daily LOVE
             </TabsTrigger>
-            <TabsTrigger value="toolbox" className="px-6 py-2 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              <Wrench className="w-4 h-4" /> My Vault
+            <TabsTrigger value="journal" className="px-4 py-2 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <PenLine className="w-4 h-4" /> Journal
             </TabsTrigger>
-            <TabsTrigger value="media" className="px-6 py-2 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+            <TabsTrigger value="bookmarks" className="px-4 py-2 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <Bookmark className="w-4 h-4" /> Bookmarks
+            </TabsTrigger>
+            <TabsTrigger value="assessments" className="px-4 py-2 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <BarChart3 className="w-4 h-4" /> Assessments
+            </TabsTrigger>
+            <TabsTrigger value="music" className="px-4 py-2 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
               <Music className="w-4 h-4" /> Music & Meditations
+            </TabsTrigger>
+            <TabsTrigger value="library" className="px-4 py-2 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <Library className="w-4 h-4" /> Library
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="lab-notes" className="space-y-6">
-            <div className="flex gap-3 mb-6">
-              <Link href="/journal?startPractice=true">
-                <Button className="gap-2">
-                  <Heart className="w-4 h-4" /> Daily LOVE Practice
-                </Button>
-              </Link>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="gap-2">
-                    <Plus className="w-4 h-4" /> New Note
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem className="focus:bg-love-body/10 focus:text-love-body cursor-pointer">
-                    <FlaskConical className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Experiment Note
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="focus:bg-love-body/10 focus:text-love-body cursor-pointer">
-                    <Lightbulb className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Discovery Note
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="focus:bg-love-body/10 focus:text-love-body cursor-pointer">
-                    <Sparkles className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} /> Magic Mentor Session
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-
-            <div className="flex items-center gap-2 mb-4">
-              <div className="relative flex-1 max-w-xs">
-                <Search className="w-4 h-4 text-muted-foreground/50 absolute left-3 top-1/2 -translate-y-1/2" />
-                <Input placeholder="Search notes..." className="h-9 pl-9 bg-transparent border border-border/40" />
-              </div>
-            </div>
-
-            <div className="grid gap-4">
-              {(journalEntries as any[]).slice(0, 5).map((entry: any) => (
-                <Card key={entry.id} className="border-none shadow-sm hover:shadow-md transition-all cursor-pointer">
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-start">
-                      <div className="flex items-center gap-2 text-muted-foreground mb-2">
-                        <Heart className="w-3 h-3" strokeWidth={1.5} />
-                        <span className="text-xs font-medium">Daily LOVE Practice</span>
-                      </div>
-                      <Lock className="w-3.5 h-3.5 text-muted-foreground/40" strokeWidth={1.5} />
-                    </div>
-                    <div className="text-lg font-serif font-bold text-foreground mb-2">
-                      {new Date(entry.date).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
-                    </div>
-                    <p className="text-sm text-muted-foreground line-clamp-2">
-                      {entry.gratitude || entry.reflection || "No content..."}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
-              
-              {journalEntries.length === 0 && (
-                <Card className="border-dashed border-2 bg-muted/20">
-                  <CardContent className="p-8 text-center">
-                    <PenLine className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-                    <h3 className="font-bold text-lg mb-2">No notes yet</h3>
-                    <p className="text-muted-foreground mb-4">Start your first Daily LOVE Practice to create your first note.</p>
-                    <Link href="/journal?startPractice=true">
-                      <Button className="gap-2">
-                        <Heart className="w-4 h-4" /> Start Practice
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
+          <TabsContent value="daily-love">
+            <DailyLovePracticeTab />
           </TabsContent>
 
-          <TabsContent value="toolbox" className="space-y-8">
-            <section>
-              <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-muted-foreground">
-                <Bookmark className="w-5 h-5 text-muted-foreground" /> Saved Courses
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {SAVED_EXPERIMENTS.map((item) => (
-                  <Card key={item.id} className="overflow-hidden border-none shadow-sm hover:shadow-md transition-all group cursor-pointer">
-                    <div className="h-40 bg-gray-100 relative overflow-hidden">
-                      <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                      <Badge className="absolute top-3 right-3 z-20 bg-white/90 text-black hover:bg-white font-normal">
-                        {item.category}
-                      </Badge>
-                    </div>
-                    <CardContent className="p-4">
-                      <h3 className="font-bold text-lg mb-1">{item.title}</h3>
-                      <div className="w-full bg-muted rounded-full h-1.5 mt-2 mb-1">
-                        <div className="bg-primary h-1.5 rounded-full" style={{ width: `${item.progress}%` }} />
-                      </div>
-                      <p className="text-xs text-muted-foreground text-right">{item.progress}% Complete</p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-muted-foreground">
-                <FileText className="w-5 h-5 text-muted-foreground" /> Worksheets & Files
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {WORKSHEETS.map((file) => (
-                  <div key={file.id} className="flex items-start justify-between p-3 bg-[#FAFAFA] rounded-md border border-[#E5E5E5]">
-                    <div className="flex items-start gap-3">
-                      <div className="mt-0.5">
-                        <FileText className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
-                      </div>
-                      <div>
-                        <p className="font-medium text-sm leading-tight mb-1">{file.title}</p>
-                        <p className="text-xs text-muted-foreground">{file.type} • {file.size}</p>
-                      </div>
-                    </div>
-                    <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary shrink-0 mt-0.5">
-                      <Download className="w-4 h-4" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-muted-foreground">
-                <LinkIcon className="w-5 h-5 text-muted-foreground" /> Books & Links
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {BOOKMARKS.map((item) => (
-                  <div key={item.id} className="flex items-start justify-between p-3 bg-[#FAFAFA] rounded-md border border-[#E5E5E5]">
-                    <div className="flex items-start gap-3">
-                      <div className="mt-0.5">
-                         {item.type === 'Book' ? <BookOpen className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} /> : 
-                          <LinkIcon className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="font-medium text-sm leading-tight mb-1 pr-2">{item.title}</p>
-                        <p className="text-xs text-muted-foreground">{item.type} • {item.author}</p>
-                      </div>
-                    </div>
-                    <div className="flex gap-1 shrink-0 mt-0.5">
-                      <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive h-8 w-8">
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary h-8 w-8">
-                        <ExternalLink className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
+          <TabsContent value="journal">
+            <JournalTab />
           </TabsContent>
 
-          <TabsContent value="media" className="space-y-8">
-            <section>
-              <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-muted-foreground">
-                <Music className="w-5 h-5 text-muted-foreground" /> Music & Playlists
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {[1, 2, 3].map((i) => (
-                  <Card key={i} className="border-none shadow-sm hover:shadow-md transition-all group cursor-pointer">
-                    <div className="h-32 bg-gradient-to-br from-purple-500 to-pink-500 relative overflow-hidden">
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/30">
-                        <Music className="w-8 h-8 text-white" />
-                      </div>
-                    </div>
-                    <CardContent className="p-4">
-                      <h3 className="font-bold text-lg text-muted-foreground">High Vibe Mix {i}</h3>
-                      <p className="text-xs text-muted-foreground">Curated for energy</p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </section>
+          <TabsContent value="bookmarks">
+            <BookmarksTab />
+          </TabsContent>
 
-            <section>
-              <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-muted-foreground">
-                <Mic className="w-5 h-5 text-muted-foreground" /> Meditations
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {[1, 2, 3].map((i) => (
-                  <Card key={i} className="border-none shadow-sm hover:shadow-md transition-all group cursor-pointer">
-                    <div className="h-32 bg-gradient-to-br from-cyan-500 to-blue-500 relative overflow-hidden">
-                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/30">
-                        <Mic className="w-8 h-8 text-white" />
-                      </div>
-                    </div>
-                    <CardContent className="p-4">
-                      <h3 className="font-bold text-lg text-muted-foreground">Morning Calm {i}</h3>
-                      <p className="text-xs text-muted-foreground">10 min • Guided</p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </section>
+          <TabsContent value="assessments">
+            <AssessmentsTab />
+          </TabsContent>
+
+          <TabsContent value="music">
+            <MusicMeditationsTab />
+          </TabsContent>
+
+          <TabsContent value="library">
+            <LibraryTab />
           </TabsContent>
         </Tabs>
       </div>
