@@ -1,0 +1,119 @@
+I'm here! Here's the copy-paste segment for Replit to build the Vault:
+
+---
+
+## 🔐 THE VAULT (User's Private Brain)
+
+### Overview
+
+The Vault is the user's private, encrypted space containing all their personal data. Think of it as their "second brain" — everything they need to track progress, reflect, and grow.
+
+### Vault Tabs (4 Core Tabs)
+
+| Tab | Icon | Purpose | Key Features |
+| --- | --- | --- | --- |
+| **Daily LOVE Practice** | 💜 | Structured 5 V's ritual — morning start + evening Victory completion | ONE entry per day; Morning: set Vibe, Vision, Value, Villain; Evening: complete Victory (includes LaB — Lessons & Blessings); Tracks streaks; AI learns from this |
+| **Journal** | 📓 | Free-form reflections with optional templates | Templates available: Blank, LaB Notes (Lesson + Blessing format), Gratitude, custom; Can tag entries with 11 Areas; AI learns from permitted entries |
+| **Bookmarks** | 🔖 | Saved content from anywhere | Save Experiments, Tribe posts, external links; Organize by tags or folders |
+| **Assessments** | 📊 | Quiz results and progress snapshots | 11x LOVE Code results stored here; Other assessments over time; Progress snapshots to track growth |
+
+### Daily LOVE Practice Structure (5 V's)
+
+The Daily LOVE Practice is ONE entry per day with TWO check-ins:
+
+**☀️ MORNING (User starts their day):**
+
+1. **Vibe** — How do I want to FEEL today?
+2. **Vision** — What does my ideal day look like?
+3. **Value** — What will I create/contribute today?
+4. **Villain** — What's trying to stop me? (CLADDD: Confusion, Lies, Apathy, Disconnection, Distraction, Drifting)
+
+**🌙 EVENING (User completes their day):**
+
+1. **Victory** — What actually happened? This includes:
+    - Did I stay in my Vibe?
+    - What was my actual Victory today?
+    - **LaB (Lessons & Blessings)** — What did I learn? What am I grateful for?
+
+**Key Implementation Notes:**
+
+- Morning and Evening are on the SAME entry (not separate entries)
+- Victory section is filled in at end of day
+- LaB is embedded within Victory, not a separate tab
+- Streak tracking: counts days user completes both morning AND evening
+- Login tracking: user should be in app twice daily (AM + PM)
+
+### Big Dreams (11x LOVE Code Output)
+
+**Big Dreams is NOT a Vault tab** — it's already in the sidebar as its own section.
+
+**Flow:**
+
+1. User takes **11x LOVE Code** assessment (in Assessments tab)
+2. Results generate their **Big Dreams** — 11 dreams for the 11 life areas
+3. Big Dreams appear in the sidebar and become **AI training data**
+4. AI references Big Dreams when coaching the user
+
+**The 11 Areas:**
+
+1. God/Spirituality
+2. Mission/Purpose
+3. Body
+4. Mind
+5. Soul
+6. Romance
+7. Family
+8. Community
+9. Money
+10. Time
+11. Environment
+
+### Tags System (Cross-Cutting)
+
+Users can tag ANY entry in Journal or Daily LOVE Practice with:
+
+- **11 Areas tags** (Health, Wealth, Relationships, etc.)
+- This allows filtering: "Show me everything related to my Money journey"
+- Tags are OPTIONAL — casual users don't need them, power users love them
+
+### AI Integration
+
+The AI Magic Mentor learns from:
+
+- ✅ Daily LOVE Practice entries (with permission)
+- ✅ Journal entries (with permission)
+- ✅ Big Dreams (11x LOVE Code results)
+- ✅ Assessment history
+- ❌ Bookmarks (just links, no content to learn from)
+
+User controls what AI can access in Settings → AI Data Access.
+
+### Data Storage
+
+All Vault data follows the privacy architecture:
+
+- **Encrypted with user's Nostr key** before saving
+- **Stored in browser IndexedDB** (primary)
+- **Backed up to Nostr relays** (encrypted)
+- **Fallback to database** (still encrypted — you can't read it)
+
+### Vault UI Layout
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  🔐 The Vault                                                │
+│  Your notes, reflections, and saved content all in one place │
+├─────────────────────────────────────────────────────────────┤
+│  [💜 Daily LOVE Practice] [📓 Journal] [🔖 Bookmarks] [📊 Assessments] │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  [+ New Entry]                    [Search...]               │
+│                                                             │
+│  ─────────────────────────────────────────────────────────  │
+│                                                             │
+│  (Tab content displays here)                                │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Terminology Reminder
