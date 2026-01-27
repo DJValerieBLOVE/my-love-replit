@@ -14,6 +14,7 @@ import {
   Heart,
   PenLine,
   Search,
+  KeyRound,
   Lock,
   Sun,
   Moon,
@@ -707,7 +708,7 @@ export default function Vault() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-serif font-bold text-muted-foreground flex items-center gap-3">
-              <Lock className="w-8 h-8 text-muted-foreground" /> The Vault
+              <KeyRound className="w-8 h-8 text-muted-foreground" /> The Vault
             </h1>
             <p className="text-muted-foreground mt-1">
               Your private space for growth, reflection, and learning.

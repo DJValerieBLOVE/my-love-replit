@@ -14,7 +14,7 @@ import {
   Radio,
   User,
   FlaskConical,
-  Lock,
+  KeyRound,
   Menu,
   X
 } from "lucide-react";
@@ -60,7 +60,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { icon: FlaskConical, label: "Experiments", href: "/experiments", hasNotification: true },
     { icon: Calendar, label: "Events", href: "/events", hasNotification: true },
     { icon: Users, label: "Tribe", href: "/community", hasNotification: true },
-    { icon: Lock, label: "Vault", href: "/vault" },
+    { icon: KeyRound, label: "Vault", href: "/vault" },
     { icon: Heart, label: "Love Board", href: "/leaderboard" },
     { icon: Rss, label: "Feed", href: "/feed" },
   ];
@@ -71,7 +71,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { icon: FlaskConical, label: "Experiments", href: "/experiments", hasNotification: true },
     { icon: Calendar, label: "Events", href: "/events", hasNotification: true },
     { icon: Users, label: "Tribe", href: "/community", hasNotification: true },
-    { icon: Lock, label: "Vault", href: "/vault" },
+    { icon: KeyRound, label: "Vault", href: "/vault" },
     { icon: Heart, label: "Love Board", href: "/leaderboard" },
     { icon: Rss, label: "Feed", href: "/feed" },
   ];
