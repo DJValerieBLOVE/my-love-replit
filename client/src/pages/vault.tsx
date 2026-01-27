@@ -30,7 +30,8 @@ import {
   Clock,
   CheckCircle2,
   Circle,
-  Sparkles
+  Sparkles,
+  CalendarDays
 } from "lucide-react";
 import { Link } from "wouter";
 import { Badge } from "@/components/ui/badge";
@@ -297,6 +298,7 @@ function DailyLovePracticeTab() {
 function JournalTab() {
   const { isConnected } = useNostr();
   const [filter, setFilter] = useState("all");
+  const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
 
   const { data: journalEntries = [] } = useQuery({
     queryKey: ["journalEntries"],
@@ -306,7 +308,7 @@ function JournalTab() {
 
   return (
     <div className="space-y-6">
-      {/* Quick Actions */}
+      {/* Quick Actions - Template Picker */}
       <div className="flex flex-wrap gap-2">
         <Link href="/journal?startPractice=true">
           <Button className="gap-2">
@@ -317,31 +319,55 @@ function JournalTab() {
           <PenLine className="w-4 h-4" /> LaB Notes
         </Button>
         <Button variant="outline" className="gap-2">
-          <Sparkles className="w-4 h-4" /> Free Write
+          <Sparkles className="w-4 h-4" /> Gratitude
+        </Button>
+        <Button variant="outline" className="gap-2">
+          <FileText className="w-4 h-4" /> Blank
         </Button>
       </div>
 
-      {/* Filter & Search */}
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="relative flex-1 max-w-xs">
-          <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
-          <Input placeholder="Search journal..." className="pl-9" />
+      {/* Filter, Search & View Toggle */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative flex-1 max-w-xs">
+            <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+            <Input placeholder="Search journal..." className="pl-9" />
+          </div>
+          <div className="flex gap-1">
+            {["all", "love-practice", "lab-notes", "gratitude"].map((f) => (
+              <Button
+                key={f}
+                variant={filter === f ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setFilter(f)}
+                className="text-xs"
+              >
+                {f === "all" && "All"}
+                {f === "love-practice" && "LOVE Practice"}
+                {f === "lab-notes" && "LaB Notes"}
+                {f === "gratitude" && "Gratitude"}
+              </Button>
+            ))}
+          </div>
         </div>
-        <div className="flex gap-1">
-          {["all", "love-practice", "lab-notes", "free-write"].map((f) => (
-            <Button
-              key={f}
-              variant={filter === f ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setFilter(f)}
-              className="text-xs"
-            >
-              {f === "all" && "All"}
-              {f === "love-practice" && "LOVE Practice"}
-              {f === "lab-notes" && "LaB Notes"}
-              {f === "free-write" && "Free Write"}
-            </Button>
-          ))}
+        {/* View Toggle */}
+        <div className="flex gap-1 border rounded-lg p-1">
+          <Button
+            variant={viewMode === "list" ? "secondary" : "ghost"}
+            size="sm"
+            onClick={() => setViewMode("list")}
+            className="h-7 px-2"
+          >
+            <FileText className="w-4 h-4" />
+          </Button>
+          <Button
+            variant={viewMode === "calendar" ? "secondary" : "ghost"}
+            size="sm"
+            onClick={() => setViewMode("calendar")}
+            className="h-7 px-2"
+          >
+            <CalendarDays className="w-4 h-4" />
+          </Button>
         </div>
       </div>
 
@@ -360,44 +386,92 @@ function JournalTab() {
         ))}
       </div>
 
-      {/* Journal Entries */}
-      <div className="grid gap-3">
-        {(journalEntries as any[]).map((entry: any) => (
-          <Card key={entry.id} className="p-4 hover:shadow-md transition-shadow cursor-pointer">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                  <Heart className="w-3 h-3" />
-                  <span className="text-xs font-medium">Daily LOVE Practice</span>
-                  <Lock className="w-3 h-3 text-muted-foreground/40" />
+      {/* Journal Entries - List View */}
+      {viewMode === "list" && (
+        <div className="grid gap-3">
+          {(journalEntries as any[]).map((entry: any) => (
+            <Card key={entry.id} className="p-4 hover:shadow-md transition-shadow cursor-pointer">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 text-muted-foreground mb-1">
+                    <Heart className="w-3 h-3" />
+                    <span className="text-xs font-medium">Daily LOVE Practice</span>
+                    <Lock className="w-3 h-3 text-muted-foreground/40" />
+                  </div>
+                  <div className="font-serif font-bold mb-1">
+                    {new Date(entry.date).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+                  </div>
+                  <p className="text-sm text-muted-foreground line-clamp-2">
+                    {entry.gratitude || entry.reflection || "No content..."}
+                  </p>
                 </div>
-                <div className="font-serif font-bold mb-1">
-                  {new Date(entry.date).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
-                </div>
-                <p className="text-sm text-muted-foreground line-clamp-2">
-                  {entry.gratitude || entry.reflection || "No content..."}
-                </p>
+                <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0 mt-1" />
               </div>
-              <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0 mt-1" />
-            </div>
-          </Card>
-        ))}
-        
-        {journalEntries.length === 0 && (
-          <Card className="border-dashed border-2 bg-muted/20">
-            <CardContent className="p-8 text-center">
-              <PenLine className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-              <h3 className="font-bold text-lg mb-2">No journal entries yet</h3>
-              <p className="text-muted-foreground mb-4">Start your first entry to begin your journey.</p>
-              <Link href="/journal?startPractice=true">
-                <Button className="gap-2">
-                  <Heart className="w-4 h-4" /> Start Practice
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        )}
-      </div>
+            </Card>
+          ))}
+          
+          {journalEntries.length === 0 && (
+            <Card className="border-dashed border-2 bg-muted/20">
+              <CardContent className="p-8 text-center">
+                <PenLine className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
+                <h3 className="font-bold text-lg mb-2">No journal entries yet</h3>
+                <p className="text-muted-foreground mb-4">Start your first entry to begin your journey.</p>
+                <Link href="/journal?startPractice=true">
+                  <Button className="gap-2">
+                    <Heart className="w-4 h-4" /> Start Practice
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      )}
+
+      {/* Journal Entries - Calendar View */}
+      {viewMode === "calendar" && (
+        <Card className="p-4">
+          <div className="text-center mb-4">
+            <h3 className="font-bold text-lg">January 2026</h3>
+          </div>
+          <div className="grid grid-cols-7 gap-1 text-center text-xs text-muted-foreground mb-2">
+            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+              <div key={day} className="py-2 font-medium">{day}</div>
+            ))}
+          </div>
+          <div className="grid grid-cols-7 gap-1">
+            {/* Empty cells for days before the 1st */}
+            {[...Array(4)].map((_, i) => (
+              <div key={`empty-${i}`} className="aspect-square" />
+            ))}
+            {/* Days of the month */}
+            {[...Array(27)].map((_, i) => {
+              const day = i + 1;
+              const hasEntry = Math.random() > 0.6;
+              const hasBoth = hasEntry && Math.random() > 0.5;
+              return (
+                <div
+                  key={day}
+                  className={`aspect-square rounded-lg flex flex-col items-center justify-center cursor-pointer transition-all hover:ring-2 hover:ring-purple-400 ${
+                    hasEntry 
+                      ? hasBoth 
+                        ? "bg-purple-600 text-white" 
+                        : "bg-purple-300 text-purple-900"
+                      : "bg-gray-50 hover:bg-gray-100"
+                  }`}
+                >
+                  <span className="text-sm font-medium">{day}</span>
+                  {hasEntry && (
+                    <div className="flex gap-0.5 mt-0.5">
+                      <Sun className="w-2.5 h-2.5" />
+                      {hasBoth && <Moon className="w-2.5 h-2.5" />}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+      )}
     </div>
   );
 }
