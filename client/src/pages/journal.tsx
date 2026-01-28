@@ -216,9 +216,6 @@ export default function LabNotes() {
             {/* Header Section */}
             <div className="space-y-1">
               <h1 className="text-3xl font-serif font-bold text-muted-foreground">Daily LOVE Practice</h1>
-              <p className="text-lg text-muted-foreground">
-                Your private record of experiments, discoveries, and daily vibes.
-              </p>
             </div>
             
             {/* Action Buttons - Hidden when in practice mode */}
