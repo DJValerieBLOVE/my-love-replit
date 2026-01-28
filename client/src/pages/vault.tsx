@@ -371,9 +371,11 @@ function JournalTab() {
             <Heart className="w-4 h-4" /> Daily LOVE Practice
           </Button>
         </Link>
-        <Button variant="outline" className="gap-2">
-          <PenLine className="w-4 h-4" /> LaB Notes
-        </Button>
+        <Link href="/journal">
+          <Button variant="outline" className="gap-2">
+            <PenLine className="w-4 h-4" /> LaB Notes
+          </Button>
+        </Link>
         <Button variant="outline" className="gap-2">
           <Sparkles className="w-4 h-4" /> Gratitude
         </Button>
