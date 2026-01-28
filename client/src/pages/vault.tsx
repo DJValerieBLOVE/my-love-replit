@@ -9,7 +9,6 @@ import {
   Bookmark, 
   FileText, 
   Download, 
-  ExternalLink, 
   BookOpen,
   Heart,
   PenLine,
@@ -28,15 +27,12 @@ import {
   FolderOpen,
   Play,
   Clock,
-  CheckCircle2,
-  Circle,
   Sparkles,
   CalendarDays
 } from "lucide-react";
 import { Link } from "wouter";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getJournalEntries } from "@/lib/api";
@@ -267,10 +263,13 @@ function StreakGrid() {
 }
 
 function DailyLovePracticeTab() {
-  const [morningComplete, setMorningComplete] = useState(false);
-  const [eveningComplete, setEveningComplete] = useState(false);
-  const currentHour = new Date().getHours();
-  const isEvening = currentHour >= 17;
+  const { isConnected } = useNostr();
+  
+  const { data: journalEntries = [] } = useQuery({
+    queryKey: ["journalEntries"],
+    queryFn: () => getJournalEntries(10),
+    enabled: isConnected,
+  });
 
   return (
     <div className="space-y-6">
@@ -279,89 +278,31 @@ function DailyLovePracticeTab() {
         <StreakGrid />
       </Card>
 
-      {/* Today's Entry */}
-      <Card className="overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-[#6600ff]/10 to-[#cc00ff]/10 border-b">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg font-serif flex items-center gap-2">
-              <Heart className="w-5 h-5 text-[#eb00a8]" />
-              Today's LOVE Practice
-            </CardTitle>
-            <Badge variant="outline" className="text-xs">
-              {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
-            </Badge>
+      {/* Start Today's Practice CTA */}
+      <Card className="overflow-hidden bg-gradient-to-r from-[#6600ff]/5 to-[#cc00ff]/5 border-purple-200/50">
+        <CardContent className="p-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#6600ff] to-[#cc00ff] flex items-center justify-center">
+                <Heart className="w-7 h-7 text-white" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold font-serif">Daily LOVE Practice</h3>
+                <p className="text-sm text-muted-foreground">
+                  {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+                </p>
+              </div>
+            </div>
+            <Link href="/journal?startPractice=true">
+              <Button size="lg" className="gap-2 bg-gradient-to-r from-[#6600ff] to-[#cc00ff] hover:opacity-90">
+                <Plus className="w-5 h-5" /> Start Today's Practice
+              </Button>
+            </Link>
           </div>
-        </CardHeader>
-        <CardContent className="p-0">
-          {/* Morning Section */}
-          <div className={`p-5 border-b ${morningComplete ? 'bg-green-50/50' : ''}`}>
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Sun className="w-5 h-5 text-orange-500" />
-                <h3 className="font-bold">Morning Check-in</h3>
-                {morningComplete && <CheckCircle2 className="w-4 h-4 text-green-600" />}
-              </div>
-              {!morningComplete && (
-                <Button size="sm" className="gap-1" onClick={() => setMorningComplete(true)}>
-                  <Plus className="w-4 h-4" /> Start
-                </Button>
-              )}
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground">Vibe — How do I want to FEEL today?</label>
-                <Textarea placeholder="Energized, focused, grateful..." className="min-h-[60px] text-sm" disabled={morningComplete} />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground">Vision — What does my ideal day look like?</label>
-                <Textarea placeholder="I will accomplish..." className="min-h-[60px] text-sm" disabled={morningComplete} />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground">Value — What will I create/contribute?</label>
-                <Textarea placeholder="I will give value by..." className="min-h-[60px] text-sm" disabled={morningComplete} />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground">Villain — What's trying to stop me? (CLADDD)</label>
-                <Textarea placeholder="Confusion, Lies, Apathy, Disconnection, Distraction, Drifting..." className="min-h-[60px] text-sm" disabled={morningComplete} />
-              </div>
-            </div>
-          </div>
-
-          {/* Evening Section */}
-          <div className={`p-5 ${eveningComplete ? 'bg-green-50/50' : isEvening ? '' : 'opacity-60'}`}>
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Moon className="w-5 h-5 text-indigo-500" />
-                <h3 className="font-bold">Evening Reflection</h3>
-                {eveningComplete && <CheckCircle2 className="w-4 h-4 text-green-600" />}
-                {!isEvening && !eveningComplete && (
-                  <Badge variant="secondary" className="text-xs">Available after 5pm</Badge>
-                )}
-              </div>
-              {isEvening && morningComplete && !eveningComplete && (
-                <Button size="sm" className="gap-1" onClick={() => setEveningComplete(true)}>
-                  <Plus className="w-4 h-4" /> Complete
-                </Button>
-              )}
-            </div>
-            
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground">Victory — What actually happened?</label>
-                <Textarea placeholder="Today I accomplished..." className="min-h-[80px] text-sm" disabled={!isEvening || eveningComplete} />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground">Lessons — What did I learn?</label>
-                  <Textarea placeholder="I learned that..." className="min-h-[60px] text-sm" disabled={!isEvening || eveningComplete} />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground">Blessings — What am I grateful for?</label>
-                  <Textarea placeholder="I'm grateful for..." className="min-h-[60px] text-sm" disabled={!isEvening || eveningComplete} />
-                </div>
-              </div>
-            </div>
+          <div className="mt-4 pt-4 border-t border-purple-200/30">
+            <p className="text-xs text-muted-foreground">
+              Complete both morning alignment and evening review to maintain your streak.
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -369,25 +310,41 @@ function DailyLovePracticeTab() {
       {/* Previous Entries */}
       <div>
         <h3 className="font-bold text-muted-foreground mb-3 flex items-center gap-2">
-          <Clock className="w-4 h-4" /> Previous Entries
+          <Clock className="w-4 h-4" /> Recent Entries
         </h3>
         <div className="space-y-2">
-          {[1, 2, 3].map((i) => (
-            <Card key={i} className="p-4 hover:shadow-md transition-shadow cursor-pointer">
+          {(journalEntries as any[]).slice(0, 5).map((entry: any) => (
+            <Card key={entry.id} className="p-4 hover:shadow-md transition-shadow cursor-pointer">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-1">
                     <Sun className="w-4 h-4 text-orange-400" />
                     <Moon className="w-4 h-4 text-indigo-400" />
                   </div>
-                  <span className="font-medium text-sm">
-                    {new Date(Date.now() - i * 86400000).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
-                  </span>
+                  <div>
+                    <span className="font-medium text-sm">
+                      {new Date(entry.date).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+                    </span>
+                    {entry.gratitude && (
+                      <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">{entry.gratitude}</p>
+                    )}
+                  </div>
                 </div>
                 <ChevronRight className="w-4 h-4 text-muted-foreground" />
               </div>
             </Card>
           ))}
+          
+          {journalEntries.length === 0 && (
+            <Card className="p-6 border-dashed text-center">
+              <p className="text-sm text-muted-foreground mb-3">No entries yet. Start your first practice!</p>
+              <Link href="/journal?startPractice=true">
+                <Button size="sm" className="gap-2">
+                  <Heart className="w-4 h-4" /> Begin Practice
+                </Button>
+              </Link>
+            </Card>
+          )}
         </div>
       </div>
     </div>
