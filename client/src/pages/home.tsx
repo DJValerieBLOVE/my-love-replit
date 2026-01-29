@@ -1,11 +1,11 @@
 import Layout from "@/components/layout";
-import { HeartDashboard } from "@/components/dashboard/heart-dashboard";
+import { ProsperityPyramid } from "@/components/dashboard/prosperity-pyramid";
 
 export default function Home() {
   return (
     <Layout>
       <div className="w-full h-full bg-background overflow-hidden">
-        <HeartDashboard />
+        <ProsperityPyramid />
       </div>
     </Layout>
   );
