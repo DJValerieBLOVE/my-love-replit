@@ -157,14 +157,18 @@ export function ProsperityPyramid() {
   };
 
   return (
-    <div className="relative w-full h-full overflow-hidden bg-background">
-      {/* Full-screen X pattern - 4 triangles meeting at center */}
-      <div className="relative w-full h-full">
-        {/* Health - Top Triangle (from top-left to top-right to center) */}
+    <div className="relative w-full h-full overflow-hidden bg-background flex items-center justify-center p-4">
+      {/* Square container for pyramid - aspect-square ensures equal triangles */}
+      <div className="relative w-full max-w-[min(100vw-32px,100vh-180px)] aspect-square bg-background">
+        {/* Health - Top Triangle with 2px gap */}
         <div
-          className="absolute inset-0 cursor-pointer overflow-hidden"
+          className="absolute cursor-pointer overflow-hidden"
           style={{
-            clipPath: "polygon(0% 0%, 100% 0%, 50% 50%)",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: "50%",
+            clipPath: "polygon(0% 0%, 100% 0%, 50% calc(100% - 2px))",
           }}
           onClick={() => handleAreaClick("health")}
           data-testid="pyramid-health"
@@ -174,9 +178,9 @@ export function ProsperityPyramid() {
             style={{ backgroundImage: `url(${getArea("health").imageUrl})` }}
           />
           <div className="absolute inset-0 bg-black/30" />
-          <div className="absolute inset-0 flex items-start justify-center pt-[15%]">
+          <div className="absolute inset-0 flex items-start justify-center pt-[18%]">
             <span
-              className="text-white text-2xl md:text-3xl font-serif"
+              className="text-white text-xl md:text-2xl font-serif"
               style={{ textShadow: "0 2px 8px rgba(0,0,0,0.8)" }}
             >
               Health
@@ -184,11 +188,15 @@ export function ProsperityPyramid() {
           </div>
         </div>
 
-        {/* People - Left Triangle (from top-left to center to bottom-left) */}
+        {/* People - Left Triangle with 2px gap */}
         <div
-          className="absolute inset-0 cursor-pointer overflow-hidden"
+          className="absolute cursor-pointer overflow-hidden"
           style={{
-            clipPath: "polygon(0% 0%, 50% 50%, 0% 100%)",
+            top: 0,
+            left: 0,
+            right: "50%",
+            bottom: 0,
+            clipPath: "polygon(0% 0%, calc(100% - 2px) 50%, 0% 100%)",
           }}
           onClick={() => handleAreaClick("people")}
           data-testid="pyramid-people"
@@ -198,9 +206,9 @@ export function ProsperityPyramid() {
             style={{ backgroundImage: `url(${getArea("people").imageUrl})` }}
           />
           <div className="absolute inset-0 bg-black/30" />
-          <div className="absolute inset-0 flex items-center justify-start pl-[8%]">
+          <div className="absolute inset-0 flex items-center justify-start pl-[12%]">
             <span
-              className="text-white text-2xl md:text-3xl font-serif"
+              className="text-white text-xl md:text-2xl font-serif"
               style={{ textShadow: "0 2px 8px rgba(0,0,0,0.8)" }}
             >
               People
@@ -208,11 +216,15 @@ export function ProsperityPyramid() {
           </div>
         </div>
 
-        {/* Purpose - Right Triangle (from top-right to bottom-right to center) */}
+        {/* Purpose - Right Triangle with 2px gap */}
         <div
-          className="absolute inset-0 cursor-pointer overflow-hidden"
+          className="absolute cursor-pointer overflow-hidden"
           style={{
-            clipPath: "polygon(100% 0%, 100% 100%, 50% 50%)",
+            top: 0,
+            left: "50%",
+            right: 0,
+            bottom: 0,
+            clipPath: "polygon(100% 0%, 100% 100%, calc(0% + 2px) 50%)",
           }}
           onClick={() => handleAreaClick("purpose")}
           data-testid="pyramid-purpose"
@@ -222,9 +234,9 @@ export function ProsperityPyramid() {
             style={{ backgroundImage: `url(${getArea("purpose").imageUrl})` }}
           />
           <div className="absolute inset-0 bg-black/30" />
-          <div className="absolute inset-0 flex items-center justify-end pr-[8%]">
+          <div className="absolute inset-0 flex items-center justify-end pr-[12%]">
             <span
-              className="text-white text-2xl md:text-3xl font-serif"
+              className="text-white text-xl md:text-2xl font-serif"
               style={{ textShadow: "0 2px 8px rgba(0,0,0,0.8)" }}
             >
               Purpose
@@ -232,11 +244,15 @@ export function ProsperityPyramid() {
           </div>
         </div>
 
-        {/* Wealth - Bottom Triangle (from bottom-left to bottom-right to center) */}
+        {/* Wealth - Bottom Triangle with 2px gap */}
         <div
-          className="absolute inset-0 cursor-pointer overflow-hidden"
+          className="absolute cursor-pointer overflow-hidden"
           style={{
-            clipPath: "polygon(0% 100%, 50% 50%, 100% 100%)",
+            top: "50%",
+            left: 0,
+            right: 0,
+            bottom: 0,
+            clipPath: "polygon(0% 100%, 50% calc(0% + 2px), 100% 100%)",
           }}
           onClick={() => handleAreaClick("wealth")}
           data-testid="pyramid-wealth"
@@ -246,9 +262,9 @@ export function ProsperityPyramid() {
             style={{ backgroundImage: `url(${getArea("wealth").imageUrl})` }}
           />
           <div className="absolute inset-0 bg-black/30" />
-          <div className="absolute inset-0 flex items-end justify-center pb-[15%]">
+          <div className="absolute inset-0 flex items-end justify-center pb-[18%]">
             <span
-              className="text-white text-2xl md:text-3xl font-serif"
+              className="text-white text-xl md:text-2xl font-serif"
               style={{ textShadow: "0 2px 8px rgba(0,0,0,0.8)" }}
             >
               Wealth
@@ -256,29 +272,26 @@ export function ProsperityPyramid() {
           </div>
         </div>
 
-        {/* God - Center Heart */}
+        {/* God - Center Heart with 2px outline, no glow */}
         <div
           className="absolute cursor-pointer transition-transform hover:scale-105 active:scale-95"
           style={{
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: "min(40%, 180px)",
+            width: "35%",
             aspectRatio: "1",
           }}
           onClick={() => handleAreaClick("god")}
           data-testid="pyramid-god"
         >
-          <svg viewBox="0 0 100 90" className="w-full h-full drop-shadow-lg">
+          <svg viewBox="0 0 100 90" className="w-full h-full">
             <defs>
               <clipPath id="heartClipPyramid">
                 <path d="M50 85 C20 55, 0 35, 0 20 C0 8, 12 0, 25 0 C35 0, 45 7, 50 15 C55 7, 65 0, 75 0 C88 0, 100 8, 100 20 C100 35, 80 55, 50 85Z" />
               </clipPath>
-              <filter id="heartGlow">
-                <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="rgba(235,0,168,0.5)" />
-              </filter>
             </defs>
-            <g filter="url(#heartGlow)">
+            <g>
               <image
                 href={getArea("god").imageUrl}
                 x="-10"
@@ -290,8 +303,14 @@ export function ProsperityPyramid() {
               />
               <path
                 d="M50 85 C20 55, 0 35, 0 20 C0 8, 12 0, 25 0 C35 0, 45 7, 50 15 C55 7, 65 0, 75 0 C88 0, 100 8, 100 20 C100 35, 80 55, 50 85Z"
-                fill="rgba(0,0,0,0.2)"
+                fill="rgba(0,0,0,0.15)"
                 clipPath="url(#heartClipPyramid)"
+              />
+              <path
+                d="M50 85 C20 55, 0 35, 0 20 C0 8, 12 0, 25 0 C35 0, 45 7, 50 15 C55 7, 65 0, 75 0 C88 0, 100 8, 100 20 C100 35, 80 55, 50 85Z"
+                fill="none"
+                stroke="white"
+                strokeWidth="2"
               />
             </g>
             <text
@@ -300,7 +319,7 @@ export function ProsperityPyramid() {
               textAnchor="middle"
               dominantBaseline="middle"
               fill="white"
-              fontSize="18"
+              fontSize="16"
               fontFamily="Marcellus, Georgia, serif"
               style={{ textShadow: "0 2px 6px rgba(0,0,0,0.8)" } as React.CSSProperties}
             >
