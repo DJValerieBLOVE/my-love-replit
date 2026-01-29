@@ -158,17 +158,13 @@ export function ProsperityPyramid() {
 
   return (
     <div className="relative w-full h-full overflow-hidden bg-background">
-      {/* Mobile: Pyramid Layout using CSS clip-path */}
+      {/* Full-screen X pattern - 4 triangles meeting at center */}
       <div className="relative w-full h-full">
-        {/* Health - Top Triangle */}
+        {/* Health - Top Triangle (from top-left to top-right to center) */}
         <div
-          className="absolute cursor-pointer overflow-hidden transition-transform hover:scale-[1.02] active:scale-[0.98]"
+          className="absolute inset-0 cursor-pointer overflow-hidden"
           style={{
-            top: 0,
-            left: "10%",
-            right: "10%",
-            height: "30%",
-            clipPath: "polygon(50% 0%, 0% 100%, 100% 100%)",
+            clipPath: "polygon(0% 0%, 100% 0%, 50% 50%)",
           }}
           onClick={() => handleAreaClick("health")}
           data-testid="pyramid-health"
@@ -177,10 +173,10 @@ export function ProsperityPyramid() {
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: `url(${getArea("health").imageUrl})` }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/50" />
-          <div className="absolute inset-0 flex items-end justify-center pb-4">
+          <div className="absolute inset-0 bg-black/30" />
+          <div className="absolute inset-0 flex items-start justify-center pt-[15%]">
             <span
-              className="text-white text-xl md:text-2xl font-serif"
+              className="text-white text-2xl md:text-3xl font-serif"
               style={{ textShadow: "0 2px 8px rgba(0,0,0,0.8)" }}
             >
               Health
@@ -188,15 +184,11 @@ export function ProsperityPyramid() {
           </div>
         </div>
 
-        {/* People - Left Triangle */}
+        {/* People - Left Triangle (from top-left to center to bottom-left) */}
         <div
-          className="absolute cursor-pointer overflow-hidden transition-transform hover:scale-[1.02] active:scale-[0.98]"
+          className="absolute inset-0 cursor-pointer overflow-hidden"
           style={{
-            top: "25%",
-            left: 0,
-            width: "35%",
-            height: "50%",
-            clipPath: "polygon(0% 0%, 100% 50%, 0% 100%)",
+            clipPath: "polygon(0% 0%, 50% 50%, 0% 100%)",
           }}
           onClick={() => handleAreaClick("people")}
           data-testid="pyramid-people"
@@ -205,10 +197,10 @@ export function ProsperityPyramid() {
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: `url(${getArea("people").imageUrl})` }}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-black/30" />
-          <div className="absolute inset-0 flex items-center justify-start pl-3 md:pl-6">
+          <div className="absolute inset-0 bg-black/30" />
+          <div className="absolute inset-0 flex items-center justify-start pl-[8%]">
             <span
-              className="text-white text-xl md:text-2xl font-serif"
+              className="text-white text-2xl md:text-3xl font-serif"
               style={{ textShadow: "0 2px 8px rgba(0,0,0,0.8)" }}
             >
               People
@@ -216,15 +208,11 @@ export function ProsperityPyramid() {
           </div>
         </div>
 
-        {/* Purpose - Right Triangle */}
+        {/* Purpose - Right Triangle (from top-right to bottom-right to center) */}
         <div
-          className="absolute cursor-pointer overflow-hidden transition-transform hover:scale-[1.02] active:scale-[0.98]"
+          className="absolute inset-0 cursor-pointer overflow-hidden"
           style={{
-            top: "25%",
-            right: 0,
-            width: "35%",
-            height: "50%",
-            clipPath: "polygon(100% 0%, 0% 50%, 100% 100%)",
+            clipPath: "polygon(100% 0%, 100% 100%, 50% 50%)",
           }}
           onClick={() => handleAreaClick("purpose")}
           data-testid="pyramid-purpose"
@@ -233,10 +221,10 @@ export function ProsperityPyramid() {
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: `url(${getArea("purpose").imageUrl})` }}
           />
-          <div className="absolute inset-0 bg-gradient-to-l from-black/50 to-black/30" />
-          <div className="absolute inset-0 flex items-center justify-end pr-3 md:pr-6">
+          <div className="absolute inset-0 bg-black/30" />
+          <div className="absolute inset-0 flex items-center justify-end pr-[8%]">
             <span
-              className="text-white text-xl md:text-2xl font-serif"
+              className="text-white text-2xl md:text-3xl font-serif"
               style={{ textShadow: "0 2px 8px rgba(0,0,0,0.8)" }}
             >
               Purpose
@@ -244,15 +232,11 @@ export function ProsperityPyramid() {
           </div>
         </div>
 
-        {/* Wealth - Bottom Triangle */}
+        {/* Wealth - Bottom Triangle (from bottom-left to bottom-right to center) */}
         <div
-          className="absolute cursor-pointer overflow-hidden transition-transform hover:scale-[1.02] active:scale-[0.98]"
+          className="absolute inset-0 cursor-pointer overflow-hidden"
           style={{
-            bottom: 0,
-            left: "10%",
-            right: "10%",
-            height: "30%",
-            clipPath: "polygon(0% 0%, 100% 0%, 50% 100%)",
+            clipPath: "polygon(0% 100%, 50% 50%, 100% 100%)",
           }}
           onClick={() => handleAreaClick("wealth")}
           data-testid="pyramid-wealth"
@@ -261,10 +245,10 @@ export function ProsperityPyramid() {
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: `url(${getArea("wealth").imageUrl})` }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-black/30" />
-          <div className="absolute inset-0 flex items-start justify-center pt-4">
+          <div className="absolute inset-0 bg-black/30" />
+          <div className="absolute inset-0 flex items-end justify-center pb-[15%]">
             <span
-              className="text-white text-xl md:text-2xl font-serif"
+              className="text-white text-2xl md:text-3xl font-serif"
               style={{ textShadow: "0 2px 8px rgba(0,0,0,0.8)" }}
             >
               Wealth
