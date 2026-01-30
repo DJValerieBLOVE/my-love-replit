@@ -158,8 +158,8 @@ export function ProsperityPyramid() {
 
   return (
     <div className="relative w-full h-full overflow-hidden bg-background flex items-center justify-center">
-      {/* Mobile: Full-width square, Desktop: Different layout (TBD) */}
-      <div className="relative w-full aspect-square md:max-w-[600px] bg-background">
+      {/* Square vision board - fills available height on desktop, full width on mobile */}
+      <div className="relative w-full aspect-square md:w-auto md:h-full md:max-h-[calc(100vh-120px)] md:aspect-square bg-background">
         {/* 2px gap lines - flat 2D X pattern */}
         <div 
           className="absolute inset-0 z-10 pointer-events-none"
