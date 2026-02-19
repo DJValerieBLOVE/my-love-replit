@@ -1,15 +1,36 @@
 # My Masterpiece App
 
 ## Overview
-
 **My Masterpiece** is a spiritual personal growth app where users design their own dashboard, consume courses/podcasts/music in one place, connect with collaborators, journal privately, and get coached by an AI that remembers them forever — powered by a hybrid Nostr + Database architecture with Lightning payments for peer-to-peer zapping.
 
 **One-Liner:** Notion + Obsidian + Mighty Networks + Spotify + Nostr + Lightning + AI Coach + Pinterest Vision Board = My Masterpiece
 
-**11x LOVE LaB** is a community INSIDE this app (not the app name itself).
+**11x LOVE LaB** is a community INSIDE this app (not the app name itself). LaB = "Lessons and Blessings" (capital L, lowercase a, capital B).
+
+## Terminology (USE THESE — NOT Alternatives)
+
+| Correct Term | Do NOT Use |
+|---|---|
+| **Experiments** | Courses, lessons, modules |
+| **Tribes** | Communities, groups |
+| **Big Dream** | Goal |
+| **Sats** | Points, coins |
+| **Zap** | Tip, donate |
+| **Bitcoin** | Crypto |
+| **Membership** | Subscription |
+| **Value for Value (V4V)** | Free |
+| **LaB** (capital L, lowercase a, capital B) | Lab, LAB |
+| **LOVE** (always capitalized) | Love, love |
+| **Daily LOVE Practice** | Daily practice, check-in |
+| **Magic Mentor** | AI assistant, chatbot |
+| **Prosperity Pyramid** | Dashboard, homepage |
+| **Dream Sheets** | Worksheets, forms |
+| **Vault** | Library, saved items |
+| **Love Board** | Leaderboard |
+| **EQ Visualizer** | Progress bars |
+| **SNAP!** | Start, begin |
 
 ## User Preferences
-
 - Preferred communication style: Simple, everyday language
 - Daily LOVE Practice is the MOST IMPORTANT feature (LOVE always capitalized)
 - Sparkles icon ONLY for Magic Mentor AI - no other usage
@@ -18,182 +39,259 @@
 - All colors solid hex, no opacity values
 - Privacy-first: entries default to private, optional sharing
 
-## Design Language
+## Design Rules (MANDATORY)
 
-### 11 LOVE Code Colors
-- GOD/LOVE: #eb00a8
-- Romance: #e60023
-- Family: #ff6600
-- Community: #ffdf00
-- Mission: #a2f005
-- Money: #00d81c
-- Time: #00ccff
-- Environment: #0033ff
-- Body: #6600ff
-- Mind: #9900ff
-- Soul: #cc00ff
+### Font Rules
+- Marcellus font, weight 400 ONLY
+- NEVER use font-bold, font-semibold, or font-medium
+- If emphasis needed, use font size, letter-spacing, or color — never weight
+
+### Color Rules
+- Purple #6600ff is the brand color for ALL buttons, links, tabs, accents
+- Purple gradient: from #6600ff to #9900ff (or to #cc00ff)
+- Pink #eb00a8 is ONLY for GOD/LOVE dimension — NEVER as brand accent
+- All colors solid hex, no opacity values
+
+### 11 LOVE Code Dimension Colors
+- 1 GOD/LOVE: #eb00a8 (Hot Pink — dimension color ONLY, not brand)
+- 2 Soul: #cc00ff (Magenta)
+- 3 Mind: #9900ff (Purple)
+- 4 Body: #6600ff (Purple — also PRIMARY BRAND COLOR)
+- 5 Romance: #e60023 (Red)
+- 6 Family: #ff6600 (Orange)
+- 7 Community: #ffdf00 (Yellow)
+- 8 Mission: #a2f005 (Lime Green)
+- 9 Money: #00d81c (Matrix Green)
+- 10 Time: #00ccff (Cyan)
+- 11 Environment: #0033ff (Blue)
 
 ### Visual Style
 - Purple gradient aesthetic (#6600ff to #cc00ff)
-- 5-pillar heart dashboard with flip cards (Mission, Health, Tribe, Wealth) + center God heart
-- Left navigation sidebar (desktop only)
-- Top header (keep existing)
-- **All cards use rounded-xs** (extra small corners)
-- Card flip animations with one-at-a-time behavior and optional pin feature
+- Prosperity Pyramid homepage with 5 areas (Health, People, Purpose, Wealth) + center God heart
+- Left navigation sidebar (desktop only), top header
+- All cards use rounded-xs (extra small corners)
+- Card flip animations with one-at-a-time behavior
 - Flipped card backs have light background (#FAF8F5), not purple
 
-### Mobile Design (Redesign In Progress)
-- **Header**: Compact (56px), smaller EQ logo (40px), sats goes to Love Board, logo goes to Big Dreams
-- **Navigation**: Hamburger menu (top-left) with slide-out drawer - web browser standard pattern
-- **Cards**: Taller (200px min), 4:3 aspect ratio, drop-shadow text, rounded-xs corners
-- **Card Flip Fix**: Heart overlay must not cover flipped card content
-- **Login**: "Login" button text (not "Sign In")
-- **AI button**: Bottom-right corner, above content
+### Mobile Design
+- Header: Compact (56px), smaller EQ logo (40px)
+- Navigation: Hamburger menu (top-left) with slide-out drawer
+- Cards: Taller (200px min), 4:3 aspect ratio, drop-shadow text, rounded-xs
+- Login: "Login" button text (not "Sign In")
+- AI button: Bottom-right corner, above content
+
+## Privacy Architecture
+
+### Three-Tier Privacy System
+- NEVER SHAREABLE: Tribe messages (NIP-29 group events), encrypted, no share button
+- PRIVATE BY DEFAULT: Big Dreams, Journals, Daily Practice, AI Conversations (Kind 30078, NIP-44 encrypted), optional sharing with warning dialog
+- SHAREABLE: Completions, Feed Posts (Kind 1 notes, reactions), user chooses
+
+### Dual-Relay Architecture
+- Private Railway Relay (wss://nostr-rs-relay-production-1569.up.railway.app): All LaB data, NIP-42 whitelist auth. Admin pubkey: 3d70ec1ea586650a0474d6858454209d222158f4079e8db806f017ef5e30e767
+- Public Relays (read-only): wss://relay.primal.net, wss://relay.damus.io, wss://relay.ditto.pub for profiles, follows, public posts, reactions, zaps
+
+### BYOK (Bring Your Own Key) for AI
+- Users provide their own API key (Anthropic or OpenRouter)
+- Key encrypted with user's Nostr pubkey, stored in browser only
+- AI calls go directly from browser to provider, billed to user
+
+## Membership Tiers (6 Tiers)
+
+| Tier | Price | Features |
+|---|---|---|
+| Free | $0 | Browse catalog, read experiments (after login), zap and share |
+| Core | $11/mo | Progress tracking, comments, tribes, vault, Love Board, Magic Mentor AI (shared key, 2M tokens) |
+| Core Annual | $99/yr | Everything Core + create tribes |
+| Creator | $25/mo | Create experiments, analytics dashboard (10M tokens) |
+| Creator Annual | $199/yr | Everything Creator + create tribes |
+| Creator BYOK | $11/mo or $99/yr | Uses user's OWN API key — unlimited AI |
+
+## Core Frameworks
+
+### The Prosperity Pyramid
+Organizes life into 11 Dimensions across 5 macro-categories with GOD at center:
+- GOD (Center/Heart): Spirituality, LOVE
+- PURPOSE: Mission — IKIGAI
+- HEALTH: Body, Mind, Soul
+- PEOPLE: Romance, Family, Community
+- WEALTH: Money, Time, Environment
+
+### FCLADDD Villains Framework
+7 villains: Fear, Confusion, Lies, Apathy, Disconnection, Distraction, Drifting.
+Villain Roots: Trauma, Biochemistry, Under-resourced, Wrong People/Places/Things, Lack of Clarity, Lack of Practice, Lack of Tools.
+Magic Mentor AI tracks villain patterns and suggests antidotes.
+
+### SNAP! Engine
+Powers every module. Start Now — A and P change per module:
+- Intro: Allow Pause
+- Module 1 BREAKTHROUGH: Align Purpose
+- Module 2 BREAKDOWN: Assess Problem
+- Module 3 BRAVERY: Activate Power
+- Module 4 BUILD: Awaken Possibilities
+- Module 5 BADASSERY: Achieve Progress
+
+### MEhD Framework
+Master of Education on Yourself. 4 Pillars: NEEDS, VALUES, DESIRES, BELIEFS.
+
+### Daily LOVE Practice (5 V's)
+Morning: VIBE, VISION, VALUE, VILLAIN, VICTORY
+Evening LaB Reflection: CELEBRATIONS, LESSONS, BLESSINGS, DREAM VIBES
+Stored: kind 30078, d-tag = daily-practice-YYYY-MM-DD, NIP-44 encrypted
+
+## 11x LOVE Code Curriculum (18 Lessons)
+
+Module 0 BELIEVE: 0.1 Human Operating System, 0.2 Why Badasses SNAP!, 0.3 You Are Not Alone
+Module 1 BREAKTHROUGH: 1.1 Identity (Rockstar DJ Superhero), 1.2 Know Thyself (MEhD), 1.3 Life Mission (Ikigai)
+Module 2 BREAKDOWN: 2.1 Reconnect to LOVE, 2.2 11x LOVE Life Audit, 2.3 1st Obituary
+Module 3 BRAVERY: 3.1 Soul Contract, 3.2 Cosmic Council and Vibe Tribe, 3.3 Fabulous Freedom Funeral
+Module 4 BUILD: 4.1 Vision Board on Steroids, 4.2 Treasure Map, 4.3 2nd Obituary (Dream Destiny)
+Module 5 BADASSERY: 5.1 Daily 5 V's Practice, 5.2 Belong and Buddy, 5.3 4 C's of Progress + Write Your Code
+BONUS: Treasure Chest — Micro-practices, playlists, journals
+
+Each lesson: 5-min video + concept + action + quiz + Dream Sheet journal prompt. Sequential unlock.
+
+Key Dream Sheets: 0.1 Rate 11 dimensions, 1.1 Rockstar Identity, 1.2 MEhD worksheet, 1.3 Ikigai, 2.2 Life Audit, 2.3 1st Obituary, 4.1 Vision Board (Must-Haves/Nice-to-Haves/Dealbreakers for all 11 dims), 4.3 2nd Obituary, 5.3 Capstone 11x LOVE Code.
+
+Two-Path Onboarding: Quick Start (simple Big Dreams per dimension) vs Deep Dive (full curriculum). Deep Dive overwrites Quick Start.
 
 ## System Architecture
 
 ### Frontend Architecture
-- **Framework**: React 18 with TypeScript
-- **Routing**: Wouter (lightweight React router)
-- **State Management**: TanStack React Query for server state
-- **Styling**: Tailwind CSS v4 with custom theme variables
-- **UI Components**: shadcn/ui component library (New York style) with Radix UI primitives
-- **Animations**: Framer Motion for page transitions and micro-interactions
-- **Build Tool**: Vite with custom plugins for Replit integration
+- Framework: React 18 with TypeScript
+- Routing: Wouter
+- State Management: TanStack React Query
+- Styling: Tailwind CSS v4 with custom theme variables
+- UI Components: shadcn/ui (New York style) with Radix UI primitives
+- Animations: Framer Motion
+- Build Tool: Vite
 
 ### Backend Architecture
-- **Runtime**: Node.js with Express
-- **Language**: TypeScript (ESM modules)
-- **API Pattern**: RESTful JSON APIs under `/api/*` prefix
-- **Database ORM**: Drizzle ORM with PostgreSQL dialect
-- **Database**: PostgreSQL (Neon serverless)
+- Runtime: Node.js with Express
+- Language: TypeScript (ESM modules)
+- API Pattern: RESTful JSON APIs under /api/*
+- Database ORM: Drizzle ORM with PostgreSQL dialect
+- Database: PostgreSQL (Neon serverless)
 
-### Data Storage
-- **Primary Database**: PostgreSQL via Neon serverless adapter
-- **Schema Location**: `shared/schema.ts` (shared between client and server)
-- **Migrations**: Drizzle Kit with output to `./migrations`
-- **Key Entities**: Users, JournalEntries, Dreams, AreaProgress, Experiments, UserExperiments, Events, Posts, Clubs
+### Data Storage (Hybrid Architecture)
+- PostgreSQL: Course/experiment content, community structure, membership tiers, public data, user accounts, AI usage logs
+- Nostr Private Relay: Encrypted personal data (Big Dreams, journals, daily practice, AI conversations, tribe messages)
+- User's Nostr Key: Encrypts/decrypts personal data using NIP-44
+- Schema Location: shared/schema.ts
+- Nostr Event Schemas: Big Dreams (kind 30078, d-tag big-dream-{1-11}), Daily Practice (kind 30078, d-tag daily-practice-YYYY-MM-DD), Lab Notes (kind 30023), Streak Data (kind 30078, d-tag streak-data), AI Conversations (kind 30078, d-tag magic-mentor-history), Experiment Progress (kind 30078), Mute Lists (kind 10000), Reports (kind 1984). All personal data NIP-44 encrypted.
 
 ### AI Integration (Magic Mentor)
-- **Model**: Claude Haiku 4.5 (hardcoded, ONLY Haiku)
-- **SDK**: Direct Anthropic SDK (NOT OpenRouter)
-- **Location**: `server/anthropic.ts`
-- **Context**: System prompt includes user's profile, journal entries, and dreams
-- **Security**: XML delimiters + user input wrapping for prompt injection protection
-- **Three-tier access**:
-  - Free: 5 messages/day (configurable via FREE_TIER_DAILY_LIMIT env var)
-  - Paid: Token balance system with upfront reservation
-  - BYOK: Users can provide their own Anthropic API key
-- **Concurrency Safety**: Two-phase atomic approach with row-level locks
-  - Phase 1: Reserve slot + tokens before AI call (SELECT FOR UPDATE)
-  - Phase 2: Finalize usage + adjust balance after AI succeeds
-  - Rollback: Release slot + refund tokens on AI failure
-- **Tables**: `ai_usage_logs` for token tracking, user fields for tier/balance
+- Model: Claude Haiku 4.5 (hardcoded)
+- SDK: Direct Anthropic SDK
+- Location: server/anthropic.ts
+- Context: System prompt includes user profile, journal entries, dreams
+- Security: XML delimiters + user input wrapping for prompt injection protection
+- Access: Free (5 msgs/day), Paid (token balance with atomic 2-phase locking), BYOK (user's own key)
+- AI Memory System (planned): Layer 1 System instructions (cached), Layer 2 User profile/dreams (cached until updated), Layer 3 Recent activity/journals (cached until new entries), Layer 4 Fresh message (never cached). 90% cost savings via prompt caching.
 
-### Future Tech Stack (Per Spec)
-- **Identity**: Nostr (NDK library) - user owns keys
-- **Payments**: Lightning (WebLN/NWC) - non-custodial
-- **Zaps**: Nostr NIP-57
-- **AI Memory**: Voy/Orama (browser) - local vector store
-- **Mobile**: PWA first
+## Key Features Already Built
 
-## Key Features
+### Authentication
+- NIP-07 Nostr Login (Alby, nos2x browser extensions)
+- NIP-46 Bunker Login (nsec.app remote signer, persistent sessions)
+- Nostr pubkey linked to database users
+- Mandatory email collection (ProfileCompletionDialog)
 
-### Already Built
-- Daily LOVE Practice journaling with 3-column layout (/journal)
-- Big Dreams page (11 LOVE Code areas)
-- Home page with 9-card flip dashboard ("My Masterpiece")
-- Resources page with tabs: Lab Notes, My Toolbox, Music & Meditations
-- Learning page (courses/experiments)
-- Communities page (clubs)
-- Events page with calendar
-- Leaderboard page (Love Board) with real data rankings
-- Floating Magic Mentor AI button (bottom-right, mobile-friendly)
-- PostgreSQL database with full schema
-- Express API backend
-- **NIP-07 Nostr Login** - Browser extension login (Alby, nos2x)
-- **NIP-46 Bunker Login** - Remote signer login via nsec.app/nsecBunker for users without extensions; session persists across page reloads
-- **Secure Authentication** - Nostr pubkey linked to database users, all personal data protected
-- **Mandatory Email Collection** - ProfileCompletionDialog prompts for email after Nostr login, required for 2-week trial access
-- **Share to Nostr** - Share Big Dreams, Journal entries, and completed Experiments to Nostr network with optional caption
-- **Notification Indicators** - Simple dark purple dots on nav items with notifications (Big Dreams, Grow, Events, Tribe)
-- **Simplified Header** - Removed mail/bell icons, cleaner navigation
-- **Social Post Actions** - Complete action buttons: Reply, Repost (with dropdown for Nostr/Group), Zap (with amount dialog), Like, Bookmark, Share (with dropdown for Copy Link, X, Facebook)
-- **Sharing Privacy Rules** - Group/community/learning posts stay private within group; only user's own original content can be shared publicly to Nostr
-- **Post Composer with Media** - Create posts with image, GIF, and video upload support; preview and remove media before posting
-- **External Sharing** - Share public posts to X/Twitter, Facebook, or copy link
-- **Course System** - Full course creation (CourseBuilder), viewing (CourseDetail), enrollment with progress tracking
-- **Course Comments** - Discussion section on courses with comment creation and display
-- **Course Access Control** - Public/community/paid access types with proper enrollment validation
-- **Community Infrastructure** - Schema and API for communities with memberships, roles (admin/moderator/member), and join approval workflows
-- **Multi-tenant Data Model** - Courses and experiments can be linked to communities, communities have access types (public/approval/paid)
-- **Community UI** - Full community pages with real API data:
-  - Community listing page (/community) - shows all communities with access type badges, member counts
-  - Community create page (/community/create) - form with access type selector (public/approval/paid)
-  - Community detail page (/community/:id) - join/leave, posts feed, create post for members
-  - Community admin page (/community/:id/admin) - member management, approve/reject requests, role management
-- **Experiment Builder** - Full experiment creation UI with step builder, day assignments, and settings
-- **Creator Dashboard** (/creator) - Analytics showing course/experiment enrollments with real database aggregation
-- **Profile Pages** - Enhanced profiles with own content view, public profile via /profile/:userId, community filtering by accessType
-- **Aggregate Feed** (/feed) - Combined global + community posts with source filtering tabs (All Posts, Communities, Learning)
+### Pages and Features
+- Home: Prosperity Pyramid with flip card animations
+- Big Dreams: 11 LOVE Code dimension cards
+- Journal: Daily LOVE Practice with 3-column layout
+- Experiments: Course and experiment tabs with enrollment
+- Events: Calendar view with event cards
+- Community: Listing, create, detail, admin pages with roles
+- Vault: Resources with Lab Notes, My Toolbox, Music tabs
+- Love Board: Rankings with real data
+- Feed: Aggregate posts with source filtering
+- Profile: Own content view, public profiles
+- Creator Dashboard: Analytics for creators
+- Settings, Wallet, Relays pages
 
-### Navigation Structure
-- **Desktop left sidebar**: Home, Big Dreams (with dot), Experiments (with dot), Events (with dot), Tribe (with dot), Vault, Love Board, Feed
-- **Mobile navigation**: Hamburger slide-out menu from left (web browser standard pattern)
-- **Experiments page**: /experiments route, contains Courses and Experiments tabs
-- **Mobile header**: Stats goes to Love Board, center logo goes to Big Dreams
-- Floating button: Magic Mentor AI (Sparkles icon, bottom-right corner)
-- No header mail/bell icons (removed - notifications shown contextually on nav items)
+### Content Creation
+- Course Builder with lessons
+- Experiment Builder with step builder
+- Post Composer with media upload (image/GIF/video)
+- Course Comments
 
-### To Build (Current Priority)
-1. **Mobile Navigation Redesign** - Replace bottom nav with hamburger slide-out menu (web browser pattern) ✓ DONE
-2. **Mobile Card Flip Fix** - Ensure heart overlay doesn't cover flipped card content ✓ DONE
+### Social
+- Share to Nostr (Big Dreams, Journal, Experiments)
+- Post Actions (Reply, Repost, Zap, Like, Bookmark, Share)
+- Privacy Rules (group content stays private)
+- External Sharing (X/Twitter, Facebook, copy link)
+- Notification dots on nav items
 
-### Future Features
-- Lightning/Zaps integration (NWC)
-- AI Learning Buddy (enhanced) - trains on user's journal, goals, course learnings
-- User personalization: Spotify playlists, podcast RSS feeds, favorite quotes/authors
-- Club-based sharing (isPrivate/sharedClubs enforcement)
+### AI (Magic Mentor)
+- Claude Haiku working with system prompt context
+- Three-tier access (Free/Paid/BYOK)
+- Atomic token tracking with row-level locks
+- Floating sparkles button
+
+## Features to Port from Shakespeare Project
+
+- useEncryptedStorage hook (NIP-44 encryption with plaintext fallback)
+- useLabPublish / useLabOnlyPublish hooks (smart relay routing)
+- Primal WebSocket client (fast feed with zlib compression, 40+ kinds, link previews)
+- useBigDreams with Nostr relay storage (encrypted, one event per dimension)
+- Two-path onboarding modal (Quick Start / Deep Dive)
+- Moderation system (mute, report, admin tools)
+- SEO files (robots.txt, llms.txt, sitemap.xml)
+
+## Build Roadmap
+
+Phase 1 Nostr Privacy Layer: NDK + dual-relay, NIP-44 encrypted storage, BYOK for AI, 6-tier membership gating
+Phase 2 Core Content: 18-lesson curriculum loaded, Dream Sheet templates, FCLADDD villain tracking + AM/PM structure
+Phase 3 User Experience: Two-path onboarding, EQ Visualizer, streak tracking (7/30/90 milestones), creator templates
+Phase 4 Social: Primal API feed, accountability buddies, NIP-57 zapping, admin dashboard
+Phase 5 Polish: AI experiment generation (Bloom's Taxonomy), PWA, SEO files
+
+## Navigation Structure
+- Desktop left sidebar: Home, Big Dreams, Experiments, Events, Tribe, Vault, Love Board, Feed
+- Mobile: Hamburger slide-out menu from left
+- Floating button: Magic Mentor AI (Sparkles icon, bottom-right)
 
 ## Multi-Tenant Architecture
-- **Creators/coaches** can set up paid communities (limit 5 per paid plan, extra available for fee)
-- **Value for Value**: Content is free to consume with optional zaps, communities are paid
-- **11x LOVE Code course**: Everyone goes through this to define dreams, fears, goals in 11 areas
-- **Magic Mentor AI trains on**: Journal entries, goals, course learnings, personal preferences
-
-## Daily LOVE Practice (5 V's)
-- **Vibe**: How you're feeling today (emotional check-in)
-- **Vision**: What you're focused on / clarity of purpose
-- **Value**: Gratitude and appreciation
-- **Villain**: Obstacles or resistance to overcome
-- **Victory**: Small wins and celebrations
-- Entries stored in private journal (only user and AI can see)
-- Connects to journal page via /journal?startPractice=true
+- Creators/coaches set up paid communities (limit 5 per paid plan)
+- Value for Value: Content free to consume with optional zaps
+- 11x LOVE Code: Everyone goes through this first
+- Magic Mentor AI trains on: Journal entries, goals, experiment learnings
+- Template system: Experiments, events, communities use templates creators fill in
 
 ## Design Patterns
-- **Monorepo Structure**: Client (`client/`), Server (`server/`), Shared (`shared/`)
-- **Path Aliases**: `@/` for client source, `@shared/` for shared code, `@assets/` for static assets
-- **API Client**: Centralized fetch wrapper in `client/src/lib/api.ts`
-- **Component Organization**: Feature-based with shared UI components in `components/ui/`
+- Monorepo: Client (client/), Server (server/), Shared (shared/)
+- Path Aliases: @/ for client source, @shared/ for shared code, @assets/ for assets
+- API Client: Centralized fetch wrapper in client/src/lib/api.ts
 
-## Environment Variables Required
-- `DATABASE_URL`: PostgreSQL connection string (required)
-- Future: `ADMIN_NPUB`, `SESSION_SECRET`, `OPENROUTER_API_KEY`
+## Environment Variables
+- DATABASE_URL: PostgreSQL connection string (required)
+- ANTHROPIC_API_KEY: For Magic Mentor AI
+- Future: ADMIN_NPUB, SESSION_SECRET, OPENROUTER_API_KEY
 
-## Security Architecture
-- **Authentication**: Nostr NIP-07 via browser extensions (Alby, nos2x)
-- **User Identity**: Users linked to database via nostrPubkey field
-- **API Protection**: authMiddleware validates x-nostr-pubkey header on all personal data routes
-- **Ownership Checks**: Users can only access their own journal entries, dreams, and progress
-- **Privacy Fields**: isPrivate and sharedClubs ready for future club-sharing features
-- **Data Isolation**: No cross-user data access possible via API
-- **Sharing Privacy Rules**: Shared utility at `client/src/lib/sharing-rules.ts` enforces: group content (community/learning) can only be reposted within group unless isOwnPost is true
+## Security
+- Nostr NIP-07/NIP-46 authentication
+- User identity via nostrPubkey field
+- authMiddleware validates x-nostr-pubkey header
+- Ownership checks on all personal data routes
+- Nostr security: ALWAYS filter queries by authors field (permissionless network)
+- Sharing privacy rules in client/src/lib/sharing-rules.ts
+
+## Session-End Checklist (MANDATORY)
+1. Test all changes — verify no errors in browser console or server logs
+2. Verify design rules — check no font-bold, no pink-as-brand in code
+3. Verify imports — every imported name must be used
+4. Update SESSION_NOTES.md — record what was done
+5. Update replit.md — if architecture or features changed
+6. Push to GitHub — double backup to origin main
 
 ## Technical Notes
 - Server runs on port 5000
-- vite.config.ts is fragile - avoid direct edits
-- Auth flow: Login button -> NIP-07 extension -> pubkey sent to /api/auth/nostr -> user created/updated -> pubkey stored in context -> sent with all API requests
+- vite.config.ts is fragile — avoid direct edits
+- Auth flow: Login -> NIP-07 -> pubkey to /api/auth/nostr -> user created -> pubkey in context -> sent with API requests
 
 ## Backup Info
-- Replit checkpoints are automatic
-- GitHub repo: https://github.com/DJValerieBLOVE/my-love-replit.git
+- Replit checkpoints: automatic
+- GitHub: https://github.com/DJValerieBLOVE/my-love-replit.git
+- Shakespeare reference: https://github.com/DJValerieBLOVE/11xLOVE-LaB.git
