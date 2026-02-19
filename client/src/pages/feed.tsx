@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Zap, Share2, MoreHorizontal, Radio, Calendar, UserPlus, Repeat2, Bookmark, Quote, Users, Image, Film, Smile, X, Link2, Copy, ExternalLink, Loader2, Lock, Globe } from "lucide-react";
+import { Heart, MessageCircle, Zap, Share2, MoreHorizontal, Radio, Calendar, UserPlus, Repeat2, Bookmark, Quote, Users, Image, Film, Smile, X, Link2, Copy, ExternalLink, Loader2, Lock, Globe, ChevronDown, TrendingUp, Flame, Camera, Clock } from "lucide-react";
 import { Link } from "wouter";
 import {
   DropdownMenu,
@@ -30,6 +30,7 @@ import { LAB_RELAY_URL, PUBLIC_RELAYS } from "@/lib/relays";
 import { NDKEvent } from "@nostr-dev-kit/ndk";
 import { Skeleton } from "@/components/ui/skeleton";
 import { parseNostrContent, truncateNpub } from "@/lib/nostr-content";
+import { fetchPrimalFeed, fetchPrimalUserFeed, type ExploreMode, type PrimalEvent, type PrimalProfile } from "@/lib/primal-cache";
 
 type FeedPost = {
   id: string;
@@ -53,117 +54,6 @@ type FeedPost = {
   isOwnPost?: boolean;
 };
 
-const MOCK_POSTS: FeedPost[] = [
-  {
-    id: "1",
-    author: {
-      id: "user-alex-luna",
-      name: "Alex Luna",
-      handle: "@alexluna",
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
-      lud16: "alexluna@getalby.com",
-    },
-    content: "Just completed my 30-day morning routine experiment! The compound effect is real. Sharing my learnings with the community later today.",
-    timestamp: "2h ago",
-    likes: 24,
-    comments: 5,
-    zaps: 1200,
-    source: "nostr" as const,
-  },
-  {
-    id: "2",
-    author: {
-      id: "user-jordan-rivera",
-      name: "Jordan Rivera",
-      handle: "@jordanr",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
-      lud16: "jordanr@getalby.com",
-    },
-    content: "Big breakthrough in my Money area today. Finally automated my savings and it feels like a weight lifted off my shoulders. Small wins add up!",
-    timestamp: "4h ago",
-    likes: 42,
-    comments: 8,
-    zaps: 2100,
-    source: "nostr" as const,
-  },
-  {
-    id: "3",
-    author: {
-      id: "user-11x-love-lab",
-      name: "11x LOVE LaB",
-      handle: "@11xlovelab",
-      avatar: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100&h=100&fit=crop",
-    },
-    content: "New module dropping tomorrow: 'The Art of Intentional Rest'. Get ready to level up your Time dimension!",
-    timestamp: "6h ago",
-    likes: 89,
-    comments: 23,
-    zaps: 5500,
-    source: "community",
-    community: "11x LOVE LaB",
-    isOwnPost: false,
-  },
-  {
-    id: "5",
-    author: {
-      id: "current-user",
-      name: "You",
-      handle: "@you",
-      avatar: "",
-    },
-    content: "My breakthrough moment today in the Body dimension - finally completed 30 days of morning workouts! Sharing this win with my community.",
-    timestamp: "1h ago",
-    likes: 12,
-    comments: 4,
-    zaps: 500,
-    source: "community",
-    community: "11x LOVE LaB",
-    isOwnPost: true,
-  },
-];
-
-const LIVE_NOW = [
-  {
-    id: "1",
-    title: "Bitcoin Lightning Workshop",
-    host: "Lightning Labs",
-    type: "Workshop",
-    avatar: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=100&h=100&fit=crop",
-  },
-  {
-    id: "2",
-    title: "Nostr Development AMA",
-    host: "Nostr Dev",
-    type: "Q&A",
-    avatar: "https://images.unsplash.com/photo-1633356122102-3fe601e05bd2?w=100&h=100&fit=crop",
-  },
-];
-
-const UPCOMING_EVENTS = [
-  { id: "1", title: "Bitcoin Lightning Workshop", date: "Tomorrow, 2:00 PM" },
-  { id: "2", title: "Nostr Hackathon Kickoff", date: "Jan 15, 10:00 AM" },
-  { id: "3", title: "Office Hours", date: "Today, 5:00 PM" },
-];
-
-const WHO_TO_FOLLOW = [
-  {
-    id: "1",
-    name: "Satoshi Nakamoto",
-    handle: "@satoshi",
-    bio: "Bitcoin creator",
-    followers: "12,500",
-    avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop",
-  },
-  {
-    id: "2",
-    name: "Lightning Dev",
-    handle: "@lightningdev",
-    bio: "Building the future",
-    followers: "3,421",
-    avatar: "https://images.unsplash.com/photo-1599566150163-29194dcabd36?w=100&h=100&fit=crop",
-  },
-];
-
 function formatTimestamp(date: number | string | Date) {
   const d = typeof date === "number" ? new Date(date * 1000) : new Date(date);
   const now = new Date();
@@ -179,15 +69,42 @@ function formatTimestamp(date: number | string | Date) {
   return d.toLocaleDateString();
 }
 
-type FeedTab = "following" | "tribe" | "global";
+type FeedTab = "following" | "tribe" | "buddies" | "explore";
 
-function useNostrFeed(tab: FeedTab) {
+function primalEventToFeedPost(
+  event: PrimalEvent,
+  profiles: Map<string, PrimalProfile>,
+  currentPubkey?: string,
+  relaySource: "private" | "public" = "public"
+): FeedPost {
+  const profileData = profiles.get(event.pubkey);
+  return {
+    id: event.id,
+    eventId: event.id,
+    author: {
+      pubkey: event.pubkey,
+      name: profileData?.display_name || profileData?.name || event.pubkey.slice(0, 8) + "...",
+      handle: `@${profileData?.nip05 || profileData?.name || event.pubkey.slice(0, 8)}`,
+      avatar: profileData?.picture || "",
+      lud16: profileData?.lud16,
+    },
+    content: event.content,
+    timestamp: formatTimestamp(event.created_at),
+    likes: 0,
+    comments: 0,
+    zaps: 0,
+    source: "nostr",
+    relaySource,
+    isOwnPost: event.pubkey === currentPubkey,
+  };
+}
+
+function useNostrFeed(tab: FeedTab, exploreMode: ExploreMode) {
   const { fetchEvents, isConnected: ndkConnected } = useNDK();
   const { profile } = useNostr();
   const [posts, setPosts] = useState<FeedPost[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const profileCacheRef = useRef<Map<string, { name: string; handle: string; avatar: string; lud16?: string }>>(new Map());
-  const followListRef = useRef<string[]>([]);
 
   const fetchProfileForPubkey = useCallback(async (pubkey: string) => {
     if (profileCacheRef.current.has(pubkey)) {
@@ -220,20 +137,31 @@ function useNostrFeed(tab: FeedTab) {
   }, [fetchEvents]);
 
   const fetchFeed = useCallback(async () => {
-    console.log("[Feed] fetchFeed called, ndkConnected:", ndkConnected, "tab:", tab);
-    if (!ndkConnected) return;
-
+    console.log("[Feed] fetchFeed called, tab:", tab, "exploreMode:", exploreMode, "ndkConnected:", ndkConnected);
     setIsLoading(true);
-    try {
-      let relayUrls: string[] | undefined;
-      let authorFilter: string[] | undefined;
 
-      if (tab === "global") {
-        relayUrls = [...PUBLIC_RELAYS];
-      } else if (tab === "tribe") {
-        relayUrls = [LAB_RELAY_URL];
-      } else if (tab === "following") {
+    try {
+      if (tab === "following") {
         if (!profile?.pubkey) {
+          setPosts([]);
+          setIsLoading(false);
+          return;
+        }
+        try {
+          const result = await fetchPrimalUserFeed(profile.pubkey, { limit: 50 });
+          if (result.events.length > 0) {
+            const feedPosts = result.events.map(e =>
+              primalEventToFeedPost(e, result.profiles, profile?.pubkey, "public")
+            );
+            setPosts(feedPosts);
+            setIsLoading(false);
+            return;
+          }
+        } catch (err) {
+          console.error("[Feed] Primal cache error for following, falling back to NDK:", err);
+        }
+
+        if (!ndkConnected) {
           setPosts([]);
           setIsLoading(false);
           return;
@@ -243,111 +171,95 @@ function useNostrFeed(tab: FeedTab) {
           const contacts = contactEvents[0].tags
             .filter(t => t[0] === "p")
             .map(t => t[1]);
-          followListRef.current = contacts;
           if (contacts.length === 0) {
             setPosts([]);
             setIsLoading(false);
             return;
           }
-          authorFilter = contacts.slice(0, 100);
+          const authorFilter = contacts.slice(0, 100);
+          const events = await fetchEvents({ kinds: [1], authors: authorFilter, limit: 50 });
+          const sortedEvents = events.sort((a, b) => (b.created_at || 0) - (a.created_at || 0));
+          await Promise.all(Array.from(new Set(sortedEvents.map(e => e.pubkey))).map(pk => fetchProfileForPubkey(pk)));
+
+          const feedPosts: FeedPost[] = sortedEvents.map(event => {
+            const pd = profileCacheRef.current.get(event.pubkey) || {
+              name: event.pubkey.slice(0, 8) + "...",
+              handle: `@${event.pubkey.slice(0, 8)}`,
+              avatar: "",
+            };
+            return {
+              id: event.id,
+              eventId: event.id,
+              author: { pubkey: event.pubkey, name: pd.name, handle: pd.handle, avatar: pd.avatar, lud16: pd.lud16 },
+              content: event.content,
+              timestamp: formatTimestamp(event.created_at || 0),
+              likes: 0, comments: 0, zaps: 0,
+              source: "nostr" as const,
+              relaySource: "public" as const,
+              isOwnPost: event.pubkey === profile?.pubkey,
+            };
+          });
+          setPosts(feedPosts);
         } else {
+          setPosts([]);
+        }
+      } else if (tab === "tribe" || tab === "buddies") {
+        if (!ndkConnected) {
           setPosts([]);
           setIsLoading(false);
           return;
         }
-      }
+        const relayUrls = [LAB_RELAY_URL];
+        const filter: any = { kinds: [1], limit: 50 };
 
-      const filter: any = { kinds: [1], limit: 50 };
-      if (authorFilter) {
-        filter.authors = authorFilter;
-      }
-
-      console.log("[Feed] Fetching events with filter:", filter, "relayUrls:", relayUrls);
-      const events = await fetchEvents(filter, relayUrls);
-      console.log("[Feed] Got", events.length, "events from relays");
-
-      if (events.length === 0) {
-        setPosts([]);
-        setIsLoading(false);
-        return;
-      }
-
-      const sortedEvents = events.sort((a, b) => (b.created_at || 0) - (a.created_at || 0));
-
-      const eventIds = sortedEvents.map(e => e.id);
-      const uniquePubkeys = Array.from(new Set(sortedEvents.map(e => e.pubkey)));
-
-      const [reactionEvents, zapEvents] = await Promise.all([
-        fetchEvents({ kinds: [7], "#e": eventIds, limit: 500 }, relayUrls),
-        fetchEvents({ kinds: [9735], "#e": eventIds, limit: 500 }, relayUrls),
-      ]);
-
-      const reactionCounts = new Map<string, number>();
-      for (const r of reactionEvents) {
-        const eTag = r.tags.find(t => t[0] === "e");
-        if (eTag) {
-          reactionCounts.set(eTag[1], (reactionCounts.get(eTag[1]) || 0) + 1);
-        }
-      }
-
-      const zapCounts = new Map<string, number>();
-      for (const z of zapEvents) {
-        const eTag = z.tags.find(t => t[0] === "e");
-        if (eTag) {
-          zapCounts.set(eTag[1], (zapCounts.get(eTag[1]) || 0) + 1);
-        }
-      }
-
-      await Promise.all(uniquePubkeys.map(pk => fetchProfileForPubkey(pk)));
-
-      const feedPosts: FeedPost[] = sortedEvents.map(event => {
-        const profileData = profileCacheRef.current.get(event.pubkey) || {
-          name: event.pubkey.slice(0, 8) + "...",
-          handle: `@${event.pubkey.slice(0, 8)}`,
-          avatar: "",
-        };
-
-        let relaySource: "private" | "public" = "public";
-        if (tab === "tribe") {
-          relaySource = "private";
-        } else if (tab === "global") {
-          relaySource = "public";
-        } else {
-          const eventRelay = (event as any).relay?.url || "";
-          if (eventRelay === LAB_RELAY_URL || eventRelay.includes("railway.app")) {
-            relaySource = "private";
-          }
+        if (tab === "buddies") {
+          filter["#t"] = ["buddy-post"];
         }
 
-        return {
-          id: event.id,
-          eventId: event.id,
-          author: {
-            pubkey: event.pubkey,
-            name: profileData.name,
-            handle: profileData.handle,
-            avatar: profileData.avatar,
-            lud16: profileData.lud16,
-          },
-          content: event.content,
-          timestamp: formatTimestamp(event.created_at || 0),
-          likes: reactionCounts.get(event.id) || 0,
-          comments: 0,
-          zaps: zapCounts.get(event.id) || 0,
-          source: "nostr" as const,
-          relaySource,
-          isOwnPost: event.pubkey === profile?.pubkey,
-        };
-      });
+        const events = await fetchEvents(filter, relayUrls);
+        const sortedEvents = events.sort((a, b) => (b.created_at || 0) - (a.created_at || 0));
 
-      setPosts(feedPosts);
+        const uniquePubkeys = Array.from(new Set(sortedEvents.map(e => e.pubkey)));
+        await Promise.all(uniquePubkeys.map(pk => fetchProfileForPubkey(pk)));
+
+        const feedPosts: FeedPost[] = sortedEvents.map(event => {
+          const pd = profileCacheRef.current.get(event.pubkey) || {
+            name: event.pubkey.slice(0, 8) + "...",
+            handle: `@${event.pubkey.slice(0, 8)}`,
+            avatar: "",
+          };
+          return {
+            id: event.id,
+            eventId: event.id,
+            author: { pubkey: event.pubkey, name: pd.name, handle: pd.handle, avatar: pd.avatar, lud16: pd.lud16 },
+            content: event.content,
+            timestamp: formatTimestamp(event.created_at || 0),
+            likes: 0, comments: 0, zaps: 0,
+            source: "nostr" as const,
+            relaySource: "private" as const,
+            isOwnPost: event.pubkey === profile?.pubkey,
+          };
+        });
+        setPosts(feedPosts);
+      } else if (tab === "explore") {
+        try {
+          const result = await fetchPrimalFeed(exploreMode, { limit: 50 });
+          const feedPosts = result.events.map(e =>
+            primalEventToFeedPost(e, result.profiles, profile?.pubkey, "public")
+          );
+          setPosts(feedPosts);
+        } catch (err) {
+          console.error("[Feed] Primal cache error for explore:", err);
+          setPosts([]);
+        }
+      }
     } catch (err) {
       console.error("[useNostrFeed] Error fetching feed:", err);
       setPosts([]);
     } finally {
       setIsLoading(false);
     }
-  }, [ndkConnected, tab, fetchEvents, fetchProfileForPubkey, profile?.pubkey]);
+  }, [ndkConnected, tab, exploreMode, fetchEvents, fetchProfileForPubkey, profile?.pubkey]);
 
   useEffect(() => {
     fetchFeed();
@@ -479,7 +391,7 @@ function PostComposer({ onPostPublished }: { onPostPublished?: () => void }) {
                 variant="ghost"
                 size="sm"
                 onClick={() => handleFileSelect("image")}
-                className="text-muted-foreground hover:text-love-body hover:bg-love-body-light"
+                className="text-muted-foreground hover:bg-[#F0E6FF]"
                 data-testid="button-add-image"
               >
                 <Image className="w-5 h-5" />
@@ -488,7 +400,7 @@ function PostComposer({ onPostPublished }: { onPostPublished?: () => void }) {
                 variant="ghost"
                 size="sm"
                 onClick={handleGifSelect}
-                className="text-muted-foreground hover:text-love-mission hover:bg-love-mission-light"
+                className="text-muted-foreground hover:bg-[#F0E6FF]"
                 data-testid="button-add-gif"
               >
                 <Smile className="w-5 h-5" />
@@ -497,7 +409,7 @@ function PostComposer({ onPostPublished }: { onPostPublished?: () => void }) {
                 variant="ghost"
                 size="sm"
                 onClick={() => handleFileSelect("video")}
-                className="text-muted-foreground hover:text-love-time hover:bg-love-time-light"
+                className="text-muted-foreground hover:bg-[#F0E6FF]"
                 data-testid="button-add-video"
               >
                 <Film className="w-5 h-5" />
@@ -661,14 +573,14 @@ function PostCard({ post }: { post: FeedPost }) {
             );
           })()}
           <div className="flex items-center gap-4 mt-3 pt-2 border-t border-border">
-            <button className="flex items-center gap-1.5 text-muted-foreground hover:text-love-time hover:bg-love-time-light rounded-md px-2 py-1 transition-colors text-sm" data-testid={`button-reply-${post.id}`}>
+            <button className="flex items-center gap-1.5 text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF] rounded-md px-2 py-1 transition-colors text-sm" data-testid={`button-reply-${post.id}`}>
               <MessageCircle className="w-4 h-4" />
               <span>{post.comments > 0 ? post.comments : ""}</span>
             </button>
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className={`flex items-center gap-1.5 rounded-md px-2 py-1 transition-colors text-sm ${isReposted ? 'text-love-mission' : 'text-muted-foreground hover:text-love-mission hover:bg-love-mission-light'}`} data-testid={`button-repost-${post.id}`}>
+                <button className={`flex items-center gap-1.5 rounded-md px-2 py-1 transition-colors text-sm ${isReposted ? 'text-[#6600ff]' : 'text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF]'}`} data-testid={`button-repost-${post.id}`}>
                   <Repeat2 className="w-4 h-4" />
                 </button>
               </DropdownMenuTrigger>
@@ -764,14 +676,14 @@ function PostCard({ post }: { post: FeedPost }) {
               </DialogContent>
             </Dialog>
 
-            <button className="flex items-center gap-1.5 text-muted-foreground hover:text-love-family hover:bg-love-family-light rounded-md px-2 py-1 transition-colors text-sm" data-testid={`button-zap-${post.id}`}>
+            <button className="flex items-center gap-1.5 text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF] rounded-md px-2 py-1 transition-colors text-sm" data-testid={`button-zap-${post.id}`}>
               <Zap className="w-5 h-5" />
               <span data-testid={`count-zaps-${post.id}`}>{post.zaps > 0 ? post.zaps.toLocaleString() : ""}</span>
             </button>
 
             <button 
               onClick={handleLike}
-              className={`flex items-center gap-1.5 rounded-md px-2 py-1 transition-colors text-sm ${isLiked ? 'text-love-romance' : 'text-muted-foreground hover:text-love-romance hover:bg-love-romance-light'}`} 
+              className={`flex items-center gap-1.5 rounded-md px-2 py-1 transition-colors text-sm ${isLiked ? 'text-[#6600ff]' : 'text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF]'}`} 
               data-testid={`button-like-${post.id}`}
             >
               <Heart className="w-4 h-4" fill={isLiked ? "currentColor" : "none"} />
@@ -780,7 +692,7 @@ function PostCard({ post }: { post: FeedPost }) {
 
             <button 
               onClick={handleBookmark}
-              className={`flex items-center gap-1.5 rounded-md px-2 py-1 transition-colors text-sm ${isBookmarked ? 'text-love-body' : 'text-muted-foreground hover:text-love-body hover:bg-love-body-light'}`} 
+              className={`flex items-center gap-1.5 rounded-md px-2 py-1 transition-colors text-sm ${isBookmarked ? 'text-[#6600ff]' : 'text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF]'}`} 
               data-testid={`button-bookmark-${post.id}`}
             >
               <Bookmark className="w-4 h-4" fill={isBookmarked ? "currentColor" : "none"} />
@@ -789,7 +701,7 @@ function PostCard({ post }: { post: FeedPost }) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button 
-                  className="flex items-center gap-1.5 text-muted-foreground hover:text-love-soul hover:bg-love-soul-light rounded-md px-2 py-1 transition-colors text-sm ml-auto" 
+                  className="flex items-center gap-1.5 text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF] rounded-md px-2 py-1 transition-colors text-sm ml-auto" 
                   data-testid={`button-share-${post.id}`}
                 >
                   <Share2 className="w-4 h-4" />
@@ -848,134 +760,121 @@ function PostCard({ post }: { post: FeedPost }) {
   );
 }
 
-function FeedSidebar() {
-  return (
-    <div className="space-y-6">
-      <Card className="p-4">
-        <div className="flex items-center gap-2 mb-4">
-          <Radio className="w-4 h-4 text-red-500" />
-          <span className="font-semibold text-sm">Live Now</span>
-        </div>
-        <div className="space-y-3">
-          {LIVE_NOW.map((event) => (
-            <div key={event.id} className="flex items-center gap-3 p-2 rounded-xs hover:bg-[#F0E6FF] transition-colors cursor-pointer" data-testid={`live-event-${event.id}`}>
-              <Avatar className="w-10 h-10">
-                <AvatarImage src={event.avatar} />
-                <AvatarFallback>{event.host.slice(0, 2).toUpperCase()}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{event.title}</p>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground">{event.host}</span>
-                  <span className="text-xs px-1.5 py-0.5 bg-primary/10 text-primary rounded">{event.type}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </Card>
-
-      <Card className="p-4">
-        <div className="flex items-center gap-2 mb-4">
-          <Calendar className="w-4 h-4 text-muted-foreground" />
-          <span className="font-semibold text-sm">Upcoming Events</span>
-        </div>
-        <div className="space-y-2">
-          {UPCOMING_EVENTS.map((event) => (
-            <div key={event.id} className="p-2 rounded-xs hover:bg-[#F0E6FF] transition-colors cursor-pointer" data-testid={`upcoming-event-${event.id}`}>
-              <p className="text-sm font-medium">{event.title}</p>
-              <p className="text-xs text-muted-foreground">{event.date}</p>
-            </div>
-          ))}
-        </div>
-        <Link href="/events">
-          <Button variant="outline" className="w-full mt-4 hover:bg-[#F0E6FF]" data-testid="button-view-all-events">
-            View All Events
-          </Button>
-        </Link>
-      </Card>
-
-      <Card className="p-4">
-        <div className="flex items-center gap-2 mb-4">
-          <UserPlus className="w-4 h-4 text-muted-foreground" />
-          <span className="font-semibold text-sm">Who to Follow</span>
-        </div>
-        <div className="space-y-3">
-          {WHO_TO_FOLLOW.map((user) => (
-            <div key={user.id} className="flex items-center gap-3" data-testid={`follow-suggestion-${user.id}`}>
-              <Avatar className="w-10 h-10">
-                <AvatarImage src={user.avatar} />
-                <AvatarFallback>{user.name.slice(0, 2).toUpperCase()}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{user.name}</p>
-                <p className="text-xs text-muted-foreground">{user.bio}</p>
-                <p className="text-xs text-muted-foreground">{user.followers} followers</p>
-              </div>
-              <Button size="sm" variant="outline" className="hover:bg-[#F0E6FF]" data-testid={`button-follow-${user.id}`}>
-                Follow
-              </Button>
-            </div>
-          ))}
-        </div>
-      </Card>
-    </div>
-  );
-}
+const EXPLORE_OPTIONS: { value: ExploreMode; label: string; icon: typeof TrendingUp }[] = [
+  { value: "trending", label: "Trending", icon: TrendingUp },
+  { value: "most_zapped", label: "Most Zapped", icon: Zap },
+  { value: "media", label: "Media", icon: Camera },
+  { value: "latest", label: "Latest", icon: Clock },
+];
 
 export default function Feed() {
   const [activeTab, setActiveTab] = useState<FeedTab>("following");
-  const { posts, isLoading, refetch, ndkConnected } = useNostrFeed(activeTab);
+  const [exploreMode, setExploreMode] = useState<ExploreMode>("trending");
+  const { posts, isLoading, refetch, ndkConnected } = useNostrFeed(activeTab, exploreMode);
 
-  const displayPosts = posts.length > 0 ? posts : (!ndkConnected ? MOCK_POSTS : []);
+  const currentExploreOption = EXPLORE_OPTIONS.find(o => o.value === exploreMode) || EXPLORE_OPTIONS[0];
 
   return (
     <Layout>
-      <div className="max-w-6xl mx-auto p-4 lg:p-6">
-        <h1 className="text-2xl font-serif font-bold mb-2">Your Feed</h1>
+      <div className="max-w-4xl mx-auto p-4 lg:p-6">
+        <h1 className="text-2xl font-serif mb-2" data-testid="text-feed-title">Your Feed</h1>
         <p className="text-muted-foreground text-sm mb-6">Personalized updates from your courses, communities, and connections</p>
         
-        <div className="flex gap-8">
-          <div className="flex-1 min-w-0">
-            <PostComposer onPostPublished={refetch} />
-            
-            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as FeedTab)} className="w-full">
-              <TabsList className="w-full mb-6 grid grid-cols-3">
-                <TabsTrigger value="following" data-testid="tab-following">Following</TabsTrigger>
-                <TabsTrigger value="tribe" data-testid="tab-tribe">Tribe</TabsTrigger>
-                <TabsTrigger value="global" data-testid="tab-global">Global</TabsTrigger>
-              </TabsList>
+        <PostComposer onPostPublished={refetch} />
+        
+        <div className="flex items-center gap-2 mb-6">
+          <div className="flex bg-muted rounded-lg p-1 flex-1">
+            <button
+              onClick={() => setActiveTab("following")}
+              className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === "following" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+              data-testid="tab-following"
+            >
+              Following
+            </button>
+            <button
+              onClick={() => setActiveTab("tribe")}
+              className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === "tribe" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+              data-testid="tab-tribe"
+            >
+              <span className="flex items-center justify-center gap-1.5">
+                <Lock className="w-3.5 h-3.5" />
+                Tribes
+              </span>
+            </button>
+            <button
+              onClick={() => setActiveTab("buddies")}
+              className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === "buddies" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+              data-testid="tab-buddies"
+            >
+              <span className="flex items-center justify-center gap-1.5">
+                <Lock className="w-3.5 h-3.5" />
+                Buddies
+              </span>
+            </button>
+          </div>
 
-              {(["following", "tribe", "global"] as FeedTab[]).map((tab) => (
-                <TabsContent key={tab} value={tab} className="space-y-4">
-                  {isLoading ? (
-                    <FeedLoadingSkeleton />
-                  ) : displayPosts.length > 0 ? (
-                    displayPosts.map((post) => (
-                      <PostCard key={post.id} post={post} />
-                    ))
-                  ) : (
-                    <div className="text-center py-12 text-muted-foreground">
-                      <p>No posts yet.</p>
-                      <p className="text-sm mt-2">
-                        {tab === "following" 
-                          ? "Follow some people to see their posts here!" 
-                          : tab === "tribe"
-                          ? "No posts from your Tribe yet."
-                          : "Be the first to share something!"}
-                      </p>
-                    </div>
-                  )}
-                </TabsContent>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "explore" ? "bg-[#6600ff] text-white" : "bg-muted text-muted-foreground hover:text-foreground"}`}
+                data-testid="tab-explore"
+              >
+                <currentExploreOption.icon className="w-4 h-4" />
+                {currentExploreOption.label}
+                <ChevronDown className="w-3.5 h-3.5" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              {EXPLORE_OPTIONS.map((option) => (
+                <DropdownMenuItem
+                  key={option.value}
+                  onClick={() => {
+                    setExploreMode(option.value);
+                    setActiveTab("explore");
+                  }}
+                  className={`cursor-pointer ${exploreMode === option.value && activeTab === "explore" ? "bg-[#F0E6FF]" : ""}`}
+                  data-testid={`explore-option-${option.value}`}
+                >
+                  <option.icon className="w-4 h-4 mr-2 text-muted-foreground" />
+                  {option.label}
+                </DropdownMenuItem>
               ))}
-            </Tabs>
-          </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
 
-          <div className="hidden lg:block w-80 shrink-0">
-            <div className="sticky top-28">
-              <FeedSidebar />
-            </div>
+        {(activeTab === "tribe" || activeTab === "buddies") && (
+          <div className="flex items-center gap-2 mb-4 p-3 bg-[#F0E6FF] rounded-lg text-sm">
+            <Lock className="w-4 h-4 text-[#6600ff] shrink-0" />
+            <span className="text-[#6600ff]">
+              {activeTab === "tribe" 
+                ? "Tribe posts are private to the LaB community and never shared publicly."
+                : "Buddy conversations are private and only visible to your buddies."}
+            </span>
           </div>
+        )}
+
+        <div className="space-y-4">
+          {isLoading ? (
+            <FeedLoadingSkeleton />
+          ) : posts.length > 0 ? (
+            posts.map((post) => (
+              <PostCard key={post.id} post={post} />
+            ))
+          ) : (
+            <div className="text-center py-12 text-muted-foreground">
+              <p className="text-lg">No posts yet</p>
+              <p className="text-sm mt-2">
+                {activeTab === "following" 
+                  ? "Follow some people to see their posts here!" 
+                  : activeTab === "tribe"
+                  ? "No posts from your Tribe yet. Be the first to share!"
+                  : activeTab === "buddies"
+                  ? "No buddy posts yet. Connect with a buddy to get started!"
+                  : "No posts found. Try a different explore category!"}
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </Layout>
