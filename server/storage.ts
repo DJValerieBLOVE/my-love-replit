@@ -108,6 +108,8 @@ export interface IStorage {
   updateUserDailyMessages(userId: string, count: number, resetAt?: Date): Promise<void>;
   deductUserTokens(userId: string, tokens: number): Promise<void>;
   updateUserAiProfile(userId: string, profile: { coreGoals?: string; currentChallenges?: string; interestsTags?: string[]; communicationStyle?: string }): Promise<User | undefined>;
+  updateUserTier(userId: string, tier: string): Promise<User | undefined>;
+  updateUserApiKey(userId: string, apiKey: string | null): Promise<User | undefined>;
   
   // Phase 1: Reserve a slot atomically - checks limits and increments counter BEFORE AI call
   // For paid tier, reserves estimated tokens (deducted upfront)
@@ -636,6 +638,22 @@ export class DatabaseStorage implements IStorage {
 
     const [updated] = await db.update(users)
       .set(updates)
+      .where(eq(users.id, userId))
+      .returning();
+    return updated;
+  }
+
+  async updateUserTier(userId: string, tier: string): Promise<User | undefined> {
+    const [updated] = await db.update(users)
+      .set({ tier })
+      .where(eq(users.id, userId))
+      .returning();
+    return updated;
+  }
+
+  async updateUserApiKey(userId: string, apiKey: string | null): Promise<User | undefined> {
+    const [updated] = await db.update(users)
+      .set({ userApiKey: apiKey })
       .where(eq(users.id, userId))
       .returning();
     return updated;

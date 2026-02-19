@@ -13,6 +13,7 @@ import { useNostr } from "@/contexts/nostr-context";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createExperiment, getAllCommunities } from "@/lib/api";
+import { MembershipGate } from "@/components/membership-gate";
 
 const LOVE_CODE_AREAS = [
   { id: "god-love", label: "GOD / LOVE", color: "#eb00a8" },
@@ -188,6 +189,16 @@ export default function ExperimentBuilder() {
 
   return (
     <Layout>
+      <MembershipGate feature="createExperiments" fallback={
+        <div className="max-w-4xl mx-auto p-4 lg:p-8">
+          <Card className="p-8 text-center">
+            <FlaskConical className="w-12 h-12 mx-auto mb-4" style={{ color: '#6600ff' }} />
+            <h2 className="text-xl mb-2" style={{ fontFamily: 'Marcellus, serif' }}>Creator Access Required</h2>
+            <p className="text-muted-foreground mb-4">Creating experiments is available with a Creator membership.</p>
+            <Button onClick={() => setLocation("/settings")} data-testid="button-upgrade">View Membership Options</Button>
+          </Card>
+        </div>
+      }>
       <div className="max-w-4xl mx-auto p-4 lg:p-8 space-y-6">
         <div className="flex items-center gap-4">
           <Button
@@ -463,6 +474,7 @@ export default function ExperimentBuilder() {
           </Button>
         </div>
       </div>
+      </MembershipGate>
     </Layout>
   );
 }

@@ -373,6 +373,55 @@ export async function updateAiProfile(profile: {
   return response.json();
 }
 
+// BYOK API Key Management
+export async function getByokKeyStatus(): Promise<{ hasKey: boolean; keyPreview: string | null }> {
+  const response = await authFetch("/api/ai/byok-key");
+  if (!response.ok) throw new Error("Failed to check API key status");
+  return response.json();
+}
+
+export async function saveByokKey(apiKey: string): Promise<{ success: boolean; hasKey: boolean }> {
+  const response = await authFetch("/api/ai/byok-key", {
+    method: "POST",
+    body: JSON.stringify({ apiKey }),
+  });
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({ error: "Failed to save API key" }));
+    throw new Error(data.error || "Failed to save API key");
+  }
+  return response.json();
+}
+
+export async function removeByokKey(): Promise<{ success: boolean; hasKey: boolean }> {
+  const response = await authFetch("/api/ai/byok-key", { method: "DELETE" });
+  if (!response.ok) throw new Error("Failed to remove API key");
+  return response.json();
+}
+
+// Membership API
+export async function getMembershipInfo(): Promise<{
+  tier: string;
+  tokenBalance: number;
+  dailyMessagesUsed: number;
+  hasApiKey: boolean;
+}> {
+  const response = await authFetch("/api/membership");
+  if (!response.ok) throw new Error("Failed to fetch membership info");
+  return response.json();
+}
+
+export async function updateMembershipTier(tier: string) {
+  const response = await authFetch("/api/membership/tier", {
+    method: "PATCH",
+    body: JSON.stringify({ tier }),
+  });
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({ error: "Failed to update membership" }));
+    throw new Error(data.error || "Failed to update membership");
+  }
+  return response.json();
+}
+
 // Course API
 export async function getAllCourses() {
   const response = await fetch("/api/courses");

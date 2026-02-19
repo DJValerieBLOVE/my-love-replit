@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { authMiddleware, optionalAuth, requireOwnership } from "./auth";
+import { authMiddleware, optionalAuth, requireOwnership, requireTier } from "./auth";
 import {
   insertJournalEntrySchema,
   insertDreamSchema,
@@ -312,7 +312,7 @@ export async function registerRoutes(
   });
 
   // Create experiment (any authenticated user can create)
-  app.post("/api/experiments", authMiddleware, async (req, res) => {
+  app.post("/api/experiments", authMiddleware, requireTier('creator'), async (req, res) => {
     try {
       const data = { ...req.body, creatorId: req.userId };
       const validated = insertExperimentSchema.parse(data);
@@ -877,13 +877,12 @@ export async function registerRoutes(
         return res.status(404).json({ error: "User not found" });
       }
 
-      // BYOK validation (must have key set)
-      if (user.tier === "byok" && !user.userApiKey) {
-        return res.status(400).json({ error: "BYOK tier requires an API key. Please add your Anthropic API key in settings." });
+      const isByokTier = user.tier === "byok" || user.tier === "creator_byok";
+      if (isByokTier && !user.userApiKey) {
+        return res.status(400).json({ error: "BYOK tier requires an API key. Please add your Anthropic or OpenRouter API key in Settings." });
       }
-      
-      // BYOK users use their own key
-      const userApiKey = user.tier === "byok" && user.userApiKey ? user.userApiKey : undefined;
+
+      const userApiKey = isByokTier && user.userApiKey ? user.userApiKey : undefined;
 
       // Phase 1: Reserve a slot atomically BEFORE calling AI
       // This enforces limits with row-level lock to prevent race conditions
@@ -987,6 +986,107 @@ export async function registerRoutes(
       res.json(updated);
     } catch (error) {
       res.status(500).json({ error: "Failed to update AI profile" });
+    }
+  });
+
+  // ===== BYOK API KEY MANAGEMENT =====
+
+  app.post("/api/ai/byok-key", authMiddleware, async (req, res) => {
+    try {
+      const { apiKey } = req.body;
+      if (!apiKey || typeof apiKey !== 'string' || apiKey.trim().length < 10) {
+        return res.status(400).json({ error: "Please provide a valid API key" });
+      }
+
+      const user = await storage.getUser(req.userId!);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const byokTiers = ['creator_byok', 'byok'];
+      if (!byokTiers.includes(user.tier || '')) {
+        return res.status(403).json({ error: "BYOK is only available for Creator BYOK tier members" });
+      }
+
+      const updated = await storage.updateUserApiKey(req.userId!, apiKey.trim());
+      if (!updated) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      res.json({ success: true, hasKey: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to save API key" });
+    }
+  });
+
+  app.delete("/api/ai/byok-key", authMiddleware, async (req, res) => {
+    try {
+      const updated = await storage.updateUserApiKey(req.userId!, null);
+      if (!updated) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      res.json({ success: true, hasKey: false });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to remove API key" });
+    }
+  });
+
+  app.get("/api/ai/byok-key", authMiddleware, async (req, res) => {
+    try {
+      const user = await storage.getUser(req.userId!);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      res.json({
+        hasKey: !!user.userApiKey,
+        keyPreview: user.userApiKey
+          ? `${user.userApiKey.substring(0, 8)}...${user.userApiKey.substring(user.userApiKey.length - 4)}`
+          : null,
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to check API key" });
+    }
+  });
+
+  // ===== MEMBERSHIP TIER MANAGEMENT =====
+
+  app.get("/api/membership", authMiddleware, async (req, res) => {
+    try {
+      const user = await storage.getUser(req.userId!);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      res.json({
+        tier: user.tier || 'free',
+        tokenBalance: user.tokenBalance,
+        dailyMessagesUsed: user.dailyMessagesUsed,
+        hasApiKey: !!user.userApiKey,
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch membership info" });
+    }
+  });
+
+  app.patch("/api/membership/tier", authMiddleware, async (req, res) => {
+    try {
+      const { tier } = req.body;
+      const validTiers = ['free', 'core', 'core_annual', 'creator', 'creator_annual', 'creator_byok'];
+      if (!tier || !validTiers.includes(tier)) {
+        return res.status(400).json({ error: "Invalid membership tier" });
+      }
+
+      const updated = await storage.updateUserTier(req.userId!, tier);
+      if (!updated) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const { password, ...userWithoutPassword } = updated;
+      res.json(userWithoutPassword);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update membership" });
     }
   });
 
@@ -1448,7 +1548,7 @@ export async function registerRoutes(
   });
 
   // Create a community
-  app.post("/api/communities", authMiddleware, async (req, res) => {
+  app.post("/api/communities", authMiddleware, requireTier('annual'), async (req, res) => {
     try {
       const slug = req.body.slug || req.body.name?.toLowerCase().replace(/[^a-z0-9]+/g, "-");
       const result = insertCommunitySchema.safeParse({

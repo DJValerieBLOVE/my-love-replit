@@ -46,6 +46,7 @@ import {
 import { EqVisualizer } from "@/components/eq-visualizer";
 import { VerticalEqVisualizer } from "@/components/vertical-eq-visualizer";
 import { ProfileCompletionDialog } from "@/components/profile-completion-dialog";
+import { MembershipBadge } from "@/components/membership-gate";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
@@ -155,6 +156,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     {isAdmin && (
                       <span className="text-xs text-love-family font-medium mt-1">Admin</span>
                     )}
+                    <MembershipBadge />
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <Link href="/profile">

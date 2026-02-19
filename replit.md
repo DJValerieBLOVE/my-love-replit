@@ -230,9 +230,16 @@ Two-Path Onboarding: Quick Start (simple Big Dreams per dimension) vs Deep Dive 
 - Atomic token tracking with row-level locks
 - Floating sparkles button
 
-## Features to Port from Shakespeare Project
+## Features Ported from Shakespeare Project (Phase 1 Complete)
 
-- useEncryptedStorage hook (NIP-44 encryption with plaintext fallback)
+- NDK context with dual-relay architecture (NdkProvider wrapping NostrProvider)
+- useEncryptedStorage hook (NIP-44 encryption with NIP-04 fallback + plaintext fallback)
+- MembershipGate component and useMembership hook for tier-based feature gating
+- MembershipBadge shown in user dropdown menu
+- BYOK (Bring Your Own Key) for Magic Mentor AI with Settings UI
+
+## Features Still to Port
+
 - useLabPublish / useLabOnlyPublish hooks (smart relay routing)
 - Primal WebSocket client (fast feed with zlib compression, 40+ kinds, link previews)
 - useBigDreams with Nostr relay storage (encrypted, one event per dimension)

@@ -5,13 +5,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ArrowLeft, Globe, Lock, Zap, Plus, X } from "lucide-react";
+import { ArrowLeft, Globe, Lock, Zap, Plus, X, Users } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { useNostr } from "@/contexts/nostr-context";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createCommunity } from "@/lib/api";
+import { MembershipGate } from "@/components/membership-gate";
 
 export default function CommunityCreate() {
   const [, setLocation] = useLocation();
@@ -91,6 +92,16 @@ export default function CommunityCreate() {
 
   return (
     <Layout>
+      <MembershipGate feature="createTribes" fallback={
+        <div className="max-w-2xl mx-auto p-4 lg:p-8">
+          <Card className="p-8 text-center">
+            <Users className="w-12 h-12 mx-auto mb-4" style={{ color: '#6600ff' }} />
+            <h2 className="text-xl mb-2" style={{ fontFamily: 'Marcellus, serif' }}>Annual Membership Required</h2>
+            <p className="text-muted-foreground mb-4">Creating Tribes is available with an annual Core or Creator membership.</p>
+            <Button onClick={() => setLocation("/settings")} data-testid="button-upgrade">View Membership Options</Button>
+          </Card>
+        </div>
+      }>
       <div className="max-w-2xl mx-auto p-4 lg:p-8 space-y-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="sm" onClick={() => setLocation("/community")} data-testid="button-back">
@@ -236,6 +247,7 @@ export default function CommunityCreate() {
           </Button>
         </form>
       </div>
+      </MembershipGate>
     </Layout>
   );
 }

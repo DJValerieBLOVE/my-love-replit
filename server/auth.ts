@@ -66,3 +66,46 @@ export function requireOwnership(paramName: string = "userId") {
     next();
   };
 }
+
+const ADMIN_PUBKEY = '3d70ec1ea586650a0474d6858454209d222158f4079e8db806f017ef5e30e767';
+
+const CREATOR_TIERS = ['creator', 'creator_annual', 'creator_byok'];
+const ANNUAL_TIERS = ['core_annual', 'creator_annual', 'creator_byok'];
+
+export function requireTier(requiredAccess: 'creator' | 'annual' | 'core') {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.userId) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+
+    try {
+      const user = await storage.getUser(req.userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      if (user.nostrPubkey === ADMIN_PUBKEY) {
+        return next();
+      }
+
+      const tier = user.tier || 'free';
+
+      let hasAccess = false;
+      if (requiredAccess === 'creator') {
+        hasAccess = CREATOR_TIERS.includes(tier);
+      } else if (requiredAccess === 'annual') {
+        hasAccess = ANNUAL_TIERS.includes(tier);
+      } else if (requiredAccess === 'core') {
+        hasAccess = tier !== 'free';
+      }
+
+      if (!hasAccess) {
+        return res.status(403).json({ error: `This feature requires a ${requiredAccess} membership` });
+      }
+
+      next();
+    } catch (error) {
+      res.status(500).json({ error: "Authorization check failed" });
+    }
+  };
+}
