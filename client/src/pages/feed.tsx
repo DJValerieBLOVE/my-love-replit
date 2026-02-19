@@ -1,12 +1,10 @@
 import Layout from "@/components/layout";
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getAggregateFeed } from "@/lib/api";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Zap, Share2, MoreHorizontal, Radio, Calendar, UserPlus, Repeat2, Bookmark, Quote, Users, Image, Film, Smile, X, Link2, Copy, ExternalLink, Loader2 } from "lucide-react";
+import { Heart, MessageCircle, Zap, Share2, MoreHorizontal, Radio, Calendar, UserPlus, Repeat2, Bookmark, Quote, Users, Image, Film, Smile, X, Link2, Copy, ExternalLink, Loader2, Lock, Globe } from "lucide-react";
 import { Link } from "wouter";
 import {
   DropdownMenu,
@@ -26,9 +24,15 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { isGroupContent, canSharePublicly, getGroupName, type ShareablePost } from "@/lib/sharing-rules";
+import { useNDK } from "@/contexts/ndk-context";
+import { useNostr } from "@/contexts/nostr-context";
+import { LAB_RELAY_URL, PUBLIC_RELAYS } from "@/lib/relays";
+import { NDKEvent } from "@nostr-dev-kit/ndk";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type FeedPost = {
   id: string;
+  eventId?: string;
   author: {
     id?: string;
     name: string;
@@ -43,6 +47,7 @@ type FeedPost = {
   comments: number;
   zaps: number;
   source?: "nostr" | "community" | "learning";
+  relaySource?: "private" | "public";
   community?: string;
   isOwnPost?: boolean;
 };
@@ -116,26 +121,6 @@ const MOCK_POSTS: FeedPost[] = [
   },
 ];
 
-const COMMUNITY_POSTS = MOCK_POSTS.filter(p => p.source === "community");
-const LEARNING_POSTS: FeedPost[] = [
-  {
-    id: "4",
-    author: {
-      id: "course-11x-foundations",
-      name: "11x LOVE Foundations",
-      handle: "@course",
-      avatar: "",
-    },
-    content: "Discussion: What's your biggest takeaway from Module 3? Share your discoveries below.",
-    timestamp: "1d ago",
-    likes: 15,
-    comments: 32,
-    zaps: 800,
-    source: "learning",
-    community: "11x LOVE Foundations",
-  },
-];
-
 const LIVE_NOW = [
   {
     id: "1",
@@ -178,16 +163,209 @@ const WHO_TO_FOLLOW = [
   },
 ];
 
+function formatTimestamp(date: number | string | Date) {
+  const d = typeof date === "number" ? new Date(date * 1000) : new Date(date);
+  const now = new Date();
+  const diffMs = now.getTime() - d.getTime();
+  const diffMins = Math.floor(diffMs / (1000 * 60));
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffHours / 24);
+
+  if (diffMins < 1) return "just now";
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays < 7) return `${diffDays}d ago`;
+  return d.toLocaleDateString();
+}
+
+type FeedTab = "all" | "global" | "lab" | "following";
+
+function useNostrFeed(tab: FeedTab) {
+  const { fetchEvents, isConnected: ndkConnected } = useNDK();
+  const { profile } = useNostr();
+  const [posts, setPosts] = useState<FeedPost[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const profileCacheRef = useRef<Map<string, { name: string; handle: string; avatar: string; lud16?: string }>>(new Map());
+  const followListRef = useRef<string[]>([]);
+
+  const fetchProfileForPubkey = useCallback(async (pubkey: string) => {
+    if (profileCacheRef.current.has(pubkey)) {
+      return profileCacheRef.current.get(pubkey)!;
+    }
+
+    try {
+      const profileEvents = await fetchEvents({ kinds: [0], authors: [pubkey], limit: 1 });
+      if (profileEvents.length > 0) {
+        const meta = JSON.parse(profileEvents[0].content);
+        const profileData = {
+          name: meta.display_name || meta.name || pubkey.slice(0, 8),
+          handle: `@${meta.nip05 || meta.name || pubkey.slice(0, 8)}`,
+          avatar: meta.picture || "",
+          lud16: meta.lud16,
+        };
+        profileCacheRef.current.set(pubkey, profileData);
+        return profileData;
+      }
+    } catch {
+    }
+
+    const fallback = {
+      name: pubkey.slice(0, 8) + "...",
+      handle: `@${pubkey.slice(0, 8)}`,
+      avatar: "",
+    };
+    profileCacheRef.current.set(pubkey, fallback);
+    return fallback;
+  }, [fetchEvents]);
+
+  const fetchFeed = useCallback(async () => {
+    if (!ndkConnected) return;
+
+    setIsLoading(true);
+    try {
+      let relayUrls: string[] | undefined;
+      let authorFilter: string[] | undefined;
+
+      if (tab === "global") {
+        relayUrls = [...PUBLIC_RELAYS];
+      } else if (tab === "lab") {
+        relayUrls = [LAB_RELAY_URL];
+      } else if (tab === "following") {
+        if (!profile?.pubkey) {
+          setPosts([]);
+          setIsLoading(false);
+          return;
+        }
+        const contactEvents = await fetchEvents({ kinds: [3], authors: [profile.pubkey], limit: 1 });
+        if (contactEvents.length > 0) {
+          const contacts = contactEvents[0].tags
+            .filter(t => t[0] === "p")
+            .map(t => t[1]);
+          followListRef.current = contacts;
+          if (contacts.length === 0) {
+            setPosts([]);
+            setIsLoading(false);
+            return;
+          }
+          authorFilter = contacts.slice(0, 100);
+        } else {
+          setPosts([]);
+          setIsLoading(false);
+          return;
+        }
+      } else {
+        relayUrls = [LAB_RELAY_URL, ...PUBLIC_RELAYS];
+      }
+
+      const filter: any = { kinds: [1], limit: 50 };
+      if (authorFilter) {
+        filter.authors = authorFilter;
+      }
+
+      const events = await fetchEvents(filter, relayUrls);
+
+      if (events.length === 0) {
+        setPosts([]);
+        setIsLoading(false);
+        return;
+      }
+
+      const sortedEvents = events.sort((a, b) => (b.created_at || 0) - (a.created_at || 0));
+
+      const eventIds = sortedEvents.map(e => e.id);
+      const uniquePubkeys = Array.from(new Set(sortedEvents.map(e => e.pubkey)));
+
+      const [reactionEvents, zapEvents] = await Promise.all([
+        fetchEvents({ kinds: [7], "#e": eventIds, limit: 500 }, relayUrls),
+        fetchEvents({ kinds: [9735], "#e": eventIds, limit: 500 }, relayUrls),
+      ]);
+
+      const reactionCounts = new Map<string, number>();
+      for (const r of reactionEvents) {
+        const eTag = r.tags.find(t => t[0] === "e");
+        if (eTag) {
+          reactionCounts.set(eTag[1], (reactionCounts.get(eTag[1]) || 0) + 1);
+        }
+      }
+
+      const zapCounts = new Map<string, number>();
+      for (const z of zapEvents) {
+        const eTag = z.tags.find(t => t[0] === "e");
+        if (eTag) {
+          zapCounts.set(eTag[1], (zapCounts.get(eTag[1]) || 0) + 1);
+        }
+      }
+
+      await Promise.all(uniquePubkeys.map(pk => fetchProfileForPubkey(pk)));
+
+      const feedPosts: FeedPost[] = sortedEvents.map(event => {
+        const profileData = profileCacheRef.current.get(event.pubkey) || {
+          name: event.pubkey.slice(0, 8) + "...",
+          handle: `@${event.pubkey.slice(0, 8)}`,
+          avatar: "",
+        };
+
+        let relaySource: "private" | "public" = "public";
+        if (tab === "lab") {
+          relaySource = "private";
+        } else if (tab === "global") {
+          relaySource = "public";
+        } else {
+          const eventRelay = (event as any).relay?.url || "";
+          if (eventRelay === LAB_RELAY_URL || eventRelay.includes("railway.app")) {
+            relaySource = "private";
+          }
+        }
+
+        return {
+          id: event.id,
+          eventId: event.id,
+          author: {
+            pubkey: event.pubkey,
+            name: profileData.name,
+            handle: profileData.handle,
+            avatar: profileData.avatar,
+            lud16: profileData.lud16,
+          },
+          content: event.content,
+          timestamp: formatTimestamp(event.created_at || 0),
+          likes: reactionCounts.get(event.id) || 0,
+          comments: 0,
+          zaps: zapCounts.get(event.id) || 0,
+          source: "nostr" as const,
+          relaySource,
+          isOwnPost: event.pubkey === profile?.pubkey,
+        };
+      });
+
+      setPosts(feedPosts);
+    } catch (err) {
+      console.error("[useNostrFeed] Error fetching feed:", err);
+      setPosts([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [ndkConnected, tab, fetchEvents, fetchProfileForPubkey, profile?.pubkey]);
+
+  useEffect(() => {
+    fetchFeed();
+  }, [fetchFeed]);
+
+  return { posts, isLoading, refetch: fetchFeed, ndkConnected };
+}
+
 type MediaItem = {
   type: "image" | "gif" | "video";
   url: string;
   file?: File;
 };
 
-function PostComposer() {
+function PostComposer({ onPostPublished }: { onPostPublished?: () => void }) {
   const [content, setContent] = useState("");
   const [media, setMedia] = useState<MediaItem[]>([]);
   const [isPosting, setIsPosting] = useState(false);
+  const { publishSmart, ndk, isConnected: ndkConnected } = useNDK();
+  const { profile } = useNostr();
 
   const handleFileSelect = (type: "image" | "video") => {
     const input = document.createElement("input");
@@ -223,19 +401,44 @@ function PostComposer() {
 
   const handlePost = async () => {
     if (!content.trim() && media.length === 0) return;
+
+    if (!ndkConnected || !ndk) {
+      toast.error("NDK not connected", { description: "Please wait for relay connection" });
+      return;
+    }
+
     setIsPosting(true);
-    setTimeout(() => {
+    try {
+      const event = new NDKEvent(ndk);
+      event.kind = 1;
+      event.content = content.trim();
+      event.created_at = Math.floor(Date.now() / 1000);
+
+      if (profile?.pubkey) {
+        event.pubkey = profile.pubkey;
+      }
+
+      await publishSmart(event, true);
+
       toast.success("Posted to Nostr!");
       setContent("");
       setMedia([]);
+      onPostPublished?.();
+    } catch (err: any) {
+      console.error("[PostComposer] Publish error:", err);
+      toast.error("Failed to post", { description: err.message || "Please try again" });
+    } finally {
       setIsPosting(false);
-    }, 1000);
+    }
   };
 
   return (
     <Card className="p-4 mb-6">
       <div className="flex gap-3">
         <Avatar className="w-10 h-10">
+          {profile?.picture ? (
+            <AvatarImage src={profile.picture} />
+          ) : null}
           <AvatarFallback>ME</AvatarFallback>
         </Avatar>
         <div className="flex-1">
@@ -313,6 +516,35 @@ function PostComposer() {
   );
 }
 
+function FeedLoadingSkeleton() {
+  return (
+    <div className="space-y-4">
+      {[1, 2, 3].map((i) => (
+        <Card key={i} className="p-4">
+          <div className="flex gap-3">
+            <Skeleton className="w-10 h-10 rounded-full" />
+            <div className="flex-1 space-y-2">
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-3 w-16" />
+                <Skeleton className="h-3 w-12" />
+              </div>
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-3/4" />
+              <div className="flex items-center gap-4 mt-3 pt-2 border-t">
+                <Skeleton className="h-6 w-12" />
+                <Skeleton className="h-6 w-12" />
+                <Skeleton className="h-6 w-12" />
+                <Skeleton className="h-6 w-12" />
+              </div>
+            </div>
+          </div>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
 function PostCard({ post }: { post: FeedPost }) {
   const [isLiked, setIsLiked] = useState(false);
   const [likes, setLikes] = useState(post.likes);
@@ -382,20 +614,26 @@ function PostCard({ post }: { post: FeedPost }) {
           <div className="flex items-center gap-2">
             <span className="font-semibold text-sm">{post.author.name}</span>
             <span className="text-muted-foreground text-sm">{post.author.handle}</span>
-            <span className="text-muted-foreground text-xs">· {post.timestamp}</span>
+            <span className="text-muted-foreground text-xs flex items-center gap-1">
+              · {post.timestamp}
+              {post.relaySource === "private" && (
+                <Lock className="w-3 h-3 text-muted-foreground" />
+              )}
+              {post.relaySource === "public" && (
+                <Globe className="w-3 h-3 text-muted-foreground" />
+              )}
+            </span>
             <Button variant="ghost" size="icon" className="ml-auto h-8 w-8 hover:bg-[#F0E6FF]" data-testid={`button-more-${post.id}`}>
               <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
             </Button>
           </div>
           <p className="text-sm mt-1 leading-relaxed">{post.content}</p>
           <div className="flex items-center gap-4 mt-3 pt-2 border-t border-border">
-            {/* Reply */}
             <button className="flex items-center gap-1.5 text-muted-foreground hover:text-love-time hover:bg-love-time-light rounded-md px-2 py-1 transition-colors text-sm" data-testid={`button-reply-${post.id}`}>
               <MessageCircle className="w-4 h-4" />
               <span>{post.comments > 0 ? post.comments : ""}</span>
             </button>
             
-            {/* Repost dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className={`flex items-center gap-1.5 rounded-md px-2 py-1 transition-colors text-sm ${isReposted ? 'text-love-mission' : 'text-muted-foreground hover:text-love-mission hover:bg-love-mission-light'}`} data-testid={`button-repost-${post.id}`}>
@@ -403,7 +641,6 @@ function PostCard({ post }: { post: FeedPost }) {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="center" className="w-56">
-                {/* Public Repost - only available for public posts */}
                 {canRepostPublic ? (
                   <DropdownMenuItem onClick={handleRepostPublic} data-testid={`menu-repost-${post.id}`}>
                     <Repeat2 className="w-4 h-4 mr-2" />
@@ -421,7 +658,6 @@ function PostCard({ post }: { post: FeedPost }) {
                     </div>
                   </DropdownMenuItem>
                 )}
-                {/* Group Repost - only for group posts */}
                 {isGroupPost && (
                   <DropdownMenuItem onClick={handleRepostGroup} data-testid={`menu-repost-group-${post.id}`}>
                     <Users className="w-4 h-4 mr-2" />
@@ -431,7 +667,6 @@ function PostCard({ post }: { post: FeedPost }) {
                     </div>
                   </DropdownMenuItem>
                 )}
-                {/* Quote Repost */}
                 <DropdownMenuItem onClick={() => setQuoteRepostOpen(true)} data-testid={`menu-quote-repost-${post.id}`}>
                   <Quote className="w-4 h-4 mr-2" />
                   <div>
@@ -444,7 +679,6 @@ function PostCard({ post }: { post: FeedPost }) {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Quote Repost Dialog */}
             <Dialog open={quoteRepostOpen} onOpenChange={setQuoteRepostOpen}>
               <DialogContent className="sm:max-w-md">
                 <DialogHeader>
@@ -498,13 +732,11 @@ function PostCard({ post }: { post: FeedPost }) {
               </DialogContent>
             </Dialog>
 
-            {/* Zap */}
             <button className="flex items-center gap-1.5 text-muted-foreground hover:text-love-family hover:bg-love-family-light rounded-md px-2 py-1 transition-colors text-sm" data-testid={`button-zap-${post.id}`}>
               <Zap className="w-5 h-5" />
               <span data-testid={`count-zaps-${post.id}`}>{post.zaps > 0 ? post.zaps.toLocaleString() : ""}</span>
             </button>
 
-            {/* Like */}
             <button 
               onClick={handleLike}
               className={`flex items-center gap-1.5 rounded-md px-2 py-1 transition-colors text-sm ${isLiked ? 'text-love-romance' : 'text-muted-foreground hover:text-love-romance hover:bg-love-romance-light'}`} 
@@ -514,7 +746,6 @@ function PostCard({ post }: { post: FeedPost }) {
               <span data-testid={`count-likes-${post.id}`}>{likes > 0 ? likes : ""}</span>
             </button>
 
-            {/* Bookmark */}
             <button 
               onClick={handleBookmark}
               className={`flex items-center gap-1.5 rounded-md px-2 py-1 transition-colors text-sm ${isBookmarked ? 'text-love-body' : 'text-muted-foreground hover:text-love-body hover:bg-love-body-light'}`} 
@@ -523,7 +754,6 @@ function PostCard({ post }: { post: FeedPost }) {
               <Bookmark className="w-4 h-4" fill={isBookmarked ? "currentColor" : "none"} />
             </button>
 
-            {/* Share */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button 
@@ -589,7 +819,6 @@ function PostCard({ post }: { post: FeedPost }) {
 function FeedSidebar() {
   return (
     <div className="space-y-6">
-      {/* Live Now */}
       <Card className="p-4">
         <div className="flex items-center gap-2 mb-4">
           <Radio className="w-4 h-4 text-red-500" />
@@ -614,7 +843,6 @@ function FeedSidebar() {
         </div>
       </Card>
 
-      {/* Upcoming Events */}
       <Card className="p-4">
         <div className="flex items-center gap-2 mb-4">
           <Calendar className="w-4 h-4 text-muted-foreground" />
@@ -635,7 +863,6 @@ function FeedSidebar() {
         </Link>
       </Card>
 
-      {/* Who to Follow */}
       <Card className="p-4">
         <div className="flex items-center gap-2 mb-4">
           <UserPlus className="w-4 h-4 text-muted-foreground" />
@@ -665,57 +892,10 @@ function FeedSidebar() {
 }
 
 export default function Feed() {
-  const [activeTab, setActiveTab] = useState("all");
+  const [activeTab, setActiveTab] = useState<FeedTab>("all");
+  const { posts, isLoading, refetch, ndkConnected } = useNostrFeed(activeTab);
 
-  const { data: allPosts = [], isLoading: allLoading } = useQuery({
-    queryKey: ["feed", "all"],
-    queryFn: () => getAggregateFeed({ limit: 50 }),
-  });
-
-  const { data: communityPosts = [], isLoading: communityLoading } = useQuery({
-    queryKey: ["feed", "community"],
-    queryFn: () => getAggregateFeed({ limit: 50, source: "community" }),
-  });
-
-  const formatTimestamp = (date: string | Date) => {
-    const d = new Date(date);
-    const now = new Date();
-    const diffMs = now.getTime() - d.getTime();
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffHours / 24);
-    
-    if (diffHours < 1) return "just now";
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
-    return d.toLocaleDateString();
-  };
-
-  const transformPost = (post: any): FeedPost => ({
-    id: post.id,
-    author: {
-      id: post.author?.id || post.authorId,
-      name: post.author?.name || "Unknown",
-      handle: `@${post.author?.handle || post.author?.username || "user"}`,
-      avatar: post.author?.avatar || "",
-      pubkey: post.author?.nostrPubkey,
-      lud16: post.author?.lud16,
-    },
-    content: post.content,
-    timestamp: formatTimestamp(post.createdAt),
-    likes: post.likes || 0,
-    comments: post.comments || 0,
-    zaps: post.zaps || 0,
-    source: post.source || "nostr",
-    community: post.communityName,
-    isOwnPost: false,
-  });
-
-  const allTransformed = (allPosts as any[]).map(transformPost);
-  const communityTransformed = (communityPosts as any[]).map(transformPost);
-
-  // Fallback to mock posts when no real data
-  const displayAllPosts = allTransformed.length > 0 ? allTransformed : MOCK_POSTS;
-  const displayCommunityPosts = communityTransformed.length > 0 ? communityTransformed : COMMUNITY_POSTS;
+  const displayPosts = posts.length > 0 ? posts : (!ndkConnected ? MOCK_POSTS : []);
 
   return (
     <Layout>
@@ -724,67 +904,42 @@ export default function Feed() {
         <p className="text-muted-foreground text-sm mb-6">Personalized updates from your courses, communities, and connections</p>
         
         <div className="flex gap-8">
-          {/* Main Feed */}
           <div className="flex-1 min-w-0">
-            <PostComposer />
+            <PostComposer onPostPublished={refetch} />
             
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="w-full mb-6 grid grid-cols-3">
-                <TabsTrigger value="all" data-testid="tab-all-nostr">All Posts</TabsTrigger>
-                <TabsTrigger value="communities" data-testid="tab-communities">Communities</TabsTrigger>
-                <TabsTrigger value="learning" data-testid="tab-learning">Learning</TabsTrigger>
+            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as FeedTab)} className="w-full">
+              <TabsList className="w-full mb-6 grid grid-cols-4">
+                <TabsTrigger value="all" data-testid="tab-all">All</TabsTrigger>
+                <TabsTrigger value="global" data-testid="tab-global">Global</TabsTrigger>
+                <TabsTrigger value="lab" data-testid="tab-lab">LaB</TabsTrigger>
+                <TabsTrigger value="following" data-testid="tab-following">Following</TabsTrigger>
               </TabsList>
 
-              <TabsContent value="all" className="space-y-4">
-                {allLoading ? (
-                  <div className="flex justify-center py-12">
-                    <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-                  </div>
-                ) : displayAllPosts.length > 0 ? (
-                  displayAllPosts.map((post) => (
-                    <PostCard key={post.id} post={post} />
-                  ))
-                ) : (
-                  <div className="text-center py-12 text-muted-foreground">
-                    <p>No posts yet.</p>
-                    <p className="text-sm mt-2">Be the first to share something!</p>
-                  </div>
-                )}
-              </TabsContent>
-
-              <TabsContent value="communities" className="space-y-4">
-                {communityLoading ? (
-                  <div className="flex justify-center py-12">
-                    <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-                  </div>
-                ) : displayCommunityPosts.length > 0 ? (
-                  displayCommunityPosts.map((post) => (
-                    <PostCard key={post.id} post={post} />
-                  ))
-                ) : (
-                  <div className="text-center py-12 text-muted-foreground">
-                    <p>No community posts yet.</p>
-                    <p className="text-sm mt-2">Join a community to see their feed here.</p>
-                  </div>
-                )}
-              </TabsContent>
-
-              <TabsContent value="learning" className="space-y-4">
-                {LEARNING_POSTS.length > 0 ? (
-                  LEARNING_POSTS.map((post) => (
-                    <PostCard key={post.id} post={post} />
-                  ))
-                ) : (
-                  <div className="text-center py-12 text-muted-foreground">
-                    <p>No learning discussions yet.</p>
-                    <p className="text-sm mt-2">Enroll in a course to see discussions here.</p>
-                  </div>
-                )}
-              </TabsContent>
+              {(["all", "global", "lab", "following"] as FeedTab[]).map((tab) => (
+                <TabsContent key={tab} value={tab} className="space-y-4">
+                  {isLoading ? (
+                    <FeedLoadingSkeleton />
+                  ) : displayPosts.length > 0 ? (
+                    displayPosts.map((post) => (
+                      <PostCard key={post.id} post={post} />
+                    ))
+                  ) : (
+                    <div className="text-center py-12 text-muted-foreground">
+                      <p>No posts yet.</p>
+                      <p className="text-sm mt-2">
+                        {tab === "following" 
+                          ? "Follow some people to see their posts here!" 
+                          : tab === "lab"
+                          ? "No posts from LaB relay yet."
+                          : "Be the first to share something!"}
+                      </p>
+                    </div>
+                  )}
+                </TabsContent>
+              ))}
             </Tabs>
           </div>
 
-          {/* Right Sidebar - Sticky */}
           <div className="hidden lg:block w-80 shrink-0">
             <div className="sticky top-28">
               <FeedSidebar />

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNostr } from "@/contexts/nostr-context";
+import { useNostrProfile } from "@/hooks/use-nostr-profile";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, Link, useLocation } from "wouter";
 import { getPublicProfile, getDreams, getCreatorExperiments, getCreatorCourses, getCreatorCommunities } from "@/lib/api";
@@ -21,7 +22,8 @@ import {
   BookOpen,
   Users,
   Loader2,
-  ExternalLink
+  ExternalLink,
+  BadgeCheck
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import BitcoinIcon from "../assets/bitcoin_icon.png";
@@ -156,6 +158,7 @@ export default function Profile() {
   const params = useParams<{ userId?: string }>();
   const [, setLocation] = useLocation();
   const { profile, userStats } = useNostr();
+  const { nostrProfile } = useNostrProfile(profile?.pubkey);
   
   const currentUserId = profile?.userId;
   const isOwnProfile = !params.userId || params.userId === currentUserId;
@@ -191,11 +194,14 @@ export default function Profile() {
     enabled: isOwnProfile && !!currentUserId,
   });
 
+  const displayName = nostrProfile?.display_name || nostrProfile?.name || profile?.name || "Guest";
+  const displayPicture = nostrProfile?.picture || profile?.picture || "";
+
   const user = isOwnProfile ? {
     id: currentUserId || "guest",
-    name: profile?.name || "Guest",
-    handle: profile?.name?.toLowerCase().replace(/\s+/g, '-') || "guest",
-    avatar: profile?.picture || "",
+    name: displayName,
+    handle: displayName.toLowerCase().replace(/\s+/g, '-'),
+    avatar: displayPicture,
     level: userStats?.level || "Explorer",
     sats: userStats?.sats || 0,
     streak: userStats?.streak || 0,
@@ -333,6 +339,18 @@ export default function Profile() {
                     <span>750 / 1000 XP</span>
                   </div>
                 )}
+                {nostrProfile?.nip05 && (
+                  <div className="mt-1.5 flex items-center gap-1 text-xs text-white/70" data-testid="text-nip05">
+                    <BadgeCheck className="w-3.5 h-3.5 text-green-300" />
+                    <span>{nostrProfile.nip05}</span>
+                  </div>
+                )}
+                {nostrProfile?.lud16 && (
+                  <div className="mt-1 flex items-center gap-1 text-xs text-white/70" data-testid="text-lightning">
+                    <Zap className="w-3.5 h-3.5 text-yellow-300" />
+                    <span>{nostrProfile.lud16}</span>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -399,6 +417,15 @@ export default function Profile() {
             </CardContent>
           </Card>
         </div>
+
+        {nostrProfile?.about && (
+          <Card className="rounded-xs border-none shadow-sm" data-testid="card-about">
+            <CardContent className="p-5">
+              <h3 className="font-serif text-sm font-bold uppercase tracking-wider text-muted-foreground mb-2">About</h3>
+              <p className="text-sm text-foreground/80 whitespace-pre-line">{nostrProfile.about}</p>
+            </CardContent>
+          </Card>
+        )}
 
         <Tabs defaultValue={isOwnProfile ? "journey" : "content"} className="space-y-8">
           <TabsList className="bg-muted/50 p-1 h-auto flex-wrap justify-start w-full md:w-auto">

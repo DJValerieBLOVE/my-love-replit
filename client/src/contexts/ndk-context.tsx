@@ -1,7 +1,9 @@
 import { createContext, useContext, useEffect, useState, useCallback, ReactNode, useRef } from "react";
-import NDK, { NDKEvent, NDKFilter, NDKRelay, NDKRelaySet, NDKSubscription } from "@nostr-dev-kit/ndk";
+import NDK, { NDKEvent, NDKFilter, NDKRelay, NDKRelaySet, NDKSubscription, NDKPrivateKeySigner } from "@nostr-dev-kit/ndk";
 import { LAB_RELAY_URL, PUBLIC_RELAYS, getPublishRelays, NEVER_SHAREABLE_KINDS, canEverBeShared } from "@/lib/relays";
 import { useNostr } from "@/contexts/nostr-context";
+import { getSecretKeyBytes } from "@/lib/nostr-keygen";
+import { bytesToHex } from "@noble/hashes/utils";
 
 interface NDKContextType {
   ndk: NDK | null;
@@ -16,7 +18,7 @@ interface NDKContextType {
 const NDKContext = createContext<NDKContextType | undefined>(undefined);
 
 export function NDKProvider({ children }: { children: ReactNode }) {
-  const { isConnected: nostrConnected, profile } = useNostr();
+  const { isConnected: nostrConnected, profile, loginMethod, emailKeyPair } = useNostr();
   const [ndk, setNdk] = useState<NDK | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [labRelay, setLabRelay] = useState<NDKRelay | null>(null);
@@ -24,8 +26,21 @@ export function NDKProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const allRelays = [LAB_RELAY_URL, ...PUBLIC_RELAYS];
+
+    let signer: NDKPrivateKeySigner | undefined;
+    if (loginMethod === "email" && emailKeyPair?.nsec) {
+      try {
+        const skBytes = getSecretKeyBytes(emailKeyPair.nsec);
+        const skHex = bytesToHex(skBytes);
+        signer = new NDKPrivateKeySigner(skHex);
+      } catch (err) {
+        console.error("[NDK] Failed to create signer from email keypair:", err);
+      }
+    }
+
     const ndkInstance = new NDK({
       explicitRelayUrls: allRelays,
+      signer,
     });
 
     ndkInstance.connect().then(() => {
@@ -44,7 +59,7 @@ export function NDKProvider({ children }: { children: ReactNode }) {
     return () => {
       ndkInstance.pool.removeAllListeners();
     };
-  }, []);
+  }, [loginMethod, emailKeyPair]);
 
   const publishToLab = useCallback(async (event: NDKEvent) => {
     if (!ndkRef.current) throw new Error("NDK not initialized");

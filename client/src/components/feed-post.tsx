@@ -17,7 +17,10 @@ import {
   Users,
   Copy,
   ExternalLink,
-  AlertCircle
+  AlertCircle,
+  Lock,
+  Globe,
+  Send
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,6 +30,8 @@ import SatsIcon from "@assets/generated_images/sats_icon.png";
 import { toast } from "sonner";
 import { isGroupContent, canSharePublicly, getGroupName, type ShareablePost } from "@/lib/sharing-rules";
 import { useNostr } from "@/contexts/nostr-context";
+import { useNDK } from "@/contexts/ndk-context";
+import { NDKEvent } from "@nostr-dev-kit/ndk";
 import { zapPost } from "@/lib/api";
 import { loadNWCConnection, zapViaLightning } from "@/lib/nwc";
 import {
@@ -52,6 +57,7 @@ import { Textarea } from "@/components/ui/textarea";
 interface FeedPostProps {
   post: {
     id: string;
+    eventId?: string;
     author: {
       id?: string;
       name: string;
@@ -67,6 +73,7 @@ interface FeedPostProps {
     zaps: number;
     timestamp: string;
     source?: "nostr" | "community" | "learning";
+    relaySource?: "private" | "public";
     community?: string;
     isOwnPost?: boolean;
   };
@@ -74,6 +81,7 @@ interface FeedPostProps {
 
 export function FeedPost({ post }: FeedPostProps) {
   const { isConnected, profile } = useNostr();
+  const { publishSmart, ndk } = useNDK();
   const [zaps, setZaps] = useState(post.zaps);
   const [isZapped, setIsZapped] = useState(false);
   const [zapAmount, setZapAmount] = useState(21);
@@ -86,22 +94,46 @@ export function FeedPost({ post }: FeedPostProps) {
   const [likes, setLikes] = useState(post.likes);
   const [quoteRepostOpen, setQuoteRepostOpen] = useState(false);
   const [quoteText, setQuoteText] = useState("");
+  const [showReplyInput, setShowReplyInput] = useState(false);
+  const [replyText, setReplyText] = useState("");
+  const [isReplying, setIsReplying] = useState(false);
 
   const isGroupPost = isGroupContent(post);
   const canRepostPublic = canSharePublicly(post);
   const groupName = getGroupName(post);
 
-  const handleRepostPublic = () => {
+  const handleRepostPublic = async () => {
     if (!canRepostPublic) {
       toast.error("Cannot share publicly", {
         description: "Group posts can only be shared within the group",
       });
       return;
     }
-    toast("Reposted to Nostr!", {
-      description: `You reposted ${post.author.name}'s post publicly`,
-    });
+    if (!post.eventId || !post.author.pubkey) {
+      toast.error("Cannot interact with this post", {
+        description: "Missing event or author information",
+      });
+      return;
+    }
     setIsReposted(true);
+    try {
+      const event = new NDKEvent(ndk!);
+      event.kind = 6;
+      event.content = "";
+      event.tags = [
+        ["e", post.eventId, "", "mention"],
+        ["p", post.author.pubkey],
+      ];
+      await publishSmart(event, true);
+      toast("Reposted to Nostr!", {
+        description: `You reposted ${post.author.name}'s post publicly`,
+      });
+    } catch (error: any) {
+      setIsReposted(false);
+      toast.error("Failed to repost", {
+        description: error.message || "Please try again",
+      });
+    }
   };
 
   const handleRepostGroup = () => {
@@ -138,9 +170,33 @@ export function FeedPost({ post }: FeedPostProps) {
     });
   };
 
-  const handleLike = () => {
-    setIsLiked(!isLiked);
-    setLikes(prev => isLiked ? prev - 1 : prev + 1);
+  const handleLike = async () => {
+    if (isLiked) {
+      setIsLiked(false);
+      setLikes(prev => prev - 1);
+      return;
+    }
+    setIsLiked(true);
+    setLikes(prev => prev + 1);
+    if (!post.eventId || !post.author.pubkey) {
+      return;
+    }
+    try {
+      const event = new NDKEvent(ndk!);
+      event.kind = 7;
+      event.content = "+";
+      event.tags = [
+        ["e", post.eventId],
+        ["p", post.author.pubkey],
+      ];
+      await publishSmart(event, true);
+    } catch (error: any) {
+      setIsLiked(false);
+      setLikes(prev => prev - 1);
+      toast.error("Failed to like post", {
+        description: error.message || "Please try again",
+      });
+    }
   };
 
   const handleCopyLink = () => {
@@ -157,6 +213,38 @@ export function FeedPost({ post }: FeedPostProps) {
   const handleShareToFacebook = () => {
     const url = encodeURIComponent(`${window.location.origin}/post/${post.id}`);
     window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, "_blank");
+  };
+
+  const handleReply = async () => {
+    if (!replyText.trim()) return;
+    if (!post.eventId || !post.author.pubkey) {
+      toast.error("Cannot interact with this post", {
+        description: "Missing event or author information",
+      });
+      return;
+    }
+    setIsReplying(true);
+    try {
+      const event = new NDKEvent(ndk!);
+      event.kind = 1;
+      event.content = replyText.trim();
+      event.tags = [
+        ["e", post.eventId, "", "reply"],
+        ["p", post.author.pubkey],
+      ];
+      await publishSmart(event, true);
+      toast.success("Reply sent!", {
+        description: `Your reply to ${post.author.name} was published`,
+      });
+      setReplyText("");
+      setShowReplyInput(false);
+    } catch (error: any) {
+      toast.error("Failed to send reply", {
+        description: error.message || "Please try again",
+      });
+    } finally {
+      setIsReplying(false);
+    }
   };
 
   const handleZap = async () => {
@@ -248,7 +336,13 @@ export function FeedPost({ post }: FeedPostProps) {
               <div>
                 <h3 className="font-bold text-muted-foreground text-sm flex items-center gap-2">
                   {post.author.name}
-                  <span className="text-muted-foreground font-normal text-sm">
+                  <span className="text-muted-foreground font-normal text-sm flex items-center gap-1">
+                    {post.relaySource === "private" && (
+                      <Lock className="w-3 h-3 text-muted-foreground" />
+                    )}
+                    {post.relaySource === "public" && (
+                      <Globe className="w-3 h-3 text-muted-foreground" />
+                    )}
                     {post.timestamp.replace(" ago", "")}
                   </span>
                 </h3>
@@ -272,8 +366,8 @@ export function FeedPost({ post }: FeedPostProps) {
               {/* 1. Reply/Comment */}
               <Button 
                 variant="ghost" 
-                onClick={() => toast("Reply feature coming soon!", { description: "You'll be able to reply to this post" })}
-                className="text-muted-foreground hover:text-love-time hover:bg-love-time-light px-2 gap-1.5 min-w-[60px]"
+                onClick={() => setShowReplyInput(!showReplyInput)}
+                className={`px-2 gap-1.5 min-w-[60px] ${showReplyInput ? 'text-love-time' : 'text-muted-foreground hover:text-love-time hover:bg-love-time-light'}`}
                 data-testid={`button-reply-${post.id}`}
               >
                 <MessageSquare className="w-[18px] h-[18px]" strokeWidth={1.5} />
@@ -547,6 +641,31 @@ export function FeedPost({ post }: FeedPostProps) {
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
+
+            {showReplyInput && (
+              <div className="mt-2 px-2 pb-2 flex gap-2 items-end" data-testid={`reply-input-container-${post.id}`}>
+                <Textarea
+                  placeholder={`Reply to ${post.author.name}...`}
+                  value={replyText}
+                  onChange={(e) => setReplyText(e.target.value)}
+                  className="min-h-[60px] text-sm flex-1 resize-none"
+                  data-testid={`textarea-reply-${post.id}`}
+                />
+                <Button
+                  size="sm"
+                  onClick={handleReply}
+                  disabled={isReplying || !replyText.trim()}
+                  className="bg-gradient-to-r from-[#6600ff] to-[#cc00ff] text-white shrink-0"
+                  data-testid={`button-submit-reply-${post.id}`}
+                >
+                  {isReplying ? (
+                    <span className="text-xs">Sending...</span>
+                  ) : (
+                    <Send className="w-4 h-4" />
+                  )}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </CardContent>

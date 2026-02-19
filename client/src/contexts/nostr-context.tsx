@@ -4,6 +4,7 @@ import { BunkerSigner, parseBunkerInput } from "nostr-tools/nip46";
 import { SimplePool } from "nostr-tools/pool";
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 import { loginWithNostr, getProfileStatus, getCurrentUser, registerWithEmail as apiRegister, loginWithEmail as apiLogin } from "@/lib/api";
+import { getOrCreateKeyPair, hasStoredKeys, loadKeyPairFromStorage, getSecretKeyBytes } from "@/lib/nostr-keygen";
 
 interface UserStats {
   sats: number;
@@ -43,6 +44,7 @@ interface NostrContextType {
   needsProfileCompletion: boolean;
   markProfileComplete: () => void;
   refreshUserStats: () => Promise<void>;
+  emailKeyPair: { pubkey: string; nsec: string; npub: string } | null;
 }
 
 const NostrContext = createContext<NostrContextType | undefined>(undefined);
@@ -73,6 +75,8 @@ export function NostrProvider({ children }: { children: ReactNode }) {
   const [loginMethod, setLoginMethod] = useState<"extension" | "bunker" | "ncryptsec" | "email" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [needsProfileCompletion, setNeedsProfileCompletion] = useState(false);
+  
+  const [emailKeyPair, setEmailKeyPair] = useState<{ pubkey: string; nsec: string; npub: string } | null>(null);
   
   const bunkerSignerRef = useRef<BunkerSigner | null>(null);
   const poolRef = useRef<SimplePool | null>(null);
@@ -232,6 +236,24 @@ export function NostrProvider({ children }: { children: ReactNode }) {
     const timer = setTimeout(initSession, 100);
     return () => clearTimeout(timer);
   }, [checkEmailSession, checkBunkerSession, checkExtension]);
+
+  useEffect(() => {
+    if (loginMethod === "email" && isConnected) {
+      const keyPair = getOrCreateKeyPair();
+      setEmailKeyPair(keyPair);
+      setProfile((prev) => {
+        if (!prev) return prev;
+        if (prev.pubkey && prev.pubkey.length > 0) return prev;
+        return {
+          ...prev,
+          pubkey: keyPair.pubkey,
+          npub: keyPair.npub,
+        };
+      });
+    } else {
+      setEmailKeyPair(null);
+    }
+  }, [loginMethod, isConnected]);
 
   const connectWithExtension = useCallback(async (): Promise<boolean> => {
     setError(null);
@@ -482,6 +504,7 @@ export function NostrProvider({ children }: { children: ReactNode }) {
         needsProfileCompletion,
         markProfileComplete,
         refreshUserStats,
+        emailKeyPair,
       }}
     >
       {children}
