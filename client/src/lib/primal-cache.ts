@@ -68,34 +68,33 @@ function parsePrimalResponse(messages: any[]): PrimalFeedResult {
         } catch {}
       } else if (eventData.kind === 1) {
         events.push(eventData);
-      } else if (eventData.kind === 10000100) {
+      } else if (eventData.kind === 10000100 || eventData.kind === 10000174) {
         try {
-          const statsData = JSON.parse(eventData.content);
-          if (statsData && typeof statsData === "object") {
-            for (const [eventId, counts] of Object.entries(statsData)) {
-              const c = counts as any;
-              stats.set(eventId, {
-                likes: c.likes || c.reactions || 0,
-                replies: c.replies || 0,
-                reposts: c.reposts || c.mentions || 0,
-                zaps: c.zaps || 0,
-                zapAmount: c.satszapped || c.sats_total || c.zap_amount || 0,
+          const parsed = JSON.parse(eventData.content);
+          if (parsed && typeof parsed === "object") {
+            if (parsed.event_id) {
+              const existing = stats.get(parsed.event_id) || { likes: 0, replies: 0, reposts: 0, zaps: 0, zapAmount: 0 };
+              stats.set(parsed.event_id, {
+                likes: parsed.likes || parsed.reactions || existing.likes,
+                replies: parsed.replies || existing.replies,
+                reposts: parsed.reposts || existing.reposts,
+                zaps: parsed.zaps || existing.zaps,
+                zapAmount: parsed.satszapped || parsed.sats_total || existing.zapAmount,
               });
-            }
-          }
-        } catch {}
-      } else if (eventData.kind === 10000113) {
-        try {
-          const mediaStats = JSON.parse(eventData.content);
-          if (mediaStats && typeof mediaStats === "object") {
-            for (const [eventId, counts] of Object.entries(mediaStats)) {
-              const c = counts as any;
-              const existing = stats.get(eventId) || { likes: 0, replies: 0, reposts: 0, zaps: 0, zapAmount: 0 };
-              stats.set(eventId, {
-                ...existing,
-                zaps: c.zaps || existing.zaps,
-                zapAmount: c.satszapped || c.sats_total || existing.zapAmount,
-              });
+            } else {
+              for (const [eventId, counts] of Object.entries(parsed)) {
+                if (typeof counts === "object" && counts !== null) {
+                  const c = counts as any;
+                  const existing = stats.get(eventId) || { likes: 0, replies: 0, reposts: 0, zaps: 0, zapAmount: 0 };
+                  stats.set(eventId, {
+                    likes: c.likes || c.reactions || existing.likes,
+                    replies: c.replies || existing.replies,
+                    reposts: c.reposts || existing.reposts,
+                    zaps: c.zaps || existing.zaps,
+                    zapAmount: c.satszapped || c.sats_total || existing.zapAmount,
+                  });
+                }
+              }
             }
           }
         } catch {}

@@ -48,11 +48,19 @@ type FeedPost = {
   likes: number;
   comments: number;
   zaps: number;
+  reposts: number;
+  satszapped: number;
   source?: "nostr" | "community" | "learning";
   relaySource?: "private" | "public";
   community?: string;
   isOwnPost?: boolean;
 };
+
+function formatSats(sats: number): string {
+  if (sats >= 1_000_000) return `${(sats / 1_000_000).toFixed(1)}M`;
+  if (sats >= 1_000) return `${(sats / 1_000).toFixed(1)}K`;
+  return sats.toLocaleString();
+}
 
 function formatTimestamp(date: number | string | Date) {
   const d = typeof date === "number" ? new Date(date * 1000) : new Date(date);
@@ -94,7 +102,9 @@ function primalEventToFeedPost(
     timestamp: formatTimestamp(event.created_at),
     likes: eventStats?.likes || 0,
     comments: eventStats?.replies || 0,
-    zaps: eventStats?.zapAmount || 0,
+    zaps: eventStats?.zaps || 0,
+    reposts: eventStats?.reposts || 0,
+    satszapped: eventStats?.zapAmount || 0,
     source: "nostr",
     relaySource,
     isOwnPost: event.pubkey === currentPubkey,
@@ -195,7 +205,7 @@ function useNostrFeed(tab: FeedTab, exploreMode: ExploreMode) {
               author: { pubkey: event.pubkey, name: pd.name, handle: pd.handle, avatar: pd.avatar, lud16: pd.lud16 },
               content: event.content,
               timestamp: formatTimestamp(event.created_at || 0),
-              likes: 0, comments: 0, zaps: 0,
+              likes: 0, comments: 0, zaps: 0, reposts: 0, satszapped: 0,
               source: "nostr" as const,
               relaySource: "public" as const,
               isOwnPost: event.pubkey === profile?.pubkey,
@@ -236,7 +246,7 @@ function useNostrFeed(tab: FeedTab, exploreMode: ExploreMode) {
             author: { pubkey: event.pubkey, name: pd.name, handle: pd.handle, avatar: pd.avatar, lud16: pd.lud16 },
             content: event.content,
             timestamp: formatTimestamp(event.created_at || 0),
-            likes: 0, comments: 0, zaps: 0,
+            likes: 0, comments: 0, zaps: 0, reposts: 0, satszapped: 0,
             source: "nostr" as const,
             relaySource: "private" as const,
             isOwnPost: event.pubkey === profile?.pubkey,
@@ -567,7 +577,7 @@ function PostCard({ post }: { post: FeedPost }) {
                 {parsed.videos.length > 0 && (
                   <div className="mt-3 space-y-2">
                     {parsed.videos.map((vid, i) => (
-                      <video key={i} src={vid} controls className="w-full rounded-xs max-h-[400px]" data-testid={`video-post-media-${post.id}-${i}`} />
+                      <video key={i} src={vid} controls autoPlay muted loop playsInline className="w-full rounded-xs max-h-[400px]" data-testid={`video-post-media-${post.id}-${i}`} />
                     ))}
                   </div>
                 )}
@@ -584,6 +594,7 @@ function PostCard({ post }: { post: FeedPost }) {
               <DropdownMenuTrigger asChild>
                 <button className={`flex items-center gap-1.5 rounded-md px-2 py-1 transition-colors text-sm ${isReposted ? 'text-[#6600ff]' : 'text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF]'}`} data-testid={`button-repost-${post.id}`}>
                   <Repeat2 className="w-4 h-4" />
+                  <span>{post.reposts > 0 ? post.reposts : ""}</span>
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="center" className="w-56">
@@ -679,8 +690,8 @@ function PostCard({ post }: { post: FeedPost }) {
             </Dialog>
 
             <button className="flex items-center gap-1.5 text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF] rounded-md px-2 py-1 transition-colors text-sm" data-testid={`button-zap-${post.id}`}>
-              <Zap className="w-5 h-5" />
-              <span data-testid={`count-zaps-${post.id}`}>{post.zaps > 0 ? post.zaps.toLocaleString() : ""}</span>
+              <Zap className="w-4 h-4" />
+              <span data-testid={`count-zaps-${post.id}`}>{post.satszapped > 0 ? formatSats(post.satszapped) : ""}</span>
             </button>
 
             <button 
