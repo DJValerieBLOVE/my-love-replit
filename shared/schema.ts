@@ -9,10 +9,16 @@ export const users = pgTable("users", {
   nostrPubkey: text("nostr_pubkey").unique(),
   username: text("username").notNull().unique(),
   password: text("password"),
+  passwordHash: text("password_hash"),
   name: text("name").notNull(),
   handle: text("handle").notNull().unique(),
   email: text("email"),
   emailVerified: boolean("email_verified").default(false).notNull(),
+  authProvider: text("auth_provider").default("nostr").notNull(),
+  nostrPubkeySource: text("nostr_pubkey_source").default("extension"),
+  twoFactorSecret: text("two_factor_secret"),
+  twoFactorEnabled: boolean("two_factor_enabled").default(false).notNull(),
+  twoFactorRecoveryCodes: text("two_factor_recovery_codes").array().default(sql`ARRAY[]::text[]`).notNull(),
   avatar: text("avatar"),
   nip05: text("nip05"),
   lud16: text("lud16"),
@@ -27,17 +33,15 @@ export const users = pgTable("users", {
   buddyDescription: text("buddy_description"),
   labInterests: text("lab_interests").array().default(sql`ARRAY[]::text[]`).notNull(),
   trialStartedAt: timestamp("trial_started_at"),
-  // AI Profile fields for Magic Mentor personalization
   coreGoals: text("core_goals"),
   currentChallenges: text("current_challenges"),
   interestsTags: text("interests_tags").array().default(sql`ARRAY[]::text[]`).notNull(),
   communicationStyle: text("communication_style").default("warm"),
-  // Billing/tier fields
-  tier: text("tier").default("free").notNull(), // free, paid, byok
+  tier: text("tier").default("free").notNull(),
   tokenBalance: integer("token_balance").default(0).notNull(),
   dailyMessagesUsed: integer("daily_messages_used").default(0).notNull(),
   dailyMessagesResetAt: timestamp("daily_messages_reset_at"),
-  userApiKey: text("user_api_key"), // For BYOK users
+  userApiKey: text("user_api_key"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -54,6 +58,18 @@ export const insertUserSchema = createInsertSchema(users).pick({
 
 export const updateEmailSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
+});
+
+export const emailRegisterSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  name: z.string().min(1, "Name is required"),
+});
+
+export const emailLoginSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(1, "Password is required"),
+  twoFactorCode: z.string().optional(),
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;

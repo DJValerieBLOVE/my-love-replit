@@ -36,6 +36,10 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   createOrUpdateUserByPubkey(pubkey: string, data: Partial<InsertUser>): Promise<User>;
+  createEmailUser(email: string, passwordHash: string, name: string, nostrPubkey: string): Promise<User>;
+  updateUserPassword(userId: string, passwordHash: string): Promise<User | undefined>;
+  updateUserTwoFactor(userId: string, secret: string | null, enabled: boolean, recoveryCodes?: string[]): Promise<User | undefined>;
+  linkNostrPubkey(userId: string, pubkey: string, source: string): Promise<User | undefined>;
   updateUserEmail(userId: string, email: string): Promise<User>;
   updateUserStats(userId: string, updates: Partial<Pick<User, 'sats' | 'streak' | 'level' | 'walletBalance' | 'badges'>>): Promise<User | undefined>;
   getLeaderboard(limit?: number): Promise<User[]>;
@@ -264,6 +268,50 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId))
       .returning();
     return user;
+  }
+
+  async createEmailUser(email: string, passwordHash: string, name: string, nostrPubkey: string): Promise<User> {
+    const shortId = Math.random().toString(36).substring(2, 10);
+    const [user] = await db.insert(users).values({
+      email,
+      passwordHash,
+      name,
+      nostrPubkey,
+      username: `user_${shortId}`,
+      handle: `@${shortId}`,
+      authProvider: 'email',
+      nostrPubkeySource: 'generated',
+      emailVerified: false,
+    }).returning();
+    return user;
+  }
+
+  async updateUserPassword(userId: string, passwordHash: string): Promise<User | undefined> {
+    const [user] = await db.update(users)
+      .set({ passwordHash })
+      .where(eq(users.id, userId))
+      .returning();
+    return user || undefined;
+  }
+
+  async updateUserTwoFactor(userId: string, secret: string | null, enabled: boolean, recoveryCodes?: string[]): Promise<User | undefined> {
+    const updates: any = { twoFactorSecret: secret, twoFactorEnabled: enabled };
+    if (recoveryCodes) {
+      updates.twoFactorRecoveryCodes = recoveryCodes;
+    }
+    const [user] = await db.update(users)
+      .set(updates)
+      .where(eq(users.id, userId))
+      .returning();
+    return user || undefined;
+  }
+
+  async linkNostrPubkey(userId: string, pubkey: string, source: string): Promise<User | undefined> {
+    const [user] = await db.update(users)
+      .set({ nostrPubkey: pubkey, nostrPubkeySource: source, authProvider: 'both' })
+      .where(eq(users.id, userId))
+      .returning();
+    return user || undefined;
   }
 
   async updateUserStats(userId: string, updates: Partial<Pick<User, 'sats' | 'streak' | 'level' | 'walletBalance' | 'badges'>>): Promise<User | undefined> {

@@ -51,3 +51,6 @@ integrations = ["javascript_database:1.0.0"]
 
 [userenv.development]
 DISABLE_REPLIT_PLUGINS = "true"
+
+[userenv.shared]
+JWT_SECRET = "ec2c36970125ec597b501bceec0b02d4debbed23607494d0b68dfeae637e0fa7"

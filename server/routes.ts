@@ -1,7 +1,10 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { authMiddleware, optionalAuth, requireOwnership, requireTier } from "./auth";
+import { authMiddleware, optionalAuth, requireOwnership, requireTier, generateToken, verifyToken } from "./auth";
+import bcrypt from "bcryptjs";
+import * as OTPAuth from "otpauth";
+import QRCode from "qrcode";
 import {
   insertJournalEntrySchema,
   insertDreamSchema,
@@ -15,6 +18,8 @@ import {
   insertClubSchema,
   insertZapSchema,
   updateEmailSchema,
+  emailRegisterSchema,
+  emailLoginSchema,
   insertCourseSchema,
   insertLessonSchema,
   insertCourseEnrollmentSchema,
@@ -60,15 +65,14 @@ export async function registerRoutes(
     }
   });
 
-  // Get current user
   app.get("/api/auth/me", authMiddleware, async (req, res) => {
     try {
       const user = await storage.getUser(req.userId!);
       if (!user) {
         return res.status(404).json({ error: "User not found" });
       }
-      const { password, ...userWithoutPassword } = user;
-      res.json(userWithoutPassword);
+      const { password, passwordHash, twoFactorSecret, twoFactorRecoveryCodes, ...safeUser } = user;
+      res.json({ ...safeUser, twoFactorEnabled: user.twoFactorEnabled });
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch user" });
     }
@@ -113,6 +117,229 @@ export async function registerRoutes(
       });
     } catch (error) {
       res.status(500).json({ error: "Failed to check profile status" });
+    }
+  });
+
+  // ===== EMAIL AUTH ROUTES =====
+
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const result = emailRegisterSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ error: result.error.errors[0]?.message || "Invalid registration data" });
+      }
+
+      const { email, password: rawPassword, name } = result.data;
+
+      const existing = await storage.getUserByEmail(email);
+      if (existing) {
+        return res.status(400).json({ error: "An account with this email already exists. Try logging in instead." });
+      }
+
+      const passwordHash = await bcrypt.hash(rawPassword, 12);
+
+      const nostrPubkey = req.body.nostrPubkey || null;
+
+      const user = await storage.createEmailUser(email, passwordHash, name, nostrPubkey);
+
+      const token = generateToken(user.id);
+
+      const { password, passwordHash: ph, twoFactorSecret, twoFactorRecoveryCodes, ...safeUser } = user;
+      res.status(201).json({ user: safeUser, token });
+    } catch (error: any) {
+      console.error("Registration error:", error);
+      if (error.code === '23505') {
+        return res.status(400).json({ error: "An account with this email already exists." });
+      }
+      res.status(500).json({ error: "Failed to create account" });
+    }
+  });
+
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const result = emailLoginSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ error: result.error.errors[0]?.message || "Invalid login data" });
+      }
+
+      const { email, password: rawPassword, twoFactorCode } = result.data;
+
+      const user = await storage.getUserByEmail(email);
+      if (!user || !user.passwordHash) {
+        return res.status(401).json({ error: "Invalid email or password" });
+      }
+
+      const passwordMatch = await bcrypt.compare(rawPassword, user.passwordHash);
+      if (!passwordMatch) {
+        return res.status(401).json({ error: "Invalid email or password" });
+      }
+
+      if (user.twoFactorEnabled && user.twoFactorSecret) {
+        if (!twoFactorCode) {
+          return res.status(200).json({ requires2FA: true });
+        }
+
+        const totp = new OTPAuth.TOTP({
+          issuer: "My Masterpiece",
+          label: email,
+          algorithm: "SHA1",
+          digits: 6,
+          period: 30,
+          secret: OTPAuth.Secret.fromBase32(user.twoFactorSecret),
+        });
+
+        const isValid = totp.validate({ token: twoFactorCode, window: 1 }) !== null;
+
+        if (!isValid) {
+          const isRecoveryCode = user.twoFactorRecoveryCodes.includes(twoFactorCode);
+          if (!isRecoveryCode) {
+            return res.status(401).json({ error: "Invalid 2FA code" });
+          }
+          const remainingCodes = user.twoFactorRecoveryCodes.filter(c => c !== twoFactorCode);
+          await storage.updateUserTwoFactor(user.id, user.twoFactorSecret, true, remainingCodes);
+        }
+      }
+
+      const token = generateToken(user.id);
+
+      const { password, passwordHash, twoFactorSecret, twoFactorRecoveryCodes, ...safeUser } = user;
+      res.json({ user: safeUser, token });
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ error: "Failed to login" });
+    }
+  });
+
+  // ===== 2FA ROUTES =====
+
+  app.post("/api/auth/2fa/setup", authMiddleware, async (req, res) => {
+    try {
+      const user = await storage.getUser(req.userId!);
+      if (!user) return res.status(404).json({ error: "User not found" });
+
+      if (user.twoFactorEnabled) {
+        return res.status(400).json({ error: "2FA is already enabled" });
+      }
+
+      const secret = new OTPAuth.Secret({ size: 20 });
+      const totp = new OTPAuth.TOTP({
+        issuer: "My Masterpiece",
+        label: user.email || user.username,
+        algorithm: "SHA1",
+        digits: 6,
+        period: 30,
+        secret,
+      });
+
+      const otpauthUrl = totp.toString();
+      const qrCodeDataUrl = await QRCode.toDataURL(otpauthUrl);
+
+      await storage.updateUserTwoFactor(user.id, secret.base32, false);
+
+      res.json({
+        secret: secret.base32,
+        qrCode: qrCodeDataUrl,
+        otpauthUrl,
+      });
+    } catch (error) {
+      console.error("2FA setup error:", error);
+      res.status(500).json({ error: "Failed to setup 2FA" });
+    }
+  });
+
+  app.post("/api/auth/2fa/verify", authMiddleware, async (req, res) => {
+    try {
+      const { code } = req.body;
+      if (!code) return res.status(400).json({ error: "Verification code required" });
+
+      const user = await storage.getUser(req.userId!);
+      if (!user || !user.twoFactorSecret) {
+        return res.status(400).json({ error: "2FA not set up yet" });
+      }
+
+      const totp = new OTPAuth.TOTP({
+        issuer: "My Masterpiece",
+        label: user.email || user.username,
+        algorithm: "SHA1",
+        digits: 6,
+        period: 30,
+        secret: OTPAuth.Secret.fromBase32(user.twoFactorSecret),
+      });
+
+      const isValid = totp.validate({ token: code, window: 1 }) !== null;
+      if (!isValid) {
+        return res.status(401).json({ error: "Invalid verification code" });
+      }
+
+      const recoveryCodes = Array.from({ length: 8 }, () =>
+        Math.random().toString(36).substring(2, 8).toUpperCase()
+      );
+
+      await storage.updateUserTwoFactor(user.id, user.twoFactorSecret, true, recoveryCodes);
+
+      res.json({ enabled: true, recoveryCodes });
+    } catch (error) {
+      console.error("2FA verify error:", error);
+      res.status(500).json({ error: "Failed to verify 2FA" });
+    }
+  });
+
+  app.delete("/api/auth/2fa", authMiddleware, async (req, res) => {
+    try {
+      const { code } = req.body;
+      if (!code) return res.status(400).json({ error: "Verification code required to disable 2FA" });
+
+      const user = await storage.getUser(req.userId!);
+      if (!user || !user.twoFactorSecret || !user.twoFactorEnabled) {
+        return res.status(400).json({ error: "2FA is not enabled" });
+      }
+
+      const totp = new OTPAuth.TOTP({
+        issuer: "My Masterpiece",
+        label: user.email || user.username,
+        algorithm: "SHA1",
+        digits: 6,
+        period: 30,
+        secret: OTPAuth.Secret.fromBase32(user.twoFactorSecret),
+      });
+
+      const isValid = totp.validate({ token: code, window: 1 }) !== null;
+      if (!isValid) {
+        return res.status(401).json({ error: "Invalid verification code" });
+      }
+
+      await storage.updateUserTwoFactor(user.id, null, false, []);
+      res.json({ enabled: false });
+    } catch (error) {
+      console.error("2FA disable error:", error);
+      res.status(500).json({ error: "Failed to disable 2FA" });
+    }
+  });
+
+  // ===== LINK NOSTR ACCOUNT =====
+
+  app.post("/api/auth/link-nostr", authMiddleware, async (req, res) => {
+    try {
+      const { pubkey, source } = req.body;
+      if (!pubkey || typeof pubkey !== 'string') {
+        return res.status(400).json({ error: "Valid Nostr pubkey required" });
+      }
+
+      const existingUser = await storage.getUserByNostrPubkey(pubkey);
+      if (existingUser && existingUser.id !== req.userId) {
+        return res.status(400).json({ error: "This Nostr key is already linked to another account" });
+      }
+
+      const user = await storage.linkNostrPubkey(req.userId!, pubkey, source || 'extension');
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const { password, passwordHash, twoFactorSecret, twoFactorRecoveryCodes, ...safeUser } = user;
+      res.json(safeUser);
+    } catch (error) {
+      console.error("Link nostr error:", error);
+      res.status(500).json({ error: "Failed to link Nostr account" });
     }
   });
   

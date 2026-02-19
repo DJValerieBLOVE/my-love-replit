@@ -3,7 +3,7 @@ import { nip19, generateSecretKey, getPublicKey } from "nostr-tools";
 import { BunkerSigner, parseBunkerInput } from "nostr-tools/nip46";
 import { SimplePool } from "nostr-tools/pool";
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
-import { loginWithNostr, getProfileStatus, getCurrentUser } from "@/lib/api";
+import { loginWithNostr, getProfileStatus, getCurrentUser, registerWithEmail as apiRegister, loginWithEmail as apiLogin } from "@/lib/api";
 
 interface UserStats {
   sats: number;
@@ -31,10 +31,12 @@ interface NostrContextType {
   isLoading: boolean;
   profile: NostrProfile | null;
   userStats: UserStats | null;
-  loginMethod: "extension" | "bunker" | "ncryptsec" | null;
+  loginMethod: "extension" | "bunker" | "ncryptsec" | "email" | null;
   error: string | null;
   connectWithExtension: () => Promise<boolean>;
   connectWithBunker: (bunkerUrl: string) => Promise<boolean>;
+  connectWithEmail: (email: string, password: string, twoFactorCode?: string) => Promise<{ success: boolean; requires2FA?: boolean }>;
+  registerWithEmail: (email: string, password: string, name: string) => Promise<boolean>;
   disconnect: () => void;
   signEvent: (event: any) => Promise<any>;
   isAdmin: boolean;
@@ -68,7 +70,7 @@ export function NostrProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [profile, setProfile] = useState<NostrProfile | null>(null);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
-  const [loginMethod, setLoginMethod] = useState<"extension" | "bunker" | "ncryptsec" | null>(null);
+  const [loginMethod, setLoginMethod] = useState<"extension" | "bunker" | "ncryptsec" | "email" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [needsProfileCompletion, setNeedsProfileCompletion] = useState(false);
   
@@ -183,8 +185,43 @@ export function NostrProvider({ children }: { children: ReactNode }) {
     setIsLoading(false);
   }, [refreshUserStats]);
 
+  const checkEmailSession = useCallback(async () => {
+    const savedMethod = localStorage.getItem("nostr_login_method");
+    const authToken = localStorage.getItem("auth_token");
+
+    if (savedMethod === "email" && authToken) {
+      try {
+        const user = await getCurrentUser();
+        if (user) {
+          setProfile({
+            npub: user.nostrPubkey ? nip19.npubEncode(user.nostrPubkey) : "",
+            pubkey: user.nostrPubkey || "",
+            userId: user.id,
+            name: user.name || user.username,
+            picture: user.avatar || undefined,
+          });
+          setIsConnected(true);
+          setLoginMethod("email");
+          setNeedsProfileCompletion(false);
+          await refreshUserStats();
+          return true;
+        }
+      } catch (e) {
+        console.error("Failed to restore email session:", e);
+        localStorage.removeItem("auth_token");
+        localStorage.removeItem("nostr_login_method");
+      }
+    }
+    return false;
+  }, [refreshUserStats]);
+
   useEffect(() => {
     const initSession = async () => {
+      const emailRestored = await checkEmailSession();
+      if (emailRestored) {
+        setIsLoading(false);
+        return;
+      }
       const bunkerRestored = await checkBunkerSession();
       if (!bunkerRestored) {
         await checkExtension();
@@ -194,7 +231,7 @@ export function NostrProvider({ children }: { children: ReactNode }) {
     };
     const timer = setTimeout(initSession, 100);
     return () => clearTimeout(timer);
-  }, [checkBunkerSession, checkExtension]);
+  }, [checkEmailSession, checkBunkerSession, checkExtension]);
 
   const connectWithExtension = useCallback(async (): Promise<boolean> => {
     setError(null);
@@ -317,6 +354,75 @@ export function NostrProvider({ children }: { children: ReactNode }) {
     }
   }, [refreshUserStats]);
 
+  const connectWithEmail = useCallback(async (email: string, password: string, twoFactorCode?: string): Promise<{ success: boolean; requires2FA?: boolean }> => {
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      const result = await apiLogin(email, password, twoFactorCode);
+
+      if (result.requires2FA) {
+        setIsLoading(false);
+        return { success: false, requires2FA: true };
+      }
+
+      localStorage.setItem("auth_token", result.token);
+      localStorage.setItem("nostr_login_method", "email");
+      if (result.user.id) localStorage.setItem("nostr_user_id", result.user.id);
+
+      setProfile({
+        npub: result.user.nostrPubkey ? nip19.npubEncode(result.user.nostrPubkey) : "",
+        pubkey: result.user.nostrPubkey || "",
+        userId: result.user.id,
+        name: result.user.name || result.user.username,
+        picture: result.user.avatar || undefined,
+      });
+      setIsConnected(true);
+      setLoginMethod("email");
+      setNeedsProfileCompletion(false);
+      await refreshUserStats();
+
+      setIsLoading(false);
+      return { success: true };
+    } catch (e: any) {
+      setError(e.message || "Failed to login");
+      setIsLoading(false);
+      return { success: false };
+    }
+  }, [refreshUserStats]);
+
+  const registerWithEmail = useCallback(async (email: string, password: string, name: string): Promise<boolean> => {
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      const result = await apiRegister(email, password, name);
+
+      localStorage.setItem("auth_token", result.token);
+      localStorage.setItem("nostr_login_method", "email");
+      if (result.user.id) localStorage.setItem("nostr_user_id", result.user.id);
+
+      setProfile({
+        npub: "",
+        pubkey: "",
+        userId: result.user.id,
+        name: result.user.name || result.user.username,
+        picture: result.user.avatar || undefined,
+      });
+      setIsConnected(true);
+      setLoginMethod("email");
+      setNeedsProfileCompletion(false);
+      await refreshUserStats();
+
+      setIsLoading(false);
+      return true;
+    } catch (e: any) {
+      setError(e.message || "Failed to register");
+      setIsLoading(false);
+      return false;
+    }
+  }, [refreshUserStats]);
+
   const disconnect = useCallback(() => {
     if (bunkerSignerRef.current) {
       bunkerSignerRef.current.close();
@@ -333,6 +439,7 @@ export function NostrProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem("nostr_picture");
     localStorage.removeItem("nostr_user_id");
     localStorage.removeItem("nostr_bunker_session");
+    localStorage.removeItem("auth_token");
     setProfile(null);
     setUserStats(null);
     setIsConnected(false);
@@ -367,6 +474,8 @@ export function NostrProvider({ children }: { children: ReactNode }) {
         error,
         connectWithExtension,
         connectWithBunker,
+        connectWithEmail,
+        registerWithEmail,
         disconnect,
         signEvent,
         isAdmin,

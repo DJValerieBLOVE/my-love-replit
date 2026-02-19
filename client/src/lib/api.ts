@@ -2,11 +2,14 @@ const API_BASE = "";
 
 function getAuthHeaders(): HeadersInit {
   const pubkey = localStorage.getItem("nostr_pubkey");
+  const jwtToken = localStorage.getItem("auth_token");
   const headers: HeadersInit = {
     "Content-Type": "application/json",
   };
   if (pubkey) {
     headers["x-nostr-pubkey"] = pubkey;
+  } else if (jwtToken) {
+    headers["Authorization"] = `Bearer ${jwtToken}`;
   }
   return headers;
 }
@@ -27,6 +30,65 @@ export async function loginWithNostr(pubkey: string, profile?: { name?: string; 
   });
   if (!response.ok) throw new Error("Failed to authenticate");
   return response.json();
+}
+
+export async function registerWithEmail(email: string, password: string, name: string, nostrPubkey?: string) {
+  const response = await fetch("/api/auth/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password, name, nostrPubkey }),
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || "Failed to register");
+  return data;
+}
+
+export async function loginWithEmail(email: string, password: string, twoFactorCode?: string) {
+  const response = await fetch("/api/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password, twoFactorCode }),
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || "Failed to login");
+  return data;
+}
+
+export async function setup2FA() {
+  const response = await authFetch("/api/auth/2fa/setup", { method: "POST" });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || "Failed to setup 2FA");
+  return data;
+}
+
+export async function verify2FA(code: string) {
+  const response = await authFetch("/api/auth/2fa/verify", {
+    method: "POST",
+    body: JSON.stringify({ code }),
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || "Failed to verify 2FA");
+  return data;
+}
+
+export async function disable2FA(code: string) {
+  const response = await authFetch("/api/auth/2fa", {
+    method: "DELETE",
+    body: JSON.stringify({ code }),
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || "Failed to disable 2FA");
+  return data;
+}
+
+export async function linkNostrAccount(pubkey: string, source: string = 'extension') {
+  const response = await authFetch("/api/auth/link-nostr", {
+    method: "POST",
+    body: JSON.stringify({ pubkey, source }),
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || "Failed to link Nostr account");
+  return data;
 }
 
 export async function getCurrentUser() {
