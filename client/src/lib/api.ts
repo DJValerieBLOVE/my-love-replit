@@ -100,6 +100,18 @@ export async function getCurrentUser() {
   return response.json();
 }
 
+export async function updateProfile(updates: { name?: string; lookingForBuddy?: boolean; buddyDescription?: string; labInterests?: string[] }) {
+  const response = await authFetch("/api/profile", {
+    method: "PATCH",
+    body: JSON.stringify(updates),
+  });
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({ error: "Failed to update profile" }));
+    throw new Error(data.error || "Failed to update profile");
+  }
+  return response.json();
+}
+
 export async function updateUserEmail(email: string) {
   const response = await authFetch("/api/auth/email", {
     method: "POST",

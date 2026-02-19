@@ -1047,6 +1047,20 @@ export async function registerRoutes(
     }
   });
 
+  app.patch("/api/profile", authMiddleware, async (req, res) => {
+    try {
+      const { name, lookingForBuddy, buddyDescription, labInterests } = req.body;
+      const updated = await storage.updateUserProfile(req.userId!, { name, lookingForBuddy, buddyDescription, labInterests });
+      if (!updated) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      const { password, ...safe } = updated;
+      res.json(safe);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update profile" });
+    }
+  });
+
   // Update user stats
   app.patch("/api/users/:id/stats", async (req, res) => {
     try {

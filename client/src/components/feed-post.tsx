@@ -29,6 +29,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import SatsIcon from "@assets/generated_images/sats_icon.png";
 import { toast } from "sonner";
 import { isGroupContent, canSharePublicly, getGroupName, type ShareablePost } from "@/lib/sharing-rules";
+import { parseNostrContent, truncateNpub } from "@/lib/nostr-content";
 import { useNostr } from "@/contexts/nostr-context";
 import { useNDK } from "@/contexts/ndk-context";
 import { NDKEvent } from "@nostr-dev-kit/ndk";
@@ -332,31 +333,61 @@ export function FeedPost({ post }: FeedPostProps) {
             <AvatarFallback>{post.author.name[0]}</AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <div className="flex justify-between items-start">
-              <div>
-                <h3 className="font-bold text-muted-foreground text-sm flex items-center gap-2">
+            <div className="flex justify-between items-start min-w-0">
+              <div className="flex items-center gap-2 min-w-0 flex-1">
+                <h3 className="font-bold text-foreground text-sm truncate max-w-[160px]">
                   {post.author.name}
-                  <span className="text-muted-foreground font-normal text-sm flex items-center gap-1">
-                    {post.relaySource === "private" && (
-                      <Lock className="w-3 h-3 text-muted-foreground" />
-                    )}
-                    {post.relaySource === "public" && (
-                      <Globe className="w-3 h-3 text-muted-foreground" />
-                    )}
-                    {post.timestamp.replace(" ago", "")}
-                  </span>
                 </h3>
+                <span className="text-muted-foreground font-normal text-sm flex items-center gap-1 shrink-0">
+                  {post.relaySource === "private" && (
+                    <Lock className="w-3 h-3 text-muted-foreground" />
+                  )}
+                  {post.relaySource === "public" && (
+                    <Globe className="w-3 h-3 text-muted-foreground" />
+                  )}
+                  {post.timestamp.replace(" ago", "")}
+                </span>
               </div>
-              <Button variant="ghost" size="icon" className="text-muted-foreground">
+              <Button variant="ghost" size="icon" className="text-muted-foreground shrink-0">
                 <MoreHorizontal className="w-4 h-4" />
               </Button>
             </div>
             
-            <p className="mt-2 text-base leading-relaxed text-foreground/90 whitespace-pre-wrap">
-              {post.content}
-            </p>
+            {(() => {
+              const parsed = parseNostrContent(post.content);
+              return (
+                <>
+                  <p className="mt-2 text-base leading-relaxed text-foreground/90 whitespace-pre-wrap">
+                    {parsed.text}
+                  </p>
+                  {parsed.images.length > 0 && (
+                    <div className={`mt-3 gap-2 ${parsed.images.length === 1 ? '' : 'grid grid-cols-2'}`}>
+                      {parsed.images.map((img, i) => (
+                        <div key={i} className="rounded-xs overflow-hidden border border-[#E5E5E5]">
+                          <img
+                            src={img}
+                            alt="Post media"
+                            className="w-full h-auto object-cover max-h-[400px]"
+                            loading="lazy"
+                            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                            data-testid={`img-post-media-${post.id}-${i}`}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {parsed.videos.length > 0 && (
+                    <div className="mt-3 space-y-2">
+                      {parsed.videos.map((vid, i) => (
+                        <video key={i} src={vid} controls className="w-full rounded-xs max-h-[400px]" data-testid={`video-post-media-${post.id}-${i}`} />
+                      ))}
+                    </div>
+                  )}
+                </>
+              );
+            })()}
             
-            {post.image && (
+            {post.image && !parseNostrContent(post.content).images.includes(post.image) && (
               <div className="mt-3 rounded-xs overflow-hidden border border-[#E5E5E5]">
                 <img src={post.image} alt="Post content" className="w-full h-auto object-cover max-h-[400px]" />
               </div>

@@ -1,13 +1,27 @@
 import Layout from "@/components/layout";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
 import { useNostr } from "@/contexts/nostr-context";
 import { useNostrProfile } from "@/hooks/use-nostr-profile";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams, Link, useLocation } from "wouter";
-import { getPublicProfile, getDreams, getCreatorExperiments, getCreatorCourses, getCreatorCommunities } from "@/lib/api";
+import { getPublicProfile, getDreams, getCreatorExperiments, getCreatorCourses, getCreatorCommunities, updateProfile } from "@/lib/api";
 import { 
   Trophy, 
   Zap, 
@@ -23,9 +37,12 @@ import {
   Users,
   Loader2,
   ExternalLink,
-  BadgeCheck
+  BadgeCheck,
+  Pencil,
+  Lock
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 import BitcoinIcon from "../assets/bitcoin_icon.png";
 import type { Experiment, Course, Community, Dream } from "@shared/schema";
 
@@ -154,15 +171,73 @@ function BadgeDisplay({ badges }: { badges: string[] | null }) {
   );
 }
 
+const LAB_INTEREST_OPTIONS = [
+  "Meditation & Mindfulness",
+  "Bitcoin & Lightning",
+  "Fitness & Health",
+  "Journaling & Reflection",
+  "Accountability Partner",
+  "Content Creation",
+  "Financial Freedom",
+  "Relationships & Communication",
+  "Career & Purpose",
+  "Spiritual Growth",
+];
+
 export default function Profile() {
   const params = useParams<{ userId?: string }>();
   const [, setLocation] = useLocation();
   const { profile, userStats } = useNostr();
   const { nostrProfile } = useNostrProfile(profile?.pubkey);
-  
+  const queryClient = useQueryClient();
+  const [editOpen, setEditOpen] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editBuddyDesc, setEditBuddyDesc] = useState("");
+  const [editLookingForBuddy, setEditLookingForBuddy] = useState(false);
+  const [editInterests, setEditInterests] = useState<string[]>([]);
+
+  const profileMutation = useMutation({
+    mutationFn: updateProfile,
+    onSuccess: () => {
+      toast.success("Profile updated!");
+      setEditOpen(false);
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+    },
+    onError: (err: any) => {
+      toast.error("Failed to update profile", { description: err.message });
+    },
+  });
+
   const currentUserId = profile?.userId;
   const isOwnProfile = !params.userId || params.userId === currentUserId;
   const targetUserId = params.userId || currentUserId;
+
+  const isPaidMember = userStats?.tier && userStats.tier !== "free";
+
+  const openEditDialog = () => {
+    setEditName(profile?.name || "");
+    setEditBuddyDesc(profile?.buddyDescription || "");
+    setEditLookingForBuddy(profile?.lookingForBuddy || false);
+    setEditInterests(profile?.labInterests || []);
+    setEditOpen(true);
+  };
+
+  const handleSaveProfile = () => {
+    profileMutation.mutate({
+      name: editName,
+      lookingForBuddy: editLookingForBuddy,
+      buddyDescription: editBuddyDesc,
+      labInterests: editInterests,
+    });
+  };
+
+  const toggleInterest = (interest: string) => {
+    setEditInterests(prev =>
+      prev.includes(interest)
+        ? prev.filter(i => i !== interest)
+        : [...prev, interest]
+    );
+  };
 
   const { data: publicProfile, isLoading: profileLoading } = useQuery({
     queryKey: ["profile", targetUserId],
@@ -426,6 +501,126 @@ export default function Profile() {
             </CardContent>
           </Card>
         )}
+
+        {isOwnProfile && (
+          <div className="flex justify-end">
+            <Button
+              variant="outline"
+              onClick={openEditDialog}
+              className="gap-2 hover:bg-[#F0E6FF]"
+              data-testid="button-edit-profile"
+            >
+              <Pencil className="w-4 h-4" /> Edit Profile
+            </Button>
+          </div>
+        )}
+
+        <Dialog open={editOpen} onOpenChange={setEditOpen}>
+          <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="font-serif text-xl">Edit Profile</DialogTitle>
+              <DialogDescription>
+                Update your profile information and preferences
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-6 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-name">Display Name</Label>
+                <Input
+                  id="edit-name"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  placeholder="Your display name"
+                  data-testid="input-edit-name"
+                />
+              </div>
+
+              <div className="border-t pt-4 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-bold text-sm">Looking for an Accountability Buddy</h4>
+                    <p className="text-xs text-muted-foreground">Let others know you're open to connecting</p>
+                  </div>
+                  {isPaidMember ? (
+                    <Switch
+                      checked={editLookingForBuddy}
+                      onCheckedChange={setEditLookingForBuddy}
+                      data-testid="switch-looking-buddy"
+                    />
+                  ) : (
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <Lock className="w-3 h-3" /> Paid members only
+                    </div>
+                  )}
+                </div>
+
+                {editLookingForBuddy && isPaidMember && (
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-buddy-desc">What are you looking for?</Label>
+                    <Textarea
+                      id="edit-buddy-desc"
+                      value={editBuddyDesc}
+                      onChange={(e) => setEditBuddyDesc(e.target.value)}
+                      placeholder="Describe the kind of accountability partner you're looking for..."
+                      className="min-h-[80px]"
+                      data-testid="textarea-buddy-desc"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="border-t pt-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-bold text-sm">LaB Interests</h4>
+                    <p className="text-xs text-muted-foreground">Select your areas of interest for better matching</p>
+                  </div>
+                  {!isPaidMember && (
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <Lock className="w-3 h-3" /> Paid members only
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {LAB_INTEREST_OPTIONS.map((interest) => (
+                    <button
+                      key={interest}
+                      onClick={() => isPaidMember && toggleInterest(interest)}
+                      disabled={!isPaidMember}
+                      className={cn(
+                        "px-3 py-1.5 rounded-full text-xs font-medium transition-colors border",
+                        editInterests.includes(interest)
+                          ? "bg-[#6600ff] text-white border-[#6600ff]"
+                          : isPaidMember
+                          ? "bg-muted hover:bg-[#F0E6FF] border-border text-foreground"
+                          : "bg-muted border-border text-muted-foreground opacity-50 cursor-not-allowed"
+                      )}
+                      data-testid={`button-interest-${interest.toLowerCase().replace(/\s+/g, '-')}`}
+                    >
+                      {interest}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="ghost">Cancel</Button>
+              </DialogClose>
+              <Button
+                onClick={handleSaveProfile}
+                disabled={profileMutation.isPending}
+                className="bg-gradient-to-r from-[#6600ff] to-[#cc00ff] text-white"
+                data-testid="button-save-profile"
+              >
+                {profileMutation.isPending ? "Saving..." : "Save Changes"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         <Tabs defaultValue={isOwnProfile ? "journey" : "content"} className="space-y-8">
           <TabsList className="bg-muted/50 p-1 h-auto flex-wrap justify-start w-full md:w-auto">

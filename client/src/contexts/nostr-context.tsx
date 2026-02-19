@@ -14,6 +14,7 @@ interface UserStats {
   satsGiven: number;
   satsReceived: number;
   badges: string[];
+  tier?: string;
 }
 
 interface NostrProfile {
@@ -25,6 +26,9 @@ interface NostrProfile {
   about?: string;
   nip05?: string;
   lud16?: string;
+  buddyDescription?: string;
+  lookingForBuddy?: boolean;
+  labInterests?: string[];
 }
 
 interface NostrContextType {
@@ -93,7 +97,16 @@ export function NostrProvider({ children }: { children: ReactNode }) {
           satsGiven: user.satsGiven || 0,
           satsReceived: user.satsReceived || 0,
           badges: user.badges || [],
+          tier: user.tier || "free",
         });
+        if (profile) {
+          setProfile(prev => prev ? {
+            ...prev,
+            lookingForBuddy: user.lookingForBuddy || false,
+            buddyDescription: user.buddyDescription || "",
+            labInterests: user.labInterests || [],
+          } : prev);
+        }
       }
     } catch (e) {
       console.error("Failed to refresh user stats:", e);
@@ -203,6 +216,9 @@ export function NostrProvider({ children }: { children: ReactNode }) {
             userId: user.id,
             name: user.name || user.username,
             picture: user.avatar || undefined,
+            lookingForBuddy: user.lookingForBuddy || false,
+            buddyDescription: user.buddyDescription || "",
+            labInterests: user.labInterests || [],
           });
           setIsConnected(true);
           setLoginMethod("email");

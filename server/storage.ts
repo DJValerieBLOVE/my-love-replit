@@ -114,6 +114,7 @@ export interface IStorage {
   updateUserAiProfile(userId: string, profile: { coreGoals?: string; currentChallenges?: string; interestsTags?: string[]; communicationStyle?: string }): Promise<User | undefined>;
   updateUserTier(userId: string, tier: string): Promise<User | undefined>;
   updateUserApiKey(userId: string, apiKey: string | null): Promise<User | undefined>;
+  updateUserProfile(userId: string, updates: { name?: string; lookingForBuddy?: boolean; buddyDescription?: string; labInterests?: string[] }): Promise<User | undefined>;
   
   // Phase 1: Reserve a slot atomically - checks limits and increments counter BEFORE AI call
   // For paid tier, reserves estimated tokens (deducted upfront)
@@ -702,6 +703,19 @@ export class DatabaseStorage implements IStorage {
   async updateUserApiKey(userId: string, apiKey: string | null): Promise<User | undefined> {
     const [updated] = await db.update(users)
       .set({ userApiKey: apiKey })
+      .where(eq(users.id, userId))
+      .returning();
+    return updated;
+  }
+
+  async updateUserProfile(userId: string, updates: { name?: string; lookingForBuddy?: boolean; buddyDescription?: string; labInterests?: string[] }): Promise<User | undefined> {
+    const setData: any = {};
+    if (updates.name !== undefined) setData.name = updates.name;
+    if (updates.lookingForBuddy !== undefined) setData.lookingForBuddy = updates.lookingForBuddy;
+    if (updates.buddyDescription !== undefined) setData.buddyDescription = updates.buddyDescription;
+    if (updates.labInterests !== undefined) setData.labInterests = updates.labInterests;
+    const [updated] = await db.update(users)
+      .set(setData)
       .where(eq(users.id, userId))
       .returning();
     return updated;

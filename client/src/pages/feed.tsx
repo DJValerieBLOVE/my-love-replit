@@ -29,6 +29,7 @@ import { useNostr } from "@/contexts/nostr-context";
 import { LAB_RELAY_URL, PUBLIC_RELAYS } from "@/lib/relays";
 import { NDKEvent } from "@nostr-dev-kit/ndk";
 import { Skeleton } from "@/components/ui/skeleton";
+import { parseNostrContent, truncateNpub } from "@/lib/nostr-content";
 
 type FeedPost = {
   id: string;
@@ -178,7 +179,7 @@ function formatTimestamp(date: number | string | Date) {
   return d.toLocaleDateString();
 }
 
-type FeedTab = "all" | "global" | "lab" | "following";
+type FeedTab = "following" | "tribe" | "global";
 
 function useNostrFeed(tab: FeedTab) {
   const { fetchEvents, isConnected: ndkConnected } = useNDK();
@@ -229,7 +230,7 @@ function useNostrFeed(tab: FeedTab) {
 
       if (tab === "global") {
         relayUrls = [...PUBLIC_RELAYS];
-      } else if (tab === "lab") {
+      } else if (tab === "tribe") {
         relayUrls = [LAB_RELAY_URL];
       } else if (tab === "following") {
         if (!profile?.pubkey) {
@@ -254,8 +255,6 @@ function useNostrFeed(tab: FeedTab) {
           setIsLoading(false);
           return;
         }
-      } else {
-        relayUrls = [LAB_RELAY_URL, ...PUBLIC_RELAYS];
       }
 
       const filter: any = { kinds: [1], limit: 50 };
@@ -309,7 +308,7 @@ function useNostrFeed(tab: FeedTab) {
         };
 
         let relaySource: "private" | "public" = "public";
-        if (tab === "lab") {
+        if (tab === "tribe") {
           relaySource = "private";
         } else if (tab === "global") {
           relaySource = "public";
@@ -614,10 +613,10 @@ function PostCard({ post }: { post: FeedPost }) {
           <AvatarFallback>{post.author.name.slice(0, 2).toUpperCase()}</AvatarFallback>
         </Avatar>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-sm">{post.author.name}</span>
-            <span className="text-muted-foreground text-sm">{post.author.handle}</span>
-            <span className="text-muted-foreground text-xs flex items-center gap-1">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="font-semibold text-sm truncate max-w-[140px]">{post.author.name}</span>
+            <span className="text-muted-foreground text-sm truncate max-w-[120px]">{truncateNpub(post.author.handle)}</span>
+            <span className="text-muted-foreground text-xs flex items-center gap-1 shrink-0">
               · {post.timestamp}
               {post.relaySource === "private" && (
                 <Lock className="w-3 h-3 text-muted-foreground" />
@@ -626,11 +625,41 @@ function PostCard({ post }: { post: FeedPost }) {
                 <Globe className="w-3 h-3 text-muted-foreground" />
               )}
             </span>
-            <Button variant="ghost" size="icon" className="ml-auto h-8 w-8 hover:bg-[#F0E6FF]" data-testid={`button-more-${post.id}`}>
+            <Button variant="ghost" size="icon" className="ml-auto h-8 w-8 hover:bg-[#F0E6FF] shrink-0" data-testid={`button-more-${post.id}`}>
               <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
             </Button>
           </div>
-          <p className="text-sm mt-1 leading-relaxed">{post.content}</p>
+          {(() => {
+            const parsed = parseNostrContent(post.content);
+            return (
+              <>
+                <p className="text-sm mt-1 leading-relaxed whitespace-pre-wrap">{parsed.text}</p>
+                {parsed.images.length > 0 && (
+                  <div className={`mt-3 gap-2 ${parsed.images.length === 1 ? '' : 'grid grid-cols-2'}`}>
+                    {parsed.images.map((img, i) => (
+                      <div key={i} className="rounded-xs overflow-hidden border border-border">
+                        <img
+                          src={img}
+                          alt="Post media"
+                          className="w-full h-auto object-cover max-h-[400px]"
+                          loading="lazy"
+                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                          data-testid={`img-post-media-${post.id}-${i}`}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {parsed.videos.length > 0 && (
+                  <div className="mt-3 space-y-2">
+                    {parsed.videos.map((vid, i) => (
+                      <video key={i} src={vid} controls className="w-full rounded-xs max-h-[400px]" data-testid={`video-post-media-${post.id}-${i}`} />
+                    ))}
+                  </div>
+                )}
+              </>
+            );
+          })()}
           <div className="flex items-center gap-4 mt-3 pt-2 border-t border-border">
             <button className="flex items-center gap-1.5 text-muted-foreground hover:text-love-time hover:bg-love-time-light rounded-md px-2 py-1 transition-colors text-sm" data-testid={`button-reply-${post.id}`}>
               <MessageCircle className="w-4 h-4" />
@@ -895,7 +924,7 @@ function FeedSidebar() {
 }
 
 export default function Feed() {
-  const [activeTab, setActiveTab] = useState<FeedTab>("all");
+  const [activeTab, setActiveTab] = useState<FeedTab>("following");
   const { posts, isLoading, refetch, ndkConnected } = useNostrFeed(activeTab);
 
   const displayPosts = posts.length > 0 ? posts : (!ndkConnected ? MOCK_POSTS : []);
@@ -911,14 +940,13 @@ export default function Feed() {
             <PostComposer onPostPublished={refetch} />
             
             <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as FeedTab)} className="w-full">
-              <TabsList className="w-full mb-6 grid grid-cols-4">
-                <TabsTrigger value="all" data-testid="tab-all">All</TabsTrigger>
-                <TabsTrigger value="global" data-testid="tab-global">Global</TabsTrigger>
-                <TabsTrigger value="lab" data-testid="tab-lab">LaB</TabsTrigger>
+              <TabsList className="w-full mb-6 grid grid-cols-3">
                 <TabsTrigger value="following" data-testid="tab-following">Following</TabsTrigger>
+                <TabsTrigger value="tribe" data-testid="tab-tribe">Tribe</TabsTrigger>
+                <TabsTrigger value="global" data-testid="tab-global">Global</TabsTrigger>
               </TabsList>
 
-              {(["all", "global", "lab", "following"] as FeedTab[]).map((tab) => (
+              {(["following", "tribe", "global"] as FeedTab[]).map((tab) => (
                 <TabsContent key={tab} value={tab} className="space-y-4">
                   {isLoading ? (
                     <FeedLoadingSkeleton />
@@ -932,8 +960,8 @@ export default function Feed() {
                       <p className="text-sm mt-2">
                         {tab === "following" 
                           ? "Follow some people to see their posts here!" 
-                          : tab === "lab"
-                          ? "No posts from LaB relay yet."
+                          : tab === "tribe"
+                          ? "No posts from your Tribe yet."
                           : "Be the first to share something!"}
                       </p>
                     </div>
