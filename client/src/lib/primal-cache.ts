@@ -23,9 +23,18 @@ type PrimalProfile = {
   lud16?: string;
 };
 
+type PrimalEventStats = {
+  likes: number;
+  replies: number;
+  reposts: number;
+  zaps: number;
+  zapAmount: number;
+};
+
 type PrimalFeedResult = {
   events: PrimalEvent[];
   profiles: Map<string, PrimalProfile>;
+  stats: Map<string, PrimalEventStats>;
 };
 
 type ExploreMode = "trending" | "most_zapped" | "media" | "latest";
@@ -37,6 +46,7 @@ function generateSubId(): string {
 function parsePrimalResponse(messages: any[]): PrimalFeedResult {
   const events: PrimalEvent[] = [];
   const profiles = new Map<string, PrimalProfile>();
+  const stats = new Map<string, PrimalEventStats>();
 
   for (const msg of messages) {
     if (!Array.isArray(msg)) continue;
@@ -58,12 +68,43 @@ function parsePrimalResponse(messages: any[]): PrimalFeedResult {
         } catch {}
       } else if (eventData.kind === 1) {
         events.push(eventData);
+      } else if (eventData.kind === 10000100) {
+        try {
+          const statsData = JSON.parse(eventData.content);
+          if (statsData && typeof statsData === "object") {
+            for (const [eventId, counts] of Object.entries(statsData)) {
+              const c = counts as any;
+              stats.set(eventId, {
+                likes: c.likes || c.reactions || 0,
+                replies: c.replies || 0,
+                reposts: c.reposts || c.mentions || 0,
+                zaps: c.zaps || 0,
+                zapAmount: c.satszapped || c.sats_total || c.zap_amount || 0,
+              });
+            }
+          }
+        } catch {}
+      } else if (eventData.kind === 10000113) {
+        try {
+          const mediaStats = JSON.parse(eventData.content);
+          if (mediaStats && typeof mediaStats === "object") {
+            for (const [eventId, counts] of Object.entries(mediaStats)) {
+              const c = counts as any;
+              const existing = stats.get(eventId) || { likes: 0, replies: 0, reposts: 0, zaps: 0, zapAmount: 0 };
+              stats.set(eventId, {
+                ...existing,
+                zaps: c.zaps || existing.zaps,
+                zapAmount: c.satszapped || c.sats_total || existing.zapAmount,
+              });
+            }
+          }
+        } catch {}
       }
     }
   }
 
   events.sort((a, b) => b.created_at - a.created_at);
-  return { events, profiles };
+  return { events, profiles, stats };
 }
 
 function buildPrimalWebSocket(): Promise<{ ws: WebSocket; messages: any[]; waitForEose: () => Promise<any[]> }> {
@@ -155,7 +196,7 @@ export async function fetchPrimalFeed(
     return parsePrimalResponse(messages);
   } catch (err) {
     console.error("[PrimalCache] Error:", err);
-    return { events: [], profiles: new Map() };
+    return { events: [], profiles: new Map(), stats: new Map() };
   }
 }
 
@@ -186,8 +227,8 @@ export async function fetchPrimalUserFeed(
     return parsePrimalResponse(messages);
   } catch (err) {
     console.error("[PrimalCache] User feed error:", err);
-    return { events: [], profiles: new Map() };
+    return { events: [], profiles: new Map(), stats: new Map() };
   }
 }
 
-export type { PrimalEvent, PrimalProfile, PrimalFeedResult, ExploreMode };
+export type { PrimalEvent, PrimalProfile, PrimalEventStats, PrimalFeedResult, ExploreMode };

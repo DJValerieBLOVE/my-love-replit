@@ -1,10 +1,11 @@
 import {
-  users, journalEntries, dreams, areaProgress, experiments, userExperiments,
+  users, journalEntries, dailyPractice, dreams, areaProgress, experiments, userExperiments,
   experimentNotes, discoveryNotes, events, posts, clubs, zaps, aiUsageLogs,
   courses, lessons, courseEnrollments, lessonComments, courseComments,
   communities, communityMemberships, communityPosts,
   type User, type InsertUser,
   type JournalEntry, type InsertJournalEntry,
+  type DailyPractice, type InsertDailyPractice,
   type Dream, type InsertDream,
   type AreaProgress, type InsertAreaProgress,
   type Experiment, type InsertExperiment,
@@ -51,6 +52,12 @@ export interface IStorage {
   createJournalEntry(entry: InsertJournalEntry): Promise<JournalEntry>;
   updateJournalEntry(id: string, entry: Partial<InsertJournalEntry>): Promise<JournalEntry | undefined>;
   deleteJournalEntry(id: string): Promise<boolean>;
+
+  // Daily LOVE Practice
+  getDailyPractice(userId: string, date: string): Promise<DailyPractice | undefined>;
+  getDailyPracticeHistory(userId: string, limit?: number): Promise<DailyPractice[]>;
+  upsertDailyPractice(data: InsertDailyPractice): Promise<DailyPractice>;
+  getCurrentStreak(userId: string): Promise<number>;
 
   // Dreams
   getDreamsByUser(userId: string): Promise<Dream[]>;
@@ -369,6 +376,59 @@ export class DatabaseStorage implements IStorage {
   async deleteJournalEntry(id: string): Promise<boolean> {
     const result = await db.delete(journalEntries).where(eq(journalEntries.id, id));
     return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // Daily LOVE Practice
+  async getDailyPractice(userId: string, date: string): Promise<DailyPractice | undefined> {
+    const [entry] = await db.select().from(dailyPractice)
+      .where(and(eq(dailyPractice.userId, userId), eq(dailyPractice.date, date)));
+    return entry || undefined;
+  }
+
+  async getDailyPracticeHistory(userId: string, limit: number = 30): Promise<DailyPractice[]> {
+    return await db.select().from(dailyPractice)
+      .where(eq(dailyPractice.userId, userId))
+      .orderBy(desc(dailyPractice.date))
+      .limit(limit);
+  }
+
+  async upsertDailyPractice(data: InsertDailyPractice): Promise<DailyPractice> {
+    const existing = await this.getDailyPractice(data.userId, data.date);
+    if (existing) {
+      const [updated] = await db.update(dailyPractice)
+        .set({ ...data, updatedAt: new Date() })
+        .where(eq(dailyPractice.id, existing.id))
+        .returning();
+      return updated;
+    }
+    const [created] = await db.insert(dailyPractice).values(data).returning();
+    return created;
+  }
+
+  async getCurrentStreak(userId: string): Promise<number> {
+    const entries = await db.select().from(dailyPractice)
+      .where(and(eq(dailyPractice.userId, userId), eq(dailyPractice.morningCompleted, true)))
+      .orderBy(desc(dailyPractice.date))
+      .limit(60);
+    
+    if (entries.length === 0) return 0;
+    
+    let streak = 0;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    for (let i = 0; i < entries.length; i++) {
+      const expected = new Date(today);
+      expected.setDate(expected.getDate() - i);
+      const expectedStr = expected.toISOString().split("T")[0];
+      
+      if (entries[i].date === expectedStr) {
+        streak++;
+      } else {
+        break;
+      }
+    }
+    return streak;
   }
 
   // Dreams

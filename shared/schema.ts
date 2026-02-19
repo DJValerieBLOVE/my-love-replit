@@ -102,6 +102,40 @@ export const insertJournalEntrySchema = createInsertSchema(journalEntries).omit(
 export type InsertJournalEntry = z.infer<typeof insertJournalEntrySchema>;
 export type JournalEntry = typeof journalEntries.$inferSelect;
 
+// Daily LOVE Practice (structured morning + evening)
+export const dailyPractice = pgTable("daily_practice", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  date: varchar("date").notNull(),
+  morningVibe: integer("morning_vibe"),
+  focusAreaId: text("focus_area_id"),
+  vision: text("vision"),
+  values: text("values").array().default(sql`ARRAY[]::text[]`).notNull(),
+  villain: text("villain"),
+  villainSolution: text("villain_solution"),
+  victory: text("victory"),
+  morningCompleted: boolean("morning_completed").default(false).notNull(),
+  celebrations: text("celebrations"),
+  lessons: text("lessons"),
+  blessings: text("blessings"),
+  dreamVibes: text("dream_vibes"),
+  eveningVibe: integer("evening_vibe"),
+  valuesChecked: boolean("values_checked").array().default(sql`ARRAY[]::boolean[]`).notNull(),
+  eveningCompleted: boolean("evening_completed").default(false).notNull(),
+  isPrivate: boolean("is_private").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertDailyPracticeSchema = createInsertSchema(dailyPractice).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertDailyPractice = z.infer<typeof insertDailyPracticeSchema>;
+export type DailyPractice = typeof dailyPractice.$inferSelect;
+
 // Big Dreams
 export const dreams = pgTable("dreams", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),

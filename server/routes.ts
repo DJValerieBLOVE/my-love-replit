@@ -28,6 +28,7 @@ import {
   insertCommunitySchema,
   insertCommunityMembershipSchema,
   insertCommunityPostSchema,
+  insertDailyPracticeSchema,
 } from "@shared/schema";
 import { chat, validateApiKey, type ChatMessage, type UserContext } from "./anthropic";
 
@@ -423,6 +424,57 @@ export async function registerRoutes(
       res.status(204).send();
     } catch (error) {
       res.status(500).json({ error: "Failed to delete journal entry" });
+    }
+  });
+
+  // ===== DAILY LOVE PRACTICE =====
+
+  app.get("/api/daily-practice/today", authMiddleware, async (req, res) => {
+    try {
+      const today = new Date().toISOString().split("T")[0];
+      const entry = await storage.getDailyPractice(req.userId!, today);
+      res.json(entry || null);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch daily practice" });
+    }
+  });
+
+  app.get("/api/daily-practice/history", authMiddleware, async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 30;
+      const entries = await storage.getDailyPracticeHistory(req.userId!, limit);
+      res.json(entries);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch practice history" });
+    }
+  });
+
+  app.get("/api/daily-practice/streak", authMiddleware, async (req, res) => {
+    try {
+      const streak = await storage.getCurrentStreak(req.userId!);
+      res.json({ streak });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch streak" });
+    }
+  });
+
+  app.post("/api/daily-practice", authMiddleware, async (req, res) => {
+    try {
+      const today = new Date().toISOString().split("T")[0];
+      const rawData = {
+        ...req.body,
+        userId: req.userId!,
+        date: req.body.date || today,
+      };
+      const parsed = insertDailyPracticeSchema.safeParse(rawData);
+      if (!parsed.success) {
+        return res.status(400).json({ error: "Invalid data", details: parsed.error.errors });
+      }
+      const entry = await storage.upsertDailyPractice(parsed.data);
+      res.json(entry);
+    } catch (error: any) {
+      console.error("Daily practice save error:", error);
+      res.status(400).json({ error: error.message || "Failed to save daily practice" });
     }
   });
 

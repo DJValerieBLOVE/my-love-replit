@@ -1,5 +1,5 @@
 import Layout from "@/components/layout";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -30,7 +30,7 @@ import { LAB_RELAY_URL, PUBLIC_RELAYS } from "@/lib/relays";
 import { NDKEvent } from "@nostr-dev-kit/ndk";
 import { Skeleton } from "@/components/ui/skeleton";
 import { parseNostrContent, truncateNpub } from "@/lib/nostr-content";
-import { fetchPrimalFeed, fetchPrimalUserFeed, type ExploreMode, type PrimalEvent, type PrimalProfile } from "@/lib/primal-cache";
+import { fetchPrimalFeed, fetchPrimalUserFeed, type ExploreMode, type PrimalEvent, type PrimalProfile, type PrimalEventStats } from "@/lib/primal-cache";
 
 type FeedPost = {
   id: string;
@@ -75,9 +75,11 @@ function primalEventToFeedPost(
   event: PrimalEvent,
   profiles: Map<string, PrimalProfile>,
   currentPubkey?: string,
-  relaySource: "private" | "public" = "public"
+  relaySource: "private" | "public" = "public",
+  stats?: Map<string, PrimalEventStats>
 ): FeedPost {
   const profileData = profiles.get(event.pubkey);
+  const eventStats = stats?.get(event.id);
   return {
     id: event.id,
     eventId: event.id,
@@ -90,9 +92,9 @@ function primalEventToFeedPost(
     },
     content: event.content,
     timestamp: formatTimestamp(event.created_at),
-    likes: 0,
-    comments: 0,
-    zaps: 0,
+    likes: eventStats?.likes || 0,
+    comments: eventStats?.replies || 0,
+    zaps: eventStats?.zapAmount || 0,
     source: "nostr",
     relaySource,
     isOwnPost: event.pubkey === currentPubkey,
@@ -151,7 +153,7 @@ function useNostrFeed(tab: FeedTab, exploreMode: ExploreMode) {
           const result = await fetchPrimalUserFeed(profile.pubkey, { limit: 50 });
           if (result.events.length > 0) {
             const feedPosts = result.events.map(e =>
-              primalEventToFeedPost(e, result.profiles, profile?.pubkey, "public")
+              primalEventToFeedPost(e, result.profiles, profile?.pubkey, "public", result.stats)
             );
             setPosts(feedPosts);
             setIsLoading(false);
@@ -245,7 +247,7 @@ function useNostrFeed(tab: FeedTab, exploreMode: ExploreMode) {
         try {
           const result = await fetchPrimalFeed(exploreMode, { limit: 50 });
           const feedPosts = result.events.map(e =>
-            primalEventToFeedPost(e, result.profiles, profile?.pubkey, "public")
+            primalEventToFeedPost(e, result.profiles, profile?.pubkey, "public", result.stats)
           );
           setPosts(feedPosts);
         } catch (err) {
@@ -774,6 +776,23 @@ export default function Feed() {
 
   const currentExploreOption = EXPLORE_OPTIONS.find(o => o.value === exploreMode) || EXPLORE_OPTIONS[0];
 
+  const trendingTags = useMemo(() => {
+    const tagCounts = new Map<string, number>();
+    posts.forEach(post => {
+      const hashtags = post.content.match(/#(\w+)/g);
+      if (hashtags) {
+        hashtags.forEach(tag => {
+          const normalized = tag.toLowerCase();
+          tagCounts.set(normalized, (tagCounts.get(normalized) || 0) + 1);
+        });
+      }
+    });
+    return Array.from(tagCounts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 8)
+      .map(([tag]) => tag.replace("#", ""));
+  }, [posts]);
+
   return (
     <Layout>
       <div className="max-w-4xl mx-auto p-4 lg:p-6">
@@ -854,27 +873,74 @@ export default function Feed() {
           </div>
         )}
 
-        <div className="space-y-4">
-          {isLoading ? (
-            <FeedLoadingSkeleton />
-          ) : posts.length > 0 ? (
-            posts.map((post) => (
-              <PostCard key={post.id} post={post} />
-            ))
-          ) : (
-            <div className="text-center py-12 text-muted-foreground">
-              <p className="text-lg">No posts yet</p>
-              <p className="text-sm mt-2">
-                {activeTab === "following" 
-                  ? "Follow some people to see their posts here!" 
-                  : activeTab === "tribe"
-                  ? "No posts from your Tribe yet. Be the first to share!"
-                  : activeTab === "buddies"
-                  ? "No buddy posts yet. Connect with a buddy to get started!"
-                  : "No posts found. Try a different explore category!"}
+        <div className="flex gap-6">
+          <div className="flex-1 space-y-4 min-w-0">
+            {isLoading ? (
+              <FeedLoadingSkeleton />
+            ) : posts.length > 0 ? (
+              posts.map((post) => (
+                <PostCard key={post.id} post={post} />
+              ))
+            ) : (
+              <div className="text-center py-12 text-muted-foreground">
+                <p className="text-lg">No posts yet</p>
+                <p className="text-sm mt-2">
+                  {activeTab === "following" 
+                    ? "Follow some people to see their posts here!" 
+                    : activeTab === "tribe"
+                    ? "No posts from your Tribe yet. Be the first to share!"
+                    : activeTab === "buddies"
+                    ? "No buddy posts yet. Connect with a buddy to get started!"
+                    : "No posts found. Try a different explore category!"}
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className="hidden lg:block w-72 shrink-0 space-y-4">
+            <Link href="/daily-practice">
+              <Card className="p-4 hover:shadow-sm transition-shadow cursor-pointer border-none bg-gradient-to-br from-[#6600ff]/5 to-[#9900ff]/5" data-testid="card-daily-practice-cta">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[#6600ff]/10 flex items-center justify-center">
+                    <Flame className="w-5 h-5 text-[#6600ff]" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-serif">Daily LOVE Practice</p>
+                    <p className="text-xs text-muted-foreground font-serif">Start your morning ritual</p>
+                  </div>
+                </div>
+              </Card>
+            </Link>
+
+            <Card className="p-4 border-none" data-testid="card-trending-topics">
+              <h3 className="text-xs font-serif text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+                <TrendingUp className="w-3.5 h-3.5" />
+                Trending on Nostr
+              </h3>
+              <div className="space-y-3">
+                {trendingTags.length > 0 ? (
+                  trendingTags.map((tag) => (
+                    <div key={tag} className="flex items-center gap-2 text-sm" data-testid={`trending-tag-${tag}`}>
+                      <span className="text-[#6600ff] font-serif">#{tag}</span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-xs text-muted-foreground font-serif italic">Loading trending topics...</p>
+                )}
+              </div>
+            </Card>
+
+            <Card className="p-4 border-none" data-testid="card-community-info">
+              <h3 className="text-xs font-serif text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+                <Users className="w-3.5 h-3.5" />
+                11x LOVE LaB
+              </h3>
+              <p className="text-xs text-muted-foreground font-serif leading-relaxed">
+                A community dedicated to personal growth through the Daily LOVE Practice framework. 
+                Elevate your vibe, set your vision, and celebrate your victories.
               </p>
-            </div>
-          )}
+            </Card>
+          </div>
         </div>
       </div>
     </Layout>
