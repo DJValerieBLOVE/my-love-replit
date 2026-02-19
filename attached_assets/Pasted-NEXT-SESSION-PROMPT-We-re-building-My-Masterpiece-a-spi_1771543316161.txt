@@ -1,0 +1,39 @@
+NEXT SESSION PROMPT:
+
+We're building "My Masterpiece" - a spiritual personal growth app. Here's what was just completed and what needs testing/building next.
+
+VERIFY & TEST THESE RECENT CHANGES:
+
+Primal Cache Explore feeds - I just fixed the Primal cache API format in client/src/lib/primal-cache.ts. The Explore dropdown (Trending, Most Zapped, Media, Latest) should now load real posts from Primal's cache at wss://cache1.primal.net/v1. The correct API format is ["explore", {timeframe: "trending", scope: "global", limit: 30, created_after: timestamp}]. Please verify all 4 Explore options actually load posts when you click them.
+
+Following tab - Uses Primal cache ["feed", {pubkey: "hex", limit: 30}] to load posts from people you follow. Test with a logged-in user who follows people to confirm it loads fresh data (not 15-min-old stale data like before).
+
+No more fake data - Verify that "Alex Luna", "Jordan Rivera", fake "Live Now", "Upcoming Events", and "Who to Follow" sections are completely gone. Only real Nostr data or proper empty states should show.
+
+Tribes & Buddies privacy - These tabs should ONLY query the private Railway relay (wss://nostr-rs-relay-production-1569.up.railway.app). Verify they show the purple privacy banner and never leak to public relays.
+
+Feed images - Posts with image URLs from nostr.build, imgur, etc. should render images inline. Check client/src/lib/nostr-content.ts.
+
+Edit Profile - Test the Edit Profile dialog on /profile with name editing, buddy matching toggle (paid only), buddy description, and LaB interests.
+
+WHAT'S NEXT TO BUILD:
+
+Parse reaction/zap counts from Primal cache responses - The Primal cache returns engagement stats but they're not being extracted yet. Likes and zaps show as 0 on Explore/Following posts. Need to parse the stats events from the Primal response.
+
+Buddies tab content - Currently filters by #t: buddy-post tag. Need to define how buddy posts are actually created and tagged, and potentially match against the user's buddy list from the database.
+
+Real sidebar content - The old fake sidebar (Live Now, Upcoming Events, Who to Follow) was removed. Consider adding real content: trending hashtags from Primal, or suggested follows, or community highlights.
+
+Feed "media" explore mode - Currently uses timeframe: "popular" which returns general popular posts. Could be improved to actually filter for posts containing images/videos only. May need mega_feed_directive from Primal's API.
+
+Daily LOVE Practice - This is the MOST IMPORTANT feature still to build. Structured morning (VIBE, VISION, VALUE, VILLAIN, VICTORY) and evening (CELEBRATIONS, LESSONS, BLESSINGS, DREAM VIBES) reflections.
+
+KEY FILES:
+
+client/src/lib/primal-cache.ts - Primal WebSocket cache client
+client/src/pages/feed.tsx - Main feed page with 4 tabs
+client/src/lib/nostr-content.ts - Parses images/videos from post content
+client/src/contexts/nostr-context.tsx - Nostr auth & profile context
+client/src/pages/profile.tsx - Profile page with Edit Profile dialog
+replit.md - Full architecture docs
+That's your ready-to-go prompt for the next session. It covers exactly what needs testing and what to build next, with all the technical details so the next session can pick right up without losing context.
