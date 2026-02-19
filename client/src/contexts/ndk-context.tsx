@@ -26,6 +26,7 @@ export function NDKProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const allRelays = [LAB_RELAY_URL, ...PUBLIC_RELAYS];
+    console.log("[NDK] Initializing with relays:", allRelays);
 
     let signer: NDKPrivateKeySigner | undefined;
     if (loginMethod === "email" && emailKeyPair?.nsec) {
@@ -33,6 +34,7 @@ export function NDKProvider({ children }: { children: ReactNode }) {
         const skBytes = getSecretKeyBytes(emailKeyPair.nsec);
         const skHex = bytesToHex(skBytes);
         signer = new NDKPrivateKeySigner(skHex);
+        console.log("[NDK] Created signer for email user");
       } catch (err) {
         console.error("[NDK] Failed to create signer from email keypair:", err);
       }
@@ -43,20 +45,42 @@ export function NDKProvider({ children }: { children: ReactNode }) {
       signer,
     });
 
+    ndkRef.current = ndkInstance;
+    setNdk(ndkInstance);
+
     ndkInstance.connect().then(() => {
-      setIsConnected(true);
-      const lab = ndkInstance.pool.getRelay(LAB_RELAY_URL);
-      if (lab) {
-        setLabRelay(lab);
-      }
+      console.log("[NDK] connect() promise resolved");
     }).catch((err) => {
       console.error("[NDK] Connection error:", err);
     });
 
-    ndkRef.current = ndkInstance;
-    setNdk(ndkInstance);
+    const checkConnection = () => {
+      if (!ndkRef.current) return;
+      const relayStatuses: Record<string, number> = {};
+      ndkRef.current.pool.relays.forEach((relay, url) => {
+        relayStatuses[url] = relay.status;
+      });
+      console.log("[NDK] Relay statuses:", relayStatuses);
+      const anyConnected = Array.from(ndkRef.current.pool.relays.values()).some(r => r.status === 5);
+      if (anyConnected) {
+        console.log("[NDK] At least one relay connected (status 5), setting isConnected=true");
+        setIsConnected(true);
+        const lab = ndkRef.current.pool.getRelay(LAB_RELAY_URL);
+        if (lab && lab.status === 5) {
+          setLabRelay(lab);
+          console.log("[NDK] LAB relay connected");
+        }
+      }
+    };
+
+    const t1 = setTimeout(checkConnection, 2000);
+    const t2 = setTimeout(checkConnection, 5000);
+    const t3 = setTimeout(checkConnection, 10000);
 
     return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
       ndkInstance.pool.removeAllListeners();
     };
   }, [loginMethod, emailKeyPair]);

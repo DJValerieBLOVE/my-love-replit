@@ -16,8 +16,11 @@ interface RelayInfo {
 
 function mapRelayStatus(statusCode: number): "connected" | "connecting" | "disconnected" {
   switch (statusCode) {
-    case 2: return "connected";
-    case 1: return "connecting";
+    case 5: return "connected";
+    case 4:
+    case 2: return "connecting";
+    case 1:
+    case 0:
     default: return "disconnected";
   }
 }

@@ -219,6 +219,7 @@ function useNostrFeed(tab: FeedTab) {
   }, [fetchEvents]);
 
   const fetchFeed = useCallback(async () => {
+    console.log("[Feed] fetchFeed called, ndkConnected:", ndkConnected, "tab:", tab);
     if (!ndkConnected) return;
 
     setIsLoading(true);
@@ -262,7 +263,9 @@ function useNostrFeed(tab: FeedTab) {
         filter.authors = authorFilter;
       }
 
+      console.log("[Feed] Fetching events with filter:", filter, "relayUrls:", relayUrls);
       const events = await fetchEvents(filter, relayUrls);
+      console.log("[Feed] Got", events.length, "events from relays");
 
       if (events.length === 0) {
         setPosts([]);
