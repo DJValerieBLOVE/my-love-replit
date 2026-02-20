@@ -1018,6 +1018,9 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [quoteRepostOpen, setQuoteRepostOpen] = useState(false);
   const [quoteText, setQuoteText] = useState("");
+  const [replyOpen, setReplyOpen] = useState(false);
+  const [replyText, setReplyText] = useState("");
+  const { publishSmart, ndk, isConnected: ndkConnected } = useNDK();
 
   const isGroupPost = isGroupContent(post);
   const canRepostPublic = canSharePublicly(post);
@@ -1028,17 +1031,33 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
     setLikes(prev => isLiked ? prev - 1 : prev + 1);
   };
 
-  const handleRepostPublic = () => {
+  const handleRepostPublic = async () => {
     if (!canRepostPublic) {
       toast("Cannot share publicly", { 
         description: "Group posts can only be shared within the group" 
       });
       return;
     }
-    toast("Reposted to Nostr!", { 
-      description: `You reposted ${post.author.name}'s post publicly` 
-    });
-    setIsReposted(true);
+    if (!ndk || !ndkConnected) {
+      toast.error("Not connected to Nostr");
+      return;
+    }
+    try {
+      const event = new NDKEvent(ndk);
+      event.kind = 6;
+      event.content = JSON.stringify(post);
+      event.tags = [
+        ["e", post.id, ""],
+        ["p", post.author.pubkey || ""],
+      ];
+      await publishSmart(event, true);
+      toast("Reposted to Nostr!", { 
+        description: `You reposted ${post.author.name}'s post publicly` 
+      });
+      setIsReposted(true);
+    } catch (err) {
+      toast.error("Failed to repost");
+    }
   };
 
   const handleRepostGroup = () => {
@@ -1049,24 +1068,69 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
     setIsReposted(true);
   };
 
-  const handleQuoteRepost = () => {
-    if (!canRepostPublic) {
-      toast("Quote shared within group!", { 
-        description: `Your quote was shared within ${groupName}` 
-      });
-    } else {
-      toast("Quote Posted to Nostr!", { 
-        description: "Your quote repost was shared publicly" 
-      });
+  const handleQuoteRepost = async () => {
+    if (!ndk || !ndkConnected) {
+      toast.error("Not connected to Nostr");
+      return;
     }
-    setIsReposted(true);
-    setQuoteRepostOpen(false);
-    setQuoteText("");
+    try {
+      const event = new NDKEvent(ndk);
+      event.kind = 1;
+      const noteRef = `nostr:${post.id}`;
+      event.content = quoteText ? `${quoteText}\n\n${noteRef}` : noteRef;
+      event.tags = [
+        ["e", post.id, "", "mention"],
+        ["p", post.author.pubkey || ""],
+      ];
+      const isPublic = canRepostPublic;
+      await publishSmart(event, isPublic);
+      if (!isPublic) {
+        toast("Quote shared within group!", { 
+          description: `Your quote was shared within ${groupName}` 
+        });
+      } else {
+        toast("Quote Posted to Nostr!", { 
+          description: "Your quote repost was shared publicly" 
+        });
+      }
+      setIsReposted(true);
+      setQuoteRepostOpen(false);
+      setQuoteText("");
+    } catch (err) {
+      toast.error("Failed to post quote");
+    }
   };
 
   const handleBookmark = () => {
     setIsBookmarked(!isBookmarked);
     toast(isBookmarked ? "Removed from bookmarks" : "Bookmarked!");
+  };
+
+  const handleReply = () => {
+    setReplyOpen(!replyOpen);
+  };
+
+  const handleSubmitReply = async () => {
+    if (!replyText.trim()) return;
+    if (!ndk || !ndkConnected) {
+      toast.error("Not connected to Nostr");
+      return;
+    }
+    try {
+      const event = new NDKEvent(ndk);
+      event.kind = 1;
+      event.content = replyText;
+      event.tags = [
+        ["e", post.id, "", "reply"],
+        ["p", post.author.pubkey || ""],
+      ];
+      await publishSmart(event, true);
+      toast("Reply posted!", { description: `Replied to ${post.author.name}` });
+      setReplyText("");
+      setReplyOpen(false);
+    } catch (err) {
+      toast.error("Failed to post reply");
+    }
   };
 
   return (
@@ -1147,14 +1211,18 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
             </div>
           )}
           <div className="flex items-center justify-between mt-3 pt-2 border-t border-gray-100">
-            <button className="flex items-center justify-center gap-1.5 text-muted-foreground hover:text-foreground rounded-full px-2 py-1 transition-colors text-xs flex-1" data-testid={`button-reply-${post.id}`}>
+            <button 
+              onClick={handleReply}
+              className={`flex items-center justify-center gap-1.5 rounded-full px-2 py-1 transition-colors text-xs flex-1 ${replyOpen ? 'text-[#6600ff]' : 'text-muted-foreground hover:text-foreground'}`} 
+              data-testid={`button-reply-${post.id}`}
+            >
               <MessageCircle className="w-3.5 h-3.5" strokeWidth={1.5} />
               <span>{post.comments > 0 ? post.comments : ""}</span>
             </button>
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className={`flex items-center justify-center gap-1.5 rounded-full px-2 py-1 transition-colors text-xs flex-1 ${isReposted ? 'text-[#6600ff]' : 'text-muted-foreground hover:text-foreground'}`} data-testid={`button-repost-${post.id}`}>
+                <button className={`flex items-center justify-center gap-1.5 rounded-full px-2 py-1 transition-colors text-xs flex-1 outline-none focus:outline-none focus-visible:outline-none ring-0 focus:ring-0 ${isReposted ? 'text-[#6600ff]' : 'text-muted-foreground hover:text-foreground'}`} data-testid={`button-repost-${post.id}`}>
                   <Repeat2 className="w-4 h-4" strokeWidth={1.5} />
                   <span>{post.reposts > 0 ? post.reposts : ""}</span>
                 </button>
@@ -1225,15 +1293,15 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
                     className="min-h-[100px]"
                     data-testid={`textarea-quote-${post.id}`}
                   />
-                  <Card className="p-3 bg-[#F4F4F5]">
+                  <Card className="p-3 bg-[#F4F4F5] overflow-hidden">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Avatar className="w-6 h-6">
+                      <Avatar className="w-6 h-6 shrink-0">
                         <AvatarImage src={post.author.avatar} />
                         <AvatarFallback>{post.author.name.slice(0, 1).toUpperCase()}</AvatarFallback>
                       </Avatar>
-                      <span className="font-normal">{post.author.name}</span>
+                      <span className="font-normal truncate">{post.author.name}</span>
                     </div>
-                    <p className="text-sm mt-2 line-clamp-2">{post.content}</p>
+                    <p className="text-sm mt-2 line-clamp-3 break-words overflow-hidden">{post.content}</p>
                   </Card>
                 </div>
                 <DialogFooter>
@@ -1328,6 +1396,40 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
+          {replyOpen && (
+            <div className="mt-3 pt-3 border-t border-gray-100" data-testid={`reply-composer-${post.id}`}>
+              <div className="flex gap-2">
+                <Textarea
+                  placeholder={`Reply to ${post.author.name}...`}
+                  value={replyText}
+                  onChange={(e) => setReplyText(e.target.value)}
+                  className="min-h-[60px] text-sm resize-none"
+                  autoFocus
+                  data-testid={`textarea-reply-${post.id}`}
+                />
+              </div>
+              <div className="flex justify-end gap-2 mt-2">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => { setReplyOpen(false); setReplyText(""); }}
+                  className="text-xs hover:bg-[#F0E6FF]"
+                  data-testid={`button-cancel-reply-${post.id}`}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  size="sm" 
+                  onClick={handleSubmitReply}
+                  disabled={!replyText.trim()}
+                  className="text-xs bg-foreground text-background hover:bg-white hover:border-[#E5E5E5] hover:text-foreground border border-transparent"
+                  data-testid={`button-submit-reply-${post.id}`}
+                >
+                  Reply
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </Card>
