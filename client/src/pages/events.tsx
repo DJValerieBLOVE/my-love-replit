@@ -50,7 +50,7 @@ export default function Events() {
       <div className="max-w-7xl mx-auto p-4 lg:p-8">
         <div className="flex flex-col md:flex-row justify-between items-end gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-serif font-bold text-muted-foreground mb-2">Meetings & Gatherings</h1>
+            <h1 className="text-3xl font-serif font-normal text-muted-foreground mb-2">Meetings & Gatherings</h1>
             <p className="text-muted-foreground">Connect with the community in real-time.</p>
           </div>
           <Button className="rounded-lg px-6" data-testid="button-create-event">
@@ -79,7 +79,7 @@ export default function Events() {
           {/* Event List - 2 Columns Wide */}
           <div className="lg:col-span-2 space-y-6">
             <div className="flex flex-col gap-4">
-              <h2 className="font-bold text-muted-foreground text-sm uppercase tracking-wider flex items-center gap-2">
+              <h2 className="font-normal text-muted-foreground text-sm uppercase tracking-wider flex items-center gap-2">
                 <CalendarIcon className="w-4 h-4" /> {getDateLabel()}
               </h2>
               {selectedMeetings.length > 0 ? (
@@ -97,7 +97,7 @@ export default function Events() {
             <Card className="border-none shadow-md bg-card rounded-sm">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-4 px-2">
-                  <span className="font-bold text-lg text-muted-foreground">November 2025</span>
+                  <span className="font-normal text-lg text-muted-foreground">November 2025</span>
                   <div className="flex gap-1">
                     <Button variant="ghost" size="icon" className="rounded-md"><ChevronLeft className="w-4 h-4" /></Button>
                     <Button variant="ghost" size="icon" className="rounded-md"><ChevronRight className="w-4 h-4" /></Button>
@@ -110,10 +110,10 @@ export default function Events() {
                   className="rounded-xs border-none w-full flex justify-center"
                   classNames={{
                     head_row: "flex w-full justify-between mb-2",
-                    head_cell: "text-muted-foreground rounded-md w-10 font-normal text-[0.75rem] uppercase font-bold",
+                    head_cell: "text-muted-foreground rounded-md w-10 font-normal text-[0.75rem] uppercase font-normal",
                     row: "flex w-full mt-2 justify-between",
                     cell: "h-10 w-10 p-0 text-center text-xs relative flex items-center justify-center",
-                    day: "h-10 w-10 p-0 font-medium flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity",
+                    day: "h-10 w-10 p-0 font-normal flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity",
                     day_outside: "text-muted-foreground/40",
                     day_disabled: "text-muted-foreground/40",
                     day_hidden: "invisible",
@@ -145,7 +145,7 @@ export default function Events() {
             </Card>
             
             <div className="mt-6 p-4 bg-primary/5 rounded-xs border border-primary/10">
-              <h3 className="font-bold text-muted-foreground mb-2">Host an Event?</h3>
+              <h3 className="font-normal text-muted-foreground mb-2">Host an Event?</h3>
               <p className="text-base text-muted-foreground mb-3">Community members can host their own gatherings.</p>
               <Button className="w-full rounded-lg px-6" data-testid="button-learn-more">Learn More</Button>
             </div>
@@ -155,7 +155,7 @@ export default function Events() {
                 <div className="w-12 h-12 bg-background rounded-full flex items-center justify-center mb-3 shadow-sm">
                   <Users className="w-6 h-6 text-muted-foreground" />
                 </div>
-                <h3 className="font-bold text-muted-foreground">Live Q&A with Dr. Maya</h3>
+                <h3 className="font-normal text-muted-foreground">Live Q&A with Dr. Maya</h3>
                 <p className="text-sm text-muted-foreground mt-1 mb-4">Friday, 2:00 PM EST • Zoom</p>
                 <Button className="rounded-lg px-6 w-full" data-testid="button-rsvp-sidebar">RSVP Now</Button>
               </Card>

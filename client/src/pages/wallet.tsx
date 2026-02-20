@@ -133,7 +133,7 @@ export default function Wallet() {
     <Layout>
       <div className="max-w-3xl mx-auto p-4 lg:p-8 space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-serif font-bold text-muted-foreground">Lightning Wallet</h1>
+          <h1 className="text-2xl font-serif font-normal text-muted-foreground">Lightning Wallet</h1>
           <Button variant="outline" size="sm" className="gap-2" data-testid="button-scan">
             <QrCode className="w-4 h-4" /> Scan
           </Button>
@@ -147,11 +147,11 @@ export default function Wallet() {
           <CardContent className="p-6 relative z-10">
             <div className="flex items-center gap-2 mb-1 opacity-90">
               <Zap className="w-5 h-5 fill-white" />
-              <span className="font-medium text-sm tracking-wider uppercase">
+              <span className="font-normal text-sm tracking-wider uppercase">
                 {nwcConnection ? "Wallet Balance" : "Community Sats"}
               </span>
             </div>
-            <div className="text-4xl font-bold font-mono mb-6" data-testid="text-wallet-balance">
+            <div className="text-4xl font-normal font-mono mb-6" data-testid="text-wallet-balance">
               {displayBalance !== null ? displayBalance.toLocaleString() : "---"} <span className="text-lg opacity-80">sats</span>
             </div>
             
@@ -179,7 +179,7 @@ export default function Wallet() {
         <div className="grid grid-cols-2 gap-4">
           <Card className="border-none shadow-sm">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold font-mono text-green-600" data-testid="text-sats-received">
+              <div className="text-2xl font-normal font-mono text-green-600" data-testid="text-sats-received">
                 {(userStats?.satsReceived || 0).toLocaleString()}
               </div>
               <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">Sats Received</div>
@@ -188,7 +188,7 @@ export default function Wallet() {
           </Card>
           <Card className="border-none shadow-sm">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold font-mono text-orange-500" data-testid="text-sats-given">
+              <div className="text-2xl font-normal font-mono text-orange-500" data-testid="text-sats-given">
                 {(userStats?.satsGiven || 0).toLocaleString()}
               </div>
               <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">Sats Given</div>
@@ -200,7 +200,7 @@ export default function Wallet() {
         {/* Connect Wallet Section */}
         <Card className="border-none shadow-sm bg-card overflow-hidden">
           <CardHeader className="bg-muted/30 pb-4">
-            <CardTitle className="text-lg font-bold flex items-center gap-2">
+            <CardTitle className="text-lg font-normal flex items-center gap-2">
               <span className="bg-purple-500/10 p-1.5 rounded-lg">
                 <WalletIcon className="w-5 h-5 text-purple-500" />
               </span>
@@ -214,7 +214,7 @@ export default function Wallet() {
             {!nwcConnection ? (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="nwc-uri" className="text-xs font-bold text-muted-foreground uppercase">
+                  <Label htmlFor="nwc-uri" className="text-xs font-normal text-muted-foreground uppercase">
                     NWC Connection String
                   </Label>
                   <Input 
@@ -228,7 +228,7 @@ export default function Wallet() {
                 </div>
                 <Button 
                   onClick={handleConnectNWC}
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold"
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-normal"
                   disabled={!nwcUri || isConnecting}
                   data-testid="button-connect-wallet"
                 >
@@ -259,7 +259,7 @@ export default function Wallet() {
                       <Check className="w-6 h-6 text-green-600" />
                     </div>
                     <div>
-                      <p className="font-bold text-green-700 dark:text-green-400" data-testid="text-wallet-connected">
+                      <p className="font-normal text-green-700 dark:text-green-400" data-testid="text-wallet-connected">
                         Wallet Connected
                       </p>
                       <p className="text-sm text-green-600/80 dark:text-green-500/80">
@@ -290,7 +290,7 @@ export default function Wallet() {
             )}
             
             <div className="mt-6 pt-4 border-t border-border/40 text-center">
-              <p className="text-[10px] text-muted-foreground/60 uppercase tracking-wider font-medium">
+              <p className="text-[10px] text-muted-foreground/60 uppercase tracking-wider font-normal">
                 Non-custodial. Your keys, your coins. We never hold your funds.
               </p>
             </div>
@@ -300,7 +300,7 @@ export default function Wallet() {
         {/* Chart */}
         <Card className="border-none shadow-sm">
           <CardHeader>
-            <CardTitle className="text-sm font-medium text-muted-foreground">Zap Activity (Last 7 Days)</CardTitle>
+            <CardTitle className="text-sm font-normal text-muted-foreground">Zap Activity (Last 7 Days)</CardTitle>
           </CardHeader>
           <CardContent className="h-[200px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -323,7 +323,7 @@ export default function Wallet() {
 
         {/* Recent Transactions */}
         <div>
-          <h3 className="font-bold mb-4 flex items-center gap-2 text-muted-foreground">
+          <h3 className="font-normal mb-4 flex items-center gap-2 text-muted-foreground">
             <History className="w-4 h-4" /> Recent Community Zaps
           </h3>
           <div className="space-y-3">
@@ -335,11 +335,11 @@ export default function Wallet() {
                       <Zap className="w-5 h-5 text-orange-500" />
                     </div>
                     <div>
-                      <p className="font-medium text-sm">Zapped post by community member</p>
+                      <p className="font-normal text-sm">Zapped post by community member</p>
                       <p className="text-xs text-muted-foreground">Recent activity</p>
                     </div>
                   </div>
-                  <span className="font-mono font-medium text-orange-500">⚡ sats</span>
+                  <span className="font-mono font-normal text-orange-500">⚡ sats</span>
                 </div>
               ))
             ) : (

@@ -43,7 +43,7 @@ export function EventCard({ event }: EventProps) {
 
           {/* Date Block - Bottom Left overlay */}
           <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent z-20">
-             <div className="text-white font-bold text-xs flex items-center gap-1">
+             <div className="text-white font-normal text-xs flex items-center gap-1">
                 <CalendarIcon className="w-3 h-3" />
                 <span>{event.date === "Today" ? "TODAY" : "NOV 28"}</span>
              </div>
@@ -54,7 +54,7 @@ export function EventCard({ event }: EventProps) {
         <CardContent className="p-4 flex-1 flex flex-col justify-between min-w-0">
           <div>
             <div className="flex justify-between items-start gap-2">
-              <h3 className="font-bold text-lg leading-tight text-muted-foreground group-hover:text-primary transition-colors line-clamp-1">
+              <h3 className="font-normal text-lg leading-tight text-muted-foreground group-hover:text-primary transition-colors line-clamp-1">
                 {event.title}
               </h3>
               <Button variant="ghost" size="icon" className="text-muted-foreground shrink-0">
@@ -63,7 +63,7 @@ export function EventCard({ event }: EventProps) {
             </div>
             
             <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1 mb-2">
-              <span className="font-medium text-foreground">{event.time}</span>
+              <span className="font-normal text-foreground">{event.time}</span>
               <span>•</span>
               <span>{event.type}</span>
             </div>
@@ -87,7 +87,7 @@ export function EventCard({ event }: EventProps) {
                   </div>
                 ))}
               </div>
-              <span className="text-xs text-muted-foreground font-medium">+{event.attendees} going</span>
+              <span className="text-xs text-muted-foreground font-normal">+{event.attendees} going</span>
             </div>
 
             <Button className="px-6 transition-colors" data-testid="button-event-rsvp">

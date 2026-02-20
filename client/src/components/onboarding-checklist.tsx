@@ -74,7 +74,7 @@ export function OnboardingChecklist({ data: initialData, className }: Props) {
           <div className="w-16 h-16 bg-primary/20 text-primary rounded-full flex items-center justify-center mx-auto mb-4">
             <PartyPopper className="w-8 h-8" />
           </div>
-          <h3 className="text-2xl font-serif font-bold mb-2">All Set! 🎉</h3>
+          <h3 className="text-2xl font-serif font-normal mb-2">All Set! 🎉</h3>
           <p className="text-muted-foreground">You've completed all onboarding tasks.</p>
         </div>
       ) : (
@@ -82,10 +82,10 @@ export function OnboardingChecklist({ data: initialData, className }: Props) {
           <div className="bg-primary/5 p-6 border-b border-primary/10">
             <div className="flex justify-between items-end mb-2">
               <div>
-                <h3 className="font-serif font-bold text-2xl">Welcome Checklist</h3>
+                <h3 className="font-serif font-normal text-2xl">Welcome Checklist</h3>
                 <p className="text-base text-muted-foreground" style={{ fontSize: "16px" }}>Get set up for success</p>
               </div>
-              <span className="text-2xl font-bold text-primary">{progress}%</span>
+              <span className="text-2xl font-normal text-primary">{progress}%</span>
             </div>
             <Progress value={progress} className="h-2 bg-primary/10 [&>div]:bg-primary" />
           </div>
@@ -103,7 +103,7 @@ export function OnboardingChecklist({ data: initialData, className }: Props) {
                     ) : (
                       <div className="w-5 h-5 rounded-full border-2 border-muted-foreground/30" />
                     )}
-                    <span className="font-medium">{section.title}</span>
+                    <span className="font-normal">{section.title}</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <span>{section.steps.filter(s => s.isCompleted).length}/{section.steps.length} lessons</span>
@@ -125,7 +125,7 @@ export function OnboardingChecklist({ data: initialData, className }: Props) {
                           <Circle className="w-5 h-5 text-muted-foreground group-hover:text-primary" />
                         )}
                         <span className={cn(
-                          "transition-colors font-medium",
+                          "transition-colors font-normal",
                           step.isCompleted ? "text-muted-foreground line-through decoration-primary/30" : "text-foreground"
                         )} style={{ fontSize: "16px" }}>
                           {step.label}

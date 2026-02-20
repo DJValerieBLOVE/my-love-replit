@@ -115,7 +115,7 @@ function ContentCard({
               <Icon className="w-5 h-5 text-muted-foreground" />
             </div>
             <div className="flex-1 min-w-0">
-              <h4 className="font-bold text-sm truncate">{title}</h4>
+              <h4 className="font-normal text-sm truncate">{title}</h4>
               <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{description || "No description"}</p>
             </div>
             <ExternalLink className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -151,7 +151,7 @@ function BadgeDisplay({ badges }: { badges: string[] | null }) {
             {badge.emoji}
           </div>
           <div>
-            <h4 className="font-bold text-sm">{badge.name}</h4>
+            <h4 className="font-normal text-sm">{badge.name}</h4>
             <p className="text-[10px] text-muted-foreground">{badge.desc}</p>
           </div>
         </div>
@@ -162,7 +162,7 @@ function BadgeDisplay({ badges }: { badges: string[] | null }) {
             🔒
           </div>
           <div>
-            <h4 className="font-bold text-sm text-muted-foreground">Locked Badge</h4>
+            <h4 className="font-normal text-sm text-muted-foreground">Locked Badge</h4>
             <p className="text-[10px] text-muted-foreground">Keep playing to unlock</p>
           </div>
         </div>
@@ -398,18 +398,18 @@ export default function Profile() {
                 {user.avatar ? (
                   <img src={user.avatar} alt={user.name} className="w-full h-full rounded-full object-cover" />
                 ) : (
-                  <span className="text-2xl font-bold">{user.name.charAt(0)}</span>
+                  <span className="text-2xl font-normal">{user.name.charAt(0)}</span>
                 )}
               </div>
               <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-white/80 mb-1">
+                <p className="text-xs font-normal uppercase tracking-wider text-white/80 mb-1">
                   {isOwnProfile ? "Current Level" : user.name}
                 </p>
-                <h2 className="text-2xl font-serif font-bold flex items-center gap-2" data-testid="text-user-level">
+                <h2 className="text-2xl font-serif font-normal flex items-center gap-2" data-testid="text-user-level">
                   {user.level} <Crown className="w-5 h-5 text-yellow-300 fill-yellow-300" />
                 </h2>
                 {isOwnProfile && (
-                  <div className="mt-2 flex items-center gap-2 text-xs font-medium">
+                  <div className="mt-2 flex items-center gap-2 text-xs font-normal">
                     <Progress value={75} className="h-1.5 w-24 bg-black/20" indicatorClassName="bg-yellow-300" />
                     <span>750 / 1000 XP</span>
                   </div>
@@ -434,12 +434,12 @@ export default function Profile() {
             <CardContent className="p-6 flex flex-col justify-center h-full">
               <div className="flex justify-between items-start mb-2">
                 <div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-orange-600/80">
+                  <p className="text-xs font-normal uppercase tracking-wider text-orange-600/80">
                     {isOwnProfile ? "Wallet Balance" : "Total Sats"}
                   </p>
-                  <h2 className="text-3xl font-black text-orange-500 flex items-center gap-2 mt-1" data-testid="text-sats">
+                  <h2 className="text-3xl font-normal text-orange-500 flex items-center gap-2 mt-1" data-testid="text-sats">
                     {(isOwnProfile ? user.walletBalance : user.sats).toLocaleString()}
-                    <span className="text-sm font-bold text-orange-400 mt-1">Sats</span>
+                    <span className="text-sm font-normal text-orange-400 mt-1">Sats</span>
                   </h2>
                 </div>
                 <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
@@ -455,11 +455,11 @@ export default function Profile() {
                 <div className="flex gap-4 text-xs mt-2">
                   <div>
                     <span className="text-muted-foreground">Given:</span>{" "}
-                    <span className="font-bold text-orange-500">{user.satsGiven}</span>
+                    <span className="font-normal text-orange-500">{user.satsGiven}</span>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Received:</span>{" "}
-                    <span className="font-bold text-orange-500">{user.satsReceived}</span>
+                    <span className="font-normal text-orange-500">{user.satsReceived}</span>
                   </div>
                 </div>
               )}
@@ -471,19 +471,19 @@ export default function Profile() {
               <div className="flex items-center justify-between gap-2 mb-4">
                 <div className="flex items-center gap-2">
                   <Flame className="w-5 h-5 text-blue-500 fill-blue-500" />
-                  <h4 className="font-bold text-xs uppercase text-blue-600/80">Streak</h4>
+                  <h4 className="font-normal text-xs uppercase text-blue-600/80">Streak</h4>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-2xl font-black text-blue-500" data-testid="text-streak">{user.streak}</span>
-                  <span className="text-xs font-bold text-blue-400">Days</span>
+                  <span className="text-2xl font-normal text-blue-500" data-testid="text-streak">{user.streak}</span>
+                  <span className="text-xs font-normal text-blue-400">Days</span>
                 </div>
               </div>
 
               <div className="flex justify-between gap-1.5">
                 {streakDays.map((d, i) => (
                   <div key={i} className={cn(
-                    "w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all",
-                    d.active ? "bg-blue-500 text-white shadow-md" : "bg-blue-200 text-blue-400 font-bold"
+                    "w-9 h-9 rounded-full flex items-center justify-center text-xs font-normal transition-all",
+                    d.active ? "bg-blue-500 text-white shadow-md" : "bg-blue-200 text-blue-400 font-normal"
                   )}>
                     {d.day}
                   </div>
@@ -496,7 +496,7 @@ export default function Profile() {
         {nostrProfile?.about && (
           <Card className="rounded-xs border-none shadow-sm" data-testid="card-about">
             <CardContent className="p-5">
-              <h3 className="font-serif text-sm font-bold uppercase tracking-wider text-muted-foreground mb-2">About</h3>
+              <h3 className="font-serif text-sm font-normal uppercase tracking-wider text-muted-foreground mb-2">About</h3>
               <p className="text-sm text-foreground/80 whitespace-pre-line">{nostrProfile.about}</p>
             </CardContent>
           </Card>
@@ -539,7 +539,7 @@ export default function Profile() {
               <div className="border-t pt-4 space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="font-bold text-sm">Looking for an Accountability Buddy</h4>
+                    <h4 className="font-normal text-sm">Looking for an Accountability Buddy</h4>
                     <p className="text-xs text-muted-foreground">Let others know you're open to connecting</p>
                   </div>
                   {isPaidMember ? (
@@ -573,7 +573,7 @@ export default function Profile() {
               <div className="border-t pt-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="font-bold text-sm">LaB Interests</h4>
+                    <h4 className="font-normal text-sm">LaB Interests</h4>
                     <p className="text-xs text-muted-foreground">Select your areas of interest for better matching</p>
                   </div>
                   {!isPaidMember && (
@@ -590,7 +590,7 @@ export default function Profile() {
                       onClick={() => isPaidMember && toggleInterest(interest)}
                       disabled={!isPaidMember}
                       className={cn(
-                        "px-3 py-1.5 rounded-full text-xs font-medium transition-colors border",
+                        "px-3 py-1.5 rounded-full text-xs font-normal transition-colors border",
                         editInterests.includes(interest)
                           ? "bg-foreground text-background border-foreground"
                           : isPaidMember
@@ -640,7 +640,7 @@ export default function Profile() {
             <TabsContent value="journey" className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-6">
-                  <h3 className="font-serif text-xl font-bold text-muted-foreground flex items-center gap-2">
+                  <h3 className="font-serif text-xl font-normal text-muted-foreground flex items-center gap-2">
                     <Target className="w-5 h-5" strokeWidth={1.5} /> 11 Big Dreams Progress
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -650,9 +650,9 @@ export default function Profile() {
                           <div className="flex justify-between items-center mb-2">
                             <div className="flex items-center gap-2">
                               <div className="w-2 h-2 rounded-full" style={{ backgroundColor: area.hex }} />
-                              <span className="font-bold text-sm uppercase text-muted-foreground">{area.name}</span>
+                              <span className="font-normal text-sm uppercase text-muted-foreground">{area.name}</span>
                             </div>
-                            <span className="text-sm font-bold" style={{ color: area.hex }}>{area.progress}%</span>
+                            <span className="text-sm font-normal" style={{ color: area.hex }}>{area.progress}%</span>
                           </div>
                           <div className="h-2 bg-muted rounded-full overflow-hidden">
                             <div className="h-full rounded-full transition-all duration-1000" style={{ width: `${area.progress}%`, backgroundColor: area.hex }} />
@@ -667,7 +667,7 @@ export default function Profile() {
                 </div>
 
                 <div className="space-y-6">
-                  <h3 className="font-serif text-xl font-bold text-muted-foreground flex items-center gap-2">
+                  <h3 className="font-serif text-xl font-normal text-muted-foreground flex items-center gap-2">
                     <Gift className="w-5 h-5" strokeWidth={1.5} /> Next Rewards
                   </h3>
                   <Card className="border-none shadow-sm bg-muted/30 rounded-xs">
@@ -677,11 +677,11 @@ export default function Profile() {
                           <Zap className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
                         </div>
                         <div>
-                          <h4 className="font-bold text-sm">7-Day Streak Bonus</h4>
+                          <h4 className="font-normal text-sm">7-Day Streak Bonus</h4>
                           <p className="text-xs text-muted-foreground mt-1">Earn 500 Sats for maintaining a 7-day practice streak.</p>
                           <div className="flex items-center gap-2 mt-2">
                             <Progress value={100} className="h-1.5 w-24" />
-                            <span className="text-[10px] font-bold text-green-600">CLAIMED</span>
+                            <span className="text-[10px] font-normal text-green-600">CLAIMED</span>
                           </div>
                         </div>
                       </div>
@@ -691,11 +691,11 @@ export default function Profile() {
                           <Package className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
                         </div>
                         <div>
-                          <h4 className="font-bold text-sm">Mystery Box (Level 13)</h4>
+                          <h4 className="font-normal text-sm">Mystery Box (Level 13)</h4>
                           <p className="text-xs text-muted-foreground mt-1">Unlock a special digital collectible when you reach Level 13.</p>
                           <div className="flex items-center gap-2 mt-2">
                             <Progress value={75} className="h-1.5 w-24" />
-                            <span className="text-[10px] font-bold text-muted-foreground">75%</span>
+                            <span className="text-[10px] font-normal text-muted-foreground">75%</span>
                           </div>
                         </div>
                       </div>
@@ -705,11 +705,11 @@ export default function Profile() {
                           <Brain className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
                         </div>
                         <div>
-                          <h4 className="font-bold text-sm">Mind Master Badge</h4>
+                          <h4 className="font-normal text-sm">Mind Master Badge</h4>
                           <p className="text-xs text-muted-foreground mt-1">Complete 30 days of meditation practices.</p>
                           <div className="flex items-center gap-2 mt-2">
                             <Progress value={45} className="h-1.5 w-24" />
-                            <span className="text-[10px] font-bold text-muted-foreground">14/30</span>
+                            <span className="text-[10px] font-normal text-muted-foreground">14/30</span>
                           </div>
                         </div>
                       </div>
@@ -731,7 +731,7 @@ export default function Profile() {
               )}
                 {content.experiments.length > 0 && (
                   <div className="space-y-4">
-                    <h3 className="font-serif text-lg font-bold text-muted-foreground flex items-center gap-2">
+                    <h3 className="font-serif text-lg font-normal text-muted-foreground flex items-center gap-2">
                       <FlaskConical className="w-5 h-5" /> Experiments ({stats.experimentsCount})
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -750,7 +750,7 @@ export default function Profile() {
 
                 {content.courses.length > 0 && (
                   <div className="space-y-4">
-                    <h3 className="font-serif text-lg font-bold text-muted-foreground flex items-center gap-2">
+                    <h3 className="font-serif text-lg font-normal text-muted-foreground flex items-center gap-2">
                       <BookOpen className="w-5 h-5" /> Courses ({stats.coursesCount})
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -769,7 +769,7 @@ export default function Profile() {
 
                 {content.communities.length > 0 && (
                   <div className="space-y-4">
-                    <h3 className="font-serif text-lg font-bold text-muted-foreground flex items-center gap-2">
+                    <h3 className="font-serif text-lg font-normal text-muted-foreground flex items-center gap-2">
                       <Users className="w-5 h-5" /> Communities ({stats.communitiesCount})
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

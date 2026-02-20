@@ -36,7 +36,7 @@ export default function MentorStudio() {
       <div className="max-w-5xl mx-auto p-4 lg:p-8 space-y-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-serif font-bold text-muted-foreground mb-2 flex items-center gap-2">
+            <h1 className="text-3xl font-serif font-normal text-muted-foreground mb-2 flex items-center gap-2">
               <Bot className="w-8 h-8 text-muted-foreground" strokeWidth={1.5} /> Magic Mentor Studio
             </h1>
             <p className="text-muted-foreground">
@@ -73,7 +73,7 @@ export default function MentorStudio() {
                     <div className="bg-primary-light p-4 rounded-full w-16 h-16 mx-auto mb-4 group-hover:scale-110 transition-transform flex items-center justify-center">
                       <Upload className="w-8 h-8 text-muted-foreground" strokeWidth={1.5} />
                     </div>
-                    <h3 className="font-medium text-lg mb-1">Upload Training Materials</h3>
+                    <h3 className="font-normal text-lg mb-1">Upload Training Materials</h3>
                     <p className="text-sm text-muted-foreground mb-4">
                       Drag & drop PDF, DOCX, or TXT files here
                     </p>
@@ -81,7 +81,7 @@ export default function MentorStudio() {
                   </div>
 
                   <div className="space-y-3">
-                    <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Active Knowledge Sources</h4>
+                    <h4 className="text-sm font-normal text-muted-foreground uppercase tracking-wider">Active Knowledge Sources</h4>
                     <div className="space-y-2">
                       {files.map((file) => (
                         <div key={file.id} className="flex items-center justify-between p-3 bg-[#FAFAFA] rounded-md border border-[#E5E5E5]">
@@ -90,7 +90,7 @@ export default function MentorStudio() {
                               <FileText className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
                             </div>
                             <div>
-                              <p className="font-medium text-sm">{file.name}</p>
+                              <p className="font-normal text-sm">{file.name}</p>
                               <p className="text-xs text-muted-foreground">{file.size} • {file.status}</p>
                             </div>
                           </div>
@@ -113,15 +113,15 @@ export default function MentorStudio() {
                   <CardContent className="space-y-4">
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">Documents Processed</span>
-                      <span className="font-bold">12</span>
+                      <span className="font-normal">12</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">Knowledge Tokens</span>
-                      <span className="font-bold">145k</span>
+                      <span className="font-normal">145k</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">Last Update</span>
-                      <span className="font-bold">2h ago</span>
+                      <span className="font-normal">2h ago</span>
                     </div>
                     <Separator className="bg-primary/20" />
                     <div className="pt-2">
@@ -149,7 +149,7 @@ export default function MentorStudio() {
               <CardContent className="space-y-8">
                 <div className="space-y-4">
                   <div className="flex justify-between">
-                    <label className="font-medium">Tone Warmth</label>
+                    <label className="font-normal">Tone Warmth</label>
                     <span className="text-sm text-muted-foreground">Empathetic & Loving</span>
                   </div>
                   <Slider defaultValue={[80]} max={100} step={1} className="w-full" />
@@ -161,7 +161,7 @@ export default function MentorStudio() {
 
                 <div className="space-y-4">
                   <div className="flex justify-between">
-                    <label className="font-medium">Directness</label>
+                    <label className="font-normal">Directness</label>
                     <span className="text-sm text-muted-foreground">Balanced</span>
                   </div>
                   <Slider defaultValue={[50]} max={100} step={1} className="w-full" />
@@ -173,7 +173,7 @@ export default function MentorStudio() {
 
                 <div className="space-y-4">
                   <div className="flex justify-between">
-                    <label className="font-medium">Spirituality Level</label>
+                    <label className="font-normal">Spirituality Level</label>
                     <span className="text-sm text-muted-foreground">High (Woo-woo)</span>
                   </div>
                   <Slider defaultValue={[90]} max={100} step={1} className="w-full" />
@@ -186,7 +186,7 @@ export default function MentorStudio() {
                 <Separator />
 
                 <div className="space-y-2">
-                  <label className="font-medium">System Prompt / Core Directive</label>
+                  <label className="font-normal">System Prompt / Core Directive</label>
                   <p className="text-xs text-muted-foreground mb-2">The fundamental instructions for the AI.</p>
                   <div className="bg-[#FAFAFA] p-4 rounded-md text-sm font-mono text-muted-foreground border border-muted">
                     You are the Magic Mentor, a wise, loving, and slightly sassy guide for the 11x LOVE Lab. 
@@ -214,7 +214,7 @@ export default function MentorStudio() {
               <CardContent className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <label className="text-base font-medium">Allow Nicknames</label>
+                    <label className="text-base font-normal">Allow Nicknames</label>
                     <p className="text-sm text-muted-foreground">Users can set what the Mentor calls them (e.g. "Goddess", "Boss").</p>
                   </div>
                   <Switch checked={true} />
@@ -222,7 +222,7 @@ export default function MentorStudio() {
                 <Separator />
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <label className="text-base font-medium">Coaching Style Selection</label>
+                    <label className="text-base font-normal">Coaching Style Selection</label>
                     <p className="text-sm text-muted-foreground">Users can choose between "Cheerleader", "Drill Sergeant", or "Zen Master".</p>
                   </div>
                   <Switch checked={true} />
@@ -230,7 +230,7 @@ export default function MentorStudio() {
                 <Separator />
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <label className="text-base font-medium">Context Memory</label>
+                    <label className="text-base font-normal">Context Memory</label>
                     <p className="text-sm text-muted-foreground">Mentor remembers past journal entries and "Morning 5 Vs" (Privacy opt-in required).</p>
                   </div>
                   <Switch checked={true} />

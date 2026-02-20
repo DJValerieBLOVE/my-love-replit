@@ -105,7 +105,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <div className="relative flex items-center justify-center">
                   <EqVisualizer size={60} isLogo={true} />
                 </div>
-                <span className="font-serif font-bold text-xl tracking-tight text-muted-foreground">My Masterpiece</span>
+                <span className="font-serif font-normal text-xl tracking-tight text-muted-foreground">My Masterpiece</span>
               </div>
             </Link>
           </div>
@@ -130,12 +130,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <img src={BitcoinIcon} alt="Bitcoin" className="w-5 h-5 rounded-full" />
                 <div className="flex items-center gap-3 text-sm">
                   <div className="flex items-center gap-1" data-testid="sats-given">
-                    <span className="text-orange-600 font-medium">↑</span>
+                    <span className="text-orange-600 font-normal">↑</span>
                     <span className="text-orange-600">{userStats?.satsGiven?.toLocaleString() || 0}</span>
                   </div>
                   <span className="text-[#C4C4C4]">|</span>
                   <div className="flex items-center gap-1" data-testid="sats-received">
-                    <span className="text-green-600 font-medium">↓</span>
+                    <span className="text-green-600 font-normal">↓</span>
                     <span className="text-green-600">{userStats?.satsReceived?.toLocaleString() || 0}</span>
                   </div>
                 </div>
@@ -177,7 +177,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       {profile?.npub?.slice(0, 12)}...{profile?.npub?.slice(-4)}
                     </span>
                     {isAdmin && (
-                      <span className="text-xs text-love-family font-medium mt-1">Admin</span>
+                      <span className="text-xs text-love-family font-normal mt-1">Admin</span>
                     )}
                     <MembershipBadge />
                   </DropdownMenuLabel>
@@ -296,7 +296,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       data-testid={`nav-mobile-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                     >
                       <item.icon className="w-5 h-5" strokeWidth={1.5} />
-                      <span className="font-medium">{item.label}</span>
+                      <span className="font-normal">{item.label}</span>
                     </div>
                   </Link>
                 </SheetClose>

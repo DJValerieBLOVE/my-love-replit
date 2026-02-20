@@ -224,7 +224,7 @@ export function MasterpieceDashboard() {
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-red-500 border-2 border-white" />
           </div>
           <div className="text-xs text-muted-foreground">Your accountability partners</div>
-          <div className="text-[10px] text-green-600 font-medium">All on track this week!</div>
+          <div className="text-[10px] text-green-600 font-normal">All on track this week!</div>
         </div>
       ),
       detailsLink: "/buddies",

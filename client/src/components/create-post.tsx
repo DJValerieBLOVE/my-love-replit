@@ -101,7 +101,7 @@ export function CreatePost({ placeholder = "Share something with the community..
               </Button>
             </div>
             <Button 
-              className="rounded-full px-6 font-bold" 
+              className="rounded-full px-6 font-normal" 
               onClick={handlePost}
               disabled={!content.trim() || isPosting}
               data-testid="button-post"

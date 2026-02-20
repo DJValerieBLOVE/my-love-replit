@@ -141,7 +141,7 @@ export default function HowToUse() {
       <div className="w-full h-full overflow-y-auto pb-20 md:pb-4">
         <div className="max-w-3xl mx-auto p-4 md:p-6 space-y-6">
           <div className="text-center mb-8">
-            <h1 className="text-2xl md:text-3xl font-serif font-bold text-foreground mb-2" data-testid="text-how-to-use-title">
+            <h1 className="text-2xl md:text-3xl font-serif font-normal text-foreground mb-2" data-testid="text-how-to-use-title">
               How to Use My Masterpiece
             </h1>
             <p className="text-muted-foreground" data-testid="text-how-to-use-subtitle">
@@ -162,7 +162,7 @@ export default function HowToUse() {
               <CardContent className="space-y-4">
                 {section.items.map((item, index) => (
                   <div key={index} className="pl-11" data-testid={`item-${section.title.toLowerCase().replace(/\s+/g, '-')}-${index}`}>
-                    <h4 className="font-medium text-foreground mb-1" data-testid={`text-item-title-${section.title.toLowerCase().replace(/\s+/g, '-')}-${index}`}>{item.title}</h4>
+                    <h4 className="font-normal text-foreground mb-1" data-testid={`text-item-title-${section.title.toLowerCase().replace(/\s+/g, '-')}-${index}`}>{item.title}</h4>
                     <p className="text-sm text-muted-foreground leading-relaxed" data-testid={`text-item-desc-${section.title.toLowerCase().replace(/\s+/g, '-')}-${index}`}>{item.description}</p>
                   </div>
                 ))}

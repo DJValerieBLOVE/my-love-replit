@@ -185,7 +185,7 @@ export default function CourseDetail() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                 <div className="absolute bottom-4 left-4 right-4">
-                  <h1 className="text-2xl md:text-3xl font-bold text-white">{course.title}</h1>
+                  <h1 className="text-2xl md:text-3xl font-normal text-white">{course.title}</h1>
                   {course.loveCodeArea && (
                     <Badge 
                       style={{ backgroundColor: categoryColor }}
@@ -200,7 +200,7 @@ export default function CourseDetail() {
 
             {!course.thumbnail && (
               <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-muted-foreground">{course.title}</h1>
+                <h1 className="text-2xl md:text-3xl font-normal text-muted-foreground">{course.title}</h1>
                 {course.loveCodeArea && (
                   <Badge 
                     style={{ backgroundColor: categoryColor }}
@@ -316,12 +316,12 @@ export default function CourseDetail() {
                             <img src={c.author.avatar} alt="" className="w-6 h-6 rounded-full" />
                           ) : (
                             <div className="w-6 h-6 rounded-full bg-purple-100 flex items-center justify-center">
-                              <span className="text-purple-600 text-xs font-semibold">
+                              <span className="text-purple-600 text-xs font-normal">
                                 {c.author?.name?.charAt(0) || "?"}
                               </span>
                             </div>
                           )}
-                          <span className="text-sm font-medium">{c.author?.name || "Anonymous"}</span>
+                          <span className="text-sm font-normal">{c.author?.name || "Anonymous"}</span>
                           <span className="text-xs text-muted-foreground">
                             {new Date(c.createdAt).toLocaleDateString()}
                           </span>
@@ -365,7 +365,7 @@ export default function CourseDetail() {
                   <>
                     {course.accessType === "paid" && course.price > 0 ? (
                       <div className="text-center">
-                        <p className="text-2xl font-bold text-yellow-500 flex items-center justify-center gap-1">
+                        <p className="text-2xl font-normal text-yellow-500 flex items-center justify-center gap-1">
                           <Zap className="w-5 h-5" />
                           {course.price.toLocaleString()} sats
                         </p>
@@ -420,7 +420,7 @@ export default function CourseDetail() {
                           {isComplete ? <CheckCircle className="w-4 h-4" /> : index + 1}
                         </span>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">{lesson.title}</p>
+                          <p className="text-sm font-normal truncate">{lesson.title}</p>
                           {lesson.duration && (
                             <p className="text-xs text-muted-foreground">{lesson.duration} min</p>
                           )}
@@ -444,13 +444,13 @@ export default function CourseDetail() {
                     <img src={course.creator.avatar} alt="" className="w-10 h-10 rounded-full" />
                   ) : (
                     <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                      <span className="text-purple-600 font-semibold">
+                      <span className="text-purple-600 font-normal">
                         {course.creator?.name?.charAt(0) || "?"}
                       </span>
                     </div>
                   )}
                   <div>
-                    <p className="font-medium">{course.creator?.name || "Unknown"}</p>
+                    <p className="font-normal">{course.creator?.name || "Unknown"}</p>
                     <p className="text-sm text-muted-foreground">{course.creator?.handle}</p>
                   </div>
                 </div>

@@ -114,7 +114,7 @@ export default function CommunityAdmin() {
     return (
       <Layout>
         <div className="max-w-2xl mx-auto p-8 text-center">
-          <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
+          <h1 className="text-2xl font-normal mb-4">Access Denied</h1>
           <p className="text-muted-foreground mb-4">You don't have admin access to this community.</p>
           <Link href="/community">
             <Button>Back to Communities</Button>
@@ -151,7 +151,7 @@ export default function CommunityAdmin() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-serif font-bold text-muted-foreground">{community.name}</h1>
+            <h1 className="text-2xl font-serif font-normal text-muted-foreground">{community.name}</h1>
             <p className="text-sm text-muted-foreground">Admin Dashboard</p>
           </div>
         </div>
@@ -159,19 +159,19 @@ export default function CommunityAdmin() {
         <div className="grid grid-cols-3 gap-4">
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-3xl font-bold text-primary">{community.memberCount || 0}</div>
+              <div className="text-3xl font-normal text-primary">{community.memberCount || 0}</div>
               <div className="text-sm text-muted-foreground">Members</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-3xl font-bold text-yellow-500">{pendingRequests.length}</div>
+              <div className="text-3xl font-normal text-yellow-500">{pendingRequests.length}</div>
               <div className="text-sm text-muted-foreground">Pending</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-3xl font-bold text-green-500">{members.filter((m: any) => m.role === "admin" || m.role === "moderator").length}</div>
+              <div className="text-3xl font-normal text-green-500">{members.filter((m: any) => m.role === "admin" || m.role === "moderator").length}</div>
               <div className="text-sm text-muted-foreground">Staff</div>
             </CardContent>
           </Card>
@@ -219,7 +219,7 @@ export default function CommunityAdmin() {
                             <AvatarFallback>{member.user?.displayName?.[0] || "?"}</AvatarFallback>
                           </Avatar>
                           <div>
-                            <div className="font-medium">{member.user?.displayName || member.user?.username || "Unknown"}</div>
+                            <div className="font-normal">{member.user?.displayName || member.user?.username || "Unknown"}</div>
                             <div className="text-sm text-muted-foreground">
                               Joined {new Date(member.joinedAt).toLocaleDateString()}
                             </div>
@@ -285,7 +285,7 @@ export default function CommunityAdmin() {
                               <AvatarFallback>{request.user?.displayName?.[0] || "?"}</AvatarFallback>
                             </Avatar>
                             <div>
-                              <div className="font-medium">{request.user?.displayName || request.user?.username || "Unknown"}</div>
+                              <div className="font-normal">{request.user?.displayName || request.user?.username || "Unknown"}</div>
                               <div className="text-sm text-muted-foreground">
                                 Requested {new Date(request.createdAt).toLocaleDateString()}
                               </div>
@@ -317,7 +317,7 @@ export default function CommunityAdmin() {
                           <div className="bg-muted p-3 rounded-lg space-y-2">
                             {request.approvalAnswers.map((answer: string, i: number) => (
                               <div key={i} className="text-sm">
-                                <span className="font-medium">Q{i + 1}:</span> {answer}
+                                <span className="font-normal">Q{i + 1}:</span> {answer}
                               </div>
                             ))}
                           </div>

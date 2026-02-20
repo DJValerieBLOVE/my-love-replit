@@ -127,7 +127,7 @@ function ExperimentCard({ experiment, setLocation }: { experiment: Experiment; s
                 )}
               </div>
               <div>
-                <h3 className="font-bold text-muted-foreground" data-testid={`text-experiment-${experiment.id}`}>
+                <h3 className="font-normal text-muted-foreground" data-testid={`text-experiment-${experiment.id}`}>
                   {experiment.title}
                 </h3>
                 <p className="text-sm text-muted-foreground">
@@ -164,7 +164,7 @@ function ExperimentCard({ experiment, setLocation }: { experiment: Experiment; s
 
           <CollapsibleContent>
             <div className="border-t mt-4 pt-2">
-              <p className="text-sm font-medium text-muted-foreground mb-2">Participants</p>
+              <p className="text-sm font-normal text-muted-foreground mb-2">Participants</p>
               <ParticipantsList experimentId={experiment.id} />
             </div>
           </CollapsibleContent>
@@ -193,7 +193,7 @@ function CourseCard({ course, setLocation }: { course: Course; setLocation: (pat
                 )}
               </div>
               <div>
-                <h3 className="font-bold text-muted-foreground" data-testid={`text-course-${course.id}`}>
+                <h3 className="font-normal text-muted-foreground" data-testid={`text-course-${course.id}`}>
                   {course.title}
                 </h3>
                 <p className="text-sm text-muted-foreground line-clamp-1">
@@ -226,7 +226,7 @@ function CourseCard({ course, setLocation }: { course: Course; setLocation: (pat
 
           <CollapsibleContent>
             <div className="border-t mt-4 pt-2">
-              <p className="text-sm font-medium text-muted-foreground mb-2">Enrollees</p>
+              <p className="text-sm font-normal text-muted-foreground mb-2">Enrollees</p>
               <EnrolleesList courseId={course.id} />
             </div>
           </CollapsibleContent>
@@ -252,7 +252,7 @@ function CommunityCard({ community, setLocation }: { community: Community; setLo
               )}
             </div>
             <div>
-              <h3 className="font-bold text-muted-foreground" data-testid={`text-community-${community.id}`}>
+              <h3 className="font-normal text-muted-foreground" data-testid={`text-community-${community.id}`}>
                 {community.name}
               </h3>
               <p className="text-sm text-muted-foreground line-clamp-1">
@@ -352,7 +352,7 @@ export default function CreatorDashboard() {
       <div className="max-w-6xl mx-auto p-4 lg:p-8 space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-serif font-bold text-muted-foreground" data-testid="heading-creator-dashboard">Creator Dashboard</h1>
+            <h1 className="text-2xl font-serif font-normal text-muted-foreground" data-testid="heading-creator-dashboard">Creator Dashboard</h1>
             <p className="text-muted-foreground">Manage your content and track your community</p>
           </div>
           <div className="flex gap-2 flex-wrap">
@@ -383,7 +383,7 @@ export default function CreatorDashboard() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-muted-foreground">Experiments</p>
-                      <p className="text-3xl font-bold">{totalExperiments}</p>
+                      <p className="text-3xl font-normal">{totalExperiments}</p>
                       <p className="text-xs text-muted-foreground">{publishedExperiments} published</p>
                     </div>
                     <FlaskConical className="w-8 h-8 text-muted-foreground" />
@@ -396,7 +396,7 @@ export default function CreatorDashboard() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-muted-foreground">Total Enrolled</p>
-                      <p className="text-3xl font-bold">{totalEnrollments}</p>
+                      <p className="text-3xl font-normal">{totalEnrollments}</p>
                       <p className="text-xs text-muted-foreground">across all content</p>
                     </div>
                     <TrendingUp className="w-8 h-8 text-muted-foreground" />
@@ -409,7 +409,7 @@ export default function CreatorDashboard() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-muted-foreground">Courses</p>
-                      <p className="text-3xl font-bold">{totalCourses}</p>
+                      <p className="text-3xl font-normal">{totalCourses}</p>
                       <p className="text-xs text-muted-foreground">{publishedCourses} published</p>
                     </div>
                     <BookOpen className="w-8 h-8 text-muted-foreground" />
@@ -422,7 +422,7 @@ export default function CreatorDashboard() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-muted-foreground">Communities</p>
-                      <p className="text-3xl font-bold">{totalCommunities}</p>
+                      <p className="text-3xl font-normal">{totalCommunities}</p>
                       <p className="text-xs text-muted-foreground">{totalMembers} total members</p>
                     </div>
                     <Users className="w-8 h-8 text-muted-foreground" />
@@ -451,7 +451,7 @@ export default function CreatorDashboard() {
                 {totalExperiments === 0 ? (
                   <Card className="p-8 text-center rounded-xs" data-testid="card-empty-experiments">
                     <FlaskConical className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                    <h3 className="font-bold text-lg mb-2">No Experiments Yet</h3>
+                    <h3 className="font-normal text-lg mb-2">No Experiments Yet</h3>
                     <p className="text-muted-foreground mb-4">Create your first experiment to help others grow</p>
                     <Button onClick={() => setLocation("/experiments/create")} className="gap-2" data-testid="button-create-first-experiment">
                       <Plus className="w-4 h-4" />
@@ -471,7 +471,7 @@ export default function CreatorDashboard() {
                 {totalCourses === 0 ? (
                   <Card className="p-8 text-center rounded-xs" data-testid="card-empty-courses">
                     <BookOpen className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                    <h3 className="font-bold text-lg mb-2">No Courses Yet</h3>
+                    <h3 className="font-normal text-lg mb-2">No Courses Yet</h3>
                     <p className="text-muted-foreground mb-4">Create your first course to share your knowledge</p>
                     <Button onClick={() => setLocation("/experiments/course/create")} className="gap-2" data-testid="button-create-first-course">
                       <Plus className="w-4 h-4" />
@@ -491,7 +491,7 @@ export default function CreatorDashboard() {
                 {totalCommunities === 0 ? (
                   <Card className="p-8 text-center rounded-xs" data-testid="card-empty-communities">
                     <Users className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                    <h3 className="font-bold text-lg mb-2">No Communities Yet</h3>
+                    <h3 className="font-normal text-lg mb-2">No Communities Yet</h3>
                     <p className="text-muted-foreground mb-4">Create your first community to build your tribe</p>
                     <Button onClick={() => setLocation("/community/create")} className="gap-2" data-testid="button-create-first-community">
                       <Plus className="w-4 h-4" />

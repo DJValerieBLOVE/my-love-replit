@@ -64,7 +64,7 @@ export function SurprisePortal({ isOpen, onClose, onClaim }: SurprisePortalProps
                      initial={{ opacity: 0, y: -20 }}
                      animate={{ opacity: 1, y: 0 }}
                      transition={{ delay: 0.2 }}
-                     className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 backdrop-blur-md text-xs font-bold uppercase tracking-widest"
+                     className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 backdrop-blur-md text-xs font-normal uppercase tracking-widest"
                    >
                       <Sparkles className="w-3 h-3 text-yellow-300" />
                       Rare Discovery
@@ -73,7 +73,7 @@ export function SurprisePortal({ isOpen, onClose, onClaim }: SurprisePortalProps
                      initial={{ opacity: 0, scale: 0.9 }}
                      animate={{ opacity: 1, scale: 1 }}
                      transition={{ delay: 0.3, type: "spring" }}
-                     className="text-3xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-200 via-white to-purple-200 drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]"
+                     className="text-3xl font-serif font-normal text-transparent bg-clip-text bg-gradient-to-r from-purple-200 via-white to-purple-200 drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]"
                    >
                       Surprise Portal!
                    </motion.h2>
@@ -93,7 +93,7 @@ export function SurprisePortal({ isOpen, onClose, onClaim }: SurprisePortalProps
                          <div className="w-32 h-32 rounded-full border-4 border-white/20 bg-black/40 backdrop-blur-sm flex items-center justify-center shadow-[0_0_50px_rgba(139,92,246,0.5)] group-hover:shadow-[0_0_80px_rgba(139,92,246,0.8)] transition-all duration-500">
                             <span className="text-4xl animate-bounce">🌌</span>
                          </div>
-                         <p className="mt-6 text-lg font-medium text-purple-200 group-hover:text-white transition-colors">Tap to Enter</p>
+                         <p className="mt-6 text-lg font-normal text-purple-200 group-hover:text-white transition-colors">Tap to Enter</p>
                       </motion.div>
                    ) : (
                       <motion.div
@@ -105,8 +105,8 @@ export function SurprisePortal({ isOpen, onClose, onClaim }: SurprisePortalProps
                          <div className="w-40 h-40 mx-auto bg-gradient-to-br from-yellow-400 to-orange-600 rounded-2xl rotate-3 flex items-center justify-center shadow-[0_0_50px_rgba(234,179,8,0.6)] border-4 border-white/20">
                             <div className="text-center">
                                <Zap className="w-16 h-16 text-white mx-auto mb-1 drop-shadow-md" fill="currentColor" />
-                               <p className="text-3xl font-bold text-white drop-shadow-md">+{REWARD_AMOUNT}</p>
-                               <p className="text-xs font-bold text-white/80 uppercase tracking-wider">Sats</p>
+                               <p className="text-3xl font-normal text-white drop-shadow-md">+{REWARD_AMOUNT}</p>
+                               <p className="text-xs font-normal text-white/80 uppercase tracking-wider">Sats</p>
                             </div>
                          </div>
                          <div className="bg-black/40 backdrop-blur-md p-4 rounded-xl border border-white/10 max-w-[280px] mx-auto">
@@ -131,7 +131,7 @@ export function SurprisePortal({ isOpen, onClose, onClaim }: SurprisePortalProps
                    ) : (
                       <Button 
                         onClick={handleClaim}
-                        className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold h-12 rounded-xl shadow-lg border border-white/20"
+                        className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-normal h-12 rounded-xl shadow-lg border border-white/20"
                       >
                         Claim Reward ⚡
                       </Button>

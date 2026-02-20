@@ -162,7 +162,7 @@ export default function CourseBuilder() {
             Back
           </Button>
           <div>
-            <h1 className="text-2xl font-serif font-bold text-muted-foreground">Create Course</h1>
+            <h1 className="text-2xl font-serif font-normal text-muted-foreground">Create Course</h1>
             <p className="text-muted-foreground text-sm">Share your knowledge with the community</p>
           </div>
         </div>

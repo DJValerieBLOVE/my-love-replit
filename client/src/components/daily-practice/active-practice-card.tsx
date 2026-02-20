@@ -115,7 +115,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
           <CardContent className="p-6 pl-[2px] pr-[2px] pt-[2px] pb-[2px]">
              <div className="mb-6 flex items-center gap-2 text-muted-foreground pl-[4px] pr-[4px] pt-[5px] pb-[5px]">
                  <Heart className="w-3 h-3" strokeWidth={1.5} />
-                 <h2 className="text-xs font-medium">Daily LOVE Practice</h2>
+                 <h2 className="text-xs font-normal">Daily LOVE Practice</h2>
              </div>
 
              <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 h-full">
@@ -124,17 +124,17 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                <div className="flex flex-col space-y-5 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full shadow-sm">
                    <div className="flex items-center gap-2 mb-1">
                        <Sun className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-                       <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Morning Alignment</span>
+                       <span className="text-xs font-normal uppercase text-muted-foreground tracking-wider">Morning Alignment</span>
                    </div>
                    
                    {/* Morning Vibe */}
                    <div className="bg-white/50 rounded-xl px-3 h-10 border border-border/40 flex justify-between items-center transition-all hover:shadow-sm">
-                       <div className="text-[15px] font-bold text-muted-foreground">Morning Vibe</div>
+                       <div className="text-[15px] font-normal text-muted-foreground">Morning Vibe</div>
                        <Input 
                            type="text" 
                            placeholder="1-11"
                            maxLength={2}
-                           className="w-16 h-8 text-right p-0 border-none bg-transparent text-lg font-medium font-serif focus-visible:ring-0 placeholder:text-muted-foreground/50 shadow-none"
+                           className="w-16 h-8 text-right p-0 border-none bg-transparent text-lg font-normal font-serif focus-visible:ring-0 placeholder:text-muted-foreground/50 shadow-none"
                            value={morningVibe}
                            onChange={(e) => {
                                const val = e.target.value;
@@ -147,7 +147,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
 
                    {/* Morning Gratitude & Image */}
                    <div className="space-y-2 flex-1 flex flex-col">
-                       <label className="text-[15px] font-bold text-muted-foreground block pl-3">Morning Gratitude</label>
+                       <label className="text-[15px] font-normal text-muted-foreground block pl-3">Morning Gratitude</label>
                        <div className="flex-1 bg-white border border-muted/50 rounded-xl overflow-hidden flex flex-col shadow-sm focus-within:ring-1 focus-within:ring-primary/20 transition-all">
                            <Textarea 
                                placeholder="I am grateful for..." 
@@ -199,12 +199,12 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                <div className="flex flex-col space-y-6 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full shadow-sm">
                    <div className="flex items-center gap-2 mb-1">
                        <Eye className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-                       <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Vision</span>
+                       <span className="text-xs font-normal uppercase text-muted-foreground tracking-wider">Vision</span>
                    </div>
 
                    {/* Focus Area */}
                    <div className="space-y-2">
-                       <label className="text-[15px] font-bold text-muted-foreground block mt-2.5 pl-3">Big Dream</label>
+                       <label className="text-[15px] font-normal text-muted-foreground block mt-2.5 pl-3">Big Dream</label>
                        <Select value={selectedAreaId} onValueChange={setSelectedAreaId}>
                            <SelectTrigger className={cn(
                                "w-full bg-white border-muted/50 focus:ring-primary/20 font-serif shadow-sm text-left whitespace-normal transition-all",
@@ -215,9 +215,9 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                                        <div className="flex items-center justify-between">
                                            <div className="flex items-center gap-2">
                                                <span className={`w-2 h-2 rounded-full ${selectedArea.color}`} />
-                                               <span className="text-[11px] font-bold text-muted-foreground uppercase font-serif">{selectedArea.name}</span>
+                                               <span className="text-[11px] font-normal text-muted-foreground uppercase font-serif">{selectedArea.name}</span>
                                            </div>
-                                           <span className="text-[10px] font-bold text-muted-foreground font-serif">{selectedArea.progress}%</span>
+                                           <span className="text-[10px] font-normal text-muted-foreground font-serif">{selectedArea.progress}%</span>
                                        </div>
                                        
                                        <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
@@ -239,9 +239,9 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                                        <div className="flex items-center justify-between">
                                            <div className="flex items-center gap-2">
                                                <span className={`w-2 h-2 rounded-full ${area.color}`} />
-                                               <span className="text-[11px] font-bold text-muted-foreground uppercase font-serif">{area.name}</span>
+                                               <span className="text-[11px] font-normal text-muted-foreground uppercase font-serif">{area.name}</span>
                                            </div>
-                                           <span className="text-[10px] font-bold text-muted-foreground font-serif">{area.progress}%</span>
+                                           <span className="text-[10px] font-normal text-muted-foreground font-serif">{area.progress}%</span>
                                        </div>
                                        
                                        <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
@@ -260,7 +260,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
 
                    {/* Values (Action Steps) */}
                    <div className="space-y-3 flex-1 pt-2">
-                        <div className="text-[15px] font-bold text-muted-foreground flex justify-between pl-3">
+                        <div className="text-[15px] font-normal text-muted-foreground flex justify-between pl-3">
                            <span>Value (3 Actions)</span>
                         </div>
                         <div className="space-y-3">
@@ -294,7 +294,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                     {/* Villain Input - Bottom */}
                    <div className="space-y-2 pt-4 border-t border-border/10 mt-auto">
                        <div className="space-y-2 mb-2">
-                           <label className="text-[15px] font-bold text-muted-foreground pl-3 mb-1 block">Villain (Obstacle)</label>
+                           <label className="text-[15px] font-normal text-muted-foreground pl-3 mb-1 block">Villain (Obstacle)</label>
                            <Input 
                                placeholder="What stands in the way?" 
                                className="h-9 bg-white border-muted/50 focus:border-primary/30 text-sm font-serif text-muted-foreground placeholder:text-muted-foreground/50"
@@ -303,7 +303,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                            />
                        </div>
                        <div className="space-y-2">
-                           <label className="text-[15px] font-bold text-muted-foreground pl-3 mb-1 block">Tool (Solution)</label>
+                           <label className="text-[15px] font-normal text-muted-foreground pl-3 mb-1 block">Tool (Solution)</label>
                            <Input 
                                placeholder="How will I overcome it?" 
                                className="h-9 bg-white border-muted/50 focus:border-primary/30 text-sm font-serif text-muted-foreground placeholder:text-muted-foreground/50"
@@ -318,17 +318,17 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                <div className="flex flex-col space-y-5 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full shadow-sm">
                    <div className="flex items-center gap-2 mb-1">
                        <Moon className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-                       <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Evening Review</span>
+                       <span className="text-xs font-normal uppercase text-muted-foreground tracking-wider">Evening Review</span>
                    </div>
 
                    {/* Evening Vibe */}
                    <div className="bg-white/50 rounded-xl px-3 h-10 border border-border/40 flex justify-between items-center transition-all hover:shadow-sm">
-                       <div className="text-[15px] font-bold text-muted-foreground">Evening Vibe</div>
+                       <div className="text-[15px] font-normal text-muted-foreground">Evening Vibe</div>
                        <Input 
                            type="text" 
                            placeholder="1-11"
                            maxLength={2}
-                           className="w-16 h-8 text-right p-0 border-none bg-transparent text-lg font-medium font-serif text-muted-foreground focus-visible:ring-0 placeholder:text-muted-foreground/50 shadow-none"
+                           className="w-16 h-8 text-right p-0 border-none bg-transparent text-lg font-normal font-serif text-muted-foreground focus-visible:ring-0 placeholder:text-muted-foreground/50 shadow-none"
                            value={eveningVibe}
                            onChange={(e) => {
                                const val = e.target.value;
@@ -341,7 +341,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
 
                     {/* Victory Input */}
                    <div className="space-y-2">
-                       <label className="text-[15px] font-bold text-muted-foreground flex items-center gap-1 pl-3">
+                       <label className="text-[15px] font-normal text-muted-foreground flex items-center gap-1 pl-3">
                            <Trophy className="w-3 h-3 text-muted-foreground stroke-[1.5]" /> 
                            Victory
                        </label>
@@ -355,7 +355,7 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
 
                    {/* Lessons & Blessings */}
                    <div className="flex-1 flex flex-col space-y-2 pt-2 border-t border-border/20">
-                       <label className="text-[15px] font-bold text-muted-foreground block pl-3">Lessons & Blessings</label>
+                       <label className="text-[15px] font-normal text-muted-foreground block pl-3">Lessons & Blessings</label>
                         <Textarea 
                            placeholder="What did I learn? What went well?" 
                            className="flex-1 w-full min-h-[150px] bg-white border-muted/50 focus:ring-primary/10 resize-none font-serif text-muted-foreground text-sm leading-6 p-3 rounded-xl transition-all shadow-sm placeholder:text-muted-foreground/50"
@@ -363,10 +363,10 @@ export function ActivePracticeCard({ data: initialData, onComplete }: ActivePrac
                            onChange={(e) => setReflection(e.target.value)}
                        />
                        <div className="pt-4 pb-1 space-y-2">
-                           <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wide pl-1">Optional: Share with Club</Label>
+                           <Label className="text-xs font-normal text-muted-foreground uppercase tracking-wide pl-1">Optional: Share with Club</Label>
                            <Select value={sharedClubId} onValueChange={setSharedClubId}>
                                <SelectTrigger className={cn(
-                                   "w-full h-9 text-xs font-medium transition-all",
+                                   "w-full h-9 text-xs font-normal transition-all",
                                    sharedClubId === 'private' 
                                        ? "bg-love-body/10 text-love-body border-love-body/10 shadow-sm" 
                                        : "bg-white border-muted/50 text-foreground"

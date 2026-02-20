@@ -108,7 +108,7 @@ export default function CommunityCreate() {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
-          <h1 className="text-2xl font-serif font-bold text-muted-foreground">Create Community</h1>
+          <h1 className="text-2xl font-serif font-normal text-muted-foreground">Create Community</h1>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">

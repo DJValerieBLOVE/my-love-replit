@@ -102,7 +102,7 @@ export function FlipCard({
           {/* Gradient overlay - stronger in bottom-left for text readability */}
           <div className="absolute inset-0 bg-gradient-to-tr from-black/80 via-black/30 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4 text-white">
-            <h3 className="text-sm md:text-lg font-bold mb-0.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{title}</h3>
+            <h3 className="text-sm md:text-lg font-normal mb-0.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{title}</h3>
             <p className="text-xs md:text-sm text-white/95 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">{subtitle}</p>
           </div>
           {frontContent && (

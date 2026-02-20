@@ -215,7 +215,7 @@ export default function LabNotes() {
           <div className="max-w-5xl mx-auto p-4 lg:p-8 space-y-6">
             {/* Header Section */}
             <div className="space-y-1">
-              <h1 className="text-3xl font-serif font-bold text-muted-foreground">Daily LOVE Practice</h1>
+              <h1 className="text-3xl font-serif font-normal text-muted-foreground">Daily LOVE Practice</h1>
             </div>
             
             {/* Action Buttons - Hidden when in practice mode */}
@@ -271,7 +271,7 @@ export default function LabNotes() {
                       <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                         <CheckCircle className="w-8 h-8 text-green-600" strokeWidth={1.5} />
                       </div>
-                      <h2 className="text-2xl font-bold mb-2 text-green-800 font-serif">Day Complete!</h2>
+                      <h2 className="text-2xl font-normal mb-2 text-green-800 font-serif">Day Complete!</h2>
                       <p className="text-green-700 mb-4 font-serif text-lg">Way to go, VIP! You've earned 100 Sats.</p>
                       <div className="flex justify-center gap-2">
                           {practiceData?.values?.map((v: string, i: number) => (
@@ -344,22 +344,22 @@ export default function LabNotes() {
                                    {entry.type === 'daily-practice' && (
                                        <div className="flex items-center gap-2 mb-1 text-muted-foreground">
                                           <Heart className="w-3 h-3" strokeWidth={1.5} />
-                                          <span className="text-xs font-medium">Daily LOVE Practice</span>
+                                          <span className="text-xs font-normal">Daily LOVE Practice</span>
                                        </div>
                                    )}
                                    {entry.type === 'experiment' && (
                                        <div className="flex items-center gap-2 mb-1 text-muted-foreground">
                                           <FlaskConical className="w-3 h-3" strokeWidth={1.5} />
-                                          <span className="text-xs font-medium">Experiments</span>
+                                          <span className="text-xs font-normal">Experiments</span>
                                        </div>
                                    )}
                                    {entry.type === 'discovery' && (
                                        <div className="flex items-center gap-2 mb-1 text-muted-foreground">
                                           <Lightbulb className="w-3 h-3" strokeWidth={1.5} />
-                                          <span className="text-xs font-medium">Discoveries</span>
+                                          <span className="text-xs font-normal">Discoveries</span>
                                        </div>
                                    )}
-                                   <div className="text-lg font-serif font-bold text-foreground">{entry.date}</div>
+                                   <div className="text-lg font-serif font-normal text-foreground">{entry.date}</div>
                                    {/* Time removed as requested */}
                                 </div>
                                 <div className="flex items-center gap-1">
@@ -391,20 +391,20 @@ export default function LabNotes() {
                                     <div className="flex flex-col space-y-5 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full shadow-sm">
                                         <div className="flex items-center gap-2 mb-1">
                                             <Sun className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-                                            <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Morning Alignment</span>
+                                            <span className="text-xs font-normal uppercase text-muted-foreground tracking-wider">Morning Alignment</span>
                                         </div>
                                         
                                         {/* Morning Vibe */}
                                         <div className="bg-white/50 rounded-xs px-3 h-10 border border-border/40 flex justify-between items-center transition-all hover:shadow-sm">
-                                            <div className="text-[15px] font-bold text-muted-foreground">Morning Vibe</div>
-                                            <div className="w-16 h-8 flex items-center justify-end text-lg font-medium font-serif text-muted-foreground">
+                                            <div className="text-[15px] font-normal text-muted-foreground">Morning Vibe</div>
+                                            <div className="w-16 h-8 flex items-center justify-end text-lg font-normal font-serif text-muted-foreground">
                                                 {entry.morningVibe || entry.vibe}
                                             </div>
                                         </div>
 
                                         {/* Morning Gratitude */}
                                         <div className="space-y-2 flex-1 flex flex-col">
-                                            <label className="text-[15px] font-bold text-muted-foreground block pl-3">Morning Gratitude</label>
+                                            <label className="text-[15px] font-normal text-muted-foreground block pl-3">Morning Gratitude</label>
                                             <div className="flex-1 bg-white border border-muted/50 rounded-xs overflow-hidden flex flex-col shadow-sm p-3">
                                                 <p className="text-sm font-serif text-muted-foreground italic leading-relaxed whitespace-pre-wrap">
                                                     "{entry.gratitude || "Grateful for this day..."}"
@@ -417,21 +417,21 @@ export default function LabNotes() {
                                     <div className="flex flex-col space-y-6 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full relative shadow-sm">
                                         <div className="flex items-center gap-2 mb-1">
                                             <Eye className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-                                            <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Vision</span>
+                                            <span className="text-xs font-normal uppercase text-muted-foreground tracking-wider">Vision</span>
                                         </div>
 
                                         {/* Focus Area */}
                                         <div className="space-y-2">
-                                            <label className="text-[15px] font-bold text-muted-foreground block mt-2.5 pl-3">Big Dream</label>
+                                            <label className="text-[15px] font-normal text-muted-foreground block mt-2.5 pl-3">Big Dream</label>
                                             {entry.focusArea && (
                                                 <div className="w-full bg-white border border-muted/50 font-serif shadow-sm text-left whitespace-normal rounded-md p-3 min-h-[3rem]">
                                                     <div className="flex flex-col gap-2 w-full text-left">
                                                         <div className="flex items-center justify-between">
                                                             <div className="flex items-center gap-2">
                                                                 <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.focusArea.color }} />
-                                                                <span className="text-[11px] font-bold text-muted-foreground uppercase font-serif">{entry.focusArea.name}</span>
+                                                                <span className="text-[11px] font-normal text-muted-foreground uppercase font-serif">{entry.focusArea.name}</span>
                                                             </div>
-                                                            <span className="text-[10px] font-bold text-muted-foreground font-serif">{entry.focusArea.progress}%</span>
+                                                            <span className="text-[10px] font-normal text-muted-foreground font-serif">{entry.focusArea.progress}%</span>
                                                         </div>
                                                         
                                                         <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
@@ -448,7 +448,7 @@ export default function LabNotes() {
 
                                         {/* Values (Action Steps) */}
                                         <div className="space-y-3 flex-1 pt-2">
-                                            <div className="text-[15px] font-bold text-muted-foreground flex justify-between pl-3">
+                                            <div className="text-[15px] font-normal text-muted-foreground flex justify-between pl-3">
                                                 <span>Value (3 Actions)</span>
                                             </div>
                                             <div className="space-y-3">
@@ -468,13 +468,13 @@ export default function LabNotes() {
                                         {/* Villain & Tool Inputs - Bottom */}
                                         <div className="space-y-3 pt-4 border-t border-border/10 mt-auto">
                                             <div className="space-y-1">
-                                                <label className="text-[15px] font-bold text-muted-foreground pl-3 block">Villain (Obstacle)</label>
+                                                <label className="text-[15px] font-normal text-muted-foreground pl-3 block">Villain (Obstacle)</label>
                                                 <div className="min-h-[2.25rem] flex items-center bg-white border border-muted/50 rounded-md px-3 text-sm font-serif text-muted-foreground shadow-sm py-1">
                                                     {entry.villain}
                                                 </div>
                                             </div>
                                             <div className="space-y-1">
-                                                <label className="text-[15px] font-bold text-muted-foreground pl-3 block">Tool (Solution)</label>
+                                                <label className="text-[15px] font-normal text-muted-foreground pl-3 block">Tool (Solution)</label>
                                                 <div className="min-h-[2.25rem] flex items-center bg-white border border-muted/50 rounded-md px-3 text-sm font-serif text-muted-foreground shadow-sm py-1">
                                                     {entry.tool || "Breathwork"}
                                                 </div>
@@ -486,20 +486,20 @@ export default function LabNotes() {
                                     <div className="flex flex-col space-y-5 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full shadow-sm">
                                         <div className="flex items-center gap-2 mb-1">
                                             <Moon className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-                                            <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Evening Review</span>
+                                            <span className="text-xs font-normal uppercase text-muted-foreground tracking-wider">Evening Review</span>
                                         </div>
 
                                         {/* Evening Vibe */}
                                         <div className="bg-white/50 rounded-xs px-3 h-10 border border-border/40 flex justify-between items-center transition-all hover:shadow-sm">
-                                            <div className="text-[15px] font-bold text-muted-foreground">Evening Vibe</div>
-                                            <div className="w-16 h-8 flex items-center justify-end text-lg font-medium font-serif text-muted-foreground">
+                                            <div className="text-[15px] font-normal text-muted-foreground">Evening Vibe</div>
+                                            <div className="w-16 h-8 flex items-center justify-end text-lg font-normal font-serif text-muted-foreground">
                                                 {entry.eveningVibe || "-"}
                                             </div>
                                         </div>
 
                                         {/* Victory Input */}
                                         <div className="space-y-2">
-                                            <label className="text-[15px] font-bold text-muted-foreground flex items-center gap-1 pl-3">
+                                            <label className="text-[15px] font-normal text-muted-foreground flex items-center gap-1 pl-3">
                                                 <Trophy className="w-3 h-3 text-muted-foreground stroke-[1.5]" /> 
                                                 Victory
                                             </label>
@@ -510,7 +510,7 @@ export default function LabNotes() {
 
                                         {/* Lessons & Blessings */}
                                         <div className="flex-1 flex flex-col space-y-2 pt-2 border-t border-border/20">
-                                            <label className="text-[15px] font-bold text-muted-foreground block pl-3">Lessons & Blessings</label>
+                                            <label className="text-[15px] font-normal text-muted-foreground block pl-3">Lessons & Blessings</label>
                                             <div className="flex-1 w-full min-h-[150px] bg-white border border-muted/50 rounded-xs p-3 shadow-sm">
                                                 <p className="text-sm font-serif text-muted-foreground leading-6 whitespace-pre-wrap">
                                                     {entry.content}
@@ -525,7 +525,7 @@ export default function LabNotes() {
                                      <div className="flex flex-col space-y-5 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full shadow-sm">
                                          <div className="flex items-center gap-2 mb-1">
                                              <FlaskConical className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-                                             <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Hypothesis</span>
+                                             <span className="text-xs font-normal uppercase text-muted-foreground tracking-wider">Hypothesis</span>
                                          </div>
                                          <div className="flex-1 bg-white border border-muted/50 rounded-xs p-3 shadow-sm">
                                              <p className="text-sm font-serif text-muted-foreground italic leading-relaxed whitespace-pre-wrap">
@@ -536,7 +536,7 @@ export default function LabNotes() {
                                      <div className="flex flex-col space-y-5 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full shadow-sm">
                                          <div className="flex items-center gap-2 mb-1">
                                              <Eye className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-                                             <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Observation</span>
+                                             <span className="text-xs font-normal uppercase text-muted-foreground tracking-wider">Observation</span>
                                          </div>
                                          <div className="flex-1 bg-white border border-muted/50 rounded-xs p-3 shadow-sm">
                                              <p className="text-sm font-serif text-muted-foreground italic leading-relaxed whitespace-pre-wrap">
@@ -547,7 +547,7 @@ export default function LabNotes() {
                                      <div className="flex flex-col space-y-5 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full shadow-sm">
                                          <div className="flex items-center gap-2 mb-1">
                                              <CheckCircle className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-                                             <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Conclusion</span>
+                                             <span className="text-xs font-normal uppercase text-muted-foreground tracking-wider">Conclusion</span>
                                          </div>
                                          <div className="flex-1 bg-white border border-muted/50 rounded-xs p-3 shadow-sm">
                                              <p className="text-sm font-serif text-muted-foreground italic leading-relaxed whitespace-pre-wrap">
@@ -562,7 +562,7 @@ export default function LabNotes() {
                                      <div className="flex flex-col space-y-5 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full shadow-sm">
                                          <div className="flex items-center gap-2 mb-1">
                                              <Lightbulb className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-                                             <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Aha! Moment</span>
+                                             <span className="text-xs font-normal uppercase text-muted-foreground tracking-wider">Aha! Moment</span>
                                          </div>
                                          <div className="flex-1 bg-white border border-muted/50 rounded-xs p-3 shadow-sm">
                                              <p className="text-sm font-serif text-muted-foreground italic leading-relaxed whitespace-pre-wrap">
@@ -573,7 +573,7 @@ export default function LabNotes() {
                                      <div className="flex flex-col space-y-5 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full shadow-sm">
                                          <div className="flex items-center gap-2 mb-1">
                                              <BookOpen className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-                                             <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Context</span>
+                                             <span className="text-xs font-normal uppercase text-muted-foreground tracking-wider">Context</span>
                                          </div>
                                          <div className="flex-1 bg-white border border-muted/50 rounded-xs p-3 shadow-sm">
                                              <p className="text-sm font-serif text-muted-foreground italic leading-relaxed whitespace-pre-wrap">
@@ -584,7 +584,7 @@ export default function LabNotes() {
                                      <div className="flex flex-col space-y-5 bg-muted/5 p-5 rounded-2xl border border-border/20 h-full shadow-sm">
                                          <div className="flex items-center gap-2 mb-1">
                                              <Play className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-                                             <span className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Action Item</span>
+                                             <span className="text-xs font-normal uppercase text-muted-foreground tracking-wider">Action Item</span>
                                          </div>
                                          <div className="flex-1 bg-white border border-muted/50 rounded-xs p-3 shadow-sm">
                                              <p className="text-sm font-serif text-muted-foreground italic leading-relaxed whitespace-pre-wrap">

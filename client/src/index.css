@@ -190,15 +190,16 @@
     @apply font-sans antialiased bg-background text-foreground selection:bg-primary-light selection:text-primary;
     font-size: var(--text-base);
   }
-  h1, h2, h3, h4, h5, h6, p, button, input, textarea, select {
+  h1, h2, h3, h4, h5, h6, p, button, input, textarea, select, span, div, a, label, li {
     font-family: 'Marcellus', Georgia, serif;
+    font-weight: 400 !important;
   }
   
   /* Default heading sizes if no class is provided */
-  h1 { font-size: var(--text-4xl); font-weight: 400; letter-spacing: -0.5px; }
-  h2 { font-size: var(--text-3xl); font-weight: 400; letter-spacing: -0.3px; }
-  h3 { font-size: var(--text-xl); font-weight: 400; }
-  h4 { font-size: var(--text-base); font-weight: 400; }
+  h1 { font-size: var(--text-4xl); letter-spacing: -0.5px; }
+  h2 { font-size: var(--text-3xl); letter-spacing: -0.3px; }
+  h3 { font-size: var(--text-xl); }
+  h4 { font-size: var(--text-base); }
   p { font-size: 16px; line-height: 1.6; }
   
   /* Mobile typography - forces consistent sizing across all pages */

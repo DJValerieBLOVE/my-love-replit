@@ -3,10 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { PlayCircle, CheckCircle, Lock, BookOpen, Search, Clock, Users, Star, Share2, Plus, FlaskConical, Loader2 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Link, useLocation } from "wouter";
 import { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ShareConfirmationDialog } from "@/components/share-confirmation-dialog";
@@ -100,17 +98,16 @@ export default function Grow() {
     <Layout>
       <div className="max-w-6xl mx-auto p-4 lg:p-8 space-y-6">
         <div>
-          <h1 className="text-2xl font-serif font-bold text-muted-foreground">Grow</h1>
-          <p className="text-muted-foreground">Courses, experiments, and skill-building adventures</p>
+          <h1 className="text-2xl font-serif text-muted-foreground">Grow</h1>
+          <p className="text-muted-foreground">Experiments and skill-building adventures</p>
         </div>
 
-        {/* Search and Filters */}
         <Card className="p-4">
-          <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex flex-col md:flex-row gap-3">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
-                placeholder="Search courses..."
+                placeholder="Search experiments..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
@@ -142,73 +139,78 @@ export default function Grow() {
           </div>
         </Card>
 
-        {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="mb-6">
-            <TabsTrigger value="courses" data-testid="tab-courses">Courses</TabsTrigger>
-            <TabsTrigger value="experiments" data-testid="tab-experiments">Experiments</TabsTrigger>
-          </TabsList>
+        <div className="flex gap-1">
+          <button
+            onClick={() => setActiveTab("courses")}
+            className={`px-4 py-1.5 rounded-full text-sm transition-colors border ${activeTab === "courses" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
+            data-testid="tab-courses"
+          >
+            Courses
+          </button>
+          <button
+            onClick={() => setActiveTab("experiments")}
+            className={`px-4 py-1.5 rounded-full text-sm transition-colors border ${activeTab === "experiments" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
+            data-testid="tab-experiments"
+          >
+            Experiments
+          </button>
+        </div>
 
-          {/* Courses Tab */}
-          <TabsContent value="courses">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredCourses.map((course) => (
-                <Link key={course.id} href={`/experiments/course/${course.id}`}>
-                  <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 group border-none shadow-sm bg-card cursor-pointer flex flex-col h-full">
-                    {/* Course Header with Gradient */}
-                    <div className={`relative h-32 bg-gradient-to-br ${course.color} flex items-center justify-center`}>
-                      <h3 className="text-2xl font-bold text-white text-center px-4">{course.title}</h3>
+        {activeTab === "courses" && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredCourses.map((course) => (
+              <Link key={course.id} href={`/experiments/course/${course.id}`}>
+                <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 group border-none shadow-sm bg-card cursor-pointer flex flex-col h-full">
+                  <div className={`relative h-32 bg-gradient-to-br ${course.color} flex items-center justify-center`}>
+                    <h3 className="text-2xl text-white text-center px-4">{course.title}</h3>
+                  </div>
+                  
+                  <CardContent className="p-5 flex-1 flex flex-col">
+                    <div className="flex gap-2 mb-3">
+                      <span className="text-xs capitalize px-2.5 py-0.5 rounded-md border border-gray-200 bg-white text-muted-foreground" data-testid={`badge-level-${course.id}`}>
+                        {course.level}
+                      </span>
+                      {course.isValueForValue && (
+                        <span className="text-xs px-2.5 py-0.5 rounded-md border border-gray-200 bg-white text-muted-foreground">
+                          Value for Value
+                        </span>
+                      )}
                     </div>
+
+                    <p className="text-sm text-muted-foreground mb-4 flex-1">{course.description}</p>
                     
-                    <CardContent className="p-5 flex-1 flex flex-col">
-                      {/* Level & Value Tags */}
-                      <div className="flex gap-2 mb-3">
-                        <Badge variant="secondary" className="text-xs capitalize" data-testid={`badge-level-${course.id}`}>
-                          {course.level}
-                        </Badge>
-                        {course.isValueForValue && (
-                          <Badge className="text-xs bg-orange-100 text-orange-700 hover:bg-orange-100">
-                            Value for Value
-                          </Badge>
-                        )}
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4">
+                      <div className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        <span>{course.duration}</span>
                       </div>
-
-                      <p className="text-sm text-muted-foreground mb-4 flex-1">{course.description}</p>
-                      
-                      {/* Course Meta */}
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4">
-                        <div className="flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          <span>{course.duration}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Users className="w-3 h-3" />
-                          <span>{course.enrolled.toLocaleString()}</span>
-                        </div>
+                      <div className="flex items-center gap-1">
+                        <Users className="w-3 h-3" />
+                        <span>{course.enrolled.toLocaleString()}</span>
                       </div>
+                    </div>
 
-                      {/* Rating & Instructor */}
-                      <div className="flex items-center justify-between text-sm mb-4">
-                        <div className="flex items-center gap-1">
-                          <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                          <span className="font-medium">{course.rating}</span>
-                        </div>
-                        <span className="text-muted-foreground text-xs">by {course.instructor}</span>
+                    <div className="flex items-center justify-between text-sm mb-4">
+                      <div className="flex items-center gap-1">
+                        <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                        <span>{course.rating}</span>
                       </div>
+                      <span className="text-muted-foreground text-xs">by {course.instructor}</span>
+                    </div>
 
-                      <Button className="w-full gap-2" data-testid={`button-course-${course.id}`}>
-                        <BookOpen className="w-4 h-4" /> View Course
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
-            </div>
-          </TabsContent>
+                    <Button className="w-full gap-2" data-testid={`button-course-${course.id}`}>
+                      <FlaskConical className="w-4 h-4" /> Start Experiment
+                    </Button>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        )}
 
-          {/* Experiments Tab */}
-          <TabsContent value="experiments">
-            <div className="flex justify-between items-center mb-4">
+        {activeTab === "experiments" && (
+          <>
+            <div className="flex justify-between items-center">
               <p className="text-sm text-muted-foreground">
                 {filteredExperiments.length} experiment{filteredExperiments.length !== 1 ? "s" : ""}
               </p>
@@ -227,7 +229,7 @@ export default function Grow() {
             ) : filteredExperiments.length === 0 ? (
               <Card className="p-8 text-center">
                 <FlaskConical className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="font-bold text-lg mb-2">No Experiments Yet</h3>
+                <h3 className="text-lg mb-2">No Experiments Yet</h3>
                 <p className="text-muted-foreground mb-4">Be the first to create an experiment!</p>
                 {isConnected && (
                   <Button onClick={() => setLocation("/experiments/create")} className="gap-2">
@@ -255,9 +257,9 @@ export default function Grow() {
                             <FlaskConical className="w-16 h-16 text-white/50" />
                           </div>
                         )}
-                        <Badge className="absolute top-3 right-3 z-20 bg-white/90 text-black hover:bg-white font-normal" data-testid={`badge-${experiment.id}`}>
+                        <span className="absolute top-3 right-3 z-20 text-xs px-2.5 py-0.5 rounded-md border border-gray-200 bg-white text-muted-foreground" data-testid={`badge-${experiment.id}`}>
                           {experiment.category}
-                        </Badge>
+                        </span>
                         <div className="absolute bottom-3 left-3 z-20">
                           <span className="text-xs text-white bg-black/50 px-2 py-1 rounded">
                             {experiment.steps?.length || 0} step{(experiment.steps?.length || 0) !== 1 ? "s" : ""}
@@ -265,7 +267,7 @@ export default function Grow() {
                         </div>
                       </div>
                       <CardContent className="p-5 flex-1 flex flex-col">
-                        <h3 className="font-bold text-lg leading-tight mb-1 text-muted-foreground group-hover:text-primary transition-colors" data-testid={`text-experiment-${experiment.id}`}>
+                        <h3 className="text-lg leading-tight mb-1 text-muted-foreground group-hover:text-primary transition-colors" data-testid={`text-experiment-${experiment.id}`}>
                           {experiment.title}
                         </h3>
                         <p className="text-base text-muted-foreground mb-4" data-testid={`text-guide-${experiment.id}`}>
@@ -283,8 +285,8 @@ export default function Grow() {
                 ))}
               </div>
             )}
-          </TabsContent>
-        </Tabs>
+          </>
+        )}
       </div>
 
       {shareDialog.experiment && (

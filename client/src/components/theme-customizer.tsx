@@ -119,7 +119,7 @@ export function ThemeCustomizer() {
                   onClick={() => applyTheme(theme.id)}
                 >
                   <div className="flex items-center justify-between mb-3">
-                    <span className="font-medium">{theme.name}</span>
+                    <span className="font-normal">{theme.name}</span>
                     {activeTheme === theme.id && <Check className="w-4 h-4 text-primary" />}
                   </div>
                   <div className="flex gap-2">
@@ -175,7 +175,7 @@ export function ThemeCustomizer() {
               <div className="w-16 h-16 mx-auto bg-muted rounded-full flex items-center justify-center mb-3">
                 <LayoutTemplate className="w-6 h-6 text-muted-foreground" />
               </div>
-              <h3 className="font-medium">Community Logo</h3>
+              <h3 className="font-normal">Community Logo</h3>
               <p className="text-xs text-muted-foreground mb-3">Recommended size: 512x512px</p>
               <Button size="sm" variant="outline">Upload Logo</Button>
             </div>
@@ -184,11 +184,11 @@ export function ThemeCustomizer() {
               <Label>Typography</Label>
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-3 border rounded-lg cursor-pointer hover:border-primary">
-                  <h4 className="font-serif font-bold text-lg mb-1">Elegant</h4>
+                  <h4 className="font-serif font-normal text-lg mb-1">Elegant</h4>
                   <p className="text-xs text-muted-foreground">Lora + Jakarta</p>
                 </div>
                 <div className="p-3 border rounded-lg cursor-pointer hover:border-primary">
-                  <h4 className="font-sans font-bold text-lg mb-1">Modern</h4>
+                  <h4 className="font-sans font-normal text-lg mb-1">Modern</h4>
                   <p className="text-xs text-muted-foreground">Inter + Inter</p>
                 </div>
               </div>

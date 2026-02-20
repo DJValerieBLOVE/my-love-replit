@@ -126,7 +126,7 @@ export function NostrLoginDialog({ open, onOpenChange }: NostrLoginDialogProps) 
             <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
               <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
-            <p className="text-lg font-medium text-green-600">You're in!</p>
+            <p className="text-lg font-normal text-green-600">You're in!</p>
           </div>
         ) : (
           <>
@@ -259,7 +259,7 @@ export function NostrLoginDialog({ open, onOpenChange }: NostrLoginDialogProps) 
                       Don't have an account?{" "}
                       <button
                         onClick={() => { setEmailMode("register"); setLocalError(null); }}
-                        className="text-[#6600ff] hover:underline font-medium"
+                        className="text-[#6600ff] hover:underline font-normal"
                         data-testid="link-switch-to-register"
                       >
                         Create one
@@ -336,7 +336,7 @@ export function NostrLoginDialog({ open, onOpenChange }: NostrLoginDialogProps) 
                       Already have an account?{" "}
                       <button
                         onClick={() => { setEmailMode("login"); setLocalError(null); }}
-                        className="text-[#6600ff] hover:underline font-medium"
+                        className="text-[#6600ff] hover:underline font-normal"
                         data-testid="link-switch-to-login"
                       >
                         Login
@@ -400,7 +400,7 @@ export function NostrLoginDialog({ open, onOpenChange }: NostrLoginDialogProps) 
                     <Button
                       onClick={handleExtensionLogin}
                       disabled={isLoading}
-                      className="w-full h-14 bg-gradient-to-r from-[#6600ff] to-[#9900ff] hover:from-[#5500dd] hover:to-[#8800dd] text-white font-medium text-base"
+                      className="w-full h-14 bg-gradient-to-r from-[#6600ff] to-[#9900ff] hover:from-[#5500dd] hover:to-[#8800dd] text-white font-normal text-base"
                       data-testid="button-login-extension"
                     >
                       {isLoading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Key className="w-5 h-5 mr-2" />}
@@ -409,7 +409,7 @@ export function NostrLoginDialog({ open, onOpenChange }: NostrLoginDialogProps) 
 
                     {hasExtension === false && (
                       <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm">
-                        <p className="font-medium text-amber-800 mb-2">No extension detected</p>
+                        <p className="font-normal text-amber-800 mb-2">No extension detected</p>
                         <p className="text-amber-700 mb-3">
                           Install a Nostr extension to login securely.
                         </p>
@@ -454,7 +454,7 @@ export function NostrLoginDialog({ open, onOpenChange }: NostrLoginDialogProps) 
                     </p>
 
                     <div className="mt-2 p-4 bg-muted/30 rounded-lg">
-                      <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <h4 className="font-normal text-sm mb-2 flex items-center gap-2">
                         <Zap className="w-4 h-4 text-muted-foreground" />
                         What is Nostr?
                       </h4>

@@ -96,7 +96,7 @@ function FlippedCardModal({ area, onClose, onExplore }: FlippedCardModalProps) {
             <Heart className="w-12 h-12 text-[#eb00a8] fill-[#eb00a8] mb-4" />
           )}
           
-          <h2 className="text-2xl font-serif font-bold text-foreground mb-2">
+          <h2 className="text-2xl font-serif font-normal text-foreground mb-2">
             {area.title}
           </h2>
           
@@ -108,7 +108,7 @@ function FlippedCardModal({ area, onClose, onExplore }: FlippedCardModalProps) {
             <div className="text-xs text-muted-foreground mb-2 uppercase tracking-wider">
               Today's Affirmation
             </div>
-            <p className="text-lg font-serif text-[#6600ff] font-medium">
+            <p className="text-lg font-serif text-[#6600ff] font-normal">
               "{area.affirmation}"
             </p>
           </div>
@@ -129,7 +129,7 @@ function FlippedCardModal({ area, onClose, onExplore }: FlippedCardModalProps) {
 
           <button
             onClick={onExplore}
-            className="px-6 py-2.5 bg-foreground hover:bg-foreground/90 rounded-lg text-background font-medium transition-colors shadow-md"
+            className="px-6 py-2.5 bg-foreground hover:bg-foreground/90 rounded-lg text-background font-normal transition-colors shadow-md"
           >
             Explore {area.title}
           </button>

@@ -68,10 +68,10 @@ export function VerticalEqVisualizer({ className, height = 60 }: VerticalEqProps
               </TooltipTrigger>
               <TooltipContent side="bottom" className="bg-white/90 border-black/10 backdrop-blur-xl z-50 shadow-[0_0_30px_rgba(0,0,0,0.1)]">
                 <div className="text-center">
-                  <p className="font-serif font-bold text-sm tracking-wider uppercase" style={{ color }}>{area.name}</p>
+                  <p className="font-serif font-normal text-sm tracking-wider uppercase" style={{ color }}>{area.name}</p>
                   <div className="flex items-center justify-center gap-2 mt-0.5">
                     <span className="text-[9px] uppercase tracking-widest text-gray-500">Progress</span>
-                    <span className="font-medium text-muted-foreground text-sm">{area.progress}%</span>
+                    <span className="font-normal text-muted-foreground text-sm">{area.progress}%</span>
                   </div>
                 </div>
               </TooltipContent>

@@ -54,7 +54,7 @@ export default function EventDetail() {
                 className="w-full h-full object-cover"
               />
               <div className="absolute top-4 left-4">
-                <Badge className="bg-white/90 text-black hover:bg-white font-bold backdrop-blur-md border-none">
+                <Badge className="bg-white/90 text-black hover:bg-white font-normal backdrop-blur-md border-none">
                   {event.category}
                 </Badge>
               </div>
@@ -62,7 +62,7 @@ export default function EventDetail() {
 
             {/* Header Info */}
             <div>
-              <h1 className="text-3xl md:text-4xl font-serif font-bold text-muted-foreground mb-4 leading-tight">
+              <h1 className="text-3xl md:text-4xl font-serif font-normal text-muted-foreground mb-4 leading-tight">
                 {event.title}
               </h1>
               
@@ -72,7 +72,7 @@ export default function EventDetail() {
                     <AvatarImage src={`https://i.pravatar.cc/150?u=${event.host}`} />
                     <AvatarFallback>H</AvatarFallback>
                   </Avatar>
-                  <span className="text-sm">Hosted by <span className="font-bold text-foreground">{event.host}</span></span>
+                  <span className="text-sm">Hosted by <span className="font-normal text-foreground">{event.host}</span></span>
                 </div>
                 <div className="w-1 h-1 bg-muted-foreground/30 rounded-full" />
                 <div className="flex items-center gap-2 text-sm">
@@ -83,7 +83,7 @@ export default function EventDetail() {
 
               {/* Description */}
               <div className="prose prose-lg text-muted-foreground max-w-none">
-                <h3 className="font-serif font-bold text-xl text-muted-foreground mb-3">About this Event</h3>
+                <h3 className="font-serif font-normal text-xl text-muted-foreground mb-3">About this Event</h3>
                 <p className="text-lg leading-relaxed">
                   {event.description} Join us for an incredible session of connection, learning, and growth. 
                   This gathering is designed to bring our community together to share insights and support one another 
@@ -98,7 +98,7 @@ export default function EventDetail() {
 
             {/* Discussion / Comments Placeholder */}
             <div className="pt-8 border-t border-border">
-              <h3 className="font-serif font-bold text-xl text-muted-foreground mb-6 flex items-center gap-2">
+              <h3 className="font-serif font-normal text-xl text-muted-foreground mb-6 flex items-center gap-2">
                 <MessageSquare className="w-5 h-5" /> Discussion
               </h3>
               <div className="bg-muted/30 rounded-xs p-6 text-center">
@@ -119,7 +119,7 @@ export default function EventDetail() {
                       <Calendar className="w-5 h-5" strokeWidth={1.5} />
                     </div>
                     <div>
-                      <p className="font-bold text-foreground">
+                      <p className="font-normal text-foreground">
                         {event.date === "Today" ? "Today, November 28" : "Tomorrow, November 29"}
                       </p>
                       <div className="flex items-center gap-1 text-sm text-muted-foreground">
@@ -127,7 +127,7 @@ export default function EventDetail() {
                         {event.recurrence && (
                           <>
                             <span>•</span>
-                            <span className="flex items-center gap-1 text-primary font-medium">
+                            <span className="flex items-center gap-1 text-primary font-normal">
                               <Repeat className="w-3 h-3" /> {event.recurrence}
                             </span>
                           </>
@@ -141,7 +141,7 @@ export default function EventDetail() {
                       <Clock className="w-5 h-5" strokeWidth={1.5} />
                     </div>
                     <div>
-                      <p className="font-bold text-foreground">{event.time} - {parseInt(event.time) + 1}:00pm EST</p>
+                      <p className="font-normal text-foreground">{event.time} - {parseInt(event.time) + 1}:00pm EST</p>
                       <p className="text-sm text-muted-foreground">1 hour duration</p>
                     </div>
                   </div>
@@ -151,7 +151,7 @@ export default function EventDetail() {
                       <Video className="w-5 h-5" strokeWidth={1.5} />
                     </div>
                     <div>
-                      <p className="font-bold text-foreground">Online via Zoom</p>
+                      <p className="font-normal text-foreground">Online via Zoom</p>
                       <p className="text-sm text-muted-foreground">Link visible after RSVP</p>
                     </div>
                   </div>
@@ -162,11 +162,11 @@ export default function EventDetail() {
                   {isRsvped ? (
                     <div className="space-y-3">
                       <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-xs text-center">
-                        <p className="text-green-600 font-bold flex items-center justify-center gap-2">
+                        <p className="text-green-600 font-normal flex items-center justify-center gap-2">
                           <CheckCircle2 className="w-5 h-5" /> You're going!
                         </p>
                       </div>
-                      <Button className="w-full gap-2 font-bold" variant="outline">
+                      <Button className="w-full gap-2 font-normal" variant="outline">
                         <Video className="w-4 h-4" /> Join Meeting
                       </Button>
                       <Button 
@@ -179,7 +179,7 @@ export default function EventDetail() {
                     </div>
                   ) : (
                     <Button 
-                      className="w-full font-bold shadow-lg shadow-primary/20" 
+                      className="w-full font-normal shadow-lg shadow-primary/20" 
                       onClick={handleRsvp}
                     >
                       RSVP Now
@@ -199,7 +199,7 @@ export default function EventDetail() {
 
                 {/* Attendees Preview */}
                 <div className="pt-4 border-t border-border">
-                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">
+                  <p className="text-xs font-normal text-muted-foreground uppercase tracking-wider mb-3">
                     Who's Going ({event.attendees})
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -209,7 +209,7 @@ export default function EventDetail() {
                         <AvatarFallback>U{i}</AvatarFallback>
                       </Avatar>
                     ))}
-                    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground border border-card">
+                    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-normal text-muted-foreground border border-card">
                       +78
                     </div>
                   </div>

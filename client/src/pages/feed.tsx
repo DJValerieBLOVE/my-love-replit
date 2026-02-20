@@ -613,7 +613,7 @@ function LinkPreviewCard({ url }: { url: string }) {
           <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">{preview.siteName}</p>
         )}
         {preview?.title && (
-          <p className="text-sm font-medium line-clamp-2 group-hover:text-[#6600ff] transition-colors">{preview.title}</p>
+          <p className="text-sm font-normal line-clamp-2 group-hover:text-[#6600ff] transition-colors">{preview.title}</p>
         )}
         {preview?.description && (
           <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{preview.description}</p>
@@ -721,7 +721,7 @@ function EmbeddedNoteCard({ eventId, bech32 }: { eventId: string; bech32: string
           {note.avatar && <AvatarImage src={note.avatar} />}
           <AvatarFallback className="text-[8px]">{note.author.slice(0, 1).toUpperCase()}</AvatarFallback>
         </Avatar>
-        <span className="text-xs font-medium">{note.author}</span>
+        <span className="text-xs font-normal">{note.author}</span>
         <span className="text-[10px] text-muted-foreground">{truncateNpub(note.handle)}</span>
         <span className="text-[10px] text-muted-foreground ml-auto">{formatTimestamp(note.timestamp)}</span>
       </div>
@@ -1083,7 +1083,7 @@ function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfiles?: M
                         <AvatarImage src={post.author.avatar} />
                         <AvatarFallback>{post.author.name.slice(0, 1).toUpperCase()}</AvatarFallback>
                       </Avatar>
-                      <span className="font-medium">{post.author.name}</span>
+                      <span className="font-normal">{post.author.name}</span>
                     </div>
                     <p className="text-sm mt-2 line-clamp-2">{post.content}</p>
                   </Card>
@@ -1369,7 +1369,7 @@ export default function Feed() {
                       </Avatar>
                     ))}
                   </div>
-                  <span className="font-medium">
+                  <span className="font-normal">
                     {newPostCount} new {newPostCount === 1 ? "post" : "posts"}
                   </span>
                   <ArrowUp className="w-3.5 h-3.5" strokeWidth={1.5} />

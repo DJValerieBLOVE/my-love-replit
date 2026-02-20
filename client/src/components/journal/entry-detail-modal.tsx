@@ -93,10 +93,10 @@ export function EntryDetailModal({ entry, isOpen, onClose, onShare, canShare = f
             <div className="space-y-6">
               <div className="flex items-center gap-3 text-muted-foreground mb-4">
                 {renderHeaderIcon()}
-                <span className="text-sm font-medium uppercase tracking-wider">{renderHeaderTitle()}</span>
+                <span className="text-sm font-normal uppercase tracking-wider">{renderHeaderTitle()}</span>
               </div>
               
-              <h1 className="text-4xl font-serif font-bold text-foreground leading-tight">
+              <h1 className="text-4xl font-serif font-normal text-foreground leading-tight">
                 {entry.type === 'daily-practice' 
                   ? `Journal Entry: ${entry.date}` 
                   : (entry.experimentTitle || entry.ahaMoment || "Untitled Entry")}
@@ -142,46 +142,46 @@ export function EntryDetailModal({ entry, isOpen, onClose, onShare, canShare = f
                   {/* 5 V's Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-muted/30 p-6 rounded-xl border border-border/40">
                     <div className="space-y-1">
-                      <div className="text-xs font-bold text-muted-foreground uppercase">Vision</div>
-                      <div className="font-medium">{entry.vision}</div>
+                      <div className="text-xs font-normal text-muted-foreground uppercase">Vision</div>
+                      <div className="font-normal">{entry.vision}</div>
                     </div>
                     {entry.gratitude && (
                       <div className="space-y-1 col-span-full">
-                        <div className="text-xs font-bold text-muted-foreground uppercase">Gratitude</div>
-                        <div className="font-medium italic text-muted-foreground">"{entry.gratitude}"</div>
+                        <div className="text-xs font-normal text-muted-foreground uppercase">Gratitude</div>
+                        <div className="font-normal italic text-muted-foreground">"{entry.gratitude}"</div>
                       </div>
                     )}
                     <div className="space-y-1">
-                      <div className="text-xs font-bold text-muted-foreground uppercase">Value</div>
-                      <div className="font-medium">{entry.value}</div>
+                      <div className="text-xs font-normal text-muted-foreground uppercase">Value</div>
+                      <div className="font-normal">{entry.value}</div>
                     </div>
                     <div className="space-y-1">
-                      <div className="text-xs font-bold text-muted-foreground uppercase">Victory</div>
-                      <div className="font-medium text-green-600">{entry.victory}</div>
+                      <div className="text-xs font-normal text-muted-foreground uppercase">Victory</div>
+                      <div className="font-normal text-green-600">{entry.victory}</div>
                     </div>
                     <div className="space-y-1">
-                      <div className="text-xs font-bold text-muted-foreground uppercase">Villain</div>
-                      <div className="font-medium text-red-500">{entry.villain}</div>
+                      <div className="text-xs font-normal text-muted-foreground uppercase">Villain</div>
+                      <div className="font-normal text-red-500">{entry.villain}</div>
                     </div>
                     <div className="col-span-full pt-2 border-t border-border/20 mt-2 flex items-center justify-between">
-                       <div className="text-xs font-bold text-muted-foreground uppercase">Morning Vibe</div>
-                       <div className="font-bold text-primary text-xl">{entry.morningVibe || entry.vibe || "-"}/10</div>
+                       <div className="text-xs font-normal text-muted-foreground uppercase">Morning Vibe</div>
+                       <div className="font-normal text-primary text-xl">{entry.morningVibe || entry.vibe || "-"}/10</div>
                     </div>
                     <div className="col-span-full flex items-center justify-between">
-                       <div className="text-xs font-bold text-muted-foreground uppercase">Evening Vibe</div>
-                       <div className="font-bold text-primary text-xl">{entry.eveningVibe || "-"}/10</div>
+                       <div className="text-xs font-normal text-muted-foreground uppercase">Evening Vibe</div>
+                       <div className="font-normal text-primary text-xl">{entry.eveningVibe || "-"}/10</div>
                     </div>
                     
                     {entry.focusArea && (
                       <div className="col-span-full mt-2 pt-4 border-t border-border/20">
                         <div className="flex items-center justify-between mb-2">
-                          <div className="text-xs font-bold text-muted-foreground uppercase">Focus Area</div>
+                          <div className="text-xs font-normal text-muted-foreground uppercase">Focus Area</div>
                           <Badge variant="outline" className="font-normal text-[10px] uppercase tracking-wider" style={{borderColor: entry.focusArea.color, color: entry.focusArea.color}}>
                             {entry.focusArea.name}
                           </Badge>
                         </div>
                         <div className="space-y-1">
-                          <div className="text-sm font-medium italic text-muted-foreground">"{entry.focusArea.dream}"</div>
+                          <div className="text-sm font-normal italic text-muted-foreground">"{entry.focusArea.dream}"</div>
                           <div className="h-1.5 w-full bg-muted rounded-full mt-2 overflow-hidden">
                             <div className="h-full rounded-full" style={{ width: `${entry.focusArea.progress}%`, backgroundColor: entry.focusArea.color }} />
                           </div>
@@ -202,17 +202,17 @@ export function EntryDetailModal({ entry, isOpen, onClose, onShare, canShare = f
               {entry.type === "experiment" && (
                 <>
                    <div className="bg-secondary/5 p-6 rounded-xl border border-secondary/20">
-                      <h3 className="text-sm font-bold text-secondary uppercase tracking-wider mb-2">Hypothesis</h3>
+                      <h3 className="text-sm font-normal text-secondary uppercase tracking-wider mb-2">Hypothesis</h3>
                       <p className="italic text-xl">"{entry.hypothesis}"</p>
                    </div>
 
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       <div className="space-y-2">
-                        <h4 className="font-bold text-muted-foreground uppercase text-sm">Observation</h4>
+                        <h4 className="font-normal text-muted-foreground uppercase text-sm">Observation</h4>
                         <p>{entry.observation}</p>
                       </div>
                       <div className="space-y-2">
-                        <h4 className="font-bold text-muted-foreground uppercase text-sm">Conclusion</h4>
+                        <h4 className="font-normal text-muted-foreground uppercase text-sm">Conclusion</h4>
                         <p>{entry.conclusion}</p>
                       </div>
                    </div>
@@ -230,22 +230,22 @@ export function EntryDetailModal({ entry, isOpen, onClose, onShare, canShare = f
                   <div className="flex items-start gap-4 bg-yellow-50 dark:bg-yellow-900/10 p-6 rounded-xl border border-yellow-200 dark:border-yellow-800">
                     <Lightbulb className="w-8 h-8 text-muted-foreground shrink-0 mt-1" strokeWidth={1.5} />
                     <div className="space-y-2">
-                      <h3 className="text-xl font-bold text-yellow-700 dark:text-yellow-400">The "Aha!" Moment</h3>
-                      <p className="text-xl font-medium italic leading-relaxed">"{entry.ahaMoment}"</p>
+                      <h3 className="text-xl font-normal text-yellow-700 dark:text-yellow-400">The "Aha!" Moment</h3>
+                      <p className="text-xl font-normal italic leading-relaxed">"{entry.ahaMoment}"</p>
                     </div>
                   </div>
 
                   <div className="space-y-6">
                     <div>
-                      <h4 className="font-bold text-muted-foreground uppercase text-sm mb-2">Context</h4>
+                      <h4 className="font-normal text-muted-foreground uppercase text-sm mb-2">Context</h4>
                       <p>{entry.context}</p>
                     </div>
                     
                     <div>
-                      <h4 className="font-bold text-muted-foreground uppercase text-sm mb-2">Action Item</h4>
+                      <h4 className="font-normal text-muted-foreground uppercase text-sm mb-2">Action Item</h4>
                       <div className="flex items-center gap-3 p-4 bg-card border rounded-lg">
                          <div className="w-5 h-5 rounded-full border-2 border-muted-foreground/30" />
-                         <span className="font-medium">{entry.actionItem}</span>
+                         <span className="font-normal">{entry.actionItem}</span>
                       </div>
                     </div>
                   </div>

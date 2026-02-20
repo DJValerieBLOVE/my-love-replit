@@ -85,7 +85,7 @@ export function Quiz({ questions, onComplete, rewardAmount }: QuizProps) {
     <div className="w-full max-w-2xl mx-auto">
        {/* Header / Progress */}
        <div className="mb-6 space-y-2">
-          <div className="flex justify-between text-sm text-muted-foreground font-medium">
+          <div className="flex justify-between text-sm text-muted-foreground font-normal">
              <span>Question {currentQuestionIndex + 1} of {questions.length}</span>
              <span className="flex items-center gap-1 text-orange-500">
                 <Zap className="w-4 h-4" strokeWidth={1.5} />
@@ -106,7 +106,7 @@ export function Quiz({ questions, onComplete, rewardAmount }: QuizProps) {
              <Card className="p-6 md:p-8 bg-card border-muted shadow-sm overflow-hidden relative">
                 
                 {/* Question Text */}
-                <h3 className="text-xl md:text-2xl font-serif font-bold mb-6 text-muted-foreground leading-relaxed">
+                <h3 className="text-xl md:text-2xl font-serif font-normal mb-6 text-muted-foreground leading-relaxed">
                    {currentQuestion.question}
                 </h3>
 
@@ -118,7 +118,7 @@ export function Quiz({ questions, onComplete, rewardAmount }: QuizProps) {
                          onClick={() => !isAnswered && setSelectedOption(option)}
                          disabled={isAnswered}
                          className={`
-                            w-full text-left px-6 py-4 rounded-lg border transition-all flex items-center justify-between font-serif font-medium text-lg
+                            w-full text-left px-6 py-4 rounded-lg border transition-all flex items-center justify-between font-serif font-normal text-lg
                             ${isAnswered 
                                ? option === currentQuestion.correctAnswer 
                                   ? 'bg-foreground text-background border-transparent shadow-sm'
@@ -126,7 +126,7 @@ export function Quiz({ questions, onComplete, rewardAmount }: QuizProps) {
                                      ? 'bg-destructive text-destructive-foreground border-transparent shadow-sm opacity-70'
                                      : 'bg-white text-muted-foreground border-muted shadow-sm opacity-50'
                                : selectedOption === option
-                                  ? 'bg-[#F5F3FF] text-foreground border-foreground/50 shadow-md -translate-y-0.5 font-bold'
+                                  ? 'bg-[#F5F3FF] text-foreground border-foreground/50 shadow-md -translate-y-0.5 font-normal'
                                   : 'bg-white text-muted-foreground border-muted shadow-sm hover:bg-[#F0E6FF] hover:text-foreground hover:border-foreground/50 hover:shadow-md hover:-translate-y-0.5'
                             }
                          `}
@@ -181,7 +181,7 @@ export function Quiz({ questions, onComplete, rewardAmount }: QuizProps) {
                                   {isCorrect ? <Check className="w-5 h-5 text-primary" /> : <HelpCircle className="w-5 h-5 text-destructive" />}
                                </div>
                                <div className="flex-1">
-                                  <p className={`font-bold text-lg mb-2 ${isCorrect ? 'text-primary' : 'text-destructive'}`}>{isCorrect ? 'Correct!' : 'Not quite right'}</p>
+                                  <p className={`font-normal text-lg mb-2 ${isCorrect ? 'text-primary' : 'text-destructive'}`}>{isCorrect ? 'Correct!' : 'Not quite right'}</p>
                                   <p className="text-base text-muted-foreground leading-relaxed">
                                      {currentQuestion.explanation || (isCorrect ? "Great job!" : `The correct answer is: ${currentQuestion.correctAnswer}`)}
                                   </p>

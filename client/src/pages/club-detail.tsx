@@ -99,7 +99,7 @@ export default function ClubDetail() {
     return (
       <Layout>
         <div className="max-w-2xl mx-auto p-8 text-center">
-          <h1 className="text-2xl font-bold mb-4">Community Not Found</h1>
+          <h1 className="text-2xl font-normal mb-4">Community Not Found</h1>
           <Link href="/community">
             <Button>Back to Communities</Button>
           </Link>
@@ -153,7 +153,7 @@ export default function ClubDetail() {
           <div className="flex items-end gap-6">
             <div className="mb-2">
               <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-3xl md:text-4xl font-serif font-bold text-foreground">{community.name}</h1>
+                <h1 className="text-3xl md:text-4xl font-serif font-normal text-foreground">{community.name}</h1>
                 {getAccessBadge()}
               </div>
               <p className="text-lg text-muted-foreground max-w-xl mb-4">{community.description}</p>
@@ -161,7 +161,7 @@ export default function ClubDetail() {
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
                 <div className="flex items-center gap-1.5">
                   <Users className="w-4 h-4" />
-                  <span className="font-medium text-foreground">{community.memberCount || 0}</span> Members
+                  <span className="font-normal text-foreground">{community.memberCount || 0}</span> Members
                 </div>
               </div>
             </div>
@@ -194,7 +194,7 @@ export default function ClubDetail() {
               </Button>
             ) : (
               <Button 
-                className="gap-2 font-bold px-6 min-w-[140px]"
+                className="gap-2 font-normal px-6 min-w-[140px]"
                 onClick={handleJoin}
                 disabled={joinMutation.isPending}
                 data-testid="button-join"
@@ -221,7 +221,7 @@ export default function ClubDetail() {
           )}
 
           <div className="space-y-4 mt-6">
-            <h3 className="font-bold text-muted-foreground uppercase text-xs tracking-wider px-1 mb-4">Recent Activity</h3>
+            <h3 className="font-normal text-muted-foreground uppercase text-xs tracking-wider px-1 mb-4">Recent Activity</h3>
             
             {posts.length === 0 ? (
               <Card className="p-8 text-center">
@@ -251,7 +251,7 @@ export default function ClubDetail() {
         <div className="space-y-6">
           <Card className="border-none shadow-lg bg-card sticky top-24">
             <CardHeader>
-              <CardTitle className="text-lg font-bold">About</CardTitle>
+              <CardTitle className="text-lg font-normal">About</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <p className="text-sm text-muted-foreground">
@@ -261,17 +261,17 @@ export default function ClubDetail() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Created</span>
-                  <span className="font-medium">
+                  <span className="font-normal">
                     {community.createdAt ? new Date(community.createdAt).toLocaleDateString("en-US", { month: "short", year: "numeric" }) : "Recently"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Access</span>
-                  <span className="font-medium capitalize">{community.accessType}</span>
+                  <span className="font-normal capitalize">{community.accessType}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Members</span>
-                  <span className="font-medium">{community.memberCount || 0}</span>
+                  <span className="font-normal">{community.memberCount || 0}</span>
                 </div>
               </div>
             </CardContent>

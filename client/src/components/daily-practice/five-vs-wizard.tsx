@@ -135,7 +135,7 @@ export function FiveVsWizard({ onComplete }: FiveVsWizardProps) {
           <label className="text-xs font-serif text-muted-foreground uppercase tracking-wider">My Action Steps</label>
           {data.values.map((val, idx) => (
             <div key={idx} className="relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs font-serif font-bold">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs font-serif font-normal">
                 {idx + 1}.
               </div>
               <Input 

@@ -109,7 +109,7 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
                 <Sparkles className="w-8 h-8 text-white" strokeWidth={1.5} />
               </div>
               <div>
-                <h3 className="font-bold text-lg font-serif text-white">Magic Mentor</h3>
+                <h3 className="font-normal text-lg font-serif text-white">Magic Mentor</h3>
                 <p className="text-xs text-[#E6E6FA]">Powered by Claude Haiku 4.5</p>
               </div>
             </div>
@@ -201,10 +201,10 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <h3 className="font-bold text-base flex items-center gap-2 text-muted-foreground uppercase tracking-wide">
+                  <h3 className="font-normal text-base flex items-center gap-2 text-muted-foreground uppercase tracking-wide">
                     <Target className="w-4 h-4" strokeWidth={1.5} /> Big Dreams
                   </h3>
-                  <Button variant="ghost" className="px-3 text-xs font-medium text-muted-foreground hover:text-primary hover:bg-primary/5">Edit</Button>
+                  <Button variant="ghost" className="px-3 text-xs font-normal text-muted-foreground hover:text-primary hover:bg-primary/5">Edit</Button>
                 </div>
 
                 <div className="space-y-4">
@@ -217,11 +217,11 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
                             <div className="space-y-1 flex-1">
                               <div className="flex items-center gap-2">
                                 <div className={`w-2 h-2 rounded-full`} style={{ backgroundColor: areaColors.hex }} />
-                                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{dream.areaId}</span>
+                                <span className="text-xs font-normal text-muted-foreground uppercase tracking-wider">{dream.areaId}</span>
                               </div>
                               <p className="text-sm font-serif text-[#4D3D5C] line-clamp-2 leading-relaxed">"{dream.description || 'Set your dream...'}"</p>
                             </div>
-                            <span className="text-xs font-medium text-muted-foreground tabular-nums bg-muted/50 px-2 py-1 rounded-md">{dream.progress || 0}%</span>
+                            <span className="text-xs font-normal text-muted-foreground tabular-nums bg-muted/50 px-2 py-1 rounded-md">{dream.progress || 0}%</span>
                           </div>
                           
                           <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">

@@ -156,7 +156,7 @@ function StreakGrid() {
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <Flame className="w-4 h-4 text-orange-500" />
-          <span className="text-lg font-bold">{currentStreak}</span>
+          <span className="text-lg font-normal">{currentStreak}</span>
           <span className="text-sm text-muted-foreground">day streak</span>
         </div>
         <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
@@ -226,7 +226,7 @@ function StreakGrid() {
                         />
                       </TooltipTrigger>
                       <TooltipContent side="top" className="text-xs">
-                        <p className="font-medium">{new Date(day.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</p>
+                        <p className="font-normal">{new Date(day.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</p>
                         <p className="text-muted-foreground">
                           {day.completion === 0 && "No check-in"}
                           {day.completion === 1 && "Morning only ☀️"}
@@ -247,15 +247,15 @@ function StreakGrid() {
       <div className="flex flex-wrap gap-4 text-xs pt-1 border-t">
         <div>
           <span className="text-muted-foreground">Year of practice: </span>
-          <span className="font-bold">{totalDays} complete days</span>
+          <span className="font-normal">{totalDays} complete days</span>
         </div>
         <div>
           <span className="text-muted-foreground">Longest streak: </span>
-          <span className="font-bold">{longestStreak} days</span>
+          <span className="font-normal">{longestStreak} days</span>
         </div>
         <div>
           <span className="text-muted-foreground">Current streak: </span>
-          <span className="font-bold">{currentStreak} days</span>
+          <span className="font-normal">{currentStreak} days</span>
         </div>
       </div>
     </div>
@@ -287,7 +287,7 @@ function DailyLovePracticeTab() {
                 <Heart className="w-7 h-7 text-white" />
               </div>
               <div>
-                <h3 className="text-lg font-bold font-serif">Daily LOVE Practice</h3>
+                <h3 className="text-lg font-normal font-serif">Daily LOVE Practice</h3>
                 <p className="text-sm text-muted-foreground">
                   {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
                 </p>
@@ -309,7 +309,7 @@ function DailyLovePracticeTab() {
 
       {/* Previous Entries */}
       <div>
-        <h3 className="font-bold text-muted-foreground mb-3 flex items-center gap-2">
+        <h3 className="font-normal text-muted-foreground mb-3 flex items-center gap-2">
           <Clock className="w-4 h-4" /> Recent Entries
         </h3>
         <div className="space-y-2">
@@ -322,7 +322,7 @@ function DailyLovePracticeTab() {
                     <Moon className="w-4 h-4 text-indigo-400" />
                   </div>
                   <div>
-                    <span className="font-medium text-sm">
+                    <span className="font-normal text-sm">
                       {new Date(entry.date).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
                     </span>
                     {entry.gratitude && (
@@ -453,10 +453,10 @@ function JournalTab() {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 text-muted-foreground mb-1">
                     <Heart className="w-3 h-3" />
-                    <span className="text-xs font-medium">Daily LOVE Practice</span>
+                    <span className="text-xs font-normal">Daily LOVE Practice</span>
                     <Lock className="w-3 h-3 text-muted-foreground/40" />
                   </div>
-                  <div className="font-serif font-bold mb-1">
+                  <div className="font-serif font-normal mb-1">
                     {new Date(entry.date).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
                   </div>
                   <p className="text-sm text-muted-foreground line-clamp-2">
@@ -472,7 +472,7 @@ function JournalTab() {
             <Card className="border-dashed border-2 bg-muted/20">
               <CardContent className="p-8 text-center">
                 <PenLine className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-                <h3 className="font-bold text-lg mb-2">No journal entries yet</h3>
+                <h3 className="font-normal text-lg mb-2">No journal entries yet</h3>
                 <p className="text-muted-foreground mb-4">Start your first entry to begin your journey.</p>
                 <Link href="/journal?startPractice=true">
                   <Button className="gap-2">
@@ -489,11 +489,11 @@ function JournalTab() {
       {viewMode === "calendar" && (
         <Card className="p-4">
           <div className="text-center mb-4">
-            <h3 className="font-bold text-lg">January 2026</h3>
+            <h3 className="font-normal text-lg">January 2026</h3>
           </div>
           <div className="grid grid-cols-7 gap-1 text-center text-xs text-muted-foreground mb-2">
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-              <div key={day} className="py-2 font-medium">{day}</div>
+              <div key={day} className="py-2 font-normal">{day}</div>
             ))}
           </div>
           <div className="grid grid-cols-7 gap-1">
@@ -517,7 +517,7 @@ function JournalTab() {
                       : "bg-gray-50 hover:bg-gray-100"
                   }`}
                 >
-                  <span className="text-sm font-medium">{day}</span>
+                  <span className="text-sm font-normal">{day}</span>
                   {hasEntry && (
                     <div className="flex gap-0.5 mt-0.5">
                       <Sun className="w-2.5 h-2.5" />
@@ -562,7 +562,7 @@ function BookmarksTab() {
                 <Bookmark className="w-5 h-5 text-white" />
               </div>
               <div className="flex-1 min-w-0">
-                <h4 className="font-medium text-sm truncate">Saved Item {i}</h4>
+                <h4 className="font-normal text-sm truncate">Saved Item {i}</h4>
                 <p className="text-xs text-muted-foreground">From Experiments</p>
               </div>
             </div>
@@ -601,8 +601,8 @@ function AssessmentsTab() {
             {LOVE_AREAS.map((area) => (
               <div key={area.id} className="p-3 rounded-lg bg-muted/30 text-center">
                 <div className="w-3 h-3 rounded-full mx-auto mb-1" style={{ backgroundColor: area.color }} />
-                <p className="text-xs font-medium truncate">{area.name}</p>
-                <p className="text-lg font-bold" style={{ color: area.color }}>{Math.floor(Math.random() * 40 + 60)}%</p>
+                <p className="text-xs font-normal truncate">{area.name}</p>
+                <p className="text-lg font-normal" style={{ color: area.color }}>{Math.floor(Math.random() * 40 + 60)}%</p>
               </div>
             ))}
           </div>
@@ -611,13 +611,13 @@ function AssessmentsTab() {
 
       {/* Assessment History */}
       <div>
-        <h3 className="font-bold text-muted-foreground mb-3">Assessment History</h3>
+        <h3 className="font-normal text-muted-foreground mb-3">Assessment History</h3>
         <div className="space-y-2">
           {[1, 2].map((i) => (
             <Card key={i} className="p-4 hover:shadow-md transition-shadow cursor-pointer">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium text-sm">11x LOVE Code Assessment</p>
+                  <p className="font-normal text-sm">11x LOVE Code Assessment</p>
                   <p className="text-xs text-muted-foreground">
                     Taken {i === 1 ? "January 15, 2026" : "October 3, 2025"}
                   </p>
@@ -643,7 +643,7 @@ function MusicMeditationsTab() {
           </div>
           <div className="flex-1">
             <p className="text-xs text-muted-foreground uppercase tracking-wide">Now Playing</p>
-            <h3 className="font-bold">Morning Energy Mix</h3>
+            <h3 className="font-normal">Morning Energy Mix</h3>
             <p className="text-sm text-muted-foreground">High vibe instrumentals</p>
           </div>
           <Button size="icon" variant="ghost" className="rounded-full w-12 h-12">
@@ -654,7 +654,7 @@ function MusicMeditationsTab() {
 
       {/* Music Playlists */}
       <section>
-        <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-muted-foreground">
+        <h2 className="text-xl font-normal mb-4 flex items-center gap-2 text-muted-foreground">
           <Music className="w-5 h-5" /> Music Playlists
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -666,7 +666,7 @@ function MusicMeditationsTab() {
                 </div>
               </div>
               <CardContent className="p-4">
-                <h3 className="font-bold">{playlist.title}</h3>
+                <h3 className="font-normal">{playlist.title}</h3>
                 <p className="text-xs text-muted-foreground">{playlist.tracks} tracks • {playlist.duration}</p>
               </CardContent>
             </Card>
@@ -683,7 +683,7 @@ function MusicMeditationsTab() {
 
       {/* Meditations */}
       <section>
-        <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-muted-foreground">
+        <h2 className="text-xl font-normal mb-4 flex items-center gap-2 text-muted-foreground">
           <Headphones className="w-5 h-5" /> Meditations
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -695,7 +695,7 @@ function MusicMeditationsTab() {
                 </div>
               </div>
               <CardContent className="p-4">
-                <h3 className="font-bold">{med.title}</h3>
+                <h3 className="font-normal">{med.title}</h3>
                 <p className="text-xs text-muted-foreground">{med.duration} • {med.type}</p>
               </CardContent>
             </Card>
@@ -770,7 +770,7 @@ function LibraryTab() {
 
       {/* Continue Section */}
       <section>
-        <h3 className="font-bold text-muted-foreground mb-3 flex items-center gap-2">
+        <h3 className="font-normal text-muted-foreground mb-3 flex items-center gap-2">
           <Play className="w-4 h-4" /> Continue
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -785,7 +785,7 @@ function LibraryTab() {
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-medium text-sm truncate">{item.title}</h4>
+                  <h4 className="font-normal text-sm truncate">{item.title}</h4>
                   <p className="text-xs text-muted-foreground truncate">{item.author}</p>
                   <div className="mt-2">{getStatusBadge(item.status)}</div>
                 </div>
@@ -797,7 +797,7 @@ function LibraryTab() {
 
       {/* All Items */}
       <section>
-        <h3 className="font-bold text-muted-foreground mb-3">All Items</h3>
+        <h3 className="font-normal text-muted-foreground mb-3">All Items</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredItems.map((item) => (
             <Card key={item.id} className="p-4 hover:shadow-md transition-shadow cursor-pointer">
@@ -810,7 +810,7 @@ function LibraryTab() {
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-medium text-sm truncate">{item.title}</h4>
+                  <h4 className="font-normal text-sm truncate">{item.title}</h4>
                   <p className="text-xs text-muted-foreground truncate">{item.author}</p>
                   <div className="mt-2 flex items-center gap-2">
                     {getStatusBadge(item.status)}
@@ -839,7 +839,7 @@ export default function Vault() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-serif font-bold text-muted-foreground flex items-center gap-3">
+            <h1 className="text-3xl font-serif font-normal text-muted-foreground flex items-center gap-3">
               <KeyRound className="w-8 h-8 text-muted-foreground" /> The Vault
             </h1>
             <p className="text-muted-foreground mt-1">

@@ -293,11 +293,11 @@ export default function ExperimentDetail() {
                </Badge>
                <span className="text-sm text-muted-foreground">Guided by {experiment.guide}</span>
             </div>
-            <h1 className="text-3xl md:text-4xl font-serif font-bold text-muted-foreground mb-4">{experiment.title}</h1>
+            <h1 className="text-3xl md:text-4xl font-serif font-normal text-muted-foreground mb-4">{experiment.title}</h1>
             
             {/* About Toggle */}
             <div className="border-l-2 border-primary/20 pl-4 py-1 cursor-pointer hover:border-primary transition-colors" onClick={() => setIsAboutOpen(!isAboutOpen)}>
-              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground">
+              <div className="flex items-center gap-2 text-sm font-normal text-muted-foreground hover:text-foreground">
                  <BookOpen className="w-4 h-4" /> About this Experiment
                  {isAboutOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
               </div>
@@ -323,7 +323,7 @@ export default function ExperimentDetail() {
                </div>
             </div>
             <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
-               <h3 className="text-white font-bold text-lg">Lesson 3: First Findings</h3>
+               <h3 className="text-white font-normal text-lg">Lesson 3: First Findings</h3>
                <p className="text-white/70 text-sm">Duration: 12:45</p>
             </div>
           </div>
@@ -337,7 +337,7 @@ export default function ExperimentDetail() {
                       {!showQuiz ? (
                          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                             <div>
-                               <h3 className="text-lg font-bold text-muted-foreground">Ready to move on?</h3>
+                               <h3 className="text-lg font-normal text-muted-foreground">Ready to move on?</h3>
                                <p className="text-muted-foreground text-sm">Complete "{currentDiscovery.title}" to unlock the next step.</p>
                             </div>
                             <Button 
@@ -350,7 +350,7 @@ export default function ExperimentDetail() {
                       ) : (
                          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <div className="flex items-center justify-between mb-6 border-b border-border pb-4">
-                               <h3 className="text-xl font-serif font-bold text-muted-foreground flex items-center gap-2">
+                               <h3 className="text-xl font-serif font-normal text-muted-foreground flex items-center gap-2">
                                   <Lightbulb className="w-5 h-5 text-yellow-500" />
                                   Knowledge Check
                                </h3>
@@ -371,7 +371,7 @@ export default function ExperimentDetail() {
 
           {/* Discussion Section */}
           <div className="mt-12 max-w-3xl">
-            <h2 className="text-2xl font-bold font-serif mb-6 flex items-center gap-2 text-muted-foreground">
+            <h2 className="text-2xl font-normal font-serif mb-6 flex items-center gap-2 text-muted-foreground">
               <MessageCircle className="w-6 h-6 text-primary" />
               Lab Partners Discussion
             </h2>
@@ -422,31 +422,31 @@ export default function ExperimentDetail() {
                  <div>
                     <div className="flex items-center gap-1.5 mb-1 text-muted-foreground">
                        <Clock className="w-3.5 h-3.5" />
-                       <span className="text-xs font-bold uppercase tracking-wider">Time</span>
+                       <span className="text-xs font-normal uppercase tracking-wider">Time</span>
                     </div>
-                    <p className="font-medium text-sm">5 Days</p>
+                    <p className="font-normal text-sm">5 Days</p>
                  </div>
                  <div>
                     <div className="flex items-center gap-1.5 mb-1 text-muted-foreground">
                        <Zap className="w-3.5 h-3.5" strokeWidth={1.5} />
-                       <span className="text-xs font-bold uppercase tracking-wider">Award</span>
+                       <span className="text-xs font-normal uppercase tracking-wider">Award</span>
                     </div>
-                    <p className="font-medium text-sm text-orange-500">{localWalletBalance.toLocaleString()} Sats</p>
+                    <p className="font-normal text-sm text-orange-500">{localWalletBalance.toLocaleString()} Sats</p>
                  </div>
               </div>
 
               {/* Progress Block */}
               <div className="space-y-4">
                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-bold text-muted-foreground">Your Progress</span>
-                    <span className="font-bold text-primary">{currentProgress}%</span>
+                    <span className="font-normal text-muted-foreground">Your Progress</span>
+                    <span className="font-normal text-primary">{currentProgress}%</span>
                  </div>
                  <Progress value={currentProgress} className="h-1.5" />
               </div>
 
               {/* Syllabus List */}
               <div>
-                 <h3 className="font-serif font-bold text-lg mb-4 text-muted-foreground">Discoveries</h3>
+                 <h3 className="font-serif font-normal text-lg mb-4 text-muted-foreground">Discoveries</h3>
                  <div className="space-y-2">
                     {discoveries.map((discovery, idx) => {
                        const isCurrent = !discovery.completed && !discovery.locked;
@@ -476,11 +476,11 @@ export default function ExperimentDetail() {
                              
                              {/* Content */}
                              <div className="flex-1">
-                                <p className={`text-base font-medium leading-tight mb-1 ${discovery.locked ? 'text-muted-foreground' : 'text-foreground'}`}>
+                                <p className={`text-base font-normal leading-tight mb-1 ${discovery.locked ? 'text-muted-foreground' : 'text-foreground'}`}>
                                    {discovery.title}
                                 </p>
                                 <div className="flex items-center gap-2">
-                                   <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">{discovery.duration}</span>
+                                   <span className="text-[10px] text-muted-foreground uppercase font-normal tracking-wider">{discovery.duration}</span>
                                 </div>
                              </div>
                           </div>
@@ -502,7 +502,7 @@ export default function ExperimentDetail() {
              <div className="mx-auto w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-4 animate-bounce">
                 <Trophy className="w-12 h-12 text-primary" />
              </div>
-            <DialogTitle className="text-3xl font-serif font-bold text-center text-muted-foreground">Experiment Complete!</DialogTitle>
+            <DialogTitle className="text-3xl font-serif font-normal text-center text-muted-foreground">Experiment Complete!</DialogTitle>
             <DialogDescription className="text-center text-lg mt-2">
                You've unlocked the secrets of {experiment.category}!
             </DialogDescription>
@@ -510,8 +510,8 @@ export default function ExperimentDetail() {
           
           <div className="py-6 space-y-6">
              <div className="p-4 bg-yellow-500/10 rounded-xs border border-yellow-500/20">
-                <p className="text-sm text-muted-foreground uppercase font-bold tracking-widest mb-1">Total Earned</p>
-                <p className="text-4xl font-bold text-yellow-600 dark:text-yellow-400 flex items-center justify-center gap-2">
+                <p className="text-sm text-muted-foreground uppercase font-normal tracking-widest mb-1">Total Earned</p>
+                <p className="text-4xl font-normal text-yellow-600 dark:text-yellow-400 flex items-center justify-center gap-2">
                    <Zap className="w-8 h-8 fill-current" />
                    {GRAND_REWARD + (totalCount * DISCOVERY_REWARD)} Sats
                 </p>
@@ -530,7 +530,7 @@ export default function ExperimentDetail() {
 
           <DialogFooter className="flex-col sm:flex-col gap-3">
             <Link href="/experiments">
-               <Button className="w-full h-12 text-lg font-bold" size="lg">
+               <Button className="w-full h-12 text-lg font-normal" size="lg">
                   Back to Experiments
                </Button>
             </Link>

@@ -195,7 +195,7 @@ export default function SettingsPage() {
                   )}
                   <div>
                     <p className="text-sm" data-testid="text-login-method">
-                      Logged in with <span className="font-medium">{getLoginMethodLabel()}</span>
+                      Logged in with <span className="font-normal">{getLoginMethodLabel()}</span>
                     </p>
                     {loginMethod === "email" && currentUser?.email && (
                       <p className="text-xs text-muted-foreground" data-testid="text-user-email">{currentUser.email}</p>
@@ -211,7 +211,7 @@ export default function SettingsPage() {
                     <div className="border-t pt-4">
                       <div className="flex items-center gap-2 mb-3">
                         <Shield className="w-4 h-4 text-muted-foreground" />
-                        <p className="text-sm font-medium" data-testid="text-2fa-title">Two-Factor Authentication</p>
+                        <p className="text-sm font-normal" data-testid="text-2fa-title">Two-Factor Authentication</p>
                       </div>
 
                       {is2FAEnabled && !recoveryCodes ? (
@@ -266,7 +266,7 @@ export default function SettingsPage() {
                       ) : recoveryCodes ? (
                         <div className="space-y-3">
                           <div className="p-3 rounded-xs border border-yellow-300" style={{ backgroundColor: '#FFF9E6' }}>
-                            <p className="text-sm font-medium mb-2" data-testid="text-recovery-warning">Save these recovery codes</p>
+                            <p className="text-sm font-normal mb-2" data-testid="text-recovery-warning">Save these recovery codes</p>
                             <p className="text-xs text-muted-foreground mb-3">Store them in a safe place. You will need them if you lose access to your authenticator app.</p>
                             <div className="grid grid-cols-2 gap-1">
                               {recoveryCodes.map((code, i) => (
@@ -338,7 +338,7 @@ export default function SettingsPage() {
                     <div className="border-t pt-4">
                       <div className="flex items-center gap-2 mb-3">
                         <Link2 className="w-4 h-4 text-muted-foreground" />
-                        <p className="text-sm font-medium" data-testid="text-link-nostr-title">Link Nostr Identity</p>
+                        <p className="text-sm font-normal" data-testid="text-link-nostr-title">Link Nostr Identity</p>
                       </div>
 
                       {currentUser?.nostrPubkey || linkedNpub ? (

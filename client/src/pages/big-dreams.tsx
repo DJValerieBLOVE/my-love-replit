@@ -77,7 +77,7 @@ export default function BigDreams() {
     <Layout>
       <div className="max-w-4xl mx-auto p-4 lg:p-8 space-y-12">
         <div>
-          <h1 className="text-3xl font-serif font-bold text-muted-foreground mb-2">Big Dreams</h1>
+          <h1 className="text-3xl font-serif font-normal text-muted-foreground mb-2">Big Dreams</h1>
           <p className="text-lg text-muted-foreground italic">
             "The future belongs to those who believe in the beauty of their dreams."
           </p>
@@ -89,7 +89,7 @@ export default function BigDreams() {
         {/* Section 2: My 11 Big Dreams */}
             <section>
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold flex items-center gap-2 text-muted-foreground">
+                <h2 className="text-xl font-normal flex items-center gap-2 text-muted-foreground">
                   <Target className="w-5 h-5" /> My 11 Big Dreams
                 </h2>
                 <span className="text-sm text-muted-foreground">Update your vision for each dimension</span>
@@ -110,8 +110,8 @@ export default function BigDreams() {
                         <CardContent className="p-6">
                           <div className="space-y-4">
                             <div className="flex justify-between items-center mb-2">
-                              <CardTitle className="text-xl font-bold font-serif text-muted-foreground">{area.name}</CardTitle>
-                              <span className="text-sm font-bold text-muted-foreground">{currentProgress}% Realized</span>
+                              <CardTitle className="text-xl font-normal font-serif text-muted-foreground">{area.name}</CardTitle>
+                              <span className="text-sm font-normal text-muted-foreground">{currentProgress}% Realized</span>
                             </div>
                             <Progress value={currentProgress} className="h-2" indicatorClassName={area.color} />
                             

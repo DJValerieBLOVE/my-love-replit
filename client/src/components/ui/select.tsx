@@ -19,7 +19,7 @@ const SelectTrigger = React.forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      "flex h-10 w-full items-center justify-between whitespace-nowrap rounded-lg border border-muted bg-white px-4 py-2 text-base text-muted-foreground shadow-sm ring-offset-background data-[placeholder]:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 hover:border-[#6600ff]/50 hover:shadow-md transition-all",
+      "flex h-9 w-full items-center justify-between whitespace-nowrap rounded-lg border border-[#E5E5E5] bg-white px-3 py-2 text-sm font-normal text-muted-foreground shadow-sm ring-offset-background data-[placeholder]:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 hover:border-gray-400 hover:shadow-md transition-all",
       className
     )}
     {...props}
@@ -105,7 +105,7 @@ const SelectLabel = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Label
     ref={ref}
-    className={cn("px-2 py-1.5 text-sm font-semibold", className)}
+    className={cn("px-2 py-1.5 text-sm font-normal", className)}
     {...props}
   />
 ))
@@ -118,7 +118,7 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex w-full cursor-default select-none items-start rounded-md py-3 pl-4 pr-8 text-base font-serif font-normal text-muted-foreground outline-none hover:bg-muted/30 hover:text-primary focus:bg-primary/10 focus:text-primary data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary data-[state=checked]:font-bold data-[disabled]:pointer-events-none data-[disabled]:opacity-50 whitespace-normal",
+      "relative flex w-full cursor-default select-none items-start rounded-md py-2.5 pl-3 pr-8 text-sm font-serif font-normal text-muted-foreground outline-none hover:bg-gray-50 hover:text-foreground focus:bg-gray-50 focus:text-foreground data-[state=checked]:bg-gray-50 data-[state=checked]:text-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 whitespace-normal",
       className
     )}
     {...props}

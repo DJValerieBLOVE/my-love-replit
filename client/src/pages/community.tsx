@@ -47,7 +47,7 @@ export default function Community() {
         />
         <div className="absolute bottom-0 left-0 right-0 p-6 z-20 flex justify-between items-end">
           <div>
-            <h1 className="text-3xl font-serif font-medium text-muted-foreground">Communities</h1>
+            <h1 className="text-3xl font-serif font-normal text-muted-foreground">Communities</h1>
             <p className="text-muted-foreground max-w-md">Intimate spaces to connect and grow together.</p>
           </div>
           {isConnected && (
@@ -90,7 +90,7 @@ export default function Community() {
                     )}
                     <CardHeader className="pb-2 pt-4 relative z-10">
                       <div className="flex items-start justify-between gap-2">
-                        <CardTitle className="text-xl font-bold text-muted-foreground group-hover:text-primary transition-colors font-serif">
+                        <CardTitle className="text-xl font-normal text-muted-foreground group-hover:text-primary transition-colors font-serif">
                           {community.name}
                         </CardTitle>
                         {getAccessBadge(community.accessType)}

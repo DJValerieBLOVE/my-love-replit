@@ -210,7 +210,7 @@ export default function ExperimentBuilder() {
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-serif font-bold text-muted-foreground">Create Experiment</h1>
+            <h1 className="text-2xl font-serif font-normal text-muted-foreground">Create Experiment</h1>
             <p className="text-muted-foreground">Design a transformative life experiment</p>
           </div>
         </div>
@@ -351,7 +351,7 @@ export default function ExperimentBuilder() {
                       </Button>
                     </div>
                     <GripVertical className="w-4 h-4 text-muted-foreground" />
-                    <span className="font-medium text-sm text-muted-foreground">
+                    <span className="font-normal text-sm text-muted-foreground">
                       Step {index + 1}
                     </span>
                     <div className="flex-1" />

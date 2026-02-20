@@ -214,7 +214,7 @@ export function ShareConfirmationDialog({
 
         <div className="space-y-4 py-4">
           <div className="space-y-3">
-            <Label className="text-sm font-medium">Share with</Label>
+            <Label className="text-sm font-normal">Share with</Label>
             <RadioGroup
               value={shareDestination}
               onValueChange={(value) => setShareDestination(value as ShareDestination)}
@@ -225,7 +225,7 @@ export function ShareConfirmationDialog({
                 <Label htmlFor="nostr" className="flex items-center gap-2 cursor-pointer flex-1">
                   <Globe className="w-4 h-4 text-love-body" />
                   <div>
-                    <p className="font-medium text-sm">Public to Nostr</p>
+                    <p className="font-normal text-sm">Public to Nostr</p>
                     <p className="text-xs text-muted-foreground">Share with all your followers</p>
                   </div>
                 </Label>
@@ -235,7 +235,7 @@ export function ShareConfirmationDialog({
                 <Label htmlFor="club" className="flex items-center gap-2 cursor-not-allowed flex-1">
                   <Users className="w-4 h-4 text-muted-foreground" />
                   <div>
-                    <p className="font-medium text-sm text-muted-foreground">Share with a Group</p>
+                    <p className="font-normal text-sm text-muted-foreground">Share with a Group</p>
                     <p className="text-xs text-muted-foreground">Coming soon - Only group members can see</p>
                   </div>
                 </Label>
@@ -275,9 +275,9 @@ export function ShareConfirmationDialog({
           )}
 
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Preview</Label>
+            <Label className="text-sm font-normal">Preview</Label>
             <div className="bg-muted/50 rounded-lg p-4 space-y-2">
-              <p className="font-medium text-sm">{contentTitle}</p>
+              <p className="font-normal text-sm">{contentTitle}</p>
               <p className="text-sm text-muted-foreground line-clamp-3">{contentPreview}</p>
             </div>
           </div>

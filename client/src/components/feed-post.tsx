@@ -335,7 +335,7 @@ export function FeedPost({ post }: FeedPostProps) {
           <div className="flex-1 min-w-0">
             <div className="flex justify-between items-start min-w-0">
               <div className="flex items-center gap-2 min-w-0 flex-1">
-                <h3 className="font-bold text-foreground text-sm truncate max-w-[160px]">
+                <h3 className="font-normal text-foreground text-sm truncate max-w-[160px]">
                   {post.author.name}
                 </h3>
                 <span className="text-muted-foreground font-normal text-sm flex items-center gap-1 shrink-0">
@@ -402,7 +402,7 @@ export function FeedPost({ post }: FeedPostProps) {
                 data-testid={`button-reply-${post.id}`}
               >
                 <MessageSquare className="w-[18px] h-[18px]" strokeWidth={1.5} />
-                <span className="text-sm font-medium">{post.comments > 0 ? post.comments : ""}</span>
+                <span className="text-sm font-normal">{post.comments > 0 ? post.comments : ""}</span>
               </Button>
 
               {/* 2. Repost with dropdown */}
@@ -492,7 +492,7 @@ export function FeedPost({ post }: FeedPostProps) {
                           <AvatarImage src={post.author.avatar} />
                           <AvatarFallback>{post.author.name[0]}</AvatarFallback>
                         </Avatar>
-                        <span className="font-medium">{post.author.name}</span>
+                        <span className="font-normal">{post.author.name}</span>
                       </div>
                       <p className="text-sm mt-2 line-clamp-2">{post.content}</p>
                     </Card>
@@ -523,7 +523,7 @@ export function FeedPost({ post }: FeedPostProps) {
                       strokeWidth={1.5}
                       fill={isZapped ? "currentColor" : "none"}
                     />
-                    <span className={`text-sm font-medium ${isZapped || zaps > 0 ? 'font-bold' : ''}`}>
+                    <span className={`text-sm font-normal ${isZapped || zaps > 0 ? 'font-normal' : ''}`}>
                       {zaps > 0 ? zaps.toLocaleString() : ""}
                     </span>
                   </Button>
@@ -545,7 +545,7 @@ export function FeedPost({ post }: FeedPostProps) {
                         <Button
                           key={amount}
                           variant={zapAmount === amount ? "default" : "outline"}
-                          className={`text-lg font-bold ${
+                          className={`text-lg font-normal ${
                             zapAmount === amount 
                               ? "bg-love-family hover:bg-[#E65C00] text-white border-love-family" 
                               : "border-[#E5E5E5] hover:border-love-family hover:bg-love-family-light text-muted-foreground"
@@ -561,13 +561,13 @@ export function FeedPost({ post }: FeedPostProps) {
                     <div className="space-y-2">
                       <Label htmlFor="custom-amount" className="text-muted-foreground font-serif">Custom Amount (Sats)</Label>
                       <div className="relative">
-                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-love-family font-bold">⚡</div>
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-love-family font-normal">⚡</div>
                         <Input 
                           id="custom-amount" 
                           type="number" 
                           value={zapAmount}
                           onChange={(e) => setZapAmount(Number(e.target.value))}
-                          className="pl-9 text-lg font-bold bg-[#FAFAFA] border-muted" 
+                          className="pl-9 text-lg font-normal bg-[#FAFAFA] border-muted" 
                         />
                       </div>
                     </div>
@@ -593,7 +593,7 @@ export function FeedPost({ post }: FeedPostProps) {
                       type="submit" 
                       onClick={handleZap}
                       disabled={isZapping || !isConnected}
-                      className="bg-love-family hover:bg-[#E65C00] text-white font-bold px-8 w-full sm:w-auto disabled:opacity-50"
+                      className="bg-love-family hover:bg-[#E65C00] text-white font-normal px-8 w-full sm:w-auto disabled:opacity-50"
                       data-testid={`button-confirm-zap-${post.id}`}
                     >
                       {isZapping ? "Zapping..." : `Zap ${zapAmount} Sats ⚡`}
@@ -610,7 +610,7 @@ export function FeedPost({ post }: FeedPostProps) {
                 data-testid={`button-like-${post.id}`}
               >
                 <Heart className="w-[18px] h-[18px]" strokeWidth={1.5} fill={isLiked ? "currentColor" : "none"} />
-                <span className="text-sm font-medium">{likes > 0 ? likes : ""}</span>
+                <span className="text-sm font-normal">{likes > 0 ? likes : ""}</span>
               </Button>
 
               {/* 5. Bookmark */}

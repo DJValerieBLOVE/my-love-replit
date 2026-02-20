@@ -64,13 +64,13 @@ export function EveningModal({ morningData, isOpen, onOpenChange, onComplete }: 
              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-md">
                 <Moon className="w-8 h-8 text-[#6600ff]" strokeWidth={1.5} />
              </div>
-             <h2 className="text-3xl font-bold text-[#4D3D5C] dark:text-white font-serif">Evening Vibe Check</h2>
+             <h2 className="text-3xl font-normal text-[#4D3D5C] dark:text-white font-serif">Evening Vibe Check</h2>
              <p className="text-[#4D3D5C]/80 dark:text-white/80 text-lg font-serif">Close your day with gratitude and reflection.</p>
            </div>
 
            {/* 3 Things Checklist */}
            <div className="space-y-4 bg-white/60 dark:bg-black/20 p-6 rounded-2xl border border-white/50 backdrop-blur-sm">
-              <h3 className="text-xs font-bold text-[#4D3D5C] uppercase tracking-wider mb-4 opacity-70">Did you complete your 3 things?</h3>
+              <h3 className="text-xs font-normal text-[#4D3D5C] uppercase tracking-wider mb-4 opacity-70">Did you complete your 3 things?</h3>
               {morningData.values.map((val, idx) => (
                  <div 
                     key={idx} 
@@ -101,7 +101,7 @@ export function EveningModal({ morningData, isOpen, onOpenChange, onComplete }: 
 
            {/* Victory */}
             <div className="space-y-3">
-                <label className="flex items-center gap-2 text-xs font-bold text-[#4D3D5C] uppercase tracking-wider opacity-70">
+                <label className="flex items-center gap-2 text-xs font-normal text-[#4D3D5C] uppercase tracking-wider opacity-70">
                     <Trophy className="w-4 h-4 text-yellow-500" />
                     Your Daily Victory
                 </label>
@@ -115,13 +115,13 @@ export function EveningModal({ morningData, isOpen, onOpenChange, onComplete }: 
 
            {/* Vibe Rater */}
            <div className="pt-6 border-t border-[#4D3D5C]/10">
-              <h3 className="text-center text-xs font-bold text-[#4D3D5C] uppercase tracking-wider mb-6 opacity-70">How's your vibe now?</h3>
+              <h3 className="text-center text-xs font-normal text-[#4D3D5C] uppercase tracking-wider mb-6 opacity-70">How's your vibe now?</h3>
               <VibeRater value={eveningVibe} onChange={setEveningVibe} />
            </div>
 
            <Button 
              size="lg" 
-             className="w-full bg-foreground hover:bg-foreground/90 text-background font-bold py-8 text-xl rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+             className="w-full bg-foreground hover:bg-foreground/90 text-background font-normal py-8 text-xl rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
              onClick={handleComplete}
            >
              <Sparkles className="w-6 h-6 mr-2" strokeWidth={2} /> Complete Day & Save

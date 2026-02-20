@@ -36,10 +36,10 @@ export function VibeRater({ value, onChange }: VibeRaterProps) {
         >
           {value}
         </motion.div>
-        <div className={cn("text-2xl font-bold font-serif uppercase tracking-widest transition-colors duration-300", info.color)}>
+        <div className={cn("text-2xl font-normal font-serif uppercase tracking-widest transition-colors duration-300", info.color)}>
           {info.label}
         </div>
-        <div className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+        <div className="text-sm font-normal text-muted-foreground uppercase tracking-wider">
           {info.zone}
         </div>
         <p className="text-lg font-serif italic text-muted-foreground/80">
@@ -56,7 +56,7 @@ export function VibeRater({ value, onChange }: VibeRaterProps) {
           onValueChange={(vals) => onChange(vals[0])}
           className="cursor-pointer"
         />
-        <div className="flex justify-between mt-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+        <div className="flex justify-between mt-4 text-xs font-normal text-muted-foreground uppercase tracking-wider">
           <span>Low Vibe</span>
           <span>High Vibe</span>
         </div>

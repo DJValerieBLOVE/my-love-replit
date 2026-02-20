@@ -90,7 +90,7 @@ function FlipCard({ title, position, imageUrl, quote, progress, onClick, testId,
             <Pin className="w-3 h-3 md:w-4 md:h-4" />
           </button>
 
-          <h3 className="text-foreground text-lg md:text-xl font-semibold mb-2 md:mb-4">{title}</h3>
+          <h3 className="text-foreground text-lg md:text-xl font-normal mb-2 md:mb-4">{title}</h3>
           <p 
             className="text-muted-foreground text-xs md:text-sm text-center italic mb-3 md:mb-4 px-2"
           >
@@ -102,7 +102,7 @@ function FlipCard({ title, position, imageUrl, quote, progress, onClick, testId,
               style={{ width: `${progress}%` }}
             />
           </div>
-          <span className="text-foreground text-xs md:text-sm font-medium">{progress}% Progress</span>
+          <span className="text-foreground text-xs md:text-sm font-normal">{progress}% Progress</span>
           <button
             className="mt-3 md:mt-4 px-3 md:px-4 py-1.5 md:py-2 bg-foreground hover:bg-foreground/90 rounded-xs text-background text-xs md:text-sm transition-colors shadow-sm"
             onClick={(e) => {
@@ -254,7 +254,7 @@ function GlowingHeart({ label, isFlipped, onClick, frontImageUrl, affirmation, p
               fill="#6600ff"
               fontSize="6"
               fontFamily="system-ui, sans-serif"
-              fontWeight="500"
+              fontWeight="400"
             >
               ▶ Daily Practice
             </text>

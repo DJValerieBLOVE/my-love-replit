@@ -15,7 +15,7 @@ export default function AdminOnboarding() {
       <div className="max-w-4xl mx-auto p-4 lg:p-8 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-serif font-bold">Onboarding Settings</h1>
+            <h1 className="text-2xl font-serif font-normal">Onboarding Settings</h1>
             <p className="text-muted-foreground">Customize the welcome experience for your members.</p>
           </div>
           <div className="flex gap-2">
@@ -123,11 +123,11 @@ export default function AdminOnboarding() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <div className="text-2xl font-bold">84%</div>
+                  <div className="text-2xl font-normal">84%</div>
                   <p className="text-xs text-muted-foreground">Completion Rate</p>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold">2.4 days</div>
+                  <div className="text-2xl font-normal">2.4 days</div>
                   <p className="text-xs text-muted-foreground">Avg. Time to Complete</p>
                 </div>
               </CardContent>
