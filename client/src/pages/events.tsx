@@ -78,14 +78,16 @@ export default function Events() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
           {/* Event List - 2 Columns Wide */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="flex flex-col gap-4">
+            <div className="space-y-4">
               <h2 className="font-normal text-muted-foreground text-sm uppercase tracking-wider flex items-center gap-2">
                 <CalendarIcon className="w-4 h-4" /> {getDateLabel()}
               </h2>
               {selectedMeetings.length > 0 ? (
-                selectedMeetings.map((event) => (
-                  <EventCard key={event.id} event={event} />
-                ))
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {selectedMeetings.map((event) => (
+                    <EventCard key={event.id} event={event} />
+                  ))}
+                </div>
               ) : (
                 <p className="text-muted-foreground">No meetings scheduled for this date</p>
               )}

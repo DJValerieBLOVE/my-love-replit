@@ -29,28 +29,22 @@ interface EventProps {
 export function EventCard({ event }: EventProps) {
   return (
     <Link href={`/events/${event.id}`}>
-      <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-all group bg-card cursor-pointer">
-        <div className="flex flex-row h-40 sm:h-48">
-          {/* Date & Image Section - Compact on left */}
-        <div className="w-32 sm:w-48 relative shrink-0 overflow-hidden bg-muted">
+      <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-all group bg-card cursor-pointer flex flex-col h-full">
+        <div className="relative aspect-video overflow-hidden bg-muted">
           <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors z-10" />
           <img 
             src={event.image} 
             alt={event.title} 
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
           />
-          
-
-          {/* Date Block - Bottom Left overlay */}
           <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent z-20">
-             <div className="text-white font-normal text-xs flex items-center gap-1">
-                <CalendarIcon className="w-3 h-3" />
-                <span>{event.date === "Today" ? "TODAY" : "NOV 28"}</span>
-             </div>
+            <div className="text-white font-normal text-xs flex items-center gap-1">
+              <CalendarIcon className="w-3 h-3" />
+              <span>{event.date === "Today" ? "TODAY" : "NOV 28"}</span>
+            </div>
           </div>
         </div>
 
-        {/* Content Section */}
         <CardContent className="p-4 flex-1 flex flex-col justify-between min-w-0">
           <div>
             <div className="flex justify-between items-start gap-2">
@@ -68,19 +62,14 @@ export function EventCard({ event }: EventProps) {
               <span>{event.type}</span>
             </div>
 
-            <p className="text-sm text-muted-foreground line-clamp-2 hidden sm:block">
-              {event.description}
-            </p>
-            
-            {/* Mobile-only description truncation */}
-            <p className="text-sm text-muted-foreground line-clamp-1 sm:hidden">
+            <p className="text-sm text-muted-foreground line-clamp-2">
               {event.description}
             </p>
           </div>
 
-          <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/50">
+          <div className="flex items-center justify-between mt-3 pt-2 border-t border-border/50">
             <div className="flex items-center gap-2">
-               <div className="flex -space-x-2">
+              <div className="flex -space-x-2">
                 {[1,2,3].map(i => (
                   <div key={i} className="w-6 h-6 rounded-full border-2 border-card bg-muted overflow-hidden">
                     <img src={`https://i.pravatar.cc/100?img=${i + 10}`} alt="Attendee" />
@@ -95,7 +84,6 @@ export function EventCard({ event }: EventProps) {
             </Button>
           </div>
         </CardContent>
-      </div>
       </Card>
     </Link>
   );

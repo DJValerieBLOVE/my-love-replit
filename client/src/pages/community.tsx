@@ -84,7 +84,7 @@ export default function Community() {
                   <Card className="hover:shadow-md transition-all border-none bg-card/50 shadow-sm group cursor-pointer overflow-hidden flex flex-col h-full" data-testid={`card-community-${community.id}`}>
                     <div className="h-[2px] w-full bg-gradient-to-r from-primary/20 to-primary/5 group-hover:from-primary group-hover:to-purple-400 transition-all" />
                     {community.coverImage && (
-                      <div className="h-24 overflow-hidden">
+                      <div className="aspect-video overflow-hidden">
                         <img src={community.coverImage} alt="" className="w-full h-full object-cover" />
                       </div>
                     )}

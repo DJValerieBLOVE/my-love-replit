@@ -161,7 +161,7 @@ export default function Grow() {
             {filteredCourses.map((course) => (
               <Link key={course.id} href={`/experiments/course/${course.id}`}>
                 <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 group border-none shadow-sm bg-card cursor-pointer flex flex-col h-full">
-                  <div className={`relative h-32 bg-gradient-to-br ${course.color} flex items-center justify-center`}>
+                  <div className={`relative aspect-video bg-gradient-to-br ${course.color} flex items-center justify-center`}>
                     <h3 className="text-2xl text-white text-center px-4">{course.title}</h3>
                   </div>
                   
@@ -244,7 +244,7 @@ export default function Grow() {
                   <Link key={experiment.id} href={`/experiments/${experiment.id}`}>
                     <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 group border-none shadow-sm bg-card cursor-pointer flex flex-col h-full rounded-xs">
                       <div className="h-[2px] w-full bg-primary" />
-                      <div className="relative h-48 overflow-hidden">
+                      <div className="relative aspect-video overflow-hidden">
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors z-10" />
                         {experiment.image ? (
                           <img 
