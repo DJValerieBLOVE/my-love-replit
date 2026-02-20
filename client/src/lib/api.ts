@@ -338,6 +338,63 @@ export async function createEvent(data: {
   return response.json();
 }
 
+// Love Board
+export async function getLoveBoardPosts(category?: string) {
+  const url = category && category !== "all" 
+    ? `/api/love-board?category=${category}` 
+    : "/api/love-board";
+  const response = await fetch(url);
+  if (!response.ok) throw new Error("Failed to fetch love board posts");
+  return response.json();
+}
+
+export async function createLoveBoardPost(data: {
+  authorId: string;
+  title: string;
+  description: string;
+  category: string;
+  image?: string;
+  price?: string;
+  contactInfo?: string;
+}) {
+  const response = await authFetch("/api/love-board", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error("Failed to create post");
+  return response.json();
+}
+
+// Prayer Requests
+export async function getPrayerRequests() {
+  const response = await fetch("/api/prayer-requests");
+  if (!response.ok) throw new Error("Failed to fetch prayer requests");
+  return response.json();
+}
+
+export async function createPrayerRequest(data: {
+  authorId: string;
+  content: string;
+  isAnonymous?: boolean;
+}) {
+  const response = await authFetch("/api/prayer-requests", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error("Failed to create prayer request");
+  return response.json();
+}
+
+export async function prayForRequest(id: string) {
+  const response = await fetch(`/api/prayer-requests/${id}/pray`, {
+    method: "POST",
+  });
+  if (!response.ok) throw new Error("Failed to pray");
+  return response.json();
+}
+
 export async function getRecentPosts(limit?: number) {
   const url = limit ? `/api/posts?limit=${limit}` : "/api/posts";
   const response = await authFetch(url);

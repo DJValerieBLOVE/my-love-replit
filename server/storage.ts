@@ -3,6 +3,7 @@ import {
   experimentNotes, discoveryNotes, events, posts, clubs, zaps, aiUsageLogs,
   courses, lessons, courseEnrollments, lessonComments, courseComments,
   communities, communityMemberships, communityPosts,
+  loveBoardPosts, prayerRequests,
   type User, type InsertUser,
   type JournalEntry, type InsertJournalEntry,
   type DailyPractice, type InsertDailyPractice,
@@ -24,6 +25,8 @@ import {
   type Community, type InsertCommunity,
   type CommunityMembership, type InsertCommunityMembership,
   type CommunityPost, type InsertCommunityPost,
+  type LoveBoardPost, type InsertLoveBoardPost,
+  type PrayerRequest, type InsertPrayerRequest,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, sql, inArray } from "drizzle-orm";
@@ -105,6 +108,16 @@ export interface IStorage {
   createPost(post: InsertPost): Promise<Post>;
   likePost(postId: string): Promise<Post | undefined>;
   zapPost(postId: string, amount: number): Promise<Post | undefined>;
+
+  // Love Board Posts
+  getLoveBoardPosts(category?: string): Promise<(LoveBoardPost & { author: User })[]>;
+  getLoveBoardPost(id: string): Promise<(LoveBoardPost & { author: User }) | undefined>;
+  createLoveBoardPost(post: InsertLoveBoardPost): Promise<LoveBoardPost>;
+
+  // Prayer Requests
+  getPrayerRequests(): Promise<(PrayerRequest & { author: User })[]>;
+  createPrayerRequest(request: InsertPrayerRequest): Promise<PrayerRequest>;
+  prayForRequest(id: string): Promise<PrayerRequest | undefined>;
 
   // Clubs
   getAllClubs(): Promise<Club[]>;
@@ -646,6 +659,71 @@ export class DatabaseStorage implements IStorage {
     const [updated] = await db.update(posts)
       .set({ zaps: sql`${posts.zaps} + ${amount}` })
       .where(eq(posts.id, postId))
+      .returning();
+    return updated || undefined;
+  }
+
+  // Love Board Posts
+  async getLoveBoardPosts(category?: string): Promise<(LoveBoardPost & { author: User })[]> {
+    const allPosts = await db
+      .select({
+        post: loveBoardPosts,
+        author: users,
+      })
+      .from(loveBoardPosts)
+      .innerJoin(users, eq(loveBoardPosts.authorId, users.id))
+      .where(eq(loveBoardPosts.isActive, true))
+      .orderBy(desc(loveBoardPosts.createdAt));
+
+    const result = allPosts.map(({ post, author }) => ({ ...post, author }));
+    if (category && category !== "all") {
+      return result.filter(p => p.category === category);
+    }
+    return result;
+  }
+
+  async getLoveBoardPost(id: string): Promise<(LoveBoardPost & { author: User }) | undefined> {
+    const rows = await db
+      .select({
+        post: loveBoardPosts,
+        author: users,
+      })
+      .from(loveBoardPosts)
+      .innerJoin(users, eq(loveBoardPosts.authorId, users.id))
+      .where(eq(loveBoardPosts.id, id));
+    if (rows.length === 0) return undefined;
+    return { ...rows[0].post, author: rows[0].author };
+  }
+
+  async createLoveBoardPost(post: InsertLoveBoardPost): Promise<LoveBoardPost> {
+    const [created] = await db.insert(loveBoardPosts).values(post).returning();
+    return created;
+  }
+
+  // Prayer Requests
+  async getPrayerRequests(): Promise<(PrayerRequest & { author: User })[]> {
+    const rows = await db
+      .select({
+        request: prayerRequests,
+        author: users,
+      })
+      .from(prayerRequests)
+      .innerJoin(users, eq(prayerRequests.authorId, users.id))
+      .where(eq(prayerRequests.isActive, true))
+      .orderBy(desc(prayerRequests.createdAt));
+    return rows.map(({ request, author }) => ({ ...request, author }));
+  }
+
+  async createPrayerRequest(request: InsertPrayerRequest): Promise<PrayerRequest> {
+    const [created] = await db.insert(prayerRequests).values(request).returning();
+    return created;
+  }
+
+  async prayForRequest(id: string): Promise<PrayerRequest | undefined> {
+    const [updated] = await db
+      .update(prayerRequests)
+      .set({ prayerCount: sql`${prayerRequests.prayerCount} + 1` })
+      .where(eq(prayerRequests.id, id))
       .returning();
     return updated || undefined;
   }

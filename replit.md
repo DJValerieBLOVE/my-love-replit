@@ -10,7 +10,11 @@ My Masterpiece is a spiritual personal growth application designed to help users
 - NO colored icons anywhere - all icons use muted-foreground color
 - All colors solid hex, no opacity values
 - Privacy-first: entries default to private, optional sharing
-- Love Board is planned as a marketplace (help wanted, items for sale) for paid members - currently shows as leaderboard
+- Love Board is a marketplace (For Sale, Help Wanted, Services, Other) for paid members at /leaderboard route
+- Prayer Requests live inside the Tribes page (any user can post, not just paid)
+- Tribes tabs: My Tribes, New, All, Suggested, Prayer Requests + Create Tribe button
+- Love Board right sidebar has placeholder gamification: Top Zappers, Top Streaks, Progress & Completions
+- All Tribe content and Prayer Requests are PRIVATE (not shared to public Nostr)
 - NO gamification on Profile page (no XP, levels, badges, rewards)
 - "Experiments" is the ONLY term for learning content (not "courses") - buttons say "Start Experiment" / "View Experiment"
 

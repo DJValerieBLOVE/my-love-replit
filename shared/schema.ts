@@ -543,6 +543,54 @@ export const insertCommunityPostSchema = createInsertSchema(communityPosts).omit
 export type InsertCommunityPost = z.infer<typeof insertCommunityPostSchema>;
 export type CommunityPost = typeof communityPosts.$inferSelect;
 
+// Love Board Posts (marketplace listings)
+export const loveBoardPosts = pgTable("love_board_posts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  authorId: varchar("author_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  category: text("category").notNull(), // for_sale, help_wanted, services, other
+  image: text("image"),
+  price: text("price"),
+  contactInfo: text("contact_info"),
+  isActive: boolean("is_active").default(true).notNull(),
+  likes: integer("likes").default(0).notNull(),
+  zaps: integer("zaps").default(0).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertLoveBoardPostSchema = createInsertSchema(loveBoardPosts).omit({
+  id: true,
+  isActive: true,
+  likes: true,
+  zaps: true,
+  createdAt: true,
+});
+
+export type InsertLoveBoardPost = z.infer<typeof insertLoveBoardPostSchema>;
+export type LoveBoardPost = typeof loveBoardPosts.$inferSelect;
+
+// Prayer Requests (private, within Tribes)
+export const prayerRequests = pgTable("prayer_requests", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  authorId: varchar("author_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  content: text("content").notNull(),
+  isAnonymous: boolean("is_anonymous").default(false).notNull(),
+  prayerCount: integer("prayer_count").default(0).notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertPrayerRequestSchema = createInsertSchema(prayerRequests).omit({
+  id: true,
+  prayerCount: true,
+  isActive: true,
+  createdAt: true,
+});
+
+export type InsertPrayerRequest = z.infer<typeof insertPrayerRequestSchema>;
+export type PrayerRequest = typeof prayerRequests.$inferSelect;
+
 // AI Usage Logs (tracking token usage for billing)
 export const aiUsageLogs = pgTable("ai_usage_logs", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),

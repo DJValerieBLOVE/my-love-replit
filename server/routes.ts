@@ -29,6 +29,8 @@ import {
   insertCommunityMembershipSchema,
   insertCommunityPostSchema,
   insertDailyPracticeSchema,
+  insertLoveBoardPostSchema,
+  insertPrayerRequestSchema,
 } from "@shared/schema";
 import { chat, validateApiKey, type ChatMessage, type UserContext } from "./anthropic";
 
@@ -1016,6 +1018,73 @@ export async function registerRoutes(
       res.json(stats);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch zap stats" });
+    }
+  });
+
+  // ===== LOVE BOARD POSTS =====
+
+  app.get("/api/love-board", async (req, res) => {
+    try {
+      const category = req.query.category as string | undefined;
+      const posts = await storage.getLoveBoardPosts(category);
+      res.json(posts);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch love board posts" });
+    }
+  });
+
+  app.get("/api/love-board/:id", async (req, res) => {
+    try {
+      const post = await storage.getLoveBoardPost(req.params.id);
+      if (!post) {
+        return res.status(404).json({ error: "Post not found" });
+      }
+      res.json(post);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch post" });
+    }
+  });
+
+  app.post("/api/love-board", authMiddleware, requireTier("core"), async (req, res) => {
+    try {
+      const validated = insertLoveBoardPostSchema.parse(req.body);
+      const post = await storage.createLoveBoardPost(validated);
+      res.status(201).json(post);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message || "Invalid post data" });
+    }
+  });
+
+  // ===== PRAYER REQUESTS =====
+
+  app.get("/api/prayer-requests", async (req, res) => {
+    try {
+      const requests = await storage.getPrayerRequests();
+      res.json(requests);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch prayer requests" });
+    }
+  });
+
+  app.post("/api/prayer-requests", authMiddleware, async (req, res) => {
+    try {
+      const validated = insertPrayerRequestSchema.parse(req.body);
+      const request = await storage.createPrayerRequest(validated);
+      res.status(201).json(request);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message || "Invalid prayer request" });
+    }
+  });
+
+  app.post("/api/prayer-requests/:id/pray", async (req, res) => {
+    try {
+      const updated = await storage.prayForRequest(req.params.id);
+      if (!updated) {
+        return res.status(404).json({ error: "Prayer request not found" });
+      }
+      res.json(updated);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update prayer count" });
     }
   });
 

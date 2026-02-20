@@ -26,6 +26,7 @@ import Events from "@/pages/events";
 import EventCreate from "@/pages/event-create";
 import EventDetail from "@/pages/event-detail";
 import Leaderboard from "@/pages/leaderboard";
+import LoveBoardCreate from "@/pages/love-board-create";
 import Feed from "@/pages/feed";
 import DailyPracticePage from "@/pages/daily-practice";
 import AdminOnboarding from "@/pages/admin/onboarding";
@@ -58,6 +59,7 @@ function Router() {
       <Route path="/events/create" component={EventCreate} />
       <Route path="/events/:id" component={EventDetail} />
       <Route path="/leaderboard" component={Leaderboard} />
+      <Route path="/leaderboard/create" component={LoveBoardCreate} />
       <Route path="/feed" component={Feed} />
       <Route path="/daily-practice" component={DailyPracticePage} />
       <Route path="/how-to-use" component={HowToUse} />
