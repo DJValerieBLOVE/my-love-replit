@@ -613,7 +613,6 @@ export default function Profile() {
               <Button
                 onClick={handleSaveProfile}
                 disabled={profileMutation.isPending}
-                className="bg-gradient-to-r from-[#6600ff] to-[#cc00ff] text-white"
                 data-testid="button-save-profile"
               >
                 {profileMutation.isPending ? "Saving..." : "Save Changes"}

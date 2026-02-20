@@ -294,7 +294,7 @@ function DailyLovePracticeTab() {
               </div>
             </div>
             <Link href="/journal?startPractice=true">
-              <Button size="lg" className="gap-2 bg-gradient-to-r from-[#6600ff] to-[#cc00ff] hover:opacity-90">
+              <Button size="lg" className="gap-2">
                 <Plus className="w-5 h-5" /> Start Today's Practice
               </Button>
             </Link>

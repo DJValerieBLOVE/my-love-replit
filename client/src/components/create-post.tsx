@@ -87,16 +87,16 @@ export function CreatePost({ placeholder = "Share something with the community..
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full"
+                className="text-muted-foreground hover:text-[#6600ff] hover:bg-[#F5F3FF] rounded-full"
                 onClick={() => fileInputRef.current?.click()}
                 data-testid="button-add-image"
               >
                 <ImageIcon className="w-4 h-4" strokeWidth={1.5} />
               </Button>
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full">
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-[#6600ff] hover:bg-[#F5F3FF] rounded-full">
                 <Smile className="w-4 h-4" strokeWidth={1.5} />
               </Button>
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full">
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-[#6600ff] hover:bg-[#F5F3FF] rounded-full">
                 <Calendar className="w-4 h-4" strokeWidth={1.5} />
               </Button>
             </div>

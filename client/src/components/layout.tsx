@@ -203,7 +203,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             ) : (
               <Button
                 onClick={() => setLoginDialogOpen(true)}
-                className="bg-gradient-to-r from-[#6600ff] to-[#cc00ff] hover:from-[#5500dd] hover:to-[#bb00dd] text-white font-medium text-xs md:text-sm px-3 md:px-4 h-8 md:h-9"
+                className="text-xs md:text-sm px-3 md:px-4 h-8 md:h-9"
                 data-testid="button-login"
               >
                 Login
@@ -220,9 +220,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         userName={profile?.name}
       />
 
-      <div className="flex-1 flex overflow-hidden">
-        {/* Left Sidebar (Navigation) - Desktop only */}
-        <aside className="hidden lg:flex flex-col w-[240px] border-r bg-card/50 p-4 gap-2">
+      <div className="flex-1 flex">
+        {/* Left Sidebar (Navigation) - Desktop only, sticky */}
+        <aside className="hidden lg:flex flex-col w-[240px] shrink-0 border-r bg-card/50 p-4 gap-2 sticky top-14 md:top-20 self-start max-h-[calc(100vh-56px)] md:max-h-[calc(100vh-80px)] overflow-y-auto">
           {desktopNavLinks.map((item) => {
             const isActive = location === item.href || (item.href !== "/" && location.startsWith(item.href));
             return (
@@ -253,7 +253,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </aside>
 
         {/* Main Content Area */}
-        <main className="flex-1 overflow-hidden">
+        <main className="flex-1 min-w-0">
           {children}
         </main>
 

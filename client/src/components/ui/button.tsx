@@ -17,7 +17,7 @@ const buttonVariants = cva(
           "bg-white text-muted-foreground border border-muted font-serif font-normal text-sm shadow-sm hover:bg-[#F5F3FF] hover:text-[#6600ff] hover:border-[#6600ff] hover:shadow-md hover:-translate-y-0.5 disabled:bg-white disabled:text-[#A1A1AA] disabled:border-[#E5E5E5] disabled:pointer-events-none",
         secondary:
           "bg-secondary text-secondary-foreground shadow-sm hover:bg-[#FFB84D] disabled:bg-[#F4F4F5] disabled:text-[#A1A1AA] disabled:pointer-events-none",
-        ghost: "hover:bg-[#E0F7FA] hover:text-[#006064] disabled:text-[#A1A1AA] disabled:bg-transparent disabled:pointer-events-none",
+        ghost: "hover:bg-[#F5F3FF] hover:text-[#6600ff] disabled:text-[#A1A1AA] disabled:bg-transparent disabled:pointer-events-none",
         link: "text-primary underline-offset-4 hover:underline disabled:text-[#A1A1AA] disabled:pointer-events-none",
       },
       size: {

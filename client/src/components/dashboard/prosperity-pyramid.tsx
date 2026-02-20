@@ -129,7 +129,7 @@ function FlippedCardModal({ area, onClose, onExplore }: FlippedCardModalProps) {
 
           <button
             onClick={onExplore}
-            className="px-6 py-2.5 bg-gradient-to-r from-[#6600ff] to-[#cc00ff] hover:from-[#5500dd] hover:to-[#bb00dd] rounded-lg text-white font-medium transition-colors shadow-md"
+            className="px-6 py-2.5 bg-[#6600ff] hover:bg-[#5500dd] rounded-lg text-white font-medium transition-colors shadow-md"
           >
             Explore {area.title}
           </button>

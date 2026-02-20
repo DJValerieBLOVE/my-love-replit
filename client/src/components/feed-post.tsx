@@ -503,7 +503,6 @@ export function FeedPost({ post }: FeedPostProps) {
                     </DialogClose>
                     <Button 
                       onClick={handleQuoteRepost}
-                      className="bg-gradient-to-r from-[#6600ff] to-[#cc00ff] text-white"
                       data-testid={`button-submit-quote-${post.id}`}
                     >
                       Post
@@ -686,7 +685,7 @@ export function FeedPost({ post }: FeedPostProps) {
                   size="sm"
                   onClick={handleReply}
                   disabled={isReplying || !replyText.trim()}
-                  className="bg-gradient-to-r from-[#6600ff] to-[#cc00ff] text-white shrink-0"
+                  className="shrink-0"
                   data-testid={`button-submit-reply-${post.id}`}
                 >
                   {isReplying ? (

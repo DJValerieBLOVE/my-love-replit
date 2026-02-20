@@ -104,7 +104,7 @@ function FlipCard({ title, position, imageUrl, quote, progress, onClick, testId,
           </div>
           <span className="text-foreground text-xs md:text-sm font-medium">{progress}% Progress</span>
           <button
-            className="mt-3 md:mt-4 px-3 md:px-4 py-1.5 md:py-2 bg-gradient-to-r from-[#6600ff] to-[#cc00ff] hover:from-[#5500dd] hover:to-[#bb00dd] rounded-xs text-white text-xs md:text-sm transition-colors shadow-sm"
+            className="mt-3 md:mt-4 px-3 md:px-4 py-1.5 md:py-2 bg-[#6600ff] hover:bg-[#5500dd] rounded-xs text-white text-xs md:text-sm transition-colors shadow-sm"
             onClick={(e) => {
               e.stopPropagation();
               onClick();

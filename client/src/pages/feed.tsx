@@ -1094,7 +1094,6 @@ function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfiles?: M
                   </DialogClose>
                   <Button 
                     onClick={handleQuoteRepost}
-                    className="bg-gradient-to-r from-[#6600ff] to-[#cc00ff] text-white"
                     data-testid={`button-submit-quote-${post.id}`}
                   >
                     Post
@@ -1220,13 +1219,13 @@ export default function Feed() {
 
   return (
     <Layout>
-      <div className="max-w-4xl mx-auto p-4 lg:p-6">
+      <div className="p-4 lg:p-6 max-w-[960px] mx-auto" style={{ marginLeft: 'clamp(0px, calc(50vw - 550px), calc(100% - 960px))' }}>
         <div className="flex items-center justify-between mb-2">
           <h1 className="text-2xl font-serif" data-testid="text-feed-title">Your Feed</h1>
           <button
             onClick={refetch}
             disabled={isRefreshing || isLoading}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF] transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-muted-foreground hover:text-[#6600ff] hover:bg-[#F5F3FF] transition-colors disabled:opacity-50"
             data-testid="button-refresh-feed"
           >
             <RefreshCw className={`w-4 h-4 ${isRefreshing || isLoading ? "animate-spin" : ""}`} />
@@ -1237,69 +1236,72 @@ export default function Feed() {
         
         <PostComposer onPostPublished={refetch} />
         
-        <div className="flex items-center gap-2 mb-6">
-          <div className="flex gap-1 flex-1">
-            <button
-              onClick={() => setActiveTab("following")}
-              className={`px-4 py-1.5 rounded-full text-sm transition-colors border ${activeTab === "following" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
-              data-testid="tab-following"
-            >
-              Following
-            </button>
-            <button
-              onClick={() => setActiveTab("tribe")}
-              className={`px-4 py-1.5 rounded-full text-sm transition-colors border ${activeTab === "tribe" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
-              data-testid="tab-tribe"
-            >
-              <span className="flex items-center justify-center gap-1.5">
-                <Lock className="w-3 h-3" />
-                Tribes
-              </span>
-            </button>
-            <button
-              onClick={() => setActiveTab("buddies")}
-              className={`px-4 py-1.5 rounded-full text-sm transition-colors border ${activeTab === "buddies" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
-              data-testid="tab-buddies"
-            >
-              <span className="flex items-center justify-center gap-1.5">
-                <Lock className="w-3 h-3" />
-                Buddies
-              </span>
-            </button>
-          </div>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+        {/* Sticky tabs - stay visible during scroll */}
+        <div className="sticky top-14 md:top-20 z-[30] py-3 -mx-4 px-4 lg:-mx-6 lg:px-6" style={{ backgroundColor: '#ffffff', borderBottom: '1px solid #f3f4f6' }}>
+          <div className="flex items-center gap-2">
+            <div className="flex gap-1 flex-1">
               <button
-                className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm transition-colors border ${activeTab === "explore" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
-                data-testid="tab-explore"
+                onClick={() => setActiveTab("following")}
+                className={`px-4 py-1.5 rounded-full text-sm transition-colors border ${activeTab === "following" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
+                data-testid="tab-following"
               >
-                <currentExploreOption.icon className="w-3.5 h-3.5" />
-                {currentExploreOption.label}
-                <ChevronDown className="w-3 h-3" />
+                Following
               </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              {EXPLORE_OPTIONS.map((option) => (
-                <DropdownMenuItem
-                  key={option.value}
-                  onClick={() => {
-                    setExploreMode(option.value);
-                    setActiveTab("explore");
-                  }}
-                  className={`cursor-pointer ${exploreMode === option.value && activeTab === "explore" ? "bg-gray-50" : ""}`}
-                  data-testid={`explore-option-${option.value}`}
+              <button
+                onClick={() => setActiveTab("tribe")}
+                className={`px-4 py-1.5 rounded-full text-sm transition-colors border ${activeTab === "tribe" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
+                data-testid="tab-tribe"
+              >
+                <span className="flex items-center justify-center gap-1.5">
+                  <Lock className="w-3 h-3" />
+                  Tribes
+                </span>
+              </button>
+              <button
+                onClick={() => setActiveTab("buddies")}
+                className={`px-4 py-1.5 rounded-full text-sm transition-colors border ${activeTab === "buddies" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
+                data-testid="tab-buddies"
+              >
+                <span className="flex items-center justify-center gap-1.5">
+                  <Lock className="w-3 h-3" />
+                  Buddies
+                </span>
+              </button>
+            </div>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm transition-colors border ${activeTab === "explore" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
+                  data-testid="tab-explore"
                 >
-                  <option.icon className="w-4 h-4 mr-2 text-muted-foreground" />
-                  {option.label}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+                  <currentExploreOption.icon className="w-3.5 h-3.5" />
+                  {currentExploreOption.label}
+                  <ChevronDown className="w-3 h-3" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                {EXPLORE_OPTIONS.map((option) => (
+                  <DropdownMenuItem
+                    key={option.value}
+                    onClick={() => {
+                      setExploreMode(option.value);
+                      setActiveTab("explore");
+                    }}
+                    className={`cursor-pointer ${exploreMode === option.value && activeTab === "explore" ? "bg-gray-50" : ""}`}
+                    data-testid={`explore-option-${option.value}`}
+                  >
+                    <option.icon className="w-4 h-4 mr-2 text-muted-foreground" />
+                    {option.label}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
 
         {(activeTab === "tribe" || activeTab === "buddies") && (
-          <div className="flex items-center gap-2 mb-4 p-3 bg-gray-50 rounded-lg text-sm border border-gray-100">
+          <div className="flex items-center gap-2 mt-4 mb-4 p-3 bg-gray-50 rounded-lg text-sm border border-gray-100">
             <Lock className="w-4 h-4 text-muted-foreground shrink-0" />
             <span className="text-muted-foreground">
               {activeTab === "tribe" 
@@ -1309,28 +1311,28 @@ export default function Feed() {
           </div>
         )}
 
-        <div className="flex gap-6">
-          <div className="flex-1 space-y-4 min-w-0">
-            {/* Floating new posts pill - fixed position */}
+        <div className="flex gap-6 mt-4">
+          <div className="flex-1 space-y-4 min-w-0 max-w-[620px]">
+            {/* Floating new posts pill - dark purple for readability */}
             {newPostCount > 0 && (
-              <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50">
+              <div className="fixed top-24 md:top-28 left-1/2 -translate-x-1/2 z-50">
                 <button
                   onClick={showNewPosts}
-                  className="flex items-center gap-2.5 px-4 py-2 bg-white border border-gray-200 rounded-full shadow-lg hover:shadow-xl transition-all text-sm text-foreground hover:border-[#6600ff]"
+                  className="flex items-center gap-2.5 px-4 py-2 bg-[#6600ff] rounded-full shadow-lg hover:shadow-xl hover:bg-[#5500dd] transition-all text-sm text-white"
                   data-testid="button-show-new-posts"
                 >
                   <div className="flex -space-x-2">
                     {pendingPosts.slice(0, 3).map((p, i) => (
-                      <Avatar key={p.id} className="w-6 h-6 border-2 border-white" style={{ zIndex: 3 - i }}>
+                      <Avatar key={p.id} className="w-6 h-6 border-2 border-[#6600ff]" style={{ zIndex: 3 - i }}>
                         {p.author.avatar && <AvatarImage src={p.author.avatar} />}
-                        <AvatarFallback className="text-[8px] bg-gray-100">{p.author.name.slice(0, 1).toUpperCase()}</AvatarFallback>
+                        <AvatarFallback className="text-[8px] bg-[#5500dd] text-white">{p.author.name.slice(0, 1).toUpperCase()}</AvatarFallback>
                       </Avatar>
                     ))}
                   </div>
                   <span className="font-medium">
                     {newPostCount} new {newPostCount === 1 ? "post" : "posts"}
                   </span>
-                  <ArrowUp className="w-3.5 h-3.5 text-muted-foreground" />
+                  <ArrowUp className="w-3.5 h-3.5 text-white/70" />
                 </button>
               </div>
             )}
@@ -1356,7 +1358,7 @@ export default function Feed() {
             )}
           </div>
 
-          <div className="hidden lg:block w-72 shrink-0 space-y-4">
+          <div className="hidden lg:block w-[300px] shrink-0 space-y-4 sticky top-36 self-start max-h-[calc(100vh-160px)] overflow-y-auto">
             <Link href="/daily-practice">
               <Card className="p-4 hover:border-gray-300 transition-colors cursor-pointer border border-gray-100 shadow-none" data-testid="card-daily-practice-cta">
                 <div className="flex items-center gap-3">
