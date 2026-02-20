@@ -67,16 +67,9 @@ export default function Grow() {
   return (
     <Layout>
       <div className="max-w-6xl mx-auto p-4 lg:p-8 space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-serif text-muted-foreground" data-testid="text-page-title">Experiments</h1>
-            <p className="text-muted-foreground">Skill-building adventures for personal growth</p>
-          </div>
-          {isConnected && (
-            <Button onClick={() => setLocation("/experiments/create")} className="gap-2" data-testid="button-create-experiment">
-              <Plus className="w-4 h-4" /> Create Experiment
-            </Button>
-          )}
+        <div>
+          <h1 className="text-2xl font-serif text-muted-foreground" data-testid="text-page-title">Experiments</h1>
+          <p className="text-muted-foreground">Skill-building adventures for personal growth</p>
         </div>
 
         <div className="relative">
@@ -85,12 +78,12 @@ export default function Grow() {
             placeholder="Search experiments..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
+            className="pl-10 bg-white"
             data-testid="input-search"
           />
         </div>
 
-        <div className="flex gap-1.5 flex-wrap">
+        <div className="flex gap-1.5 flex-wrap items-center">
           {TABS.map((tab) => (
             <button
               key={tab.id}
@@ -106,6 +99,9 @@ export default function Grow() {
               {tab.label}
             </button>
           ))}
+          <Button onClick={() => setLocation("/experiments/create")} className="gap-2 ml-auto" data-testid="button-create-experiment">
+            <Plus className="w-4 h-4" /> Create Experiment
+          </Button>
         </div>
 
         {experimentsLoading ? (

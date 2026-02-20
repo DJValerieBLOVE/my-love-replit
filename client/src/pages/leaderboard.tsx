@@ -1,6 +1,6 @@
 import Layout from "@/components/layout";
 import { LEADERBOARD_DATA } from "@/lib/mock-data";
-import { Trophy, Zap, Award, TrendingUp, Loader2 } from "lucide-react";
+import { Trophy, Zap, Award, TrendingUp, Loader2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
@@ -61,13 +61,16 @@ export default function Leaderboard() {
     <Layout>
       <div className="max-w-4xl mx-auto p-4 lg:p-8 space-y-8">
         {/* Header */}
-        <div className="text-center space-y-3">
-          <div className="flex items-center justify-center gap-3">
-            <Trophy className="w-8 h-8 text-yellow-400" />
-            <h1 className="text-4xl font-serif font-normal text-muted-foreground">Leaderboard</h1>
-            <Trophy className="w-8 h-8 text-yellow-400" />
+        <div className="space-y-3">
+          <div className="text-center">
+            <h1 className="text-4xl font-serif font-normal text-muted-foreground">Love Board</h1>
+            <p className="text-muted-foreground text-lg">Compete with the community • Level up together</p>
           </div>
-          <p className="text-muted-foreground text-lg">Compete with the community • Level up together</p>
+          <div className="flex gap-1.5 flex-wrap items-center">
+            <Button className="gap-2 ml-auto" data-testid="button-create-post">
+              <Plus className="w-4 h-4" /> Create Post
+            </Button>
+          </div>
         </div>
 
         {/* Your Rank Card */}

@@ -55,19 +55,14 @@ export default function Events() {
   return (
     <Layout>
       <div className="max-w-7xl mx-auto p-4 lg:p-8">
-        <div className="flex flex-col md:flex-row justify-between items-end gap-4 mb-8">
-          <div>
-            <h1 className="text-3xl font-serif font-normal text-muted-foreground mb-2">Meetings & Gatherings</h1>
-            <p className="text-muted-foreground">Connect with the community in real-time.</p>
-          </div>
-          <Button className="rounded-lg px-6" data-testid="button-create-event">
-            <Plus className="w-4 h-4 mr-2" /> Create Event
-          </Button>
+        <div className="mb-8">
+          <h1 className="text-3xl font-serif font-normal text-muted-foreground mb-2">Meetings & Gatherings</h1>
+          <p className="text-muted-foreground">Connect with the community in real-time.</p>
         </div>
 
-        {/* Filters & Search */}
+        {/* Tabs & Search */}
         <div className="flex flex-col md:flex-row gap-4 mb-8 items-center justify-between">
-          <div className="flex gap-1.5 flex-wrap">
+          <div className="flex gap-1.5 flex-wrap items-center">
             {EVENT_TABS.map((tab) => (
               <button
                 key={tab.id}
@@ -78,6 +73,9 @@ export default function Events() {
                 {tab.label}
               </button>
             ))}
+            <Button className="gap-2 ml-2" data-testid="button-create-event">
+              <Plus className="w-4 h-4" /> Create Event
+            </Button>
           </div>
           
           <div className="flex gap-2 w-full md:w-auto">

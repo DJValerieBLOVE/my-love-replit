@@ -45,23 +45,20 @@ export default function Community() {
           alt="Community" 
           className="w-full h-full object-cover"
         />
-        <div className="absolute bottom-0 left-0 right-0 p-6 z-20 flex justify-between items-end">
-          <div>
-            <h1 className="text-3xl font-serif font-normal text-muted-foreground">Communities</h1>
-            <p className="text-muted-foreground max-w-md">Intimate spaces to connect and grow together.</p>
-          </div>
-          {isConnected && (
-            <Link href="/community/create">
-              <Button className="gap-2" data-testid="button-create-community">
-                <Plus className="w-4 h-4" />
-                Create Community
-              </Button>
-            </Link>
-          )}
+        <div className="absolute bottom-0 left-0 right-0 p-6 z-20">
+          <h1 className="text-3xl font-serif font-normal text-muted-foreground">Communities</h1>
+          <p className="text-muted-foreground max-w-md">Intimate spaces to connect and grow together.</p>
         </div>
       </div>
 
       <div className="max-w-4xl mx-auto p-4 lg:p-8">
+        <div className="flex gap-1.5 flex-wrap items-center mb-6">
+          <Link href="/community/create">
+            <Button className="gap-2 ml-auto" data-testid="button-create-community">
+              <Plus className="w-4 h-4" /> Create Tribe
+            </Button>
+          </Link>
+        </div>
         {isLoading ? (
           <div className="text-center py-12">
             <p className="text-muted-foreground">Loading communities...</p>
