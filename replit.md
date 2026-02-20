@@ -33,7 +33,7 @@ My Masterpiece is a spiritual personal growth application designed to help users
 - **Typography**: Marcellus font, weight 400 ONLY everywhere. Global CSS enforces `font-weight: 400 !important`.
 - **Color Palette**:
   - Background: `#FAFAFA`
-  - Foreground: `#4D3D5C` (Deep Muted Purple)
+  - Foreground: `#2a2430` (Dark Purple-Black)
   - Primary Brand: `#6600ff` (Purple - for links, accents, active nav)
   - GOD/LOVE Dimension: `#eb00a8` (Pink - exclusively for GOD/LOVE)
   - All colors must be solid hex values.

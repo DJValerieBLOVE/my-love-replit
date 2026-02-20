@@ -102,13 +102,13 @@
 :root {
   /* Light Mode: Clean, Modern, High Energy */
   --background: #FAFAFA;
-  --foreground: #4D3D5C; /* Deep Muted Purple (Was Black) */
+  --foreground: #2a2430; /* Dark Purple-Black */
 
   --card: #FFFFFF;
-  --card-foreground: #4D3D5C;
+  --card-foreground: #2a2430;
 
   --popover: #FFFFFF;
-  --popover-foreground: #4D3D5C;
+  --popover-foreground: #2a2430;
 
   /* Primary: Body Purple (Brand) */
   --primary: #6600ff; 
@@ -119,7 +119,7 @@
   --secondary-foreground: #FFFFFF;
 
   --muted: #F5F3FF;
-  --muted-foreground: #4D3D5C; /* Deep Muted Purple */
+  --muted-foreground: #2a2430; /* Dark Purple-Black */
 
   --accent: #E0F7FA;
   --accent-foreground: #006064;
@@ -132,7 +132,7 @@
   --ring: #6600ff;
 
   --sidebar: #FFFFFF;
-  --sidebar-foreground: #4D3D5C;
+  --sidebar-foreground: #2a2430;
   --sidebar-primary: #6600ff;
   --sidebar-primary-foreground: #FFFFFF;
   --sidebar-accent: #F5F3FF;

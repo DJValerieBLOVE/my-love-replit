@@ -58,13 +58,13 @@ export function EveningCheckIn({ morningData, onComplete }: EveningCheckInProps)
              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-md">
                 <Moon className="w-8 h-8 text-[#6600ff]" strokeWidth={1.5} />
              </div>
-             <h2 className="text-3xl font-normal text-[#4D3D5C] dark:text-white font-serif">Evening Vibe Check</h2>
-             <p className="text-[#4D3D5C]/80 dark:text-white/80 text-lg font-serif">Close your day with gratitude and reflection.</p>
+             <h2 className="text-3xl font-normal text-[#2a2430] dark:text-white font-serif">Evening Vibe Check</h2>
+             <p className="text-[#2a2430]/80 dark:text-white/80 text-lg font-serif">Close your day with gratitude and reflection.</p>
            </div>
 
            {/* 3 Things Checklist */}
            <div className="space-y-4 bg-white/60 dark:bg-black/20 p-6 rounded-2xl border border-white/50 backdrop-blur-sm">
-              <h3 className="text-xs font-normal text-[#4D3D5C] uppercase tracking-wider mb-4 opacity-70">Did you complete your 3 things?</h3>
+              <h3 className="text-xs font-normal text-[#2a2430] uppercase tracking-wider mb-4 opacity-70">Did you complete your 3 things?</h3>
               {morningData.values.map((val, idx) => (
                  <div 
                     key={idx} 
@@ -85,7 +85,7 @@ export function EveningCheckIn({ morningData, onComplete }: EveningCheckInProps)
                     <span className={`text-lg font-serif transition-all duration-300 ${
                         checkedItems[idx] 
                         ? 'text-green-700 line-through opacity-60 decoration-green-500/50 decoration-2' 
-                        : 'text-[#4D3D5C]'
+                        : 'text-[#2a2430]'
                     }`}>
                         {val || "Undefined Goal"}
                     </span>
@@ -95,7 +95,7 @@ export function EveningCheckIn({ morningData, onComplete }: EveningCheckInProps)
 
            {/* Victory */}
             <div className="space-y-3">
-                <label className="flex items-center gap-2 text-xs font-normal text-[#4D3D5C] uppercase tracking-wider opacity-70">
+                <label className="flex items-center gap-2 text-xs font-normal text-[#2a2430] uppercase tracking-wider opacity-70">
                     <Trophy className="w-4 h-4 text-yellow-500" />
                     Your Daily Victory
                 </label>
@@ -108,8 +108,8 @@ export function EveningCheckIn({ morningData, onComplete }: EveningCheckInProps)
             </div>
 
            {/* Vibe Rater */}
-           <div className="pt-6 border-t border-[#4D3D5C]/10">
-              <h3 className="text-center text-xs font-normal text-[#4D3D5C] uppercase tracking-wider mb-6 opacity-70">How's your vibe now?</h3>
+           <div className="pt-6 border-t border-[#2a2430]/10">
+              <h3 className="text-center text-xs font-normal text-[#2a2430] uppercase tracking-wider mb-6 opacity-70">How's your vibe now?</h3>
               <VibeRater value={eveningVibe} onChange={setEveningVibe} />
            </div>
 

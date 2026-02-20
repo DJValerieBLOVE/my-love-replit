@@ -135,7 +135,7 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
                 onChange={(e) => setChatMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
                 disabled={isLoading}
-                className="flex-1 px-4 py-3 rounded-xl border border-white bg-[#F4F4F5] text-sm text-[#4D3D5C] placeholder:text-[#4D3D5C] focus:outline-none focus:ring-2 focus:ring-white shadow-[0_0_30px_rgba(255,255,255,0.6),0_4px_12px_rgba(0,0,0,0.1)] transition-all disabled:opacity-50"
+                className="flex-1 px-4 py-3 rounded-xl border border-white bg-[#F4F4F5] text-sm text-[#2a2430] placeholder:text-[#2a2430] focus:outline-none focus:ring-2 focus:ring-white shadow-[0_0_30px_rgba(255,255,255,0.6),0_4px_12px_rgba(0,0,0,0.1)] transition-all disabled:opacity-50"
                 data-testid="input-chat-message"
               />
               <button 
@@ -219,7 +219,7 @@ export function AiBuddy({ trigger, open, onOpenChange }: { trigger?: React.React
                                 <div className={`w-2 h-2 rounded-full`} style={{ backgroundColor: areaColors.hex }} />
                                 <span className="text-xs font-normal text-muted-foreground uppercase tracking-wider">{dream.areaId}</span>
                               </div>
-                              <p className="text-sm font-serif text-[#4D3D5C] line-clamp-2 leading-relaxed">"{dream.description || 'Set your dream...'}"</p>
+                              <p className="text-sm font-serif text-[#2a2430] line-clamp-2 leading-relaxed">"{dream.description || 'Set your dream...'}"</p>
                             </div>
                             <span className="text-xs font-normal text-muted-foreground tabular-nums bg-muted/50 px-2 py-1 rounded-md">{dream.progress || 0}%</span>
                           </div>
