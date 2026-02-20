@@ -67,7 +67,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { icon: KeyRound, label: "Vault", href: "/vault" },
     { icon: Heart, label: "Love Board", href: "/leaderboard" },
     { icon: Rss, label: "Feed", href: "/feed" },
-    { icon: BookOpen, label: "Daily Practice", href: "/daily-practice" },
   ];
 
   const mobileNavLinks = [
@@ -79,7 +78,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { icon: KeyRound, label: "Vault", href: "/vault" },
     { icon: Heart, label: "Love Board", href: "/leaderboard" },
     { icon: Rss, label: "Feed", href: "/feed" },
-    { icon: BookOpen, label: "Daily Practice", href: "/daily-practice" },
   ];
 
   return (
