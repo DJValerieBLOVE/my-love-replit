@@ -50,7 +50,7 @@
 - **Primary Brand**: #6600ff (Purple)
 - **Secondary**: #eb00a8 (Pink/Love God)
 - **Sats/Gold**: #ff9900
-- **Text Base**: #4D3D5C (Deep Muted Purple)
+- **Text Base**: #2a2430 (Dark Purple-Black)
 
 ## Iconography
 - **Sidebar/Navigation**:

@@ -43,8 +43,9 @@ My Masterpiece is a spiritual personal growth application designed to help users
   - Never use blue for any button or hover state.
 - **Tabs / Pill Bubbles**: Consistent `rounded-full` shape with active state `bg-foreground text-background border-foreground` and inactive state `bg-white text-muted-foreground border-gray-200`. Used on Feed, Experiments, Events, Vault.
 - **Search Inputs**: Always `bg-white` with `Search` icon at `left-3` and `pl-10` for input.
-- **Cards**: `border-none shadow-sm bg-card rounded-xs` with `hover:shadow-md`. Images are 16:9 (`aspect-video`). Top accent is a thin purple line (`bg-primary`). Card titles turn purple on group hover. Dashed borders for placeholder cards.
-- **Tags / Badges**: Light gray outline style: `bg-white border border-gray-200 text-muted-foreground text-xs px-2.5 py-0.5 rounded-md`.
+- **Cards**: `border-none shadow-sm bg-card rounded-xs` with `hover:shadow-md`. Images are 16:9 (`aspect-video`) with NO overlays/tags on images. Top accent is a thin purple line (`bg-primary`). Card titles turn purple on group hover. Dashed borders for placeholder cards. Tags, step counts, and categories go in the card info area below the image.
+- **Tags / Badges**: Light gray outline style: `bg-white border border-gray-200 text-muted-foreground text-xs px-2.5 py-0.5 rounded-md`. Always placed in card content area, never overlaid on images.
+- **Create Buttons**: Each listing page has a "Create" button in the tab/header row area (not in the page title). Experiments, Events, Tribe, and Love Board all have create buttons.
 - **Navigation**:
   - Left Sidebar: White background, active/hover items use `text-[#6600ff]` (purple text only, no background highlight).
   - Header: White background, sticky, `h-14 md:h-20`.
@@ -55,12 +56,12 @@ My Masterpiece is a spiritual personal growth application designed to help users
 - **Home** (`/`): Prosperity Pyramid with flip card animations.
 - **Big Dreams** (`/big-dreams`): Primary daily hub/dashboard with Daily LOVE Practice CTA, streak grid, experiment progress, upcoming events, and 11 Big Dreams editor.
 - **Daily LOVE Practice** (`/daily-practice`): Full-page wizard, accessible only from Big Dreams dashboard.
-- **Experiments** (`/experiments`): 6 tabs for learning content.
-- **Events** (`/events`): 4 tabs with calendar and event cards.
+- **Experiments** (`/experiments`): 6 tabs for learning content. Create Experiment button in tab row.
+- **Events** (`/events`): 4 tabs with calendar and event cards. Create Event button in tab row.
 - **Feed** (`/feed`): 4 tabs for Nostr social feed.
 - **Vault** (`/vault`): 6 tabs for personal content.
-- **Tribe/Community** (`/community`): Community listing, creation, and management.
-- **Love Board** (`/leaderboard`): Rankings (planned marketplace).
+- **Tribe/Community** (`/community`): Community listing, creation, and management. Create Tribe button below cover image.
+- **Love Board** (`/leaderboard`): Rankings (planned marketplace). Create Post button in header area.
 - **Profile** (`/profile/:id`): Clean Primal-style profile with no gamification.
 - **Creator Dashboard** (`/creator`): Analytics for content creators.
 - **Wallet** (`/wallet`): Lightning wallet with NWC integration.

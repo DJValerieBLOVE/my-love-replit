@@ -169,7 +169,10 @@ See replit.md Design System section for complete documentation.
 | 2026-02-20 | Sidebar nav: purple text only, no background highlight | Cleaner, more modern look matching user preference |
 | 2026-02-20 | Search inputs always bg-white | Consistent with card backgrounds, not page background |
 | 2026-02-20 | "Experiments" only term, no "Courses" tab | User preference, single terminology |
-| 2026-02-20 | Dark button color is #4D3D5C (foreground) | Deep Muted Purple, not black |
+| 2026-02-20 | Foreground/button color changed to #2a2430 | Darker Purple-Black, replaces #4D3D5C |
+| 2026-02-20 | Create buttons in tab/header rows on listing pages | Experiments, Events, Tribe, Love Board all have create buttons |
+| 2026-02-20 | No tags/overlays on card images | Tags, steps, categories in card info area below image |
+| 2026-02-20 | Love Board is display name (route /leaderboard) | User preference for marketplace branding |
 | 2026-02-19 | No gamification on Profile page | User wants clean Primal-style profile |
 | 2026-02-19 | Big Dreams is primary daily hub | Central entry point for daily practice, streaks, dreams |
 | 2026-02-19 | Daily Practice hidden from nav | Only accessible from Big Dreams CTA button |

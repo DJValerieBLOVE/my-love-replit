@@ -159,15 +159,21 @@ These features exist in the Shakespeare/11xLOVE-LaB GitHub repo and are candidat
 5. Replaced Button-based tabs on Events with rounded-full pill bubbles with active state
 6. Replaced shadcn TabsList/TabsTrigger on Vault with rounded-full pill bubbles with active state
 7. Standardized all search input backgrounds to bg-white
-8. Comprehensive update of replit.md with full Design System documentation
-9. Updated SESSION_NOTES.md and PROJECT_MANIFEST.md
+8. Added "Create" buttons in tab/header row areas: Create Experiment, Create Event, Create Tribe, Create Post (Love Board)
+9. Changed all dark button/foreground color from #4D3D5C to #2a2430 (Dark Purple-Black) across CSS variables and all hardcoded component references
+10. Moved experiment card tags/categories and step counts OFF images into card info area below — no overlays on card images
+11. Renamed Leaderboard page heading to "Love Board"
+12. Comprehensive update of replit.md, SESSION_NOTES.md, PROJECT_MANIFEST.md
 
 **Key Decisions:**
 - All page-level tabs must use the same rounded-full pill bubble pattern (not shadcn Tabs)
 - Sidebar nav: purple text only on hover/active, NO background highlight
 - Search inputs: always bg-white, never bg-background
 - "Experiments" is the ONLY term for learning content - no "Courses" tab
-- The dark button color is #4D3D5C (foreground variable - Deep Muted Purple)
+- Foreground/button color is #2a2430 (Dark Purple-Black, not #4D3D5C)
+- NO tags/overlays on card images — tags, step counts, categories go in card info area below image
+- Each listing page has a "Create" button in the tab/header row area
+- Love Board is the displayed name (route remains /leaderboard)
 
 ### Session: February 19, 2026 (Claude Opus 4.6)
 
