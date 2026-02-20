@@ -527,8 +527,14 @@ const PRIVACY_OPTIONS: { id: PostPrivacy; label: string; icon: typeof Globe; des
   { id: "secret", label: "Secret", icon: Lock, description: "Vault only" },
 ];
 
-export function CompactPostBar({ onPostPublished }: { onPostPublished?: () => void }) {
-  const [modalOpen, setModalOpen] = useState(false);
+export function CompactPostBar({ onPostPublished, autoOpen }: { onPostPublished?: () => void; autoOpen?: boolean }) {
+  const [modalOpen, setModalOpen] = useState(autoOpen || false);
+
+  useEffect(() => {
+    const handler = () => setModalOpen(true);
+    window.addEventListener("open-compose", handler);
+    return () => window.removeEventListener("open-compose", handler);
+  }, []);
   const [content, setContent] = useState("");
   const [privacy, setPrivacy] = useState<PostPrivacy>("public");
   const [isPosting, setIsPosting] = useState(false);

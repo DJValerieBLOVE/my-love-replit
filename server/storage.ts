@@ -3,7 +3,7 @@ import {
   experimentNotes, discoveryNotes, events, posts, clubs, zaps, aiUsageLogs,
   courses, lessons, courseEnrollments, lessonComments, courseComments,
   communities, communityMemberships, communityPosts,
-  loveBoardPosts, prayerRequests,
+  loveBoardPosts, prayerRequests, gratitudePosts, victoryPosts,
   type User, type InsertUser,
   type JournalEntry, type InsertJournalEntry,
   type DailyPractice, type InsertDailyPractice,
@@ -27,6 +27,8 @@ import {
   type CommunityPost, type InsertCommunityPost,
   type LoveBoardPost, type InsertLoveBoardPost,
   type PrayerRequest, type InsertPrayerRequest,
+  type GratitudePost, type InsertGratitudePost,
+  type VictoryPost, type InsertVictoryPost,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, sql, inArray } from "drizzle-orm";
@@ -118,6 +120,12 @@ export interface IStorage {
   getPrayerRequests(): Promise<(PrayerRequest & { author: User })[]>;
   createPrayerRequest(request: InsertPrayerRequest): Promise<PrayerRequest>;
   prayForRequest(id: string): Promise<PrayerRequest | undefined>;
+
+  getGratitudePosts(): Promise<(GratitudePost & { author: User })[]>;
+  createGratitudePost(post: InsertGratitudePost): Promise<GratitudePost>;
+
+  getVictoryPosts(): Promise<(VictoryPost & { author: User })[]>;
+  createVictoryPost(post: InsertVictoryPost): Promise<VictoryPost>;
 
   // Clubs
   getAllClubs(): Promise<Club[]>;
@@ -726,6 +734,34 @@ export class DatabaseStorage implements IStorage {
       .where(eq(prayerRequests.id, id))
       .returning();
     return updated || undefined;
+  }
+
+  async getGratitudePosts(): Promise<(GratitudePost & { author: User })[]> {
+    const rows = await db
+      .select({ post: gratitudePosts, author: users })
+      .from(gratitudePosts)
+      .innerJoin(users, eq(gratitudePosts.authorId, users.id))
+      .orderBy(desc(gratitudePosts.createdAt));
+    return rows.map(({ post, author }) => ({ ...post, author }));
+  }
+
+  async createGratitudePost(post: InsertGratitudePost): Promise<GratitudePost> {
+    const [created] = await db.insert(gratitudePosts).values(post).returning();
+    return created;
+  }
+
+  async getVictoryPosts(): Promise<(VictoryPost & { author: User })[]> {
+    const rows = await db
+      .select({ post: victoryPosts, author: users })
+      .from(victoryPosts)
+      .innerJoin(users, eq(victoryPosts.authorId, users.id))
+      .orderBy(desc(victoryPosts.createdAt));
+    return rows.map(({ post, author }) => ({ ...post, author }));
+  }
+
+  async createVictoryPost(post: InsertVictoryPost): Promise<VictoryPost> {
+    const [created] = await db.insert(victoryPosts).values(post).returning();
+    return created;
   }
 
   // Clubs

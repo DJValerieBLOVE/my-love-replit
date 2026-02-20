@@ -1,5 +1,5 @@
 import Layout from "@/components/layout";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -26,7 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getAllCommunities, getMyCommunities, getPrayerRequests, createPrayerRequest, prayForRequest } from "@/lib/api";
+import { getAllCommunities, getMyCommunities, getPrayerRequests, createPrayerRequest, prayForRequest, getGratitudePosts, createGratitudePost, getVictoryPosts, createVictoryPost } from "@/lib/api";
 import { useNostr } from "@/contexts/nostr-context";
 import { useNDK } from "@/contexts/ndk-context";
 import { toast } from "sonner";
@@ -67,7 +67,7 @@ const BUDDY_SUB_OPTIONS: { id: BuddySubOption; label: string; icon: typeof Hands
   { id: "goals", label: "Shared Goals", icon: Trophy },
 ];
 
-function FeedTabContent({ subOption }: { subOption: FeedSubOption }) {
+function FeedTabContent({ subOption, autoCompose }: { subOption: FeedSubOption; autoCompose?: boolean }) {
   const exploreMap: Record<FeedSubOption, ExploreMode> = {
     following: "trending",
     trending: "trending",
@@ -81,7 +81,7 @@ function FeedTabContent({ subOption }: { subOption: FeedSubOption }) {
 
   return (
     <div>
-      <CompactPostBar onPostPublished={refetch} />
+      <CompactPostBar onPostPublished={refetch} autoOpen={autoCompose} />
 
       <div className="space-y-4">
         {newPostCount > 0 && (
@@ -236,11 +236,44 @@ function BuddiesTabContent() {
 function VictoriesTabContent() {
   const { isConnected, profile } = useNostr();
   const [victoryContent, setVictoryContent] = useState("");
+  const queryClient = useQueryClient();
+
+  const { data: victoryPostsList = [], isLoading } = useQuery({
+    queryKey: ["victoryPosts"],
+    queryFn: getVictoryPosts,
+  });
+
+  const createVictoryMutation = useMutation({
+    mutationFn: createVictoryPost,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["victoryPosts"] });
+      setVictoryContent("");
+      toast.success("Victory shared!");
+    },
+    onError: () => {
+      toast.error("Failed to share victory");
+    },
+  });
 
   const handlePostVictory = (privacy: string) => {
-    if (!victoryContent.trim()) return;
-    toast.success(privacy === "public" ? "Victory shared to Nostr!" : "Victory saved privately!");
-    setVictoryContent("");
+    if (!victoryContent.trim() || !profile?.userId) return;
+    createVictoryMutation.mutate({
+      authorId: profile.userId,
+      content: victoryContent.trim(),
+      privacy,
+    });
+  };
+
+  const formatTimeAgo = (dateStr: string) => {
+    const d = new Date(dateStr);
+    const now = new Date();
+    const diff = now.getTime() - d.getTime();
+    const minutes = Math.floor(diff / 60000);
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    return `${days}d ago`;
   };
 
   return (
@@ -268,9 +301,9 @@ function VictoriesTabContent() {
               />
               <div className="flex items-center justify-end mt-3 pt-3 border-t">
                 <PrivacySubmitButton
-                  label="Share Victory"
+                  label={createVictoryMutation.isPending ? "Sharing..." : "Share Victory"}
                   icon={Trophy}
-                  disabled={!victoryContent.trim()}
+                  disabled={createVictoryMutation.isPending || !victoryContent.trim()}
                   onSubmit={handlePostVictory}
                   testId="button-post-victory"
                 />
@@ -280,11 +313,41 @@ function VictoriesTabContent() {
         </Card>
       )}
 
-      <div className="text-center py-8 text-muted-foreground">
-        <Trophy className="w-12 h-12 mx-auto mb-4" strokeWidth={1} />
-        <p className="text-lg font-serif mb-2">No victories shared yet</p>
-        <p className="text-sm">Be the first to celebrate a win today!</p>
-      </div>
+      {isLoading ? (
+        <div className="flex justify-center py-12">
+          <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+        </div>
+      ) : victoryPostsList.length > 0 ? (
+        <div className="space-y-4">
+          {victoryPostsList.map((victory: any) => (
+            <Card key={victory.id} className="border-none shadow-sm bg-card rounded-xs" data-testid={`card-victory-${victory.id}`}>
+              <CardContent className="p-4">
+                <div className="flex items-start gap-3">
+                  <Avatar className="w-8 h-8 mt-1">
+                    {victory.author?.picture && <AvatarImage src={victory.author.picture} />}
+                    <AvatarFallback className="bg-gray-100 text-muted-foreground text-xs">
+                      {(victory.author?.displayName || victory.author?.username || "?").slice(0, 1).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-sm font-normal">{victory.author?.displayName || victory.author?.username || "Anonymous"}</span>
+                      <span className="text-xs text-muted-foreground">{formatTimeAgo(victory.createdAt)}</span>
+                    </div>
+                    <p className="text-sm whitespace-pre-wrap">{victory.content}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-8 text-muted-foreground">
+          <Trophy className="w-12 h-12 mx-auto mb-4" strokeWidth={1} />
+          <p className="text-lg font-serif mb-2">No victories shared yet</p>
+          <p className="text-sm">Be the first to celebrate a win today!</p>
+        </div>
+      )}
     </div>
   );
 }
@@ -292,11 +355,44 @@ function VictoriesTabContent() {
 function GratitudeTabContent() {
   const { isConnected, profile } = useNostr();
   const [gratitudeContent, setGratitudeContent] = useState("");
+  const queryClient = useQueryClient();
+
+  const { data: gratitudePostsList = [], isLoading } = useQuery({
+    queryKey: ["gratitudePosts"],
+    queryFn: getGratitudePosts,
+  });
+
+  const createGratitudeMutation = useMutation({
+    mutationFn: createGratitudePost,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["gratitudePosts"] });
+      setGratitudeContent("");
+      toast.success("Gratitude shared!");
+    },
+    onError: () => {
+      toast.error("Failed to share gratitude");
+    },
+  });
 
   const handlePostGratitude = (privacy: string) => {
-    if (!gratitudeContent.trim()) return;
-    toast.success(privacy === "public" ? "Gratitude shared to Nostr!" : "Gratitude saved privately!");
-    setGratitudeContent("");
+    if (!gratitudeContent.trim() || !profile?.userId) return;
+    createGratitudeMutation.mutate({
+      authorId: profile.userId,
+      content: gratitudeContent.trim(),
+      privacy,
+    });
+  };
+
+  const formatTimeAgo = (dateStr: string) => {
+    const d = new Date(dateStr);
+    const now = new Date();
+    const diff = now.getTime() - d.getTime();
+    const minutes = Math.floor(diff / 60000);
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    return `${days}d ago`;
   };
 
   return (
@@ -324,9 +420,9 @@ function GratitudeTabContent() {
               />
               <div className="flex items-center justify-end mt-3 pt-3 border-t">
                 <PrivacySubmitButton
-                  label="Share Gratitude"
+                  label={createGratitudeMutation.isPending ? "Sharing..." : "Share Gratitude"}
                   icon={Star}
-                  disabled={!gratitudeContent.trim()}
+                  disabled={createGratitudeMutation.isPending || !gratitudeContent.trim()}
                   onSubmit={handlePostGratitude}
                   testId="button-post-gratitude"
                 />
@@ -336,11 +432,41 @@ function GratitudeTabContent() {
         </Card>
       )}
 
-      <div className="text-center py-8 text-muted-foreground">
-        <Star className="w-12 h-12 mx-auto mb-4" strokeWidth={1} />
-        <p className="text-lg font-serif mb-2">No gratitude entries yet</p>
-        <p className="text-sm">Start your gratitude practice — share what you're thankful for.</p>
-      </div>
+      {isLoading ? (
+        <div className="flex justify-center py-12">
+          <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+        </div>
+      ) : gratitudePostsList.length > 0 ? (
+        <div className="space-y-4">
+          {gratitudePostsList.map((gratitude: any) => (
+            <Card key={gratitude.id} className="border-none shadow-sm bg-card rounded-xs" data-testid={`card-gratitude-${gratitude.id}`}>
+              <CardContent className="p-4">
+                <div className="flex items-start gap-3">
+                  <Avatar className="w-8 h-8 mt-1">
+                    {gratitude.author?.picture && <AvatarImage src={gratitude.author.picture} />}
+                    <AvatarFallback className="bg-gray-100 text-muted-foreground text-xs">
+                      {(gratitude.author?.displayName || gratitude.author?.username || "?").slice(0, 1).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-sm font-normal">{gratitude.author?.displayName || gratitude.author?.username || "Anonymous"}</span>
+                      <span className="text-xs text-muted-foreground">{formatTimeAgo(gratitude.createdAt)}</span>
+                    </div>
+                    <p className="text-sm whitespace-pre-wrap">{gratitude.content}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-8 text-muted-foreground">
+          <Star className="w-12 h-12 mx-auto mb-4" strokeWidth={1} />
+          <p className="text-lg font-serif mb-2">No gratitude entries yet</p>
+          <p className="text-sm">Start your gratitude practice — share what you're thankful for.</p>
+        </div>
+      )}
     </div>
   );
 }
@@ -982,6 +1108,17 @@ export default function People() {
   const [buddySub, setBuddySub] = useState<BuddySubOption>("find");
   const [selectedTribeId, setSelectedTribeId] = useState<string>("all");
 
+  const searchParams = new URLSearchParams(window.location.search);
+  const [autoCompose, setAutoCompose] = useState(searchParams.get("compose") === "true");
+  
+  useEffect(() => {
+    if (autoCompose) {
+      setActiveTab("feed");
+      setFeedSub("following");
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, []);
+
   const myTribes = useMyTribesForDropdown();
 
   const feedSubLabel = FEED_SUB_OPTIONS.find(o => o.id === feedSub)?.label;
@@ -1096,7 +1233,7 @@ export default function People() {
 
         <div className="flex gap-4 mt-4 max-w-[940px] mx-auto">
           <div className="flex-1 min-w-0">
-            {activeTab === "feed" && <FeedTabContent subOption={feedSub} />}
+            {activeTab === "feed" && <FeedTabContent subOption={feedSub} autoCompose={autoCompose} />}
             {activeTab === "tribes" && <TribesTabContent selectedTribeId={selectedTribeId} />}
             {activeTab === "buddies" && <BuddiesTabContent />}
             {activeTab === "victories" && <VictoriesTabContent />}

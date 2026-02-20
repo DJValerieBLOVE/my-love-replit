@@ -34,6 +34,8 @@ import {
   insertDailyPracticeSchema,
   insertLoveBoardPostSchema,
   insertPrayerRequestSchema,
+  insertGratitudePostSchema,
+  insertVictoryPostSchema,
 } from "@shared/schema";
 import { chat, validateApiKey, type ChatMessage, type UserContext } from "./anthropic";
 
@@ -1135,6 +1137,46 @@ export async function registerRoutes(
       res.json(updated);
     } catch (error) {
       res.status(500).json({ error: "Failed to update prayer count" });
+    }
+  });
+
+  // ===== GRATITUDE POSTS =====
+  app.get("/api/gratitude-posts", async (req, res) => {
+    try {
+      const posts = await storage.getGratitudePosts();
+      res.json(posts);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch gratitude posts" });
+    }
+  });
+
+  app.post("/api/gratitude-posts", authMiddleware, async (req, res) => {
+    try {
+      const validated = insertGratitudePostSchema.parse(req.body);
+      const post = await storage.createGratitudePost(validated);
+      res.status(201).json(post);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message || "Invalid gratitude post" });
+    }
+  });
+
+  // ===== VICTORY POSTS =====
+  app.get("/api/victory-posts", async (req, res) => {
+    try {
+      const posts = await storage.getVictoryPosts();
+      res.json(posts);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch victory posts" });
+    }
+  });
+
+  app.post("/api/victory-posts", authMiddleware, async (req, res) => {
+    try {
+      const validated = insertVictoryPostSchema.parse(req.body);
+      const post = await storage.createVictoryPost(validated);
+      res.status(201).json(post);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message || "Invalid victory post" });
     }
   });
 

@@ -395,6 +395,48 @@ export async function prayForRequest(id: string) {
   return response.json();
 }
 
+// Gratitude Posts
+export async function getGratitudePosts() {
+  const response = await fetch("/api/gratitude-posts");
+  if (!response.ok) throw new Error("Failed to fetch gratitude posts");
+  return response.json();
+}
+
+export async function createGratitudePost(data: {
+  authorId: string;
+  content: string;
+  privacy: string;
+}) {
+  const response = await authFetch("/api/gratitude-posts", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error("Failed to create gratitude post");
+  return response.json();
+}
+
+// Victory Posts
+export async function getVictoryPosts() {
+  const response = await fetch("/api/victory-posts");
+  if (!response.ok) throw new Error("Failed to fetch victory posts");
+  return response.json();
+}
+
+export async function createVictoryPost(data: {
+  authorId: string;
+  content: string;
+  privacy: string;
+}) {
+  const response = await authFetch("/api/victory-posts", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error("Failed to create victory post");
+  return response.json();
+}
+
 export async function getRecentPosts(limit?: number) {
   const url = limit ? `/api/posts?limit=${limit}` : "/api/posts";
   const response = await authFetch(url);

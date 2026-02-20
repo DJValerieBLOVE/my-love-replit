@@ -52,7 +52,7 @@ import { ProfileCompletionDialog } from "@/components/profile-completion-dialog"
 import { MembershipBadge } from "@/components/membership-gate";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -260,15 +260,20 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           })}
 
           <div className="mt-auto pt-4">
-            <Link href="/people">
-              <Button
-                className="w-full gap-2 bg-foreground text-background hover:bg-white hover:border-[#E5E5E5] hover:text-foreground border border-transparent"
-                data-testid="button-sidebar-new-post"
-              >
-                <PenSquare className="w-4 h-4" strokeWidth={1.5} />
-                New Post
-              </Button>
-            </Link>
+            <Button
+              className="w-full gap-2 bg-foreground text-background hover:bg-white hover:border-[#E5E5E5] hover:text-foreground border border-transparent"
+              data-testid="button-sidebar-new-post"
+              onClick={() => {
+                if (location === "/people") {
+                  window.dispatchEvent(new CustomEvent("open-compose"));
+                } else {
+                  setLocation("/people?compose=true");
+                }
+              }}
+            >
+              <PenSquare className="w-4 h-4" strokeWidth={1.5} />
+              New Post
+            </Button>
           </div>
         </aside>
 

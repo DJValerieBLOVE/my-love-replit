@@ -594,6 +594,40 @@ export const insertPrayerRequestSchema = createInsertSchema(prayerRequests).omit
 export type InsertPrayerRequest = z.infer<typeof insertPrayerRequestSchema>;
 export type PrayerRequest = typeof prayerRequests.$inferSelect;
 
+// Gratitude Posts
+export const gratitudePosts = pgTable("gratitude_posts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  authorId: varchar("author_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  content: text("content").notNull(),
+  privacy: varchar("privacy", { length: 20 }).default("public").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertGratitudePostSchema = createInsertSchema(gratitudePosts).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertGratitudePost = z.infer<typeof insertGratitudePostSchema>;
+export type GratitudePost = typeof gratitudePosts.$inferSelect;
+
+// Victory Posts
+export const victoryPosts = pgTable("victory_posts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  authorId: varchar("author_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  content: text("content").notNull(),
+  privacy: varchar("privacy", { length: 20 }).default("public").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertVictoryPostSchema = createInsertSchema(victoryPosts).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertVictoryPost = z.infer<typeof insertVictoryPostSchema>;
+export type VictoryPost = typeof victoryPosts.$inferSelect;
+
 // AI Usage Logs (tracking token usage for billing)
 export const aiUsageLogs = pgTable("ai_usage_logs", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
