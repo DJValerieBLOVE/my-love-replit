@@ -81,7 +81,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/20 flex flex-col">
+    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-[#E0CCF5] flex flex-col">
       <ThemeCustomizer />
       
       {/* Top Navigation Bar */}
@@ -91,7 +91,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             {/* Mobile: Hamburger menu button */}
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="lg:hidden flex items-center justify-center w-10 h-10 rounded-lg hover:bg-muted/50 transition-colors"
+              className="lg:hidden flex items-center justify-center w-10 h-10 rounded-lg hover:bg-[#F0F0F0] transition-colors"
               aria-label="Open menu"
               data-testid="button-mobile-menu"
             >
@@ -124,14 +124,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-1 md:gap-4">
             {/* Desktop: Sats display */}
             <Link href="/wallet" className="hidden lg:block">
-              <div className="flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-orange-500/10 to-yellow-500/10 rounded-full border border-orange-400/30 hover:border-orange-400/50 transition-colors cursor-pointer" data-testid="sats-display">
+              <div className="flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-[#FFF5EB] to-[#FFFBEB] rounded-full border border-[#FBC88B] hover:border-[#F5A84D] transition-colors cursor-pointer" data-testid="sats-display">
                 <img src={BitcoinIcon} alt="Bitcoin" className="w-5 h-5 rounded-full" />
                 <div className="flex items-center gap-3 text-sm">
                   <div className="flex items-center gap-1" data-testid="sats-given">
                     <span className="text-orange-600 font-medium">↑</span>
                     <span className="text-orange-600">{userStats?.satsGiven?.toLocaleString() || 0}</span>
                   </div>
-                  <span className="text-muted-foreground/50">|</span>
+                  <span className="text-[#C4C4C4]">|</span>
                   <div className="flex items-center gap-1" data-testid="sats-received">
                     <span className="text-green-600 font-medium">↓</span>
                     <span className="text-green-600">{userStats?.satsReceived?.toLocaleString() || 0}</span>
@@ -145,7 +145,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             ) : isConnected ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Avatar className="h-8 w-8 md:h-9 md:w-9 shrink-0 cursor-pointer ring-2 ring-primary/20 transition-all hover:ring-primary" data-testid="avatar-user">
+                  <Avatar className="h-8 w-8 md:h-9 md:w-9 shrink-0 cursor-pointer ring-2 ring-[#D9CCE6] transition-all hover:ring-[#6600ff]" data-testid="avatar-user">
                     <AvatarImage src={profile?.picture} />
                     <AvatarFallback>{profile?.name?.[0] || profile?.npub?.slice(-2).toUpperCase() || "?"}</AvatarFallback>
                   </Avatar>
@@ -222,7 +222,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       <div className="flex-1 flex">
         {/* Left Sidebar (Navigation) - Desktop only, sticky */}
-        <aside className="hidden lg:flex flex-col w-[240px] shrink-0 border-r bg-card/50 p-4 gap-2 sticky top-14 md:top-20 self-start h-[calc(100vh-56px)] md:h-[calc(100vh-80px)] overflow-y-auto">
+        <aside className="hidden lg:flex flex-col w-[240px] shrink-0 border-r bg-[#FAFAFA] p-4 gap-2 sticky top-14 md:top-20 self-start h-[calc(100vh-56px)] md:h-[calc(100vh-80px)] overflow-y-auto">
           {desktopNavLinks.map((item) => {
             const isActive = location === item.href || (item.href !== "/" && location.startsWith(item.href));
             return (
@@ -230,15 +230,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <div className={cn(
                   "flex items-center gap-3 px-4 py-1.5 rounded-lg transition-all duration-300 cursor-pointer group font-serif sidebar-menu text-base relative",
                   isActive 
-                    ? "bg-love-body/10 text-love-body shadow-md shadow-love-body/10 border border-love-body/10" 
-                    : "text-muted-foreground hover:bg-love-body/5 hover:text-love-body hover:shadow-sm hover:translate-x-1"
+                    ? "bg-[#F0E6FF] text-love-body shadow-md shadow-[#E6D9F5] border border-[#E6D9F5]" 
+                    : "text-muted-foreground hover:bg-[#F8F3FF] hover:text-love-body hover:shadow-sm hover:translate-x-1"
                 )}>
                   <div className="relative">
                     <item.icon 
                       strokeWidth={1.5} 
                       className={cn(
                         "w-5 h-5 transition-transform group-hover:scale-110 relative z-10", 
-                        isActive && "opacity-100"
+                        isActive && "text-love-body"
                       )} 
                     />
                     {item.hasNotification && (
@@ -278,8 +278,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       className={cn(
                         "flex items-center gap-3 px-4 py-3 rounded-lg transition-all cursor-pointer relative",
                         isActive
-                          ? "bg-love-body/10 text-love-body"
-                          : "text-muted-foreground hover:bg-muted/50"
+                          ? "bg-[#F0E6FF] text-love-body"
+                          : "text-muted-foreground hover:bg-[#F0F0F0]"
                       )}
                       data-testid={`nav-mobile-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                     >
@@ -300,11 +300,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {/* Sats display in mobile menu */}
           <div className="mt-auto p-4 border-t">
             <Link href="/leaderboard" onClick={() => setMobileMenuOpen(false)}>
-              <div className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-orange-500/10 to-yellow-500/10 rounded-lg border border-orange-400/30">
+              <div className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-[#FFF5EB] to-[#FFFBEB] rounded-lg border border-[#FBC88B]">
                 <img src={BitcoinIcon} alt="Bitcoin" className="w-5 h-5 rounded-full" />
                 <div className="flex items-center gap-2 text-sm">
                   <span className="text-orange-600">↑{userStats?.satsGiven?.toLocaleString() || 0}</span>
-                  <span className="text-muted-foreground/50">|</span>
+                  <span className="text-[#C4C4C4]">|</span>
                   <span className="text-green-600">↓{userStats?.satsReceived?.toLocaleString() || 0}</span>
                 </div>
               </div>

@@ -463,7 +463,7 @@ function PostComposer({ onPostPublished }: { onPostPublished?: () => void }) {
                   )}
                   <button
                     onClick={() => removeMedia(index)}
-                    className="absolute top-2 right-2 p-1 bg-black/50 rounded-full text-white hover:bg-black/70"
+                    className="absolute top-2 right-2 p-1 bg-[#555555] rounded-full text-white hover:bg-[#333333]"
                     data-testid={`button-remove-media-${index}`}
                   >
                     <X className="w-4 h-4" />
@@ -1021,7 +1021,7 @@ function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfiles?: M
                     </div>
                   </DropdownMenuItem>
                 ) : (
-                  <DropdownMenuItem disabled className="opacity-50 cursor-not-allowed" data-testid={`menu-repost-disabled-${post.id}`}>
+                  <DropdownMenuItem disabled className="text-[#A1A1AA] cursor-not-allowed" data-testid={`menu-repost-disabled-${post.id}`}>
                     <Repeat2 className="w-4 h-4 mr-2" />
                     <div>
                       <p>Repost to Nostr</p>
@@ -1077,7 +1077,7 @@ function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfiles?: M
                     className="min-h-[100px]"
                     data-testid={`textarea-quote-${post.id}`}
                   />
-                  <Card className="p-3 bg-muted/50">
+                  <Card className="p-3 bg-[#F4F4F5]">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Avatar className="w-6 h-6">
                         <AvatarImage src={post.author.avatar} />
@@ -1222,15 +1222,6 @@ export default function Feed() {
       <div className="p-4 lg:p-6 max-w-[960px] mx-auto" style={{ marginLeft: 'clamp(0px, calc(50vw - 550px), calc(100% - 960px))' }}>
         <div className="flex items-center justify-between mb-2">
           <h1 className="text-2xl font-serif" data-testid="text-feed-title">Your Feed</h1>
-          <button
-            onClick={refetch}
-            disabled={isRefreshing || isLoading}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-muted-foreground hover:text-[#6600ff] hover:bg-[#F5F3FF] transition-colors disabled:opacity-50"
-            data-testid="button-refresh-feed"
-          >
-            <RefreshCw className={`w-4 h-4 ${isRefreshing || isLoading ? "animate-spin" : ""}`} />
-            {isRefreshing ? "Refreshing..." : "Refresh"}
-          </button>
         </div>
         <p className="text-muted-foreground text-sm mb-6">Personalized updates from your courses, communities, and connections</p>
         
@@ -1269,7 +1260,16 @@ export default function Feed() {
               </button>
             </div>
 
-            <div className="hidden lg:flex w-[300px] shrink-0 ml-6 justify-center">
+            <div className="hidden lg:flex w-[300px] shrink-0 ml-6 items-center justify-center gap-2">
+              <button
+                onClick={refetch}
+                disabled={isRefreshing || isLoading}
+                className="flex items-center justify-center w-8 h-8 rounded-full text-muted-foreground hover:text-foreground hover:bg-[#F0E6FF] transition-colors disabled:text-[#C4C4C4] disabled:cursor-not-allowed"
+                data-testid="button-refresh-feed"
+                title="Refresh feed"
+              >
+                <RefreshCw className={`w-4 h-4 ${isRefreshing || isLoading ? "animate-spin" : ""}`} />
+              </button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
@@ -1299,7 +1299,16 @@ export default function Feed() {
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-            <div className="lg:hidden ml-auto">
+            <div className="lg:hidden ml-auto flex items-center gap-2">
+              <button
+                onClick={refetch}
+                disabled={isRefreshing || isLoading}
+                className="flex items-center justify-center w-8 h-8 rounded-full text-muted-foreground hover:text-foreground hover:bg-[#F0E6FF] transition-colors disabled:text-[#C4C4C4] disabled:cursor-not-allowed"
+                data-testid="button-refresh-feed-mobile"
+                title="Refresh feed"
+              >
+                <RefreshCw className={`w-4 h-4 ${isRefreshing || isLoading ? "animate-spin" : ""}`} />
+              </button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
@@ -1349,7 +1358,7 @@ export default function Feed() {
               <div className="flex justify-center -mt-2 mb-2">
                 <button
                   onClick={showNewPosts}
-                  className="flex items-center gap-2.5 px-4 py-2 bg-foreground text-background rounded-full shadow-lg hover:shadow-xl hover:opacity-90 transition-all text-sm"
+                  className="flex items-center gap-2.5 px-4 py-2 bg-foreground text-background rounded-full shadow-lg hover:shadow-xl transition-all text-sm"
                   data-testid="button-show-new-posts"
                 >
                   <div className="flex -space-x-2">
@@ -1363,7 +1372,7 @@ export default function Feed() {
                   <span className="font-medium">
                     {newPostCount} new {newPostCount === 1 ? "post" : "posts"}
                   </span>
-                  <ArrowUp className="w-3.5 h-3.5 opacity-70" />
+                  <ArrowUp className="w-3.5 h-3.5" />
                 </button>
               </div>
             )}
