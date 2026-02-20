@@ -32,7 +32,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { parseNostrContent, truncateNpub, resolveContentMentions, type NostrEntity, type ParsedContent } from "@/lib/nostr-content";
 import { fetchPrimalFeed, fetchPrimalUserFeed, type ExploreMode, type PrimalEvent, type PrimalProfile, type PrimalEventStats, type ZapReceipt } from "@/lib/primal-cache";
 
-type FeedPost = {
+export type FeedPost = {
   id: string;
   eventId?: string;
   author: {
@@ -57,13 +57,13 @@ type FeedPost = {
   isOwnPost?: boolean;
 };
 
-function formatSats(sats: number): string {
+export function formatSats(sats: number): string {
   if (sats >= 1_000_000) return `${(sats / 1_000_000).toFixed(1)}M`;
   if (sats >= 1_000) return `${(sats / 1_000).toFixed(1)}K`;
   return sats.toLocaleString();
 }
 
-function formatTimestamp(date: number | string | Date) {
+export function formatTimestamp(date: number | string | Date) {
   const d = typeof date === "number" ? new Date(date * 1000) : new Date(date);
   const now = new Date();
   const diffMs = now.getTime() - d.getTime();
@@ -78,9 +78,9 @@ function formatTimestamp(date: number | string | Date) {
   return d.toLocaleDateString();
 }
 
-type FeedTab = "following" | "tribe" | "buddies" | "explore";
+export type FeedTab = "following" | "tribe" | "buddies" | "explore";
 
-function primalEventToFeedPost(
+export function primalEventToFeedPost(
   event: PrimalEvent,
   profiles: Map<string, PrimalProfile>,
   currentPubkey?: string,
@@ -124,7 +124,7 @@ function primalEventToFeedPost(
   };
 }
 
-function useNostrFeed(tab: FeedTab, exploreMode: ExploreMode) {
+export function useNostrFeed(tab: FeedTab, exploreMode: ExploreMode) {
   const { fetchEvents, isConnected: ndkConnected } = useNDK();
   const { profile } = useNostr();
   const [posts, setPosts] = useState<FeedPost[]>([]);
@@ -362,7 +362,7 @@ type MediaItem = {
   file?: File;
 };
 
-function PostComposer({ onPostPublished }: { onPostPublished?: () => void }) {
+export function PostComposer({ onPostPublished }: { onPostPublished?: () => void }) {
   const [content, setContent] = useState("");
   const [media, setMedia] = useState<MediaItem[]>([]);
   const [isPosting, setIsPosting] = useState(false);
@@ -518,7 +518,7 @@ function PostComposer({ onPostPublished }: { onPostPublished?: () => void }) {
   );
 }
 
-function FeedLoadingSkeleton() {
+export function FeedLoadingSkeleton() {
   return (
     <div className="space-y-4">
       {[1, 2, 3].map((i) => (
@@ -730,12 +730,14 @@ function EmbeddedNoteCard({ eventId, bech32 }: { eventId: string; bech32: string
   );
 }
 
-function RichTextContent({ text, entities, links, primalProfiles }: {
+export type RichTextContentProps = {
   text: string;
   entities: NostrEntity[];
   links: string[];
   primalProfiles?: Map<string, PrimalProfile>;
-}) {
+};
+
+export function RichTextContent({ text, entities, links, primalProfiles }: RichTextContentProps) {
   const URL_PATTERN = /https?:\/\/\S+/g;
   const NOSTR_PATTERN = /nostr:(npub1[a-z0-9]+|nprofile1[a-z0-9]+|nevent1[a-z0-9]+|note1[a-z0-9]+|naddr1[a-z0-9]+)/g;
   const HASHTAG_PATTERN = /#(\w+)/g;
@@ -863,7 +865,7 @@ function RichTextContent({ text, entities, links, primalProfiles }: {
   );
 }
 
-function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfiles?: Map<string, PrimalProfile> }) {
+export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfiles?: Map<string, PrimalProfile> }) {
   const [isLiked, setIsLiked] = useState(false);
   const [likes, setLikes] = useState(post.likes);
   const [isReposted, setIsReposted] = useState(false);
@@ -1186,7 +1188,7 @@ function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfiles?: M
   );
 }
 
-const EXPLORE_OPTIONS: { value: ExploreMode; label: string; icon: typeof TrendingUp }[] = [
+export const EXPLORE_OPTIONS: { value: ExploreMode; label: string; icon: typeof TrendingUp }[] = [
   { value: "trending", label: "Trending", icon: TrendingUp },
   { value: "most_zapped", label: "Most Zapped", icon: Zap },
   { value: "media", label: "Media", icon: Camera },

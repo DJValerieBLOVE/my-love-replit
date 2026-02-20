@@ -6,7 +6,6 @@ import {
   Flame,
   Sparkles,
   Heart,
-  Rss,
   LogOut,
   BookOpen,
   Zap,
@@ -63,10 +62,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { icon: Flame, label: "Big Dreams", href: "/big-dreams" },
     { icon: FlaskConical, label: "Experiments", href: "/experiments" },
     { icon: Calendar, label: "Events", href: "/events" },
-    { icon: Users, label: "Tribe", href: "/community" },
+    { icon: Users, label: "People", href: "/people" },
     { icon: KeyRound, label: "Vault", href: "/vault" },
     { icon: Heart, label: "Love Board", href: "/leaderboard" },
-    { icon: Rss, label: "Feed", href: "/feed" },
   ];
 
   const mobileNavLinks = [
@@ -74,10 +72,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { icon: Flame, label: "Big Dreams", href: "/big-dreams" },
     { icon: FlaskConical, label: "Experiments", href: "/experiments" },
     { icon: Calendar, label: "Events", href: "/events" },
-    { icon: Users, label: "Tribe", href: "/community" },
+    { icon: Users, label: "People", href: "/people" },
     { icon: KeyRound, label: "Vault", href: "/vault" },
     { icon: Heart, label: "Love Board", href: "/leaderboard" },
-    { icon: Rss, label: "Feed", href: "/feed" },
   ];
 
   return (

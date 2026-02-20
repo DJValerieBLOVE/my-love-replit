@@ -266,7 +266,7 @@ export default function Profile() {
 
         {!isOwnProfile && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
-            <Link href="/feed" className="hover:text-primary">Feed</Link>
+            <Link href="/people" className="hover:text-primary">People</Link>
             <span>/</span>
             <span>{user.name}'s Profile</span>
           </div>
@@ -310,7 +310,24 @@ export default function Profile() {
               </div>
             )}
 
-            <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+            <div className="flex items-center gap-4 mt-3 text-sm">
+              <button className="flex items-center gap-1 hover:underline" data-testid="text-following-count">
+                <span className="font-normal text-foreground">{nostrProfile?.following_count || 0}</span>
+                <span className="text-muted-foreground">Following</span>
+              </button>
+              <button className="flex items-center gap-1 hover:underline" data-testid="text-followers-count">
+                <span className="font-normal text-foreground">{nostrProfile?.followers_count || 0}</span>
+                <span className="text-muted-foreground">Followers</span>
+              </button>
+            </div>
+
+            <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground flex-wrap">
+              {nostrProfile?.location && (
+                <div className="flex items-center gap-1" data-testid="text-location">
+                  <MapPin className="w-3 h-3" />
+                  <span>{nostrProfile.location}</span>
+                </div>
+              )}
               {publicProfile?.createdAt && (
                 <div className="flex items-center gap-1" data-testid="text-joined">
                   <Calendar className="w-3 h-3" />
@@ -418,6 +435,13 @@ export default function Profile() {
                 <Label htmlFor="edit-name">Display Name</Label>
                 <Input id="edit-name" value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Your display name" data-testid="input-edit-name" />
               </div>
+
+              {aboutText && (
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-1.5">Bio <span className="text-xs text-muted-foreground font-normal">(synced from Nostr)</span></Label>
+                  <p className="text-sm text-muted-foreground bg-muted/50 rounded-lg p-3">{aboutText}</p>
+                </div>
+              )}
 
               <div className="border-t pt-4 space-y-4">
                 <div className="flex items-center justify-between">
