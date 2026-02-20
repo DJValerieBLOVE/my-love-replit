@@ -1,7 +1,7 @@
 import Layout from "@/components/layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Users, Plus, Lock, Check, Heart, Search, Loader2 } from "lucide-react";
+import { ArrowRight, Users, Plus, Lock, Check, Heart, Search, Loader2, Zap, Flame, Trophy, FlaskConical, Award } from "lucide-react";
 import CommunityCover from "@assets/generated_images/community_cover.png";
 import { Link, useLocation } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -146,7 +146,7 @@ export default function Community() {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto p-4 lg:p-8">
+      <div className="max-w-7xl mx-auto p-4 lg:p-8">
         {/* Privacy Notice */}
         <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4 bg-[#F5F5F5] px-3 py-2 rounded-xs">
           <Lock className="w-3 h-3" />
@@ -187,6 +187,8 @@ export default function Community() {
           )}
         </div>
 
+        <div className="flex gap-8 items-start">
+          <div className="flex-1 min-w-0">
         {/* Prayer Requests Tab */}
         {activeTab === "prayer-requests" ? (
           <div className="space-y-6">
@@ -349,6 +351,84 @@ export default function Community() {
             )}
           </>
         )}
+          </div>
+
+          {/* Right Sidebar - Gamification Placeholders */}
+          <div className="hidden lg:block w-[300px] shrink-0 space-y-4 sticky top-24 self-start">
+            {/* Top Zappers */}
+            <Card className="border-none shadow-sm bg-card rounded-xs">
+              <CardContent className="p-4">
+                <h3 className="font-normal text-sm text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} /> Top Zappers
+                </h3>
+                <div className="space-y-3">
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Individuals</p>
+                    <div className="p-3 bg-[#F5F5F5] rounded-xs text-center">
+                      <p className="text-xs text-muted-foreground" data-testid="text-zappers-coming-soon">Coming soon</p>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Tribes</p>
+                    <div className="p-3 bg-[#F5F5F5] rounded-xs text-center">
+                      <p className="text-xs text-muted-foreground">Coming soon</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Top Streaks */}
+            <Card className="border-none shadow-sm bg-card rounded-xs">
+              <CardContent className="p-4">
+                <h3 className="font-normal text-sm text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+                  <Flame className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} /> Top Streaks
+                </h3>
+                <div className="space-y-3">
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Individuals</p>
+                    <div className="p-3 bg-[#F5F5F5] rounded-xs text-center">
+                      <p className="text-xs text-muted-foreground">Coming soon</p>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Tribes</p>
+                    <div className="p-3 bg-[#F5F5F5] rounded-xs text-center">
+                      <p className="text-xs text-muted-foreground">Coming soon</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Progress & Completions */}
+            <Card className="border-none shadow-sm bg-card rounded-xs">
+              <CardContent className="p-4">
+                <h3 className="font-normal text-sm text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+                  <Trophy className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} /> Progress & Completions
+                </h3>
+                <div className="space-y-3">
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+                      <FlaskConical className="w-3 h-3" /> Experiments
+                    </p>
+                    <div className="p-3 bg-[#F5F5F5] rounded-xs text-center">
+                      <p className="text-xs text-muted-foreground">Coming soon</p>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+                      <Award className="w-3 h-3" /> 11x LOVE Code
+                    </p>
+                    <div className="p-3 bg-[#F5F5F5] rounded-xs text-center">
+                      <p className="text-xs text-muted-foreground">Coming soon</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
     </Layout>
   );

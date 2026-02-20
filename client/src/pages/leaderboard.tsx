@@ -1,5 +1,5 @@
 import Layout from "@/components/layout";
-import { ShoppingBag, Briefcase, Wrench, MoreHorizontal, Plus, Search, Loader2, Heart, Zap, Trophy, Flame, FlaskConical, Award, Users, Lock } from "lucide-react";
+import { ShoppingBag, Briefcase, Wrench, MoreHorizontal, Plus, Search, Loader2, Heart, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
@@ -90,9 +90,7 @@ export default function Leaderboard() {
           </div>
         </div>
 
-        <div className="flex gap-8 items-start">
-          {/* Main Content */}
-          <div className="flex-1 min-w-0">
+        <div>
             {isLoading ? (
               <div className="flex justify-center py-12">
                 <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
@@ -151,83 +149,6 @@ export default function Leaderboard() {
                 </MembershipGate>
               </Card>
             )}
-          </div>
-
-          {/* Right Sidebar - Gamification Placeholders */}
-          <div className="hidden lg:block w-[300px] shrink-0 space-y-4 sticky top-24 self-start">
-            {/* Top Zappers */}
-            <Card className="border-none shadow-sm bg-card rounded-xs">
-              <CardContent className="p-4">
-                <h3 className="font-normal text-sm text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
-                  <Zap className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} /> Top Zappers
-                </h3>
-                <div className="space-y-3">
-                  <div className="space-y-1">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Individuals</p>
-                    <div className="p-3 bg-[#F5F5F5] rounded-xs text-center">
-                      <p className="text-xs text-muted-foreground">Coming soon</p>
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Tribes</p>
-                    <div className="p-3 bg-[#F5F5F5] rounded-xs text-center">
-                      <p className="text-xs text-muted-foreground">Coming soon</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Top Streaks */}
-            <Card className="border-none shadow-sm bg-card rounded-xs">
-              <CardContent className="p-4">
-                <h3 className="font-normal text-sm text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
-                  <Flame className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} /> Top Streaks
-                </h3>
-                <div className="space-y-3">
-                  <div className="space-y-1">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Individuals</p>
-                    <div className="p-3 bg-[#F5F5F5] rounded-xs text-center">
-                      <p className="text-xs text-muted-foreground">Coming soon</p>
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Tribes</p>
-                    <div className="p-3 bg-[#F5F5F5] rounded-xs text-center">
-                      <p className="text-xs text-muted-foreground">Coming soon</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Progress & Completions */}
-            <Card className="border-none shadow-sm bg-card rounded-xs">
-              <CardContent className="p-4">
-                <h3 className="font-normal text-sm text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
-                  <Trophy className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} /> Progress & Completions
-                </h3>
-                <div className="space-y-3">
-                  <div className="space-y-1">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider flex items-center gap-1">
-                      <FlaskConical className="w-3 h-3" /> Experiments
-                    </p>
-                    <div className="p-3 bg-[#F5F5F5] rounded-xs text-center">
-                      <p className="text-xs text-muted-foreground">Coming soon</p>
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider flex items-center gap-1">
-                      <Award className="w-3 h-3" /> 11x LOVE Code
-                    </p>
-                    <div className="p-3 bg-[#F5F5F5] rounded-xs text-center">
-                      <p className="text-xs text-muted-foreground">Coming soon</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
         </div>
       </div>
     </Layout>
