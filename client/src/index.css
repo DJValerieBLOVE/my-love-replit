@@ -219,6 +219,7 @@
   input, textarea, select {
     font-size: var(--text-base);
     color: var(--foreground);
+    background-color: #FFFFFF;
   }
 }
 
