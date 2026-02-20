@@ -240,7 +240,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       <div className="flex-1 flex">
         {/* Left Sidebar (Navigation) - Desktop only, sticky */}
-        <aside className="hidden lg:flex flex-col w-[240px] shrink-0 border-r bg-[#FAFAFA] p-4 gap-2 sticky top-14 md:top-20 self-start h-[calc(100vh-56px)] md:h-[calc(100vh-80px)] overflow-y-auto">
+        <aside className="hidden lg:flex flex-col w-[240px] shrink-0 border-r p-4 gap-2 sticky top-14 md:top-20 self-start h-[calc(100vh-56px)] md:h-[calc(100vh-80px)] overflow-y-auto" style={{ backgroundColor: '#ffffff' }}>
           {desktopNavLinks.map((item) => {
             const isActive = location === item.href || (item.href !== "/" && location.startsWith(item.href));
             return (
