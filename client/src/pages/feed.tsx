@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Zap, Share2, MoreHorizontal, Radio, Calendar, UserPlus, Repeat2, Bookmark, Quote, Users, Image, Film, Smile, X, Link2, Copy, ExternalLink, Loader2, Lock, Globe, ChevronDown, TrendingUp, Flame, Camera, Clock, RefreshCw, ArrowUp } from "lucide-react";
+import { Heart, MessageCircle, Zap, Share2, MoreHorizontal, Radio, Calendar, UserPlus, Repeat2, Bookmark, Quote, Users, Image, Film, Smile, X, Link2, Copy, ExternalLink, Loader2, Lock, Globe, ChevronDown, TrendingUp, Flame, Camera, Clock, RefreshCw, ArrowUp, Plus } from "lucide-react";
 import { Link } from "wouter";
 import {
   DropdownMenu,
@@ -515,6 +515,146 @@ export function PostComposer({ onPostPublished }: { onPostPublished?: () => void
         </div>
       </div>
     </Card>
+  );
+}
+
+type PostPrivacy = "public" | "private" | "buddy" | "secret";
+
+const PRIVACY_OPTIONS: { id: PostPrivacy; label: string; icon: typeof Globe; description: string }[] = [
+  { id: "public", label: "Public", icon: Globe, description: "Post to Nostr" },
+  { id: "private", label: "Tribe Only", icon: Users, description: "Private to tribe" },
+  { id: "buddy", label: "Buddy", icon: Lock, description: "Accountability buddy" },
+  { id: "secret", label: "Secret", icon: Lock, description: "Vault only" },
+];
+
+export function CompactPostBar({ onPostPublished }: { onPostPublished?: () => void }) {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [content, setContent] = useState("");
+  const [privacy, setPrivacy] = useState<PostPrivacy>("public");
+  const [isPosting, setIsPosting] = useState(false);
+  const { publishSmart, ndk, isConnected: ndkConnected } = useNDK();
+  const { profile } = useNostr();
+
+  const handlePost = async () => {
+    if (!content.trim()) return;
+    if (!ndkConnected || !ndk) {
+      toast.error("NDK not connected", { description: "Please wait for relay connection" });
+      return;
+    }
+    setIsPosting(true);
+    try {
+      const event = new NDKEvent(ndk);
+      event.kind = 1;
+      event.content = content.trim();
+      event.created_at = Math.floor(Date.now() / 1000);
+      if (profile?.pubkey) {
+        event.pubkey = profile.pubkey;
+      }
+      const isPublic = privacy === "public";
+      await publishSmart(event, isPublic);
+      toast.success(isPublic ? "Posted to Nostr!" : "Posted privately!");
+      setContent("");
+      setPrivacy("public");
+      setModalOpen(false);
+      onPostPublished?.();
+    } catch (err: any) {
+      console.error("[CompactPostBar] Publish error:", err);
+      toast.error("Failed to post", { description: err.message || "Please try again" });
+    } finally {
+      setIsPosting(false);
+    }
+  };
+
+  const currentPrivacy = PRIVACY_OPTIONS.find(o => o.id === privacy) || PRIVACY_OPTIONS[0];
+
+  return (
+    <>
+      <div
+        className="flex items-center gap-3 mb-4 px-4 py-3 bg-white border border-gray-200 rounded-xl cursor-pointer hover:border-gray-300 transition-colors"
+        onClick={() => setModalOpen(true)}
+        data-testid="compact-post-bar"
+      >
+        <Avatar className="w-8 h-8">
+          {profile?.picture ? <AvatarImage src={profile.picture} /> : null}
+          <AvatarFallback className="bg-gray-100 text-muted-foreground text-xs">ME</AvatarFallback>
+        </Avatar>
+        <span className="text-sm text-muted-foreground flex-1">Start a post...</span>
+        <Plus className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
+      </div>
+
+      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+        <DialogContent className="sm:max-w-[560px] p-0">
+          <DialogHeader className="px-5 pt-5 pb-0">
+            <DialogTitle className="text-lg font-serif">Create post</DialogTitle>
+          </DialogHeader>
+          <div className="px-5 py-4">
+            <div className="flex gap-3">
+              <Avatar className="w-10 h-10">
+                {profile?.picture ? <AvatarImage src={profile.picture} /> : null}
+                <AvatarFallback className="bg-gray-100 text-muted-foreground text-xs">ME</AvatarFallback>
+              </Avatar>
+              <div className="flex-1">
+                <p className="text-sm font-medium mb-2">{profile?.name || "Anonymous"}</p>
+                <Textarea
+                  placeholder="Write something..."
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  className="min-h-[120px] border rounded-lg resize-none focus-visible:ring-1 px-3 py-2 text-sm"
+                  autoFocus
+                  data-testid="textarea-modal-post-content"
+                />
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center justify-between px-5 py-3 border-t">
+            <div className="flex items-center gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs border border-gray-200 bg-white text-muted-foreground hover:border-gray-400 transition-colors"
+                    data-testid="button-modal-privacy"
+                  >
+                    <currentPrivacy.icon className="w-3.5 h-3.5" strokeWidth={1.5} />
+                    {currentPrivacy.label}
+                    <ChevronDown className="w-3 h-3" strokeWidth={1.5} />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-52">
+                  {PRIVACY_OPTIONS.map((option) => (
+                    <DropdownMenuItem
+                      key={option.id}
+                      onClick={() => setPrivacy(option.id)}
+                      className={`cursor-pointer ${privacy === option.id ? "bg-gray-50" : ""}`}
+                      data-testid={`modal-privacy-${option.id}`}
+                    >
+                      <option.icon className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} />
+                      <div>
+                        <p className="text-sm">{option.label}</p>
+                        <p className="text-xs text-muted-foreground">{option.description}</p>
+                      </div>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:bg-[#F0E6FF] h-8 w-8 p-0" data-testid="button-modal-add-image">
+                <Image className="w-4 h-4" strokeWidth={1.5} />
+              </Button>
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:bg-[#F0E6FF] h-8 w-8 p-0" data-testid="button-modal-add-gif">
+                <Smile className="w-4 h-4" strokeWidth={1.5} />
+              </Button>
+            </div>
+            <Button
+              onClick={handlePost}
+              disabled={isPosting || !content.trim()}
+              className="px-6"
+              data-testid="button-modal-publish"
+            >
+              {isPosting ? "Posting..." : "Publish"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 

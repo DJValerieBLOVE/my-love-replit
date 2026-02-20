@@ -18,7 +18,8 @@ import {
   Menu,
   X,
   Bell,
-  Mail
+  Mail,
+  PenSquare
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -257,6 +258,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </Link>
             );
           })}
+
+          <div className="mt-auto pt-4">
+            <Link href="/people">
+              <Button
+                className="w-full gap-2 bg-foreground text-background hover:bg-white hover:border-[#E5E5E5] hover:text-foreground border border-transparent"
+                data-testid="button-sidebar-new-post"
+              >
+                <PenSquare className="w-4 h-4" strokeWidth={1.5} />
+                New Post
+              </Button>
+            </Link>
+          </div>
         </aside>
 
         {/* Main Content Area */}

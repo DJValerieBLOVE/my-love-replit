@@ -33,7 +33,7 @@ import { toast } from "sonner";
 import { EXPERIMENT_CATEGORIES, EXPERIMENT_TAGS } from "@/lib/mock-data";
 import CommunityCover from "@assets/generated_images/community_cover.png";
 import {
-  PostComposer,
+  CompactPostBar,
   PostCard,
   FeedLoadingSkeleton,
   useNostrFeed,
@@ -81,7 +81,7 @@ function FeedTabContent({ subOption }: { subOption: FeedSubOption }) {
 
   return (
     <div>
-      <PostComposer onPostPublished={refetch} />
+      <CompactPostBar onPostPublished={refetch} />
 
       <div className="space-y-4">
         {newPostCount > 0 && (
@@ -967,7 +967,7 @@ export default function People() {
   return (
     <Layout>
       <div className="p-4 lg:p-6">
-        <div className="flex gap-6 max-w-[1024px] mx-auto">
+        <div className="flex gap-4 max-w-[940px] mx-auto">
           <div className="flex-1 min-w-0">
             <div className="mb-2">
               <h1 className="text-2xl font-serif" data-testid="text-people-title">People</h1>
@@ -978,7 +978,7 @@ export default function People() {
         </div>
 
         <div className="sticky top-14 md:top-20 z-[30] -mx-4 lg:-mx-6 px-4 lg:px-6 py-3 bg-[#FAFAFA] border-b border-gray-200">
-          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide max-w-[1024px] mx-auto">
+          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide max-w-[940px] mx-auto">
             <TabDropdownBubble
               label="My Feed"
               icon={Globe}
@@ -1059,7 +1059,7 @@ export default function People() {
           </div>
         </div>
 
-        <div className="flex gap-6 mt-4 max-w-[1024px] mx-auto">
+        <div className="flex gap-4 mt-4 max-w-[940px] mx-auto">
           <div className="flex-1 min-w-0">
             {activeTab === "feed" && <FeedTabContent subOption={feedSub} />}
             {activeTab === "tribes" && <TribesTabContent selectedTribeId={selectedTribeId} />}
