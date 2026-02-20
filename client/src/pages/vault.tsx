@@ -1,7 +1,6 @@
 import Layout from "@/components/layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Music, 
   Headphones,
@@ -684,52 +683,34 @@ export default function Vault() {
         </div>
 
         {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="w-full md:w-auto bg-[#FAFAFA] p-1 h-auto flex-wrap justify-start gap-1">
-            <TabsTrigger value="daily-love" className="px-4 py-2 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              <Heart className="w-4 h-4" /> Daily LOVE
-            </TabsTrigger>
-            <TabsTrigger value="journal" className="px-4 py-2 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              <PenLine className="w-4 h-4" /> Journal
-            </TabsTrigger>
-            <TabsTrigger value="bookmarks" className="px-4 py-2 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              <Bookmark className="w-4 h-4" /> Bookmarks
-            </TabsTrigger>
-            <TabsTrigger value="assessments" className="px-4 py-2 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              <BarChart3 className="w-4 h-4" /> Assessments
-            </TabsTrigger>
-            <TabsTrigger value="music" className="px-4 py-2 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              <Music className="w-4 h-4" /> Music & Meditations
-            </TabsTrigger>
-            <TabsTrigger value="library" className="px-4 py-2 gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              <Library className="w-4 h-4" /> Library
-            </TabsTrigger>
-          </TabsList>
+        <div className="flex gap-1.5 flex-wrap">
+          {[
+            { id: "daily-love", label: "Daily LOVE", icon: Heart },
+            { id: "journal", label: "Journal", icon: PenLine },
+            { id: "bookmarks", label: "Bookmarks", icon: Bookmark },
+            { id: "assessments", label: "Assessments", icon: BarChart3 },
+            { id: "music", label: "Music & Meditations", icon: Music },
+            { id: "library", label: "Library", icon: Library },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm transition-colors border ${activeTab === tab.id ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
+              data-testid={`tab-${tab.id}`}
+            >
+              <tab.icon className="w-4 h-4" /> {tab.label}
+            </button>
+          ))}
+        </div>
 
-          <TabsContent value="daily-love">
-            <DailyLovePracticeTab />
-          </TabsContent>
-
-          <TabsContent value="journal">
-            <JournalTab />
-          </TabsContent>
-
-          <TabsContent value="bookmarks">
-            <BookmarksTab />
-          </TabsContent>
-
-          <TabsContent value="assessments">
-            <AssessmentsTab />
-          </TabsContent>
-
-          <TabsContent value="music">
-            <MusicMeditationsTab />
-          </TabsContent>
-
-          <TabsContent value="library">
-            <LibraryTab />
-          </TabsContent>
-        </Tabs>
+        <div className="space-y-6">
+          {activeTab === "daily-love" && <DailyLovePracticeTab />}
+          {activeTab === "journal" && <JournalTab />}
+          {activeTab === "bookmarks" && <BookmarksTab />}
+          {activeTab === "assessments" && <AssessmentsTab />}
+          {activeTab === "music" && <MusicMeditationsTab />}
+          {activeTab === "library" && <LibraryTab />}
+        </div>
       </div>
     </Layout>
   );

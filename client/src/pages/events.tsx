@@ -2,17 +2,24 @@ import Layout from "@/components/layout";
 import { EVENTS } from "@/lib/mock-data";
 import { EventCard } from "@/components/event-card";
 import { Button } from "@/components/ui/button";
-import { Calendar as CalendarIcon, Plus, Filter, Search, ChevronLeft, ChevronRight, Users } from "lucide-react";
+import { Calendar as CalendarIcon, Plus, Search, ChevronLeft, ChevronRight, Users } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import EventHeader from "@assets/generated_images/zoom_meeting_event.png";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
 import { useState, useMemo } from "react";
 
+const EVENT_TABS = [
+  { id: "upcoming", label: "Upcoming" },
+  { id: "nearby", label: "Nearby" },
+  { id: "past", label: "Past" },
+  { id: "yours", label: "Yours" },
+];
+
 export default function Events() {
   const today = new Date();
   const [selectedDate, setSelectedDate] = useState(today);
+  const [activeTab, setActiveTab] = useState("upcoming");
   
   // Get meetings for selected date
   const selectedMeetings = useMemo(() => {
@@ -60,17 +67,23 @@ export default function Events() {
 
         {/* Filters & Search */}
         <div className="flex flex-col md:flex-row gap-4 mb-8 items-center justify-between">
-          <div className="flex gap-2">
-            <Button className="px-6 rounded-lg">Upcoming</Button>
-            <Button variant="outline" className="text-muted-foreground px-6 rounded-lg">Nearby</Button>
-            <Button variant="outline" className="text-muted-foreground px-6 rounded-lg">Past</Button>
-            <Button variant="outline" className="text-muted-foreground px-6 rounded-lg">Yours</Button>
+          <div className="flex gap-1.5 flex-wrap">
+            {EVENT_TABS.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-4 py-1.5 rounded-full text-sm transition-colors border ${activeTab === tab.id ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
+                data-testid={`tab-${tab.id}`}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
           
           <div className="flex gap-2 w-full md:w-auto">
             <div className="relative flex-1 md:w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input placeholder="Search events..." className="pl-9 bg-background" />
+              <Input placeholder="Search events..." className="pl-9 bg-white" />
             </div>
           </div>
         </div>
