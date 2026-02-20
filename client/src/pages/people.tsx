@@ -83,18 +83,6 @@ function FeedTabContent({ subOption }: { subOption: FeedSubOption }) {
     <div>
       <PostComposer onPostPublished={refetch} />
 
-      <div className="flex items-center justify-end mb-4">
-        <button
-          onClick={refetch}
-          disabled={isRefreshing || isLoading}
-          className="flex items-center justify-center w-8 h-8 rounded-full text-muted-foreground hover:text-foreground hover:bg-[#F0E6FF] transition-colors disabled:text-[#C4C4C4]"
-          data-testid="button-refresh-feed"
-          title="Refresh feed"
-        >
-          <RefreshCw className={`w-4 h-4 ${isRefreshing || isLoading ? "animate-spin" : ""}`} strokeWidth={1.5} />
-        </button>
-      </div>
-
       <div className="space-y-4">
         {newPostCount > 0 && (
           <div className="flex justify-center">
@@ -126,9 +114,8 @@ function FeedTabContent({ subOption }: { subOption: FeedSubOption }) {
   );
 }
 
-function TribesTabContent() {
-  const { isConnected, profile } = useNostr();
-  const [selectedTribe, setSelectedTribe] = useState<string>("all");
+function TribesTabContent({ selectedTribeId }: { selectedTribeId: string }) {
+  const { isConnected } = useNostr();
 
   const { data: communities = [] } = useQuery({
     queryKey: ["communities"],
@@ -143,28 +130,10 @@ function TribesTabContent() {
 
   const myMembershipIds = new Set(myCommunities.map((m: any) => m.communityId || m.id));
   const myTribes = communities.filter((c: any) => myMembershipIds.has(c.id));
+  const displayTribes = selectedTribeId === "all" ? myTribes : myTribes.filter((t: any) => t.id === selectedTribeId);
 
   return (
     <div>
-      <div className="flex items-center gap-3 mb-4">
-        <Select value={selectedTribe} onValueChange={setSelectedTribe}>
-          <SelectTrigger className="w-[240px] h-10 bg-white" data-testid="select-my-tribe">
-            <SelectValue placeholder="All My Tribes" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All My Tribes</SelectItem>
-            {myTribes.map((tribe: any) => (
-              <SelectItem key={tribe.id} value={tribe.id}>{tribe.name}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Link href="/community/create">
-          <Button variant="outline" className="gap-2 h-10" data-testid="button-create-tribe">
-            <Plus className="w-4 h-4" /> New Tribe
-          </Button>
-        </Link>
-      </div>
-
       <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4 bg-[#F5F5F5] px-3 py-2 rounded-lg">
         <Lock className="w-3 h-3" />
         <span>All Tribe content is private and encrypted — not shared to public Nostr relays.</span>
@@ -178,7 +147,7 @@ function TribesTabContent() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {(selectedTribe === "all" ? myTribes : myTribes.filter((t: any) => t.id === selectedTribe)).map((tribe: any) => (
+          {displayTribes.map((tribe: any) => (
             <Link key={tribe.id} href={`/community/${tribe.id}`}>
               <Card className="hover:shadow-md transition-all border-none bg-card shadow-sm group cursor-pointer overflow-hidden rounded-xs" data-testid={`card-tribe-${tribe.id}`}>
                 <div className="h-[2px] w-full bg-primary" />
@@ -955,104 +924,155 @@ function TabDropdownBubble({
   );
 }
 
+function useMyTribesForDropdown() {
+  const { isConnected } = useNostr();
+  const { data: communities = [] } = useQuery({
+    queryKey: ["communities"],
+    queryFn: getAllCommunities,
+  });
+  const { data: myCommunities = [] } = useQuery({
+    queryKey: ["myCommunities"],
+    queryFn: getMyCommunities,
+    enabled: isConnected,
+  });
+  const myMembershipIds = new Set(myCommunities.map((m: any) => m.communityId || m.id));
+  const myTribes = communities.filter((c: any) => myMembershipIds.has(c.id));
+  return myTribes;
+}
+
 export default function People() {
   const [activeTab, setActiveTab] = useState<PeopleTab>("feed");
   const [feedSub, setFeedSub] = useState<FeedSubOption>("following");
   const [discoverSub, setDiscoverSub] = useState<DiscoverSubOption>("tribes");
   const [buddySub, setBuddySub] = useState<BuddySubOption>("find");
+  const [selectedTribeId, setSelectedTribeId] = useState<string>("all");
+
+  const myTribes = useMyTribesForDropdown();
 
   const feedSubLabel = FEED_SUB_OPTIONS.find(o => o.id === feedSub)?.label;
   const discoverSubLabel = DISCOVER_SUB_OPTIONS.find(o => o.id === discoverSub)?.label;
   const buddySubLabel = BUDDY_SUB_OPTIONS.find(o => o.id === buddySub)?.label;
 
+  const tribeDropdownItems: { id: string; label: string; icon: typeof Users }[] = [
+    { id: "all", label: "All My Tribes", icon: Users },
+    ...myTribes.map((t: any) => ({ id: t.id, label: t.name, icon: Users })),
+    { id: "__create__", label: "New Tribe", icon: Plus },
+  ];
+  const tribesActiveLabel = selectedTribeId === "all"
+    ? "My Tribes"
+    : myTribes.find((t: any) => t.id === selectedTribeId)?.name || "My Tribes";
+
+  const [, setLocation] = useLocation();
+
   return (
     <Layout>
       <div className="p-4 lg:p-6">
-        <div className="max-w-[1100px] mx-auto">
-          <div className="mb-2">
-            <h1 className="text-2xl font-serif" data-testid="text-people-title">People</h1>
-          </div>
-          <p className="text-muted-foreground text-sm mb-4">Your tribes, feed, victories, and connections — all in one place.</p>
-
-          <div className="sticky top-14 md:top-20 z-[30] -mx-4 lg:-mx-6 px-4 lg:px-6 py-3 bg-[#FAFAFA] border-b border-gray-200">
-            <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide max-w-[1100px] mx-auto">
-              <TabDropdownBubble
-                label="My Feed"
-                icon={Globe}
-                isActive={activeTab === "feed"}
-                items={FEED_SUB_OPTIONS}
-                activeItemLabel={feedSubLabel}
-                onSelect={(id) => { setActiveTab("feed"); setFeedSub(id as FeedSubOption); }}
-                testId="tab-feed"
-              />
-              <TabDropdownBubble
-                label="My Tribes"
-                icon={Users}
-                isActive={activeTab === "tribes"}
-                items={[]}
-                onSelect={() => setActiveTab("tribes")}
-                testId="tab-tribes"
-              />
-              <TabDropdownBubble
-                label="Buddies"
-                icon={Handshake}
-                isActive={activeTab === "buddies"}
-                items={BUDDY_SUB_OPTIONS}
-                activeItemLabel={buddySubLabel}
-                onSelect={(id) => { setActiveTab("buddies"); setBuddySub(id as BuddySubOption); }}
-                testId="tab-buddies"
-              />
-              <TabDropdownBubble
-                label="Victories"
-                icon={Trophy}
-                isActive={activeTab === "victories"}
-                items={[]}
-                onSelect={() => setActiveTab("victories")}
-                testId="tab-victories"
-              />
-              <TabDropdownBubble
-                label="Gratitude"
-                icon={Star}
-                isActive={activeTab === "gratitude"}
-                items={[]}
-                onSelect={() => setActiveTab("gratitude")}
-                testId="tab-gratitude"
-              />
-              <TabDropdownBubble
-                label="Prayers"
-                icon={Heart}
-                isActive={activeTab === "prayers"}
-                items={[]}
-                onSelect={() => setActiveTab("prayers")}
-                testId="tab-prayers"
-              />
-              <TabDropdownBubble
-                label="Discover"
-                icon={Search}
-                isActive={activeTab === "discover"}
-                items={DISCOVER_SUB_OPTIONS}
-                activeItemLabel={discoverSubLabel}
-                onSelect={(id) => { setActiveTab("discover"); setDiscoverSub(id as DiscoverSubOption); }}
-                testId="tab-discover"
-              />
+        <div className="flex gap-6 max-w-[1100px] mx-auto">
+          <div className="flex-1 min-w-0 max-w-[720px]">
+            <div className="mb-2">
+              <h1 className="text-2xl font-serif" data-testid="text-people-title">People</h1>
             </div>
+            <p className="text-muted-foreground text-sm mb-4">Your tribes, feed, victories, and connections — all in one place.</p>
+          </div>
+          <div className="hidden lg:block w-[280px] shrink-0" />
+        </div>
+
+        <div className="sticky top-14 md:top-20 z-[30] -mx-4 lg:-mx-6 px-4 lg:px-6 py-3 bg-[#FAFAFA] border-b border-gray-200">
+          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide max-w-[1100px] mx-auto">
+            <TabDropdownBubble
+              label="My Feed"
+              icon={Globe}
+              isActive={activeTab === "feed"}
+              items={FEED_SUB_OPTIONS}
+              activeItemLabel={feedSubLabel}
+              onSelect={(id) => { setActiveTab("feed"); setFeedSub(id as FeedSubOption); }}
+              testId="tab-feed"
+            />
+            <TabDropdownBubble
+              label="My Tribes"
+              icon={Users}
+              isActive={activeTab === "tribes"}
+              items={tribeDropdownItems}
+              activeItemLabel={tribesActiveLabel}
+              onSelect={(id) => {
+                if (id === "__create__") {
+                  setLocation("/community/create");
+                } else {
+                  setActiveTab("tribes");
+                  setSelectedTribeId(id);
+                }
+              }}
+              testId="tab-tribes"
+            />
+            <TabDropdownBubble
+              label="Buddies"
+              icon={Handshake}
+              isActive={activeTab === "buddies"}
+              items={BUDDY_SUB_OPTIONS}
+              activeItemLabel={buddySubLabel}
+              onSelect={(id) => { setActiveTab("buddies"); setBuddySub(id as BuddySubOption); }}
+              testId="tab-buddies"
+            />
+            <TabDropdownBubble
+              label="Victories"
+              icon={Trophy}
+              isActive={activeTab === "victories"}
+              items={[]}
+              onSelect={() => setActiveTab("victories")}
+              testId="tab-victories"
+            />
+            <TabDropdownBubble
+              label="Gratitude"
+              icon={Star}
+              isActive={activeTab === "gratitude"}
+              items={[]}
+              onSelect={() => setActiveTab("gratitude")}
+              testId="tab-gratitude"
+            />
+            <TabDropdownBubble
+              label="Prayers"
+              icon={Heart}
+              isActive={activeTab === "prayers"}
+              items={[]}
+              onSelect={() => setActiveTab("prayers")}
+              testId="tab-prayers"
+            />
+            <TabDropdownBubble
+              label="Discover"
+              icon={Search}
+              isActive={activeTab === "discover"}
+              items={DISCOVER_SUB_OPTIONS}
+              activeItemLabel={discoverSubLabel}
+              onSelect={(id) => { setActiveTab("discover"); setDiscoverSub(id as DiscoverSubOption); }}
+              testId="tab-discover"
+            />
+
+            {activeTab === "feed" && (
+              <button
+                className="ml-auto flex items-center justify-center w-8 h-8 rounded-full text-muted-foreground hover:text-foreground hover:bg-[#F0E6FF] transition-colors shrink-0"
+                data-testid="button-refresh-feed"
+                title="Refresh feed"
+              >
+                <RefreshCw className="w-4 h-4" strokeWidth={1.5} />
+              </button>
+            )}
+          </div>
+        </div>
+
+        <div className="flex gap-6 mt-4 max-w-[1100px] mx-auto">
+          <div className="flex-1 min-w-0 max-w-[720px]">
+            {activeTab === "feed" && <FeedTabContent subOption={feedSub} />}
+            {activeTab === "tribes" && <TribesTabContent selectedTribeId={selectedTribeId} />}
+            {activeTab === "buddies" && <BuddiesTabContent />}
+            {activeTab === "victories" && <VictoriesTabContent />}
+            {activeTab === "gratitude" && <GratitudeTabContent />}
+            {activeTab === "prayers" && <PrayersTabContent />}
+            {activeTab === "discover" && <DiscoverTabContent subOption={discoverSub} />}
           </div>
 
-          <div className="flex gap-6 mt-4">
-            <div className="flex-1 min-w-0 max-w-[720px] mx-auto">
-              {activeTab === "feed" && <FeedTabContent subOption={feedSub} />}
-              {activeTab === "tribes" && <TribesTabContent />}
-              {activeTab === "buddies" && <BuddiesTabContent />}
-              {activeTab === "victories" && <VictoriesTabContent />}
-              {activeTab === "gratitude" && <GratitudeTabContent />}
-              {activeTab === "prayers" && <PrayersTabContent />}
-              {activeTab === "discover" && <DiscoverTabContent subOption={discoverSub} />}
-            </div>
-
-            <div className="hidden lg:block w-[280px] shrink-0">
-              <div className="sticky top-36">
-                <RightSidebar />
-              </div>
+          <div className="hidden lg:block w-[280px] shrink-0">
+            <div className="sticky top-36">
+              <RightSidebar />
             </div>
           </div>
         </div>
