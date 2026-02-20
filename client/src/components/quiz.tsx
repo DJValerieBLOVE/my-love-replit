@@ -127,7 +127,7 @@ export function Quiz({ questions, onComplete, rewardAmount }: QuizProps) {
                                      : 'bg-white text-muted-foreground border-muted shadow-sm opacity-50'
                                : selectedOption === option
                                   ? 'bg-[#F5F3FF] text-foreground border-foreground/50 shadow-md -translate-y-0.5 font-bold'
-                                  : 'bg-white text-muted-foreground border-muted shadow-sm hover:bg-[#F5F3FF] hover:text-foreground hover:border-foreground/50 hover:shadow-md hover:-translate-y-0.5'
+                                  : 'bg-white text-muted-foreground border-muted shadow-sm hover:bg-[#F0E6FF] hover:text-foreground hover:border-foreground/50 hover:shadow-md hover:-translate-y-0.5'
                             }
                          `}
                       >

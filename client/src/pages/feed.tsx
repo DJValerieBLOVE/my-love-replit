@@ -479,28 +479,28 @@ function PostComposer({ onPostPublished }: { onPostPublished?: () => void }) {
                 variant="ghost"
                 size="sm"
                 onClick={() => handleFileSelect("image")}
-                className="text-muted-foreground hover:bg-gray-50 hover:text-foreground"
+                className="text-muted-foreground hover:bg-[#F0E6FF] hover:text-foreground"
                 data-testid="button-add-image"
               >
-                <Image className="w-5 h-5" />
+                <Image className="w-5 h-5" strokeWidth={1.5} />
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleGifSelect}
-                className="text-muted-foreground hover:bg-gray-50 hover:text-foreground"
+                className="text-muted-foreground hover:bg-[#F0E6FF] hover:text-foreground"
                 data-testid="button-add-gif"
               >
-                <Smile className="w-5 h-5" />
+                <Smile className="w-5 h-5" strokeWidth={1.5} />
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => handleFileSelect("video")}
-                className="text-muted-foreground hover:bg-gray-50 hover:text-foreground"
+                className="text-muted-foreground hover:bg-[#F0E6FF] hover:text-foreground"
                 data-testid="button-add-video"
               >
-                <Film className="w-5 h-5" />
+                <Film className="w-5 h-5" strokeWidth={1.5} />
               </Button>
             </div>
             <Button
@@ -935,14 +935,14 @@ function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfiles?: M
             <span className="text-muted-foreground text-[11px] flex items-center gap-1 shrink-0">
               · {post.timestamp}
               {post.relaySource === "private" && (
-                <Lock className="w-3 h-3" />
+                <Lock className="w-3 h-3" strokeWidth={1.5} />
               )}
               {post.relaySource === "public" && (
-                <Globe className="w-3 h-3" />
+                <Globe className="w-3 h-3" strokeWidth={1.5} />
               )}
             </span>
-            <Button variant="ghost" size="icon" className="ml-auto h-7 w-7 hover:bg-gray-50 shrink-0" data-testid={`button-more-${post.id}`}>
-              <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
+            <Button variant="ghost" size="icon" className="ml-auto h-7 w-7 hover:bg-[#F0E6FF] shrink-0" data-testid={`button-more-${post.id}`}>
+              <MoreHorizontal className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
             </Button>
           </div>
           {(() => {
@@ -983,7 +983,7 @@ function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfiles?: M
           })()}
           {post.zapReceipts && post.zapReceipts.length > 0 && (
             <div className="flex items-center gap-1.5 mt-2.5 mb-1 flex-wrap" data-testid={`zap-receipts-${post.id}`}>
-              <Zap className="w-3 h-3 text-muted-foreground" />
+              <Zap className="w-3 h-3 text-muted-foreground" strokeWidth={1.5} />
               {post.zapReceipts.slice(0, 5).map((zr, i) => (
                 <div key={`${zr.pubkey}-${i}`} className="flex items-center gap-1 rounded-full px-1.5 py-0.5 border border-gray-200" style={{ backgroundColor: '#ffffff' }} data-testid={`zap-receipt-${post.id}-${i}`}>
                   <Avatar className="w-4 h-4">
@@ -1000,21 +1000,21 @@ function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfiles?: M
           )}
           <div className="flex items-center gap-1 mt-3 pt-2 border-t border-gray-100">
             <button className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground rounded-full px-2.5 py-1 transition-colors text-xs" data-testid={`button-reply-${post.id}`}>
-              <MessageCircle className="w-3.5 h-3.5" />
+              <MessageCircle className="w-3.5 h-3.5" strokeWidth={1.5} />
               <span>{post.comments > 0 ? post.comments : ""}</span>
             </button>
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 transition-colors text-xs ${isReposted ? 'text-[#6600ff]' : 'text-muted-foreground hover:text-foreground'}`} data-testid={`button-repost-${post.id}`}>
-                  <Repeat2 className="w-4 h-4" />
+                  <Repeat2 className="w-4 h-4" strokeWidth={1.5} />
                   <span>{post.reposts > 0 ? post.reposts : ""}</span>
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="center" className="w-56">
                 {canRepostPublic ? (
                   <DropdownMenuItem onClick={handleRepostPublic} data-testid={`menu-repost-${post.id}`}>
-                    <Repeat2 className="w-4 h-4 mr-2" />
+                    <Repeat2 className="w-4 h-4 mr-2" strokeWidth={1.5} />
                     <div>
                       <p>Repost to Nostr</p>
                       <p className="text-xs text-muted-foreground">Share publicly</p>
@@ -1022,7 +1022,7 @@ function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfiles?: M
                   </DropdownMenuItem>
                 ) : (
                   <DropdownMenuItem disabled className="text-[#A1A1AA] cursor-not-allowed" data-testid={`menu-repost-disabled-${post.id}`}>
-                    <Repeat2 className="w-4 h-4 mr-2" />
+                    <Repeat2 className="w-4 h-4 mr-2" strokeWidth={1.5} />
                     <div>
                       <p>Repost to Nostr</p>
                       <p className="text-xs text-muted-foreground">Only your own content can go public</p>
@@ -1031,7 +1031,7 @@ function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfiles?: M
                 )}
                 {isGroupPost && (
                   <DropdownMenuItem onClick={handleRepostGroup} data-testid={`menu-repost-group-${post.id}`}>
-                    <Users className="w-4 h-4 mr-2" />
+                    <Users className="w-4 h-4 mr-2" strokeWidth={1.5} />
                     <div>
                       <p>Repost within Group</p>
                       <p className="text-xs text-muted-foreground">{groupName}</p>
@@ -1039,7 +1039,7 @@ function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfiles?: M
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem onClick={() => setQuoteRepostOpen(true)} data-testid={`menu-quote-repost-${post.id}`}>
-                  <Quote className="w-4 h-4 mr-2" />
+                  <Quote className="w-4 h-4 mr-2" strokeWidth={1.5} />
                   <div>
                     <p>Quote Repost</p>
                     <p className="text-xs text-muted-foreground">
@@ -1063,7 +1063,7 @@ function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfiles?: M
                 </DialogHeader>
                 {isGroupPost && !post.isOwnPost && (
                   <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-start gap-2">
-                    <Users className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
+                    <Users className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" strokeWidth={1.5} />
                     <p className="text-sm text-amber-800">
                       This post is from a private group. Your quote will only be visible within that group.
                     </p>
@@ -1103,7 +1103,7 @@ function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfiles?: M
             </Dialog>
 
             <button className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground rounded-full px-2.5 py-1 transition-colors text-xs" data-testid={`button-zap-${post.id}`}>
-              <Zap className="w-3.5 h-3.5" />
+              <Zap className="w-3.5 h-3.5" strokeWidth={1.5} />
               <span data-testid={`count-zaps-${post.id}`}>{post.satszapped > 0 ? formatSats(post.satszapped) : ""}</span>
             </button>
 
@@ -1112,7 +1112,7 @@ function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfiles?: M
               className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 transition-colors text-xs ${isLiked ? 'text-[#6600ff]' : 'text-muted-foreground hover:text-foreground'}`} 
               data-testid={`button-like-${post.id}`}
             >
-              <Heart className="w-3.5 h-3.5" fill={isLiked ? "currentColor" : "none"} />
+              <Heart className="w-3.5 h-3.5" strokeWidth={1.5} fill={isLiked ? "currentColor" : "none"} />
               <span data-testid={`count-likes-${post.id}`}>{likes > 0 ? likes : ""}</span>
             </button>
 
@@ -1121,7 +1121,7 @@ function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfiles?: M
               className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 transition-colors text-xs ${isBookmarked ? 'text-[#6600ff]' : 'text-muted-foreground hover:text-foreground'}`} 
               data-testid={`button-bookmark-${post.id}`}
             >
-              <Bookmark className="w-3.5 h-3.5" fill={isBookmarked ? "currentColor" : "none"} />
+              <Bookmark className="w-3.5 h-3.5" strokeWidth={1.5} fill={isBookmarked ? "currentColor" : "none"} />
             </button>
 
             <DropdownMenu>
@@ -1130,7 +1130,7 @@ function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfiles?: M
                   className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground rounded-full px-2.5 py-1 transition-colors text-xs ml-auto" 
                   data-testid={`button-share-${post.id}`}
                 >
-                  <Share2 className="w-4 h-4" />
+                  <Share2 className="w-4 h-4" strokeWidth={1.5} />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
@@ -1142,7 +1142,7 @@ function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfiles?: M
                   className="cursor-pointer"
                   data-testid={`button-copy-link-${post.id}`}
                 >
-                  <Copy className="w-4 h-4 mr-2" />
+                  <Copy className="w-4 h-4 mr-2" strokeWidth={1.5} />
                   Copy Link
                 </DropdownMenuItem>
                 {canRepostPublic && (
@@ -1156,7 +1156,7 @@ function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfiles?: M
                       className="cursor-pointer"
                       data-testid={`button-share-x-${post.id}`}
                     >
-                      <ExternalLink className="w-4 h-4 mr-2" />
+                      <ExternalLink className="w-4 h-4 mr-2" strokeWidth={1.5} />
                       Share to X
                     </DropdownMenuItem>
                     <DropdownMenuItem
@@ -1167,7 +1167,7 @@ function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfiles?: M
                       className="cursor-pointer"
                       data-testid={`button-share-facebook-${post.id}`}
                     >
-                      <ExternalLink className="w-4 h-4 mr-2" />
+                      <ExternalLink className="w-4 h-4 mr-2" strokeWidth={1.5} />
                       Share to Facebook
                     </DropdownMenuItem>
                   </>
@@ -1244,7 +1244,7 @@ export default function Feed() {
                 data-testid="tab-tribe"
               >
                 <span className="flex items-center justify-center gap-1.5">
-                  <Lock className="w-3 h-3" />
+                  <Lock className="w-3 h-3" strokeWidth={1.5} />
                   Tribes
                 </span>
               </button>
@@ -1254,7 +1254,7 @@ export default function Feed() {
                 data-testid="tab-buddies"
               >
                 <span className="flex items-center justify-center gap-1.5">
-                  <Lock className="w-3 h-3" />
+                  <Lock className="w-3 h-3" strokeWidth={1.5} />
                   Buddies
                 </span>
               </button>
@@ -1268,7 +1268,7 @@ export default function Feed() {
                 data-testid="button-refresh-feed"
                 title="Refresh feed"
               >
-                <RefreshCw className={`w-4 h-4 ${isRefreshing || isLoading ? "animate-spin" : ""}`} />
+                <RefreshCw className={`w-4 h-4 ${isRefreshing || isLoading ? "animate-spin" : ""}`} strokeWidth={1.5} />
               </button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -1276,9 +1276,9 @@ export default function Feed() {
                     className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm transition-colors border ${activeTab === "explore" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
                     data-testid="tab-explore"
                   >
-                    <currentExploreOption.icon className="w-3.5 h-3.5" />
+                    <currentExploreOption.icon className="w-3.5 h-3.5" strokeWidth={1.5} />
                     {currentExploreOption.label}
-                    <ChevronDown className="w-3 h-3" />
+                    <ChevronDown className="w-3 h-3" strokeWidth={1.5} />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="center" className="w-48">
@@ -1292,7 +1292,7 @@ export default function Feed() {
                       className={`cursor-pointer ${exploreMode === option.value && activeTab === "explore" ? "bg-gray-50" : ""}`}
                       data-testid={`explore-option-${option.value}`}
                     >
-                      <option.icon className="w-4 h-4 mr-2 text-muted-foreground" />
+                      <option.icon className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} />
                       {option.label}
                     </DropdownMenuItem>
                   ))}
@@ -1307,7 +1307,7 @@ export default function Feed() {
                 data-testid="button-refresh-feed-mobile"
                 title="Refresh feed"
               >
-                <RefreshCw className={`w-4 h-4 ${isRefreshing || isLoading ? "animate-spin" : ""}`} />
+                <RefreshCw className={`w-4 h-4 ${isRefreshing || isLoading ? "animate-spin" : ""}`} strokeWidth={1.5} />
               </button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -1315,9 +1315,9 @@ export default function Feed() {
                     className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm transition-colors border ${activeTab === "explore" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
                     data-testid="tab-explore-mobile"
                   >
-                    <currentExploreOption.icon className="w-3.5 h-3.5" />
+                    <currentExploreOption.icon className="w-3.5 h-3.5" strokeWidth={1.5} />
                     {currentExploreOption.label}
-                    <ChevronDown className="w-3 h-3" />
+                    <ChevronDown className="w-3 h-3" strokeWidth={1.5} />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
@@ -1330,7 +1330,7 @@ export default function Feed() {
                       }}
                       className={`cursor-pointer ${exploreMode === option.value && activeTab === "explore" ? "bg-gray-50" : ""}`}
                     >
-                      <option.icon className="w-4 h-4 mr-2 text-muted-foreground" />
+                      <option.icon className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} />
                       {option.label}
                     </DropdownMenuItem>
                   ))}
@@ -1342,7 +1342,7 @@ export default function Feed() {
 
         {(activeTab === "tribe" || activeTab === "buddies") && (
           <div className="flex items-center gap-2 mt-4 mb-4 p-3 bg-gray-50 rounded-lg text-sm border border-gray-100">
-            <Lock className="w-4 h-4 text-muted-foreground shrink-0" />
+            <Lock className="w-4 h-4 text-muted-foreground shrink-0" strokeWidth={1.5} />
             <span className="text-muted-foreground">
               {activeTab === "tribe" 
                 ? "Tribe posts are private to the LaB community and never shared publicly."
@@ -1372,7 +1372,7 @@ export default function Feed() {
                   <span className="font-medium">
                     {newPostCount} new {newPostCount === 1 ? "post" : "posts"}
                   </span>
-                  <ArrowUp className="w-3.5 h-3.5" />
+                  <ArrowUp className="w-3.5 h-3.5" strokeWidth={1.5} />
                 </button>
               </div>
             )}
@@ -1403,7 +1403,7 @@ export default function Feed() {
               <Card className="p-4 hover:border-gray-300 transition-colors cursor-pointer border border-gray-100 shadow-none" data-testid="card-daily-practice-cta">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center">
-                    <Flame className="w-5 h-5 text-muted-foreground" />
+                    <Flame className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
                   </div>
                   <div>
                     <p className="text-sm" style={{ fontFamily: 'Marcellus, serif' }}>Daily LOVE Practice</p>
@@ -1415,7 +1415,7 @@ export default function Feed() {
 
             <Card className="p-4 border border-gray-100 shadow-none" data-testid="card-trending-topics">
               <h3 className="text-[11px] text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2" style={{ fontFamily: 'Marcellus, serif' }}>
-                <TrendingUp className="w-3.5 h-3.5" />
+                <TrendingUp className="w-3.5 h-3.5" strokeWidth={1.5} />
                 Trending on Nostr
               </h3>
               <div className="space-y-2.5">
@@ -1433,7 +1433,7 @@ export default function Feed() {
 
             <Card className="p-4 border border-gray-100 shadow-none" data-testid="card-community-info">
               <h3 className="text-[11px] text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2" style={{ fontFamily: 'Marcellus, serif' }}>
-                <Users className="w-3.5 h-3.5" />
+                <Users className="w-3.5 h-3.5" strokeWidth={1.5} />
                 11x LOVE LaB
               </h3>
               <p className="text-xs text-muted-foreground leading-relaxed">

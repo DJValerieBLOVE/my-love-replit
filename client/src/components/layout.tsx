@@ -17,7 +17,9 @@ import {
   FlaskConical,
   KeyRound,
   Menu,
-  X
+  X,
+  Bell,
+  Mail
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -58,10 +60,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const desktopNavLinks = [
     { icon: Home, label: "Home", href: "/" },
-    { icon: Flame, label: "Big Dreams", href: "/big-dreams", hasNotification: true },
-    { icon: FlaskConical, label: "Experiments", href: "/experiments", hasNotification: true },
-    { icon: Calendar, label: "Events", href: "/events", hasNotification: true },
-    { icon: Users, label: "Tribe", href: "/community", hasNotification: true },
+    { icon: Flame, label: "Big Dreams", href: "/big-dreams" },
+    { icon: FlaskConical, label: "Experiments", href: "/experiments" },
+    { icon: Calendar, label: "Events", href: "/events" },
+    { icon: Users, label: "Tribe", href: "/community" },
     { icon: KeyRound, label: "Vault", href: "/vault" },
     { icon: Heart, label: "Love Board", href: "/leaderboard" },
     { icon: Rss, label: "Feed", href: "/feed" },
@@ -70,10 +72,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const mobileNavLinks = [
     { icon: Home, label: "Home", href: "/" },
-    { icon: Flame, label: "Big Dreams", href: "/big-dreams", hasNotification: true },
-    { icon: FlaskConical, label: "Experiments", href: "/experiments", hasNotification: true },
-    { icon: Calendar, label: "Events", href: "/events", hasNotification: true },
-    { icon: Users, label: "Tribe", href: "/community", hasNotification: true },
+    { icon: Flame, label: "Big Dreams", href: "/big-dreams" },
+    { icon: FlaskConical, label: "Experiments", href: "/experiments" },
+    { icon: Calendar, label: "Events", href: "/events" },
+    { icon: Users, label: "Tribe", href: "/community" },
     { icon: KeyRound, label: "Vault", href: "/vault" },
     { icon: Heart, label: "Love Board", href: "/leaderboard" },
     { icon: Rss, label: "Feed", href: "/feed" },
@@ -120,8 +122,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
 
-          {/* RIGHT: Sats + Avatar */}
-          <div className="flex items-center gap-1 md:gap-4">
+          {/* RIGHT: Sats + Bell + Mail + Avatar */}
+          <div className="flex items-center gap-1 md:gap-3">
             {/* Desktop: Sats display */}
             <Link href="/wallet" className="hidden lg:block">
               <div className="flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-[#FFF5EB] to-[#FFFBEB] rounded-full border border-[#FBC88B] hover:border-[#F5A84D] transition-colors cursor-pointer" data-testid="sats-display">
@@ -139,6 +141,24 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </div>
               </div>
             </Link>
+
+            {/* Notification Bell */}
+            <button
+              className="flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-full text-muted-foreground hover:text-foreground hover:bg-[#F0E6FF] transition-colors"
+              aria-label="Notifications"
+              data-testid="button-notifications"
+            >
+              <Bell className="w-[18px] h-[18px]" strokeWidth={1.5} />
+            </button>
+
+            {/* Messages */}
+            <button
+              className="flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-full text-muted-foreground hover:text-foreground hover:bg-[#F0E6FF] transition-colors"
+              aria-label="Messages"
+              data-testid="button-messages"
+            >
+              <Mail className="w-[18px] h-[18px]" strokeWidth={1.5} />
+            </button>
 
             {isLoading ? (
               <div className="h-8 w-8 md:h-9 md:w-9 rounded-full bg-muted animate-pulse" />
@@ -164,38 +184,38 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <DropdownMenuSeparator />
                   <Link href="/profile">
                     <DropdownMenuItem className="cursor-pointer" data-testid="menu-item-profile">
-                      <User className="w-4 h-4 mr-2 text-muted-foreground" />
+                      <User className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} />
                       Profile
                     </DropdownMenuItem>
                   </Link>
                   <Link href="/wallet">
                     <DropdownMenuItem className="cursor-pointer" data-testid="menu-item-wallet">
-                      <Zap className="w-4 h-4 mr-2 text-muted-foreground" />
+                      <Zap className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} />
                       Wallet
                     </DropdownMenuItem>
                   </Link>
                   <DropdownMenuSeparator />
                   <Link href="/settings">
                     <DropdownMenuItem className="cursor-pointer" data-testid="menu-item-settings">
-                      <Settings className="w-4 h-4 mr-2 text-muted-foreground" />
+                      <Settings className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} />
                       Settings
                     </DropdownMenuItem>
                   </Link>
                   <Link href="/relays">
                     <DropdownMenuItem className="cursor-pointer" data-testid="menu-item-relays">
-                      <Radio className="w-4 h-4 mr-2 text-muted-foreground" />
+                      <Radio className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} />
                       Relays
                     </DropdownMenuItem>
                   </Link>
                   <Link href="/how-to-use">
                     <DropdownMenuItem className="cursor-pointer" data-testid="menu-item-how-to-use">
-                      <HelpCircle className="w-4 h-4 mr-2 text-muted-foreground" />
+                      <HelpCircle className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} />
                       How to Use
                     </DropdownMenuItem>
                   </Link>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={disconnect} className="text-red-600 focus:text-red-600 cursor-pointer" data-testid="menu-item-disconnect">
-                    <LogOut className="w-4 h-4 mr-2" />
+                    <LogOut className="w-4 h-4 mr-2" strokeWidth={1.5} />
                     Disconnect
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -228,23 +248,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             return (
               <Link key={item.href} href={item.href}>
                 <div className={cn(
-                  "flex items-center gap-3 px-4 py-1.5 rounded-lg transition-all duration-300 cursor-pointer group font-serif sidebar-menu text-base relative",
+                  "flex items-center gap-3 px-4 py-1.5 rounded-lg transition-all duration-200 cursor-pointer group font-serif sidebar-menu text-base",
                   isActive 
-                    ? "bg-[#F0E6FF] text-love-body shadow-md shadow-[#E6D9F5] border border-[#E6D9F5]" 
-                    : "text-muted-foreground hover:bg-[#F8F3FF] hover:text-love-body hover:shadow-sm hover:translate-x-1"
+                    ? "text-[#6600ff]" 
+                    : "text-muted-foreground hover:text-foreground hover:bg-[#F0E6FF]"
                 )}>
-                  <div className="relative">
-                    <item.icon 
-                      strokeWidth={1.5} 
-                      className={cn(
-                        "w-5 h-5 transition-transform group-hover:scale-110 relative z-10", 
-                        isActive && "text-love-body"
-                      )} 
-                    />
-                    {item.hasNotification && (
-                      <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-love-body rounded-full" data-testid={`notification-dot-${item.label.toLowerCase().replace(/\s+/g, '-')}`} />
-                    )}
-                  </div>
+                  <item.icon 
+                    strokeWidth={1.5} 
+                    className="w-5 h-5 transition-transform group-hover:scale-105"
+                  />
                   <span>{item.label}</span>
                 </div>
               </Link>
@@ -276,19 +288,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <Link href={item.href}>
                     <div
                       className={cn(
-                        "flex items-center gap-3 px-4 py-3 rounded-lg transition-all cursor-pointer relative",
+                        "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 cursor-pointer",
                         isActive
-                          ? "bg-[#F0E6FF] text-love-body"
-                          : "text-muted-foreground hover:bg-[#F0F0F0]"
+                          ? "text-[#6600ff]"
+                          : "text-muted-foreground hover:text-foreground hover:bg-[#F0E6FF]"
                       )}
                       data-testid={`nav-mobile-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                     >
-                      <div className="relative">
-                        <item.icon className="w-5 h-5" strokeWidth={1.5} />
-                        {item.hasNotification && (
-                          <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-love-body rounded-full" />
-                        )}
-                      </div>
+                      <item.icon className="w-5 h-5" strokeWidth={1.5} />
                       <span className="font-medium">{item.label}</span>
                     </div>
                   </Link>

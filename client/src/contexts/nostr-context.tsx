@@ -293,6 +293,8 @@ export function NostrProvider({ children }: { children: ReactNode }) {
       localStorage.setItem("nostr_pubkey", pubkey);
       localStorage.setItem("nostr_login_method", "extension");
       localStorage.setItem("nostr_user_id", user.id);
+      if (user.name) localStorage.setItem("nostr_name", user.name);
+      if (user.avatar) localStorage.setItem("nostr_picture", user.avatar);
       
       setProfile({
         npub,
@@ -362,6 +364,8 @@ export function NostrProvider({ children }: { children: ReactNode }) {
       localStorage.setItem("nostr_pubkey", pubkey);
       localStorage.setItem("nostr_login_method", "bunker");
       localStorage.setItem("nostr_user_id", user.id);
+      if (user.name) localStorage.setItem("nostr_name", user.name);
+      if (user.avatar) localStorage.setItem("nostr_picture", user.avatar);
       
       setProfile({
         npub,
@@ -407,6 +411,8 @@ export function NostrProvider({ children }: { children: ReactNode }) {
       localStorage.setItem("auth_token", result.token);
       localStorage.setItem("nostr_login_method", "email");
       if (result.user.id) localStorage.setItem("nostr_user_id", result.user.id);
+      if (result.user.name || result.user.username) localStorage.setItem("nostr_name", result.user.name || result.user.username);
+      if (result.user.avatar) localStorage.setItem("nostr_picture", result.user.avatar);
 
       setProfile({
         npub: result.user.nostrPubkey ? nip19.npubEncode(result.user.nostrPubkey) : "",
@@ -439,6 +445,8 @@ export function NostrProvider({ children }: { children: ReactNode }) {
       localStorage.setItem("auth_token", result.token);
       localStorage.setItem("nostr_login_method", "email");
       if (result.user.id) localStorage.setItem("nostr_user_id", result.user.id);
+      if (result.user.name || result.user.username) localStorage.setItem("nostr_name", result.user.name || result.user.username);
+      if (result.user.avatar) localStorage.setItem("nostr_picture", result.user.avatar);
 
       setProfile({
         npub: "",
