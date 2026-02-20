@@ -296,7 +296,7 @@ export default function Community() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="gap-1.5 text-xs text-muted-foreground hover:text-primary hover:bg-[#F0E6FF]"
+                              className="gap-1.5 text-xs text-muted-foreground hover:text-primary hover:bg-[#EBEBEB]"
                               onClick={() => prayMutation.mutate(prayer.id)}
                               data-testid={`button-pray-${prayer.id}`}
                             >
