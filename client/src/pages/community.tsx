@@ -187,14 +187,14 @@ export default function Community() {
         </div>
 
         {activeTab !== "prayer-requests" && (
-          <div className="flex gap-2 items-center mb-6">
+          <div className="flex gap-2 items-stretch mb-6">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 placeholder="Search tribes..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-white"
+                className="pl-10 bg-white h-10"
                 data-testid="input-search"
               />
             </div>
@@ -202,7 +202,8 @@ export default function Community() {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="appearance-none bg-white border border-gray-200 rounded-md px-3 py-2 pr-8 text-sm text-muted-foreground cursor-pointer hover:border-gray-400 transition-colors focus:outline-none focus:ring-1 focus:ring-[#6600ff]"
+                className="appearance-none bg-white border border-gray-200 rounded-md px-3 pr-8 text-sm text-[#2a2430] cursor-pointer hover:border-gray-400 transition-colors focus:outline-none focus:ring-1 focus:ring-[#6600ff] h-10"
+                style={{ fontFamily: "Marcellus, serif" }}
                 data-testid="select-tribe-category"
               >
                 {EXPERIMENT_CATEGORIES.map((cat) => (
@@ -215,7 +216,8 @@ export default function Community() {
               <select
                 value={selectedTag}
                 onChange={(e) => setSelectedTag(e.target.value)}
-                className="appearance-none bg-white border border-gray-200 rounded-md px-3 py-2 pr-8 text-sm text-muted-foreground cursor-pointer hover:border-gray-400 transition-colors focus:outline-none focus:ring-1 focus:ring-[#6600ff]"
+                className="appearance-none bg-white border border-gray-200 rounded-md px-3 pr-8 text-sm text-[#2a2430] cursor-pointer hover:border-gray-400 transition-colors focus:outline-none focus:ring-1 focus:ring-[#6600ff] h-10"
+                style={{ fontFamily: "Marcellus, serif" }}
                 data-testid="select-tribe-tag"
               >
                 <option value="all">All Tags</option>
