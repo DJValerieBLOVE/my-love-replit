@@ -33,6 +33,44 @@ export const CURRENT_USER = {
 // GOD/LOVE: #eb00a8 | Romance: #e60023 | Family: #ff6600 | Community: #ffdf00
 // Mission: #a2f005 | Money: #00d81c | Time: #00ccff | Environment: #0033ff
 // Body: #6600ff | Mind: #9900ff | Soul: #cc00ff
+export const EXPERIMENT_CATEGORIES = [
+  { id: "all", label: "All Categories" },
+  { id: "god-love", label: "GOD/LOVE" },
+  { id: "romance", label: "Romance" },
+  { id: "family", label: "Family" },
+  { id: "community", label: "Community" },
+  { id: "mission", label: "Mission" },
+  { id: "money", label: "Money" },
+  { id: "time", label: "Time" },
+  { id: "environment", label: "Environment" },
+  { id: "body", label: "Body" },
+  { id: "mind", label: "Mind" },
+  { id: "soul", label: "Soul" },
+];
+
+export const EXPERIMENT_TAGS = [
+  "Self-Paced",
+  "Live",
+  "Group",
+  "Solo",
+  "Quick Win",
+  "Short",
+  "Deep Dive",
+  "Confidence",
+  "Clarity",
+  "Healing",
+  "Abundance",
+  "Connection",
+  "Discipline",
+  "Creativity",
+  "Peace",
+  "Leadership",
+  "Gratitude",
+  "Freedom",
+  "Vitality",
+  "Focus",
+];
+
 export const LOVE_CODE_AREAS = [
   { id: "god-love", name: "GOD/LOVE", color: "bg-[#eb00a8]", hex: "#eb00a8", progress: 85, dream: "To feel universally connected and lead with unconditional love in every interaction.", value: "Daily Prayer", villain: "Ego", victory: "Peace" },
   { id: "romance", name: "Romance", color: "bg-[#e60023]", hex: "#e60023", progress: 60, dream: "To build a partnership based on deep trust, wild passion, and shared growth.", value: "Date Night", villain: "Busyness", victory: "Connection" },

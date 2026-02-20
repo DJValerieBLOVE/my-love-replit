@@ -2,7 +2,7 @@ import Layout from "@/components/layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { Search, Plus, FlaskConical, Loader2, Share2 } from "lucide-react";
+import { Search, Plus, FlaskConical, Loader2, Share2, ChevronDown, X } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { ShareConfirmationDialog } from "@/components/share-confirmation-dialog"
 import { useNostr } from "@/contexts/nostr-context";
 import { useQuery } from "@tanstack/react-query";
 import { getAllExperiments } from "@/lib/api";
+import { EXPERIMENT_CATEGORIES, EXPERIMENT_TAGS } from "@/lib/mock-data";
 import type { Experiment } from "@shared/schema";
 import { cn } from "@/lib/utils";
 
@@ -26,6 +27,8 @@ export default function Grow() {
   const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedTag, setSelectedTag] = useState("all");
   const [shareDialog, setShareDialog] = useState<{
     open: boolean;
     experiment: Experiment | null;
@@ -44,6 +47,19 @@ export default function Grow() {
       (exp.description?.toLowerCase().includes(searchQuery.toLowerCase()));
 
     if (!matchesSearch) return false;
+
+    if (selectedCategory !== "all") {
+      const catLabel = EXPERIMENT_CATEGORIES.find(c => c.id === selectedCategory)?.label || "";
+      const matchesCategory = exp.category?.toLowerCase() === selectedCategory.toLowerCase() ||
+        exp.category?.toLowerCase() === catLabel.toLowerCase() ||
+        exp.loveCodeArea === selectedCategory;
+      if (!matchesCategory) return false;
+    }
+
+    if (selectedTag !== "all") {
+      const expTags = (exp as any).tags as string[] | null;
+      if (!expTags || !expTags.includes(selectedTag)) return false;
+    }
 
     switch (activeTab) {
       case "in-progress":
@@ -64,24 +80,83 @@ export default function Grow() {
     }
   });
 
+  const hasActiveFilters = selectedCategory !== "all" || selectedTag !== "all";
+
   return (
     <Layout>
-      <div className="max-w-6xl mx-auto p-4 lg:p-8 space-y-6">
+      <div className="max-w-6xl mx-auto p-4 lg:p-8 space-y-4">
         <div>
           <h1 className="text-2xl font-serif text-muted-foreground" data-testid="text-page-title">Experiments</h1>
           <p className="text-muted-foreground">Skill-building adventures for personal growth</p>
         </div>
 
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            placeholder="Search experiments..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-white"
-            data-testid="input-search"
-          />
+        <div className="flex gap-2 items-center">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder="Search experiments..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 bg-white"
+              data-testid="input-search"
+            />
+          </div>
+          <div className="relative">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="appearance-none bg-white border border-gray-200 rounded-md px-3 py-2 pr-8 text-sm text-muted-foreground cursor-pointer hover:border-gray-400 transition-colors focus:outline-none focus:ring-1 focus:ring-[#6600ff]"
+              data-testid="select-category"
+            >
+              {EXPERIMENT_CATEGORIES.map((cat) => (
+                <option key={cat.id} value={cat.id}>{cat.label}</option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+          </div>
+          <div className="relative">
+            <select
+              value={selectedTag}
+              onChange={(e) => setSelectedTag(e.target.value)}
+              className="appearance-none bg-white border border-gray-200 rounded-md px-3 py-2 pr-8 text-sm text-muted-foreground cursor-pointer hover:border-gray-400 transition-colors focus:outline-none focus:ring-1 focus:ring-[#6600ff]"
+              data-testid="select-tag"
+            >
+              <option value="all">All Tags</option>
+              {EXPERIMENT_TAGS.map((tag) => (
+                <option key={tag} value={tag}>{tag}</option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+          </div>
         </div>
+
+        {hasActiveFilters && (
+          <div className="flex items-center gap-2 flex-wrap">
+            {selectedCategory !== "all" && (
+              <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md border border-gray-200 bg-white text-muted-foreground">
+                {EXPERIMENT_CATEGORIES.find(c => c.id === selectedCategory)?.label}
+                <button onClick={() => setSelectedCategory("all")} className="hover:text-foreground" data-testid="clear-category">
+                  <X className="w-3 h-3" />
+                </button>
+              </span>
+            )}
+            {selectedTag !== "all" && (
+              <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md border border-gray-200 bg-white text-muted-foreground">
+                {selectedTag}
+                <button onClick={() => setSelectedTag("all")} className="hover:text-foreground" data-testid="clear-tag">
+                  <X className="w-3 h-3" />
+                </button>
+              </span>
+            )}
+            <button
+              onClick={() => { setSelectedCategory("all"); setSelectedTag("all"); }}
+              className="text-xs text-muted-foreground hover:text-foreground underline"
+              data-testid="clear-all-filters"
+            >
+              Clear all
+            </button>
+          </div>
+        )}
 
         <div className="flex gap-1.5 flex-wrap items-center">
           {TABS.map((tab) => (
@@ -134,55 +209,55 @@ export default function Grow() {
             )}
           </Card>
         ) : (
-          <>
-            <p className="text-sm text-muted-foreground">
-              {filteredExperiments.length} experiment{filteredExperiments.length !== 1 ? "s" : ""}
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredExperiments.map((experiment) => (
-                <Link key={experiment.id} href={`/experiments/${experiment.id}`}>
-                  <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 group border-none shadow-sm bg-card cursor-pointer flex flex-col h-full rounded-xs" data-testid={`card-experiment-${experiment.id}`}>
-                    <div className="h-[2px] w-full bg-primary" />
-                    <div className="relative aspect-video overflow-hidden">
-                      {experiment.image ? (
-                        <img
-                          src={experiment.image}
-                          alt={experiment.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                          <FlaskConical className="w-16 h-16 text-white/50" />
-                        </div>
-                      )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredExperiments.map((experiment) => (
+              <Link key={experiment.id} href={`/experiments/${experiment.id}`}>
+                <Card className="overflow-hidden hover:shadow-md transition-all duration-300 group border-none shadow-sm bg-card cursor-pointer flex flex-col h-full rounded-xs" data-testid={`card-experiment-${experiment.id}`}>
+                  <div className="h-[2px] w-full bg-primary" />
+                  <div className="relative aspect-video overflow-hidden">
+                    {experiment.image ? (
+                      <img
+                        src={experiment.image}
+                        alt={experiment.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-[#F0E6FF] flex items-center justify-center">
+                        <FlaskConical className="w-16 h-16 text-muted-foreground" />
+                      </div>
+                    )}
+                  </div>
+                  <CardContent className="p-5 flex-1 flex flex-col">
+                    <div className="flex items-center gap-2 mb-2 flex-wrap">
+                      <span className="text-xs px-2.5 py-0.5 rounded-md border border-gray-200 bg-white text-muted-foreground" data-testid={`badge-category-${experiment.id}`}>
+                        {experiment.category}
+                      </span>
+                      {((experiment as any).tags as string[] | null)?.slice(0, 2).map((tag: string) => (
+                        <span key={tag} className="text-xs px-2.5 py-0.5 rounded-md border border-gray-200 bg-white text-muted-foreground" data-testid={`badge-tag-${experiment.id}`}>
+                          {tag}
+                        </span>
+                      ))}
+                      <span className="text-xs text-muted-foreground">
+                        {experiment.steps?.length || 0} step{(experiment.steps?.length || 0) !== 1 ? "s" : ""}
+                      </span>
                     </div>
-                    <CardContent className="p-5 flex-1 flex flex-col">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-xs px-2.5 py-0.5 rounded-md border border-gray-200 bg-white text-muted-foreground" data-testid={`badge-${experiment.id}`}>
-                          {experiment.category}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {experiment.steps?.length || 0} step{(experiment.steps?.length || 0) !== 1 ? "s" : ""}
-                        </span>
-                      </div>
-                      <h3 className="text-lg leading-tight mb-1 text-muted-foreground group-hover:text-primary transition-colors" data-testid={`text-experiment-${experiment.id}`}>
-                        {experiment.title}
-                      </h3>
-                      <p className="text-base text-muted-foreground mb-4" data-testid={`text-guide-${experiment.id}`}>
-                        with {experiment.guide}
-                      </p>
+                    <h3 className="text-lg leading-tight mb-1 text-muted-foreground group-hover:text-primary transition-colors" data-testid={`text-experiment-${experiment.id}`}>
+                      {experiment.title}
+                    </h3>
+                    <p className="text-base text-muted-foreground mb-4" data-testid={`text-guide-${experiment.id}`}>
+                      with {experiment.guide}
+                    </p>
 
-                      <div className="mt-auto">
-                        <Button className="w-full gap-2" data-testid={`button-experiment-${experiment.id}`}>
-                          <FlaskConical className="w-4 h-4" /> View Experiment
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
-            </div>
-          </>
+                    <div className="mt-auto">
+                      <Button className="w-full gap-2" data-testid={`button-experiment-${experiment.id}`}>
+                        <FlaskConical className="w-4 h-4" /> View Experiment
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
         )}
       </div>
 

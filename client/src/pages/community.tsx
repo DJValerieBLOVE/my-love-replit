@@ -1,7 +1,7 @@
 import Layout from "@/components/layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Users, Plus, Lock, Check, Heart, Search, Loader2, Zap, Flame, Trophy, FlaskConical, Award } from "lucide-react";
+import { ArrowRight, Users, Plus, Lock, Check, Heart, Search, Loader2, Zap, Flame, Trophy, FlaskConical, Award, ChevronDown, X } from "lucide-react";
 import CommunityCover from "@assets/generated_images/community_cover.png";
 import { Link, useLocation } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState } from "react";
 import { toast } from "sonner";
+import { EXPERIMENT_CATEGORIES, EXPERIMENT_TAGS } from "@/lib/mock-data";
 
 const TRIBE_TABS = [
   { id: "my-tribes", label: "My Tribes" },
@@ -25,6 +26,8 @@ export default function Community() {
   const { isConnected, profile } = useNostr();
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedTag, setSelectedTag] = useState("all");
   const [newPrayer, setNewPrayer] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [, setLocation] = useLocation();
@@ -87,6 +90,14 @@ export default function Community() {
         c.name.toLowerCase().includes(q) ||
         c.description.toLowerCase().includes(q)
       );
+    }
+
+    if (selectedCategory !== "all") {
+      filtered = filtered.filter((c: any) => c.category === selectedCategory);
+    }
+
+    if (selectedTag !== "all") {
+      filtered = filtered.filter((c: any) => c.tags && c.tags.includes(selectedTag));
     }
 
     return filtered;
@@ -173,8 +184,11 @@ export default function Community() {
             </Link>
           </div>
 
-          {activeTab !== "prayer-requests" && (
-            <div className="relative w-full md:w-64">
+        </div>
+
+        {activeTab !== "prayer-requests" && (
+          <div className="flex gap-2 items-center mb-6">
+            <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 placeholder="Search tribes..."
@@ -184,8 +198,35 @@ export default function Community() {
                 data-testid="input-search"
               />
             </div>
-          )}
-        </div>
+            <div className="relative">
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="appearance-none bg-white border border-gray-200 rounded-md px-3 py-2 pr-8 text-sm text-muted-foreground cursor-pointer hover:border-gray-400 transition-colors focus:outline-none focus:ring-1 focus:ring-[#6600ff]"
+                data-testid="select-tribe-category"
+              >
+                {EXPERIMENT_CATEGORIES.map((cat) => (
+                  <option key={cat.id} value={cat.id}>{cat.label}</option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+            </div>
+            <div className="relative">
+              <select
+                value={selectedTag}
+                onChange={(e) => setSelectedTag(e.target.value)}
+                className="appearance-none bg-white border border-gray-200 rounded-md px-3 py-2 pr-8 text-sm text-muted-foreground cursor-pointer hover:border-gray-400 transition-colors focus:outline-none focus:ring-1 focus:ring-[#6600ff]"
+                data-testid="select-tribe-tag"
+              >
+                <option value="all">All Tags</option>
+                {EXPERIMENT_TAGS.map((tag) => (
+                  <option key={tag} value={tag}>{tag}</option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+            </div>
+          </div>
+        )}
 
         <div className="flex gap-8 items-start">
           <div className="flex-1 min-w-0">
@@ -324,9 +365,23 @@ export default function Community() {
                           </div>
                         </CardHeader>
                         <CardContent className="flex flex-col flex-1">
-                          <p className="text-base text-muted-foreground mb-4 line-clamp-2">
+                          <p className="text-base text-muted-foreground mb-3 line-clamp-2">
                             {community.description}
                           </p>
+                          {(community.category || (community.tags && community.tags.length > 0)) && (
+                            <div className="flex items-center gap-1.5 mb-3 flex-wrap">
+                              {community.category && (
+                                <span className="text-xs px-2.5 py-0.5 rounded-md border border-gray-200 bg-white text-muted-foreground">
+                                  {EXPERIMENT_CATEGORIES.find(c => c.id === community.category)?.label || community.category}
+                                </span>
+                              )}
+                              {community.tags?.slice(0, 2).map((tag: string) => (
+                                <span key={tag} className="text-xs px-2.5 py-0.5 rounded-md border border-gray-200 bg-white text-muted-foreground">
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
                           <div className="flex items-center gap-1 text-xs text-muted-foreground mb-4">
                             <Users className="w-3 h-3" />
                             <span>{community.memberCount || 0} members</span>

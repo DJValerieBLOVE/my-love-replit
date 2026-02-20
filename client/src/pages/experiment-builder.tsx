@@ -14,32 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createExperiment, getAllCommunities } from "@/lib/api";
 import { MembershipGate } from "@/components/membership-gate";
-
-const LOVE_CODE_AREAS = [
-  { id: "god-love", label: "GOD / LOVE", color: "#eb00a8" },
-  { id: "romance", label: "Romance", color: "#e60023" },
-  { id: "family", label: "Family", color: "#ff6600" },
-  { id: "community", label: "Community", color: "#ffdf00" },
-  { id: "mission", label: "Mission", color: "#a2f005" },
-  { id: "money", label: "Money", color: "#00d81c" },
-  { id: "time", label: "Time", color: "#00ccff" },
-  { id: "environment", label: "Environment", color: "#0033ff" },
-  { id: "body", label: "Body", color: "#6600ff" },
-  { id: "mind", label: "Mind", color: "#9900ff" },
-  { id: "soul", label: "Soul", color: "#cc00ff" },
-];
-
-const CATEGORIES = [
-  "Wellness",
-  "Mindfulness",
-  "Relationships",
-  "Money",
-  "Business",
-  "Creativity",
-  "Spirituality",
-  "Health",
-  "Personal Growth",
-];
+import { EXPERIMENT_CATEGORIES, EXPERIMENT_TAGS, LOVE_CODE_AREAS } from "@/lib/mock-data";
 
 interface ExperimentStep {
   id: string;
@@ -60,6 +35,7 @@ export default function ExperimentBuilder() {
   const [image, setImage] = useState("");
   const [category, setCategory] = useState("");
   const [loveCodeArea, setLoveCodeArea] = useState<string>("");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [accessType, setAccessType] = useState("public");
   const [communityId, setCommunityId] = useState<string>("");
   const [price, setPrice] = useState(0);
@@ -166,6 +142,7 @@ export default function ExperimentBuilder() {
       image: image || undefined,
       category,
       loveCodeArea: loveCodeArea || undefined,
+      tags: selectedTags,
       steps: formattedSteps,
       accessType,
       communityId: accessType === "community" ? communityId : undefined,
@@ -277,8 +254,8 @@ export default function ExperimentBuilder() {
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent>
-                    {CATEGORIES.map((cat) => (
-                      <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                    {EXPERIMENT_CATEGORIES.filter(c => c.id !== "all").map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id}>{cat.label}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -294,14 +271,43 @@ export default function ExperimentBuilder() {
                     {LOVE_CODE_AREAS.map((area) => (
                       <SelectItem key={area.id} value={area.id}>
                         <span className="flex items-center gap-2">
-                          <span className="w-3 h-3 rounded-full" style={{ backgroundColor: area.color }} />
-                          {area.label}
+                          <span className="w-3 h-3 rounded-full" style={{ backgroundColor: area.hex }} />
+                          {area.name}
                         </span>
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Tags (select up to 5)</Label>
+              <div className="flex flex-wrap gap-2">
+                {EXPERIMENT_TAGS.map((tag) => {
+                  const isSelected = selectedTags.includes(tag);
+                  return (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => {
+                        if (isSelected) {
+                          setSelectedTags(selectedTags.filter(t => t !== tag));
+                        } else if (selectedTags.length < 5) {
+                          setSelectedTags([...selectedTags, tag]);
+                        }
+                      }}
+                      className={`text-xs px-2.5 py-1 rounded-md border transition-colors ${isSelected ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
+                      data-testid={`tag-${tag.toLowerCase().replace(/\s+/g, "-")}`}
+                    >
+                      {tag}
+                    </button>
+                  );
+                })}
+              </div>
+              {selectedTags.length > 0 && (
+                <p className="text-xs text-muted-foreground">{selectedTags.length}/5 tags selected</p>
+              )}
             </div>
           </CardContent>
         </Card>

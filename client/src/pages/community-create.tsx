@@ -13,6 +13,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createCommunity } from "@/lib/api";
 import { MembershipGate } from "@/components/membership-gate";
+import { EXPERIMENT_CATEGORIES, EXPERIMENT_TAGS } from "@/lib/mock-data";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function CommunityCreate() {
   const [, setLocation] = useLocation();
@@ -22,6 +24,8 @@ export default function CommunityCreate() {
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [accessType, setAccessType] = useState("public");
   const [price, setPrice] = useState(0);
   const [approvalQuestions, setApprovalQuestions] = useState<string[]>([]);
@@ -71,6 +75,8 @@ export default function CommunityCreate() {
     createMutation.mutate({
       name: name.trim(),
       description: description.trim(),
+      category: category || undefined,
+      tags: selectedTags,
       accessType,
       price: accessType === "paid" ? price : 0,
       approvalQuestions: accessType === "approval" ? approvalQuestions : [],
@@ -139,6 +145,49 @@ export default function CommunityCreate() {
                   data-testid="input-description"
                 />
               </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="category">Category</Label>
+                <Select value={category} onValueChange={setCategory}>
+                  <SelectTrigger id="category" data-testid="select-tribe-category">
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {EXPERIMENT_CATEGORIES.filter(c => c.id !== "all").map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id}>{cat.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Tags (select up to 5)</Label>
+                <div className="flex flex-wrap gap-2">
+                  {EXPERIMENT_TAGS.map((tag) => {
+                    const isSelected = selectedTags.includes(tag);
+                    return (
+                      <button
+                        key={tag}
+                        type="button"
+                        onClick={() => {
+                          if (isSelected) {
+                            setSelectedTags(selectedTags.filter(t => t !== tag));
+                          } else if (selectedTags.length < 5) {
+                            setSelectedTags([...selectedTags, tag]);
+                          }
+                        }}
+                        className={`text-xs px-2.5 py-1 rounded-md border transition-colors ${isSelected ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
+                        data-testid={`tag-tribe-${tag.toLowerCase().replace(/\s+/g, "-")}`}
+                      >
+                        {tag}
+                      </button>
+                    );
+                  })}
+                </div>
+                {selectedTags.length > 0 && (
+                  <p className="text-xs text-muted-foreground">{selectedTags.length}/5 tags selected</p>
+                )}
+              </div>
             </CardContent>
           </Card>
 
@@ -149,7 +198,7 @@ export default function CommunityCreate() {
             </CardHeader>
             <CardContent>
               <RadioGroup value={accessType} onValueChange={setAccessType} className="space-y-4">
-                <div className="flex items-start space-x-3 p-4 rounded-lg border hover:bg-muted/50 cursor-pointer" onClick={() => setAccessType("public")}>
+                <div className="flex items-start space-x-3 p-4 rounded-lg border hover:bg-[#F5F5F5] cursor-pointer" onClick={() => setAccessType("public")}>
                   <RadioGroupItem value="public" id="public" className="mt-1" />
                   <div className="flex-1">
                     <Label htmlFor="public" className="flex items-center gap-2 cursor-pointer">
@@ -160,7 +209,7 @@ export default function CommunityCreate() {
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-3 p-4 rounded-lg border hover:bg-muted/50 cursor-pointer" onClick={() => setAccessType("approval")}>
+                <div className="flex items-start space-x-3 p-4 rounded-lg border hover:bg-[#F5F5F5] cursor-pointer" onClick={() => setAccessType("approval")}>
                   <RadioGroupItem value="approval" id="approval" className="mt-1" />
                   <div className="flex-1">
                     <Label htmlFor="approval" className="flex items-center gap-2 cursor-pointer">
@@ -171,11 +220,11 @@ export default function CommunityCreate() {
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-3 p-4 rounded-lg border hover:bg-muted/50 cursor-pointer" onClick={() => setAccessType("paid")}>
+                <div className="flex items-start space-x-3 p-4 rounded-lg border hover:bg-[#F5F5F5] cursor-pointer" onClick={() => setAccessType("paid")}>
                   <RadioGroupItem value="paid" id="paid" className="mt-1" />
                   <div className="flex-1">
                     <Label htmlFor="paid" className="flex items-center gap-2 cursor-pointer">
-                      <Zap className="w-4 h-4 text-yellow-500" />
+                      <Zap className="w-4 h-4 text-muted-foreground" />
                       Paid
                     </Label>
                     <p className="text-sm text-muted-foreground mt-1">Members pay sats to join</p>

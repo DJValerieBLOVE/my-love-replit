@@ -175,19 +175,20 @@ export type AreaProgress = typeof areaProgress.$inferSelect;
 // Experiments (can be user-created or system)
 export const experiments = pgTable("experiments", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  creatorId: varchar("creator_id").references(() => users.id, { onDelete: "set null" }), // null = system experiment
+  creatorId: varchar("creator_id").references(() => users.id, { onDelete: "set null" }),
   title: text("title").notNull(),
   guide: text("guide").notNull(),
   description: text("description"),
   image: text("image"),
   category: text("category").notNull(),
-  loveCodeArea: text("love_code_area"), // god-love, romance, family, etc.
+  loveCodeArea: text("love_code_area"),
+  tags: text("tags").array().default([]),
   steps: jsonb("steps").$type<{ order: number; title: string; prompt: string; }[]>().default([]),
   totalDiscoveries: integer("total_discoveries").default(0).notNull(),
   isPublished: boolean("is_published").default(false).notNull(),
-  accessType: text("access_type").default("public").notNull(), // public, community, paid
-  communityId: varchar("community_id"), // If access_type is 'community'
-  price: integer("price").default(0).notNull(), // In sats
+  accessType: text("access_type").default("public").notNull(),
+  communityId: varchar("community_id"),
+  price: integer("price").default(0).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -478,8 +479,10 @@ export const communities = pgTable("communities", {
   description: text("description").notNull(),
   thumbnail: text("thumbnail"),
   coverImage: text("cover_image"),
-  accessType: text("access_type").default("public").notNull(), // public, approval, paid
-  price: integer("price").default(0).notNull(), // In sats, if access_type is 'paid'
+  category: text("category"),
+  tags: text("tags").array().default([]),
+  accessType: text("access_type").default("public").notNull(),
+  price: integer("price").default(0).notNull(),
   approvalQuestions: jsonb("approval_questions").$type<string[]>().default([]),
   memberCount: integer("member_count").default(0).notNull(),
   isActive: boolean("is_active").default(true).notNull(),
