@@ -1,8 +1,8 @@
 # PROJECT MANIFEST
 
-**Last Updated:** 2026-01-27
-**Current Phase:** Phase 3 - Feature Build-Out
-**Active Task:** Course System & Community Infrastructure Complete - Ready for Community UI
+**Last Updated:** 2026-02-20
+**Current Phase:** Phase 3 - Feature Build-Out + Design System Standardization
+**Active Task:** UI consistency standardization complete — Design System documented
 
 ---
 
@@ -10,10 +10,10 @@
 
 | Metric | Count |
 |--------|-------|
-| Total Features Specified | 35 |
-| Complete | 33 (94%) |
+| Total Features Specified | 37 |
+| Complete | 35 (95%) |
 | Partial | 0 (0%) |
-| Not Started | 2 (6%) |
+| Not Started | 2 (5%) |
 | Code Health Issues | 0 |
 
 ---
@@ -25,8 +25,49 @@
 3. **AI Magic Mentor COMPLETE** - Claude Haiku 4.5 via direct Anthropic SDK, three-tier access (free/paid/BYOK)
 4. **Lightning payments COMPLETE** - NWC integration for zaps and wallet, non-custodial user wallets
 5. **NIP-46 Bunker Login COMPLETE** - nsec.app integration for users without browser extensions
-6. **Course System COMPLETE** - Course creation, enrollment, progress tracking, comments with full API integration
+6. **Experiment System COMPLETE** - Experiment creation, discovery, 6-tab interface (In Progress, My Experiments, New, All, Suggested, Complete)
 7. **Community Infrastructure COMPLETE** - Schema and API for communities, memberships, roles, and approval workflows
+8. **Design System STANDARDIZED** - All tabs, buttons, search inputs, cards follow consistent patterns documented in replit.md
+9. **Big Dreams Dashboard REBUILT** - Primary daily hub with streak grid, practice CTA, experiment progress, events sidebar
+10. **Profile SIMPLIFIED** - Clean Primal-style, no gamification (no XP, levels, badges, rewards)
+
+---
+
+## DESIGN SYSTEM REFERENCE
+
+### Consistent Tab/Bubble Pattern (ALL Pages)
+```
+Active:   bg-foreground text-background border-foreground rounded-full
+Inactive: bg-white text-muted-foreground border-gray-200 hover:border-gray-400 rounded-full
+```
+Pages: Feed, Experiments, Events, Vault
+
+### Consistent Button Pattern
+```
+Primary:  bg-foreground text-background (dark #4D3D5C fill)
+Hover:    hover:bg-white hover:border-[#E5E5E5] hover:text-foreground
+Ghost:    hover:bg-[#F0E6FF]
+```
+
+### Consistent Search Pattern
+```
+bg-white, Search icon at left-3, pl-10 input
+```
+
+### Consistent Card Pattern
+```
+border-none shadow-sm bg-card rounded-xs hover:shadow-md
+16:9 images (aspect-video), thin purple top accent, title hover:text-primary
+```
+
+### Sidebar Nav Pattern
+```
+Default:  text-muted-foreground
+Active:   text-[#6600ff]
+Hover:    hover:text-[#6600ff] (text only, NO background)
+```
+
+See replit.md Design System section for complete documentation.
 
 ---
 
@@ -34,7 +75,7 @@
 
 | Source | Type | Status |
 |--------|------|--------|
-| `replit.md` | Primary spec | Current |
+| `replit.md` | Primary spec + Design System | Current (Feb 20, 2026) |
 | `shared/schema.ts` | Database schema | Current |
 | `server/routes.ts` | API documentation | Current |
 | `package.json` | Dependencies | Current |
@@ -43,51 +84,52 @@
 
 ## FEATURE MATRIX
 
-### COMPLETE (28 Features)
+### COMPLETE (35 Features)
 
 | Feature | Location | Confidence | Notes |
 |---------|----------|------------|-------|
-| Daily LOVE Practice Journaling | `/journal`, `client/src/pages/journal.tsx` | 100% | Full CRUD, 5 V's wizard, date-based entries |
-| Big Dreams (11 LOVE Code areas) | `/big-dreams`, `client/src/pages/big-dreams.tsx` | 100% | Area-based dreams, share to Nostr |
-| Home Dashboard | `/`, `client/src/pages/home.tsx` | 100% | 9-card flip dashboard |
-| Heart Dashboard Component | `client/src/components/dashboard/heart-dashboard.tsx` | 100% | Visual pillar layout |
-| Resources Page | `/resources`, `client/src/pages/resources.tsx` | 100% | Lab Notes, Toolbox, Music tabs |
-| Grow/Learning Page | `/grow`, `client/src/pages/grow.tsx` | 100% | Courses & Experiments tabs |
-| Experiment Detail | `/grow/:id`, `client/src/pages/experiment-detail.tsx` | 100% | Discovery notes, progress tracking |
-| Communities Page | `/community`, `client/src/pages/community.tsx` | 100% | Club listing |
-| Club Detail | `/community/:id`, `client/src/pages/club-detail.tsx` | 100% | Club posts, members |
-| Events Page | `/events`, `client/src/pages/events.tsx` | 100% | Calendar view, event cards |
-| Event Detail | `/events/:id`, `client/src/pages/event-detail.tsx` | 100% | Event info, registration |
-| Leaderboard | `/leaderboard`, `client/src/pages/leaderboard.tsx` | 100% | Sats ranking |
-| Feed Page | `/feed`, `client/src/pages/feed.tsx` | 100% | Posts with full action buttons |
-| Profile Completion | `client/src/components/profile-completion-dialog.tsx` | 100% | Email collection for trial |
-| Share to Nostr | `client/src/components/share-confirmation-dialog.tsx` | 100% | Compose & post to Nostr |
-| PostgreSQL Database | `shared/schema.ts`, 11 tables | 100% | Users, journals, dreams, experiments, etc. - VERIFIED PROVISIONED |
-| Express API Backend | `server/routes.ts`, 40+ endpoints | 100% | Full CRUD with auth middleware |
-| Notification Indicators | `client/src/components/layout.tsx` | 100% | Purple dots on nav items |
-| Post Composer with Media | `client/src/components/create-post.tsx` | 100% | Image, GIF, video upload support |
-| External Sharing | `client/src/components/feed-post.tsx` | 100% | Share to X, Facebook, copy link |
-| Mobile-Optimized Layout | `client/src/components/layout.tsx` | 100% | Compact header, icon-only bottom nav |
-| Social Post Actions | `client/src/components/feed-post.tsx` | 100% | Reply, Repost, Zap, Like, Bookmark, Share buttons |
-| Magic Mentor AI | `server/anthropic.ts`, `client/src/components/ai-buddy.tsx` | 100% | Claude Haiku 4.5, three-tier access, two-phase atomic transactions |
-| AI Usage Tracking | `shared/schema.ts`, `server/storage.ts` | 100% | ai_usage_logs table, token tracking per user |
-| Wallet Page | `/wallet`, `client/src/pages/wallet.tsx` | 100% | UI layout, ZBD gamertag input, balance display from real user data |
-| Lightning/NWC Integration | `client/src/lib/nwc.ts`, `client/src/pages/wallet.tsx` | 100% | Non-custodial user wallet connection, real balance, payments |
-| Zap Payments | `client/src/components/feed-post.tsx`, `client/src/lib/nwc.ts` | 100% | LNURL-pay, BOLT11 payment hash extraction, graceful fallback |
-| NIP-46 Bunker Login | `client/src/contexts/nostr-context.tsx`, `client/src/components/nostr-login-dialog.tsx` | 100% | nsec.app integration, bunker connection flow, session persistence |
-| Course System | `/grow/create`, `/grow/course/:id`, `client/src/pages/course-*.tsx` | 100% | Full CRUD, enrollment, progress tracking, LOVE Code categories |
-| Course Comments | `server/routes.ts`, `client/src/pages/course-detail.tsx` | 100% | Discussion section with full API integration |
-| Course Access Control | `server/routes.ts` enrollment routes | 100% | Public/community/paid validation on enrollment |
-| Community Schema | `shared/schema.ts` | 100% | Communities, memberships tables with access types |
-| Community API | `server/routes.ts`, `server/storage.ts` | 100% | Full CRUD, membership workflows, role-based access |
-| Experiment Schema Extension | `shared/schema.ts` | 100% | Steps/prompts, access types, community linking |
+| Daily LOVE Practice Journaling | `/daily-practice` | 100% | Full wizard, AM/PM, streak tracking |
+| Big Dreams Dashboard | `/big-dreams` | 100% | Primary daily hub, streak grid, 11 dreams editor |
+| Home Dashboard | `/` | 100% | Prosperity Pyramid flip cards |
+| Experiments Page | `/experiments` | 100% | 6 tabs, user-created experiments support |
+| Events Page | `/events` | 100% | 4 tabs, calendar sidebar, event cards |
+| Feed Page | `/feed` | 100% | 4 tabs, real Nostr data via Primal |
+| Vault Page | `/vault` | 100% | 6 tabs, personal content vault |
+| Communities Page | `/community` | 100% | Listing, create, detail, admin |
+| Club Detail | `/community/:id` | 100% | Club posts, members |
+| Event Detail | `/events/:id` | 100% | Event info, registration |
+| Love Board | `/leaderboard` | 100% | Rankings with real data |
+| Profile | `/profile/:id` | 100% | Primal-style, no gamification |
+| Creator Dashboard | `/creator` | 100% | Analytics for creators |
+| Settings | `/settings` | 100% | User preferences |
+| Wallet | `/wallet` | 100% | Lightning wallet with NWC |
+| Relays | `/relays` | 100% | Relay management |
+| Experiment Builder | `/experiment-builder` | 100% | Step builder with day assignments |
+| Course Builder | `/course-builder` | 100% | Legacy course creation |
+| Post Composer | Components | 100% | Image/GIF/video upload |
+| Share to Nostr | Components | 100% | Compose & post with privacy |
+| Social Post Actions | Components | 100% | Reply, Repost, Zap, Like, Bookmark, Share |
+| External Sharing | Components | 100% | X/Twitter, Facebook, copy link |
+| Profile Completion | Components | 100% | Email collection dialog |
+| PostgreSQL Database | `shared/schema.ts` | 100% | 15+ tables via Drizzle ORM |
+| Express API Backend | `server/routes.ts` | 100% | 40+ endpoints with auth middleware |
+| Magic Mentor AI | `server/anthropic.ts` | 100% | Claude Haiku 4.5, three-tier access |
+| AI Usage Tracking | Schema + API | 100% | Token tracking per user |
+| Lightning/NWC Integration | `client/src/lib/nwc.ts` | 100% | Non-custodial wallet connection |
+| Zap Payments | Components | 100% | LNURL-pay, BOLT11, graceful fallback |
+| NIP-46 Bunker Login | Contexts | 100% | nsec.app, session persistence |
+| Course System | Pages + API | 100% | Full CRUD, enrollment, progress |
+| Community Infrastructure | Schema + API | 100% | Memberships, roles, approval workflows |
+| Experiment Schema | `shared/schema.ts` | 100% | Steps, access types, creator linking |
+| StreakGrid Component | `client/src/components/streak-grid.tsx` | 100% | Reusable, used by Big Dreams + Vault |
+| Design System Standardization | All pages | 100% | Tabs, buttons, search, cards, nav consistent |
 
 ### NOT STARTED (2 Features)
 
-| Feature | Specified In | Priority | Dependencies |
-|---------|--------------|----------|--------------|
-| Community UI Pages | replit.md line 123 | HIGH | Schema/API complete, need frontend pages |
-| User Personalization | replit.md line 125 | MEDIUM | Spotify API, podcast RSS parser |
+| Feature | Priority | Dependencies |
+|---------|----------|--------------|
+| Bitcoin Rewards System | MEDIUM | NWC integration |
+| User Personalization | LOW | Spotify API, podcast RSS |
 
 ---
 
@@ -97,13 +139,15 @@
 
 | Issue | Location | Severity |
 |-------|----------|----------|
-| TODO: Admin check for experiments | `server/routes.ts:288` | LOW |
+| TODO: Admin check for experiments | `server/routes.ts` | LOW |
 
 ### Security Notes
 
-- All personal data routes protected by authMiddleware (checks x-nostr-pubkey header)
-- Course enrollment validates access type (paid/community) before allowing enrollment
-- Community posts require approved membership to access for non-public communities
+- All personal data routes protected by authMiddleware
+- Course enrollment validates access type before allowing enrollment
+- Community posts require approved membership for non-public communities
+- AI prompt injection protection via XML delimiters
+- Two-phase atomic transactions for AI usage
 
 ### Positive Notes
 
@@ -112,416 +156,8 @@
 - Auth middleware protects personal data
 - TypeScript types properly shared between client/server
 - Zod validation on all API inputs
-- Database fully provisioned with 12 tables (verified)
-- AI Magic Mentor uses two-phase atomic transactions for concurrency safety
-- AI prompt injection protection via XML delimiters
-- Three-tier AI access control (free/paid/BYOK) with row-level locks
-
----
-
-## PHASE STATUS
-
-| Phase | Name | Total Tasks | Completed | Status |
-|-------|------|-------------|-----------|--------|
-| 0 | Critical Blockers | 0 | 0 | Complete |
-| 1 | Infrastructure & Integrations | 5 | 5 | Complete |
-| 2 | Core Feature Completion | 5 | 5 | Complete |
-| 3 | Feature Build-Out | 5 | 3 | In Progress |
-| 4 | Admin & Operations | 2 | 0 | Not Started |
-| 5 | Hardening & Code Health | 3 | 0 | Not Started |
-| 6 | Testing & Documentation | 2 | 0 | Not Started |
-
----
-
-## PHASED TASK LIST
-
-### PHASE 0: CRITICAL BLOCKERS
-*None identified - app is functional for core features*
-
-### PHASE 1: INFRASTRUCTURE & INTEGRATIONS
-
-**[P1-01] AI Magic Mentor Integration** ✅ COMPLETE
-- Description: Set up direct Anthropic SDK for Magic Mentor AI with Claude Haiku 4.5
-- Audit Reference: replit.md AI Integration section
-- Files: `server/anthropic.ts`, `server/routes.ts`, `shared/schema.ts`, `client/src/components/ai-buddy.tsx`
-- Dependencies: None
-- Blocked By: None
-- Acceptance Criteria:
-  - [x] Anthropic SDK configured with ANTHROPIC_API_KEY from env
-  - [x] Claude Haiku 4.5 model hardcoded (NOT configurable)
-  - [x] Two-phase atomic transactions for concurrency safety
-  - [x] Three-tier access: Free (5 msg/day), Paid (token balance), BYOK
-  - [x] ai_usage_logs table for token tracking
-  - [x] XML delimiters for prompt injection protection
-- Effort: L (4-8hr)
-- Completed: Jan 2026
-
-**[P1-02] Lightning/NWC Integration Setup** ✅ COMPLETE
-- Description: Set up Nostr Wallet Connect for Lightning payments
-- Audit Reference: replit.md line 78 (Payments: Lightning WebLN/NWC)
-- Files: `client/src/lib/nwc.ts`, `client/src/pages/wallet.tsx`
-- Dependencies: None
-- Blocked By: None
-- Acceptance Criteria:
-  - [x] NWC connection can be established (user pastes their own connection string)
-  - [x] Balance can be read from connected wallet
-  - [x] Payment requests can be generated
-  - [x] LNURL-pay invoice fetching from Lightning addresses
-  - [x] Payment hash extraction from BOLT11 invoices
-- Effort: L (4-8hr)
-- Completed: Jan 2026
-
-**[P1-03] Add Missing API Endpoints for User Data** ✅ COMPLETE
-- Description: Create API endpoints needed before replacing mock data (user dreams, wallet balance)
-- Audit Reference: Code health - mock data dependency requires API readiness
-- Files: `server/routes.ts`, `client/src/lib/api.ts`
-- Dependencies: None
-- Blocked By: None
-- Acceptance Criteria:
-  - [x] GET /api/auth/me returns user's stats including sats, streak, level, walletBalance
-  - [x] GET /api/dreams returns user's dreams
-  - [x] API functions exist in api.ts for all user data
-- Effort: M (1-4hr)
-- Note: Endpoints already existed; enhanced NostrContext to load stats on login
-- Completed: Jan 2026
-
-**[P1-04] Replace Mock User Data with Real Data** ✅ COMPLETE
-- Description: Update components to use authenticated user data instead of mock-data.ts
-- Audit Reference: Code health - mock data dependency
-- Files: `client/src/components/ai-buddy.tsx`, `client/src/pages/wallet.tsx`, and 6+ others
-- Dependencies: P1-03 (API endpoints must exist first)
-- Blocked By: None
-- Acceptance Criteria:
-  - [x] AI Buddy uses real user name from NostrContext
-  - [x] Wallet uses real user balance from NostrContext/API
-  - [x] All CURRENT_USER references replaced with useNostr/API data
-- Effort: M (1-4hr)
-- Completed: Jan 2026
-
-**[P1-05] Database Seed Verification** ✅ COMPLETE
-- Description: Verify database is properly seeded with initial data
-- Audit Reference: Database verified provisioned with 11 tables
-- Files: `server/seed.ts`
-- Dependencies: None
-- Blocked By: None
-- Acceptance Criteria:
-  - [x] Seed data loads successfully for experiments, events, clubs
-  - [x] API routes return seeded data (verified via curl)
-- Effort: S (under 1hr)
-- Completed: Jan 2026
-
-### PHASE 2: CORE FEATURE COMPLETION
-
-**[P2-01] Magic Mentor AI Chat Backend** ✅ COMPLETE
-- Description: Build API endpoint that sends user messages to Anthropic Claude and returns AI responses
-- Audit Reference: Partial feature - Magic Mentor AI
-- Files: `server/routes.ts` (POST /api/ai/chat), `server/anthropic.ts`, `client/src/lib/api.ts`
-- Dependencies: P1-01
-- Blocked By: None
-- Acceptance Criteria:
-  - [x] POST /api/ai/chat endpoint accepts message and returns AI response
-  - [x] Two-phase atomic: reserve slot/tokens → AI call → finalize/rollback
-  - [x] User's journal entries/dreams/profile included in context
-  - [x] Row-level locks prevent concurrent usage violations
-- Effort: L (4-8hr)
-- Completed: Jan 2026
-
-**[P2-02] Magic Mentor Frontend Integration** ✅ COMPLETE
-- Description: Connect AI Buddy component to real AI backend
-- Audit Reference: Partial feature - Magic Mentor AI
-- Files: `client/src/components/ai-buddy.tsx`
-- Dependencies: P2-01, P1-03
-- Blocked By: None
-- Acceptance Criteria:
-  - [x] Send button triggers API call
-  - [x] AI responses display in chat
-  - [x] Loading state while waiting for response
-  - [x] Error handling for failed requests
-  - [x] Usage limit display for free tier
-- Effort: M (1-4hr)
-- Completed: Jan 2026
-
-**[P2-03] Zap Payment Integration** ✅ COMPLETE
-- Description: Connect zap buttons to real NWC payments
-- Audit Reference: Partial feature - Zap/Lightning UI
-- Files: `client/src/components/feed-post.tsx`, `client/src/lib/nwc.ts`
-- Dependencies: P1-02
-- Blocked By: None
-- Acceptance Criteria:
-  - [x] Zap button triggers NWC payment (when wallet connected & recipient has lud16)
-  - [x] Payment confirmation updates UI with Lightning toast
-  - [x] Failed payments show error
-  - [x] Graceful fallback to database-only recording if no wallet/lud16
-- Effort: M (1-4hr)
-- Completed: Jan 2026
-
-**[P2-04] Wallet Lightning Integration** ✅ COMPLETE
-- Description: Connect wallet page to real Lightning transactions via NWC
-- Audit Reference: Partial feature - Wallet Page
-- Files: `client/src/pages/wallet.tsx`, `client/src/lib/nwc.ts`
-- Dependencies: P1-02
-- Blocked By: None
-- Acceptance Criteria:
-  - [x] Balance reflects NWC wallet balance (real-time from connected wallet)
-  - [x] Connect wallet UI with NWC string input
-  - [x] Transaction history display
-- Effort: L (4-8hr)
-- Completed: Jan 2026
-
-**[P2-05] NIP-46 Bunker Login** ✅ COMPLETE
-- Description: Enable NIP-46 bunker login for maximum security
-- Audit Reference: Partial feature - NIP-46 Bunker Login
-- Files: `client/src/components/nostr-login-dialog.tsx`, `client/src/contexts/nostr-context.tsx`
-- Dependencies: None
-- Blocked By: None
-- Acceptance Criteria:
-  - [x] Bunker button enabled
-  - [x] Can connect via nsec.app or nsecBunker
-  - [x] Auth flow completes and persists
-  - [x] Create New Account option links to nsec.app
-- Effort: L (4-8hr)
-- Completed: Jan 2026
-
-### PHASE 3: FEATURE BUILD-OUT
-
-**[P3-01] Course System** ✅ COMPLETE
-- Description: Implement course creation, viewing, and enrollment with access controls
-- Audit Reference: replit.md - Multi-tenant architecture
-- Files: `shared/schema.ts`, `server/routes.ts`, `client/src/pages/course-builder.tsx`, `client/src/pages/course-detail.tsx`
-- Dependencies: Database schema
-- Blocked By: None
-- Acceptance Criteria:
-  - [x] Course builder page with lessons, LOVE Code category
-  - [x] Course detail page with progress tracking
-  - [x] Enrollment API with access type validation (paid/community/public)
-  - [x] Course comments with full API integration
-- Effort: XL (8hr+)
-- Completed: Jan 2026
-
-**[P3-02] Community Infrastructure** ✅ COMPLETE
-- Description: Implement community schema and API with membership management
-- Audit Reference: replit.md line 123 - Multi-tenant architecture
-- Files: `shared/schema.ts`, `server/routes.ts`, `server/storage.ts`
-- Dependencies: None
-- Blocked By: None
-- Acceptance Criteria:
-  - [x] Communities table with access types (public/approval/paid)
-  - [x] Memberships table with roles (admin/moderator/member)
-  - [x] Full CRUD API for communities
-  - [x] Membership workflows (join, approve, reject, ban)
-  - [x] Community posts with membership checks
-- Effort: L (4-8hr)
-- Completed: Jan 2026
-
-**[P3-03] Community UI Pages**
-- Description: Build frontend pages for community creation, management, and feeds
-- Audit Reference: replit.md line 123
-- Files: `client/src/pages/community-*.tsx`
-- Dependencies: P3-02 (API complete)
-- Blocked By: None
-- Acceptance Criteria:
-  - [ ] Community creation page with access type selector
-  - [ ] Community detail page with member list
-  - [ ] Admin tools for join request queue
-  - [ ] Community feed with post composer
-- Effort: L (4-8hr)
-
-**[P3-04] Bitcoin Rewards System**
-- Description: Award sats for completing journal entries, experiments, streaks
-- Audit Reference: replit.md line 124
-- Files: `server/routes.ts`, `shared/schema.ts` (reward tracking)
-- Dependencies: P1-02
-- Blocked By: Reward rules definition
-- Acceptance Criteria:
-  - [ ] Sats awarded for daily LOVE Practice
-  - [ ] Sats awarded for experiment completion
-  - [ ] Streak bonuses calculated
-- Effort: L (4-8hr)
-
-**[P3-05] Experiment Builder** ✅ COMPLETE (Schema only)
-- Description: Extended experiments table for user-created experiments
-- Audit Reference: replit.md - Multi-tenant architecture
-- Files: `shared/schema.ts`
-- Dependencies: None
-- Blocked By: None
-- Acceptance Criteria:
-  - [x] Steps/prompts jsonb field for experiment structure
-  - [x] Access type and community linking
-  - [x] Creator ID for user-created experiments
-- Effort: S (under 1hr)
-- Completed: Jan 2026
-- Note: UI builder page still pending
-
-### PHASE 4: ADMIN & OPERATIONS
-
-**[P4-01] Admin Role Check for Experiments**
-- Description: Add admin check for experiment creation
-- Audit Reference: TODO in server/routes.ts:288
-- Files: `server/routes.ts`, `server/auth.ts`
-- Dependencies: None
-- Blocked By: None
-- Acceptance Criteria:
-  - [ ] Only admin users can create experiments
-  - [ ] Admin check uses VITE_ADMIN_NPUB
-- Effort: S (under 1hr)
-
-**[P4-02] Admin Dashboard Enhancements**
-- Description: Enhance admin pages for content management
-- Audit Reference: Existing admin pages at /admin/onboarding, /admin/mentor
-- Files: `client/src/pages/admin/`
-- Dependencies: P4-01
-- Blocked By: None
-- Acceptance Criteria:
-  - [ ] Admin can manage experiments
-  - [ ] Admin can manage events
-  - [ ] Admin can view user stats
-- Effort: M (1-4hr)
-
-### PHASE 5: HARDENING & CODE HEALTH
-
-**[P5-01] Remove Mock Data Dependencies**
-- Description: Eliminate all mock-data.ts imports in production code
-- Audit Reference: Code health - mock data usage
-- Files: All files importing from mock-data.ts
-- Dependencies: P1-03
-- Blocked By: None
-- Acceptance Criteria:
-  - [ ] No components use CURRENT_USER
-  - [ ] All data comes from API or context
-- Effort: M (1-4hr)
-
-**[P5-02] Error Boundary Implementation**
-- Description: Add error boundaries to catch and display errors gracefully
-- Files: Create `client/src/components/error-boundary.tsx`, wrap routes
-- Dependencies: None
-- Blocked By: None
-- Acceptance Criteria:
-  - [ ] Errors don't crash entire app
-  - [ ] User sees friendly error message
-- Effort: S (under 1hr)
-
-**[P5-03] API Error Handling Improvements**
-- Description: Standardize error responses and add retry logic
-- Files: `client/src/lib/api.ts`, `client/src/lib/queryClient.ts`
-- Dependencies: None
-- Blocked By: None
-- Acceptance Criteria:
-  - [ ] Consistent error message format
-  - [ ] Failed requests retry appropriately
-- Effort: S (under 1hr)
-
-### PHASE 6: TESTING & DOCUMENTATION
-
-**[P6-01] E2E Test Suite**
-- Description: Create Playwright tests for critical user flows
-- Files: Create `tests/` directory
-- Dependencies: All core features complete
-- Blocked By: None
-- Acceptance Criteria:
-  - [ ] Login flow tested
-  - [ ] Journal entry creation tested
-  - [ ] Big Dreams flow tested
-- Effort: L (4-8hr)
-
-**[P6-02] API Documentation**
-- Description: Document all API endpoints
-- Files: Create `docs/api.md`
-- Dependencies: None
-- Blocked By: None
-- Acceptance Criteria:
-  - [ ] All endpoints documented
-  - [ ] Request/response schemas included
-- Effort: M (1-4hr)
-
----
-
-## COMPLETED TASKS
-
-### January 2026
-
-**[P1-01] AI Magic Mentor Integration** - Complete Anthropic SDK setup with Claude Haiku 4.5
-- Two-phase atomic transactions with row-level locks
-- Three-tier access control (free/paid/BYOK)
-- ai_usage_logs table for token tracking
-- XML delimiters for prompt injection protection
-
-**[P2-01] Magic Mentor AI Chat Backend** - POST /api/ai/chat endpoint
-- User context injection (profile, journal, dreams)
-- Token reservation before AI call
-- Graceful rollback on failure
-
-**[P2-02] Magic Mentor Frontend Integration** - AI Buddy component connected
-- Real-time chat interface
-- Loading states and error handling
-- Usage limit display
-
-**[P1-03] Add Missing API Endpoints** - User data endpoints ready
-
-**[P1-04] Replace Mock User Data** - Components use real authenticated data
-
-**[P1-05] Database Seed Verification** - All tables verified working
-
-**[P1-02] Lightning/NWC Integration** - Non-custodial wallet connection
-- User pastes their own NWC connection string
-- Real wallet balance display
-- LNURL-pay invoice fetching
-
-**[P2-03] Zap Payment Integration** - Real Lightning payments
-- Zap buttons trigger NWC payments when wallet connected
-- BOLT11 payment hash extraction for tracking
-- Graceful fallback to database recording
-
-**[P2-04] Wallet Lightning Integration** - Full wallet page
-- Connect/disconnect wallet UI
-- Real-time balance from connected wallet
-
-**[P2-05] NIP-46 Bunker Login** - nsec.app integration
-- Bunker button enabled with URL input
-- BunkerSigner via nostr-tools NIP-46 module
-- Session persistence for reconnection
-- Create New Account option for new users
-
-**[P3-01] Course System** - Full course creation and enrollment
-- CourseBuilder page with lessons, thumbnail, LOVE Code categories
-- CourseDetail page with progress tracking and lesson viewer
-- Enrollment API with paid/community/public access validation
-- Course comments with full discussion section
-
-**[P3-02] Community Infrastructure** - Schema and API complete
-- Communities table with access types (public/approval/paid)
-- Memberships table with roles and approval workflows
-- Community posts with membership-based access control
-- Join/approve/reject/ban workflows
-
-**[P3-05] Experiment Schema Extension** - User-created experiments ready
-- Steps/prompts jsonb field for structured experiments
-- Access type and community linking
-- Creator ID for user-created content
-
----
-
-## CURRENT FOCUS
-
-- **Active:** Course System & Community Infrastructure Complete - Ready for Community UI Pages
-- **Started:** 2026-01-27
-- **Notes:** Course creation, enrollment, and comments fully implemented. Community schema and API complete with membership workflows. Next: Build community UI pages (creation, feeds, admin tools).
-
----
-
-## BLOCKED ITEMS
-
-| Task | Blocker | What's Needed |
-|------|---------|---------------|
-| None | - | All blockers resolved |
-
----
-
-## UP NEXT QUEUE
-
-1. [P3-03] Community UI Pages (creation, feeds, admin tools)
-2. [P3-04] Bitcoin Rewards System
-3. Experiment Builder UI Page
-4. Creator Dashboard (view courses, enrollees, analytics)
+- Consistent Design System documented and enforced
+- All tabs/buttons/search/cards follow standardized patterns
 
 ---
 
@@ -529,109 +165,32 @@
 
 | Date | Decision | Rationale |
 |------|----------|-----------|
+| 2026-02-20 | All page tabs use rounded-full pill buttons (not shadcn Tabs) | Visual consistency across all pages |
+| 2026-02-20 | Sidebar nav: purple text only, no background highlight | Cleaner, more modern look matching user preference |
+| 2026-02-20 | Search inputs always bg-white | Consistent with card backgrounds, not page background |
+| 2026-02-20 | "Experiments" only term, no "Courses" tab | User preference, single terminology |
+| 2026-02-20 | Dark button color is #4D3D5C (foreground) | Deep Muted Purple, not black |
+| 2026-02-19 | No gamification on Profile page | User wants clean Primal-style profile |
+| 2026-02-19 | Big Dreams is primary daily hub | Central entry point for daily practice, streaks, dreams |
+| 2026-02-19 | Daily Practice hidden from nav | Only accessible from Big Dreams CTA button |
+| 2026-01-27 | Course access validation on enrollment | Validate paid/community access before enrollment |
 | 2026-01-26 | Use direct Anthropic SDK instead of OpenRouter | Better control, simpler setup, BYOK support |
 | 2026-01-26 | Hardcode Claude Haiku 4.5 model | Per spec, fastest model, no user override |
 | 2026-01-26 | Two-phase atomic transactions for AI usage | Prevents race conditions and wasted API costs |
-| 2026-01-26 | Token reservation before AI call | Paid tier reserves tokens upfront, refunds on failure |
-| 2026-01-26 | XML delimiters in AI prompts | Defense against prompt injection attacks |
 | 2026-01-26 | Lightning integration via NWC over WebLN | NWC provides better cross-wallet compatibility |
-| 2026-01-26 | Non-custodial wallets (user provides NWC) | No app-wide wallet needed, users control their own funds |
-| 2026-01-26 | LNURL-pay for invoice generation | Standard protocol, works with any Lightning address |
-| 2026-01-26 | Graceful fallback for zaps | If no wallet/lud16, record in database only |
-| 2026-01-26 | NIP-46 via nostr-tools BunkerSigner | Built-in support in nostr-tools v2, no extra dependency |
-| 2026-01-26 | Store bunker session in localStorage | Ephemeral key is safe to store, user's nsec stays in bunker |
-| 2026-01-27 | Course access validation on enrollment | Validate paid/community access before allowing enrollment |
-| 2026-01-27 | Deduplicate lesson completions server-side | Prevent progress inflation from duplicate marks |
-| 2026-01-27 | Community membership with role-based access | Admin/moderator/member roles with proper authorization |
-| 2026-01-27 | Community posts require approved membership | Non-public community content protected by membership checks |
+| 2026-01-26 | Non-custodial wallets (user provides NWC) | Users control their own funds |
+| 2026-01-26 | NIP-46 via nostr-tools BunkerSigner | Built-in support, no extra dependency |
 
 ---
 
-## KNOWN ISSUES
+## UP NEXT QUEUE
 
-| Issue | Impact | Priority |
-|-------|--------|----------|
-| None currently | - | - |
-
----
-
-## CONTEXT NOTES
-
-- **Auth Pattern**: Nostr pubkey stored in localStorage, sent as x-nostr-pubkey header
-- **API Base**: All routes under /api/, server on port 5000
-- **Component Style**: shadcn/ui with Tailwind, purple gradient theme
-- **Database**: PostgreSQL via Neon, Drizzle ORM, schema in shared/schema.ts
-- **State**: TanStack Query for server state, React context for auth
-- **Mobile First**: Bottom nav with 6 icons, compact header
+1. Bitcoin Rewards System (sats for practice completion, streaks)
+2. User Personalization (Spotify, podcasts)
+3. Admin Dashboard enhancements
+4. Full 18-lesson curriculum content loading
+5. Two-path onboarding (Quick Start / Deep Dive)
 
 ---
 
-## PENDING SECRETS
-
-| Env Var | Service | Where Used | Status |
-|---------|---------|------------|--------|
-| ANTHROPIC_API_KEY | Anthropic AI | server/anthropic.ts | ✅ Set |
-| NWC_CONNECTION_STRING | Lightning Wallet | client/src/lib/nwc.ts (to create) | Not Set |
-| VITE_ADMIN_NPUB | Admin Access | client/src/contexts/nostr-context.tsx | Not Set |
-| FREE_TIER_DAILY_LIMIT | AI Usage | server/routes.ts | Optional (default: 5) |
-
----
-
-## DEPENDENCY GRAPH
-
-```
-Phase 1 (Infrastructure)
-├── P1-05 Database Seed Verify ─────┐
-│                                   │
-├── P1-03 API Endpoints ────────────┼──► P1-04 Replace Mock Data
-│                                   │
-├── P1-01 OpenRouter Setup ─────────┼──► Phase 2 (AI Features)
-│                                   │    ├── P2-01 AI Backend (needs P1-01)
-├── P1-02 NWC Setup ────────────────┼──► ├── P2-02 AI Frontend (needs P2-01)
-│                                   │    ├── P2-03 Zap Integration (needs P1-02)
-│                                   │    ├── P2-04 Wallet Transactions (needs P1-02)
-│                                   │    └── P2-05 NIP-46 Login (independent)
-│                                   │
-└───────────────────────────────────┘    Phase 3 (Build-Out)
-                                         ├── P3-01 Memberships (needs P2-03)
-                                         ├── P3-02 Rewards (needs P1-02)
-                                         ├── P3-03 Sharing Enforcement
-                                         └── P3-04 AI Memory (needs P2-01)
-```
-
----
-
-## PARALLEL OPPORTUNITIES
-
-These tasks can be worked simultaneously:
-- P1-01 + P1-02 + P1-05 (all infrastructure setup, independent)
-- P1-03 can start parallel with P1-01/P1-02 (API endpoints independent of external integrations)
-- P2-01 + P2-05 (AI backend and NIP-46 login are independent)
-- P3-03 Club Sharing can run parallel with P3-01/P3-02 (no dependencies)
-- P5-01 + P5-02 + P5-03 (all hardening tasks independent)
-
-Note: P1-04 (Replace Mock Data) depends on P1-03 (API Endpoints) - must be sequential
-
----
-
-## ESTIMATED TIMELINE
-
-| Phase | Effort Hours | Cumulative |
-|-------|--------------|------------|
-| Phase 1 | 8-12 hrs | 8-12 hrs |
-| Phase 2 | 16-24 hrs | 24-36 hrs |
-| Phase 3 | 20-28 hrs | 44-64 hrs |
-| Phase 4 | 4-6 hrs | 48-70 hrs |
-| Phase 5 | 4-6 hrs | 52-76 hrs |
-| Phase 6 | 8-12 hrs | 60-88 hrs |
-
-**Total Estimated:** 60-88 hours of development work
-
----
-
-## RISK FLAGS
-
-| Task | Risk | Mitigation |
-|------|------|------------|
-| P3-03 AI Memory | Browser storage limits | Implement pruning strategy early |
-| P3-01 Community Memberships | Payment/subscription complexity | Start with simple one-time payments |
+**Peace, LOVE, & Warm Aloha**

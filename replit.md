@@ -8,25 +8,13 @@ My Masterpiece is a spiritual personal growth application designed to help users
 - Daily LOVE Practice is the MOST IMPORTANT feature (LOVE always capitalized)
 - Sparkles icon ONLY for Magic Mentor AI - no other usage
 - NO colored icons anywhere - all icons use muted-foreground color
-- Hover interactions use light purple (#F0E6FF), never blue
 - All colors solid hex, no opacity values
 - Privacy-first: entries default to private, optional sharing
 - Love Board is planned as a marketplace (help wanted, items for sale) for paid members - currently shows as leaderboard
+- NO gamification on Profile page (no XP, levels, badges, rewards)
+- "Experiments" is the ONLY term for learning content (not "courses") - buttons say "Start Experiment" / "View Experiment"
 
 ## System Architecture
-
-### Design Principles
-- **Font**: Marcellus font, weight 400 ONLY. Global CSS enforces `font-weight: 400 !important` on all elements.
-- **Color Scheme**: Primary brand color is Purple (#6600ff) for links, accents, and progress indicators ONLY. Action buttons use `bg-foreground` (dark charcoal), with hover state: white background and light gray border (#E5E5E5). Pink (#eb00a8) is exclusively for the GOD/LOVE dimension. All colors are solid hex values.
-- **Card Images**: All card images use a 16:9 aspect ratio (`aspect-video`).
-- **Tags/Badges**: All tags and badges use a light gray outline style (white background, `border-gray-200`, `text-muted-foreground`).
-- **Tabs/Bubbles**: Category tabs use a rounded-full pill/bubble style.
-- **Dropdowns**: Select triggers use `h-9 text-sm`. Items highlight with `bg-gray-50`.
-- **Terminology**: "Experiments" is the primary term for learning content, with buttons saying "Start Experiment" / "View Experiment".
-- **Visual Style**: Features a purple gradient aesthetic. Homepage is a "Prosperity Pyramid". Navigation includes a left sidebar (desktop) and top header. Cards use `rounded-xs` corners with flip animations. Ghost button hover uses light purple (#F5F3FF/foreground text).
-- **Feed Layout**: Three-column layout similar to social media feeds. Left (240px) and right (300px) sidebars are sticky.
-- **Mobile Design**: Compact header (56px), hamburger menu. Cards are taller (200px min), 4:3 aspect ratio. AI button is floating bottom-right.
-- **Privacy Architecture**: Three-tier privacy for data (encrypted tribe messages, private by default journals/AI conversations, shareable completions/feed posts). Dual-relay architecture using a private Railway Relay for LaB data and public relays for general Nostr data. Users can provide their own AI API key (BYOK).
 
 ### Core Frameworks & Curriculum
 - **The Prosperity Pyramid**: Organizes life into 11 Dimensions across 5 macro-categories.
@@ -34,39 +22,67 @@ My Masterpiece is a spiritual personal growth application designed to help users
 - **Daily LOVE Practice**: Structured morning (VIBE, VISION, VALUE, VILLAIN, VICTORY) and evening (CELEBRATIONS, LESSONS, BLESSINGS, DREAM VIBES) reflections.
 - **11x LOVE Code Curriculum**: An 18-lesson curriculum across 5 modules with sequential unlocking.
 
-### Technical Implementation
+### Technical Stack
 - **Frontend**: React 18, TypeScript, Wouter, TanStack React Query, Tailwind CSS v4, shadcn/ui, Framer Motion, Vite.
 - **Backend**: Node.js, Express, TypeScript, RESTful JSON APIs, Drizzle ORM, Neon serverless PostgreSQL.
 - **Data Storage**: Hybrid PostgreSQL for public/structured data and Nostr Private Relay for encrypted personal data (NIP-44 encrypted).
 - **AI Integration (Magic Mentor)**: Uses Claude Haiku 4.5 via Anthropic SDK, with system prompts including user profile, journal, and dreams. Supports three-tier access (Free, Paid, BYOK) and planned 4-layer AI memory.
 - **Authentication**: Dual system with Email/password (bcrypt, JWT, optional TOTP) and Nostr Login (NIP-07, NIP-46). Email users auto-generate client-side Nostr keypairs for NIP-44 encryption.
-- **Key Features Implemented**: Dual authentication, Prosperity Pyramid homepage, Big Dreams Dashboard, Journal, Daily LOVE Practice (with streak tracking), Experiments, Events, Community, Vault, Love Board, Feed (live Nostr events via NDK), User Profiles, Creator Dashboard, Settings, Wallet, Relays, Content creation tools, Social features (Nostr sharing, Post Actions).
-- **Big Dreams Dashboard**: The primary daily hub/dashboard page. Contains Daily LOVE Practice CTA at top, GitHub-style streak grid, experiment progress sidebar, upcoming events sidebar, and 11 Big Dreams editor with progress tracking. Daily Practice is NOT in the nav menu - accessed only from Big Dreams page.
-- **Daily LOVE Practice**: Full-page experience with morning wizard, evening reflection, summary, history, and streak counter, backed by PostgreSQL. Hidden from nav, accessible from Big Dreams dashboard.
-- **Profile Page**: Clean, Primal-style profile with avatar, display name, NIP-05, lightning address, about bio, buddy matching info, and published content. No gamification (no XP, levels, badges, rewards).
-- **StreakGrid Component**: Reusable GitHub-style contribution grid in `client/src/components/streak-grid.tsx`, used by both Big Dreams dashboard and Vault pages.
-- **Nostr Feed Integration**: Uses Primal Cache API for public feeds and NDK with private Railway relay for private feeds (Tribes, Buddies). Displays real Nostr data, handles post interactions as Nostr events, and parses inline images/videos.
-- **Profile Editing**: Allows editing name, buddy matching toggle, buddy description, and LaB interests.
-- **Membership Tiers**: Six tiers from Free to Creator BYOK.
-- **Design Patterns**: Monorepo structure (`client/`, `server/`, `shared/`), path aliases, centralized API client.
-- **Security**: Dual auth middleware (JWT, Nostr pubkey header), NIP-07/NIP-46 authentication, ownership checks, Nostr query filtering.
 
-### Key UI Components (Modified)
-- **Button**: Uses `bg-foreground` as default, `hover:bg-white` with `hover:border-[#E5E5E5]`.
-- **Badge**: `font-normal`, typically outline/light gray style.
-- **Select**: Trigger `h-9 text-sm`, items highlight with `bg-gray-50`.
-- **EventCard**: Vertical layout with 16:9 image on top.
-- **Experiments Page**: Tabs as rounded-full bubble buttons; cards use 16:9 images.
+### Design System (Style Guide)
+- **Typography**: Marcellus font, weight 400 ONLY everywhere. Global CSS enforces `font-weight: 400 !important`.
+- **Color Palette**:
+  - Background: `#FAFAFA`
+  - Foreground: `#4D3D5C` (Deep Muted Purple)
+  - Primary Brand: `#6600ff` (Purple - for links, accents, active nav)
+  - GOD/LOVE Dimension: `#eb00a8` (Pink - exclusively for GOD/LOVE)
+  - All colors must be solid hex values.
+- **Buttons**:
+  - Default/Primary: `bg-foreground text-background` (dark charcoal fill, white text). Hover: `hover:bg-white hover:border-[#E5E5E5] hover:text-foreground`.
+  - Ghost Button Hover: Light purple `hover:bg-[#F0E6FF]`.
+  - Never use blue for any button or hover state.
+- **Tabs / Pill Bubbles**: Consistent `rounded-full` shape with active state `bg-foreground text-background border-foreground` and inactive state `bg-white text-muted-foreground border-gray-200`. Used on Feed, Experiments, Events, Vault.
+- **Search Inputs**: Always `bg-white` with `Search` icon at `left-3` and `pl-10` for input.
+- **Cards**: `border-none shadow-sm bg-card rounded-xs` with `hover:shadow-md`. Images are 16:9 (`aspect-video`). Top accent is a thin purple line (`bg-primary`). Card titles turn purple on group hover. Dashed borders for placeholder cards.
+- **Tags / Badges**: Light gray outline style: `bg-white border border-gray-200 text-muted-foreground text-xs px-2.5 py-0.5 rounded-md`.
+- **Navigation**:
+  - Left Sidebar: White background, active/hover items use `text-[#6600ff]` (purple text only, no background highlight).
+  - Header: White background, sticky, `h-14 md:h-20`.
+  - Mobile: Hamburger menu, compact header.
+- **Icons**: ALL icons use `text-muted-foreground` color, except the Sparkles icon for Magic Mentor AI. Lucide React icons with `strokeWidth={1.5}`.
+
+### Key Pages & Features
+- **Home** (`/`): Prosperity Pyramid with flip card animations.
+- **Big Dreams** (`/big-dreams`): Primary daily hub/dashboard with Daily LOVE Practice CTA, streak grid, experiment progress, upcoming events, and 11 Big Dreams editor.
+- **Daily LOVE Practice** (`/daily-practice`): Full-page wizard, accessible only from Big Dreams dashboard.
+- **Experiments** (`/experiments`): 6 tabs for learning content.
+- **Events** (`/events`): 4 tabs with calendar and event cards.
+- **Feed** (`/feed`): 4 tabs for Nostr social feed.
+- **Vault** (`/vault`): 6 tabs for personal content.
+- **Tribe/Community** (`/community`): Community listing, creation, and management.
+- **Love Board** (`/leaderboard`): Rankings (planned marketplace).
+- **Profile** (`/profile/:id`): Clean Primal-style profile with no gamification.
+- **Creator Dashboard** (`/creator`): Analytics for content creators.
+- **Wallet** (`/wallet`): Lightning wallet with NWC integration.
+- **Security**: Dual auth middleware (JWT, Nostr pubkey), NIP-07/NIP-46, ownership checks, Nostr query filtering, AI prompt injection protection, atomic transactions for AI usage.
+
+### Privacy Architecture
+- Three-tier privacy: encrypted tribe messages, private-by-default journals/AI conversations, shareable completions/feed posts.
+- Dual-relay architecture: private Railway Relay for LaB data, public relays for general Nostr data.
+- Users can provide their own AI API key (BYOK).
 
 ## External Dependencies
 - **PostgreSQL**: Primary database (Neon serverless).
-- **Nostr Relays**: Private Railway Relay for LaB data, and public relays (e.g., `relay.primal.net`, `relay.damus.io`) for public Nostr data.
+- **Nostr Relays**: Private Railway Relay, public relays (e.g., `relay.primal.net`).
 - **Anthropic API**: Magic Mentor AI (Claude Haiku 4.5).
 - **OpenRouter API**: Alternative AI provider.
-- **Primal Cache API**: WebSocket service (`cache1.primal.net/v1`) for fast public Nostr feeds.
+- **Primal Cache API**: WebSocket service for fast public Nostr feeds.
 - **Alby / nos2x**: NIP-07 Nostr login.
 - **nsec.app**: NIP-46 Bunker Login.
-- **Tailwind CSS v4**: Styling.
+- **Tailwind CSS v4**: Styling framework.
 - **shadcn/ui**: UI component library.
 - **Framer Motion**: Animations.
 - **Vite**: Frontend build tool.
+- **Drizzle ORM**: Database queries and migrations.
+- **TanStack React Query**: Server state management.
+- **Wouter**: Client-side routing.
