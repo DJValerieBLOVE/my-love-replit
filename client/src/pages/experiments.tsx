@@ -144,7 +144,6 @@ export default function Grow() {
                   <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 group border-none shadow-sm bg-card cursor-pointer flex flex-col h-full rounded-xs" data-testid={`card-experiment-${experiment.id}`}>
                     <div className="h-[2px] w-full bg-primary" />
                     <div className="relative aspect-video overflow-hidden">
-                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors z-10" />
                       {experiment.image ? (
                         <img
                           src={experiment.image}
@@ -156,16 +155,16 @@ export default function Grow() {
                           <FlaskConical className="w-16 h-16 text-white/50" />
                         </div>
                       )}
-                      <span className="absolute top-3 right-3 z-20 text-xs px-2.5 py-0.5 rounded-md border border-gray-200 bg-white text-muted-foreground" data-testid={`badge-${experiment.id}`}>
-                        {experiment.category}
-                      </span>
-                      <div className="absolute bottom-3 left-3 z-20">
-                        <span className="text-xs text-white bg-black/50 px-2 py-1 rounded">
+                    </div>
+                    <CardContent className="p-5 flex-1 flex flex-col">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-xs px-2.5 py-0.5 rounded-md border border-gray-200 bg-white text-muted-foreground" data-testid={`badge-${experiment.id}`}>
+                          {experiment.category}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
                           {experiment.steps?.length || 0} step{(experiment.steps?.length || 0) !== 1 ? "s" : ""}
                         </span>
                       </div>
-                    </div>
-                    <CardContent className="p-5 flex-1 flex flex-col">
                       <h3 className="text-lg leading-tight mb-1 text-muted-foreground group-hover:text-primary transition-colors" data-testid={`text-experiment-${experiment.id}`}>
                         {experiment.title}
                       </h3>
