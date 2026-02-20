@@ -7,6 +7,20 @@ import {
 
 type StreakDay = { date: string; dayOfWeek: number; completion: number };
 
+const COMPLETION_COLORS: Record<number, string> = {
+  0: "#EEEEEE",
+  1: "#D9C2FF",
+  2: "#A366FF",
+  3: "#6600FF",
+};
+
+const COMPLETION_LABELS: Record<number, string> = {
+  0: "No check-in",
+  1: "Morning only ☀️",
+  2: "Evening only 🌙",
+  3: "Complete day ✨",
+};
+
 const generateYearStreakData = () => {
   const weeks: StreakDay[][] = [];
   const today = new Date();
@@ -41,6 +55,7 @@ const YEAR_STREAK_DATA = generateYearStreakData();
 
 export function StreakGrid({ currentStreak = 7, longestStreak = 30 }: { currentStreak?: number; longestStreak?: number }) {
   const totalDays = YEAR_STREAK_DATA.flat().filter(d => d.completion === 3).length;
+  const totalWeeks = YEAR_STREAK_DATA.length;
 
   const getMonthLabels = () => {
     const labels: { month: string; weekIndex: number }[] = [];
@@ -64,81 +79,89 @@ export function StreakGrid({ currentStreak = 7, longestStreak = 30 }: { currentS
     <div className="space-y-3" data-testid="streak-grid">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <Flame className="w-4 h-4 text-orange-500" />
+          <Flame className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
           <span className="text-lg font-normal" data-testid="text-current-streak">{currentStreak}</span>
           <span className="text-sm text-muted-foreground">day streak</span>
         </div>
         <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
           <span>Less</span>
           <div className="flex gap-0.5">
-            <div className="w-2.5 h-2.5 rounded-[2px] bg-gray-200" />
-            <div className="w-2.5 h-2.5 rounded-[2px] bg-purple-200" />
-            <div className="w-2.5 h-2.5 rounded-[2px] bg-purple-400" />
-            <div className="w-2.5 h-2.5 rounded-[2px] bg-purple-600" />
+            <div className="w-2.5 h-2.5 rounded-[2px]" style={{ backgroundColor: COMPLETION_COLORS[0] }} />
+            <div className="w-2.5 h-2.5 rounded-[2px]" style={{ backgroundColor: COMPLETION_COLORS[1] }} />
+            <div className="w-2.5 h-2.5 rounded-[2px]" style={{ backgroundColor: COMPLETION_COLORS[2] }} />
+            <div className="w-2.5 h-2.5 rounded-[2px]" style={{ backgroundColor: COMPLETION_COLORS[3] }} />
           </div>
           <span>More</span>
         </div>
       </div>
 
       <div className="overflow-x-auto">
-        <div className="min-w-[600px]">
-          <div className="flex text-[10px] text-muted-foreground mb-1 ml-6">
+        <div style={{ minWidth: '100%' }}>
+          <div className="relative h-4 ml-4">
             {monthLabels.map((label, i) => (
               <div
                 key={i}
-                className="absolute"
-                style={{ marginLeft: `${label.weekIndex * 11 + 24}px` }}
+                className="absolute text-[10px] text-muted-foreground whitespace-nowrap"
+                style={{ left: `${(label.weekIndex / totalWeeks) * 100}%` }}
               >
                 {label.month}
               </div>
             ))}
           </div>
-          <div className="h-3" />
 
-          <div className="flex gap-[2px]">
-            <div className="flex flex-col gap-[2px] text-[9px] text-muted-foreground pr-1">
-              <div className="h-[9px]"></div>
-              <div className="h-[9px] leading-[9px]">M</div>
-              <div className="h-[9px]"></div>
-              <div className="h-[9px] leading-[9px]">W</div>
-              <div className="h-[9px]"></div>
-              <div className="h-[9px] leading-[9px]">F</div>
-              <div className="h-[9px]"></div>
-            </div>
-
-            {YEAR_STREAK_DATA.map((week, weekIndex) => (
-              <div key={weekIndex} className="flex flex-col gap-[2px]">
-                {[0, 1, 2, 3, 4, 5, 6].map((dayOfWeek) => {
-                  const day = week.find(d => d.dayOfWeek === dayOfWeek);
-                  if (!day) return <div key={dayOfWeek} className="w-[9px] h-[9px]" />;
-
-                  const bgColor = day.completion === 0
-                    ? "bg-gray-100"
-                    : day.completion === 3
-                      ? "bg-purple-600"
-                      : day.completion === 2
-                        ? "bg-purple-400"
-                        : "bg-purple-200";
-
-                  return (
-                    <Tooltip key={dayOfWeek}>
-                      <TooltipTrigger asChild>
-                        <div className={`w-[9px] h-[9px] rounded-[2px] ${bgColor} cursor-pointer hover:ring-1 hover:ring-purple-400`} />
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="text-xs">
-                        <p className="font-normal">{new Date(day.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</p>
-                        <p className="text-muted-foreground">
-                          {day.completion === 0 && "No check-in"}
-                          {day.completion === 1 && "Morning only ☀️"}
-                          {day.completion === 2 && "Evening only 🌙"}
-                          {day.completion === 3 && "Complete day ✨"}
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  );
-                })}
+          <div
+            className="w-full"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: `14px repeat(${totalWeeks}, 1fr)`,
+              gridTemplateRows: 'repeat(7, 1fr)',
+              gap: '2px',
+            }}
+          >
+            {[0, 1, 2, 3, 4, 5, 6].map((dayOfWeek) => (
+              <div
+                key={`label-${dayOfWeek}`}
+                className="text-[9px] text-muted-foreground flex items-center justify-end pr-0.5"
+                style={{ gridColumn: 1, gridRow: dayOfWeek + 1 }}
+              >
+                {dayOfWeek === 1 ? 'M' : dayOfWeek === 3 ? 'W' : dayOfWeek === 5 ? 'F' : ''}
               </div>
             ))}
+
+            {YEAR_STREAK_DATA.map((week, weekIndex) =>
+              [0, 1, 2, 3, 4, 5, 6].map((dayOfWeek) => {
+                const day = week.find(d => d.dayOfWeek === dayOfWeek);
+                const gridStyle = {
+                  gridColumn: weekIndex + 2,
+                  gridRow: dayOfWeek + 1,
+                };
+
+                if (!day) {
+                  return <div key={`${weekIndex}-${dayOfWeek}`} style={gridStyle} />;
+                }
+
+                return (
+                  <Tooltip key={`${weekIndex}-${dayOfWeek}`}>
+                    <TooltipTrigger asChild>
+                      <div
+                        className="w-full rounded-[2px] cursor-pointer hover:ring-1 hover:ring-gray-400"
+                        style={{
+                          ...gridStyle,
+                          aspectRatio: '1',
+                          backgroundColor: COMPLETION_COLORS[day.completion] || COMPLETION_COLORS[0],
+                        }}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="text-xs">
+                      <p className="font-normal">{new Date(day.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</p>
+                      <p className="text-muted-foreground">
+                        {COMPLETION_LABELS[day.completion] || "No check-in"}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              })
+            )}
           </div>
         </div>
       </div>

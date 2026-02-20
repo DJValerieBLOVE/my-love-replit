@@ -15,7 +15,9 @@ My Masterpiece is a spiritual personal growth application designed to help users
 - Tribes tabs: My Tribes, New, All, Suggested, Prayer Requests + Create Tribe button
 - Love Board right sidebar has placeholder gamification: Top Zappers, Top Streaks, Progress & Completions
 - All Tribe content and Prayer Requests are PRIVATE (not shared to public Nostr)
+- Streak grid tracks Daily LOVE Practice completions: #EEEEEE (none), #D9C2FF (morning only), #A366FF (evening only), #6600FF (complete day)
 - NO gamification on Profile page (no XP, levels, badges, rewards)
+- **Planned: Tribe Badges** — Each tribe gets one special badge that members earn and give to each other as gratitude. Scarce by design (one badge per tribe that keeps moving). Tracks engagement: most posts, most comments. Future implementation.
 - "Experiments" is the ONLY term for learning content (not "courses") - buttons say "Start Experiment" / "View Experiment"
 
 ## System Architecture
