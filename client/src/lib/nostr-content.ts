@@ -1,3 +1,5 @@
+import { nip19 } from "nostr-tools";
+
 const IMAGE_REGEX = /https?:\/\/\S+\.(?:jpg|jpeg|png|gif|webp|svg|bmp)(?:\?\S*)?/gi;
 const VIDEO_REGEX = /https?:\/\/\S+\.(?:mp4|webm|mov|avi)(?:\?\S*)?/gi;
 const NOSTR_IMAGE_HOSTS = [
@@ -13,6 +15,7 @@ const NOSTR_IMAGE_HOSTS = [
 ];
 
 const GENERIC_URL_REGEX = /https?:\/\/\S+/gi;
+const NOSTR_MENTION_REGEX = /nostr:(npub1[a-z0-9]+|nprofile1[a-z0-9]+)/g;
 
 function isImageUrl(url: string): boolean {
   const lower = url.toLowerCase();
@@ -27,11 +30,31 @@ function isVideoUrl(url: string): boolean {
   return /\.(mp4|webm|mov|avi)(\?|$)/i.test(url.toLowerCase());
 }
 
+export type NostrMention = {
+  original: string;
+  pubkey: string;
+  displayName?: string;
+};
+
 export interface ParsedContent {
   text: string;
   images: string[];
   videos: string[];
   links: string[];
+  mentions: NostrMention[];
+}
+
+export function decodeMentionPubkey(bech32: string): string | null {
+  try {
+    const decoded = nip19.decode(bech32);
+    if (decoded.type === "npub") {
+      return decoded.data as string;
+    }
+    if (decoded.type === "nprofile") {
+      return (decoded.data as { pubkey: string }).pubkey;
+    }
+  } catch {}
+  return null;
 }
 
 export function parseNostrContent(content: string): ParsedContent {
@@ -51,6 +74,17 @@ export function parseNostrContent(content: string): ParsedContent {
     }
   }
 
+  const mentions: NostrMention[] = [];
+  let mentionMatch;
+  const mentionRegex = new RegExp(NOSTR_MENTION_REGEX.source, 'g');
+  while ((mentionMatch = mentionRegex.exec(content)) !== null) {
+    const bech32 = mentionMatch[1];
+    const pubkey = decodeMentionPubkey(bech32);
+    if (pubkey) {
+      mentions.push({ original: mentionMatch[0], pubkey });
+    }
+  }
+
   let text = content;
   for (const img of images) {
     text = text.replace(img, '').trim();
@@ -61,7 +95,31 @@ export function parseNostrContent(content: string): ParsedContent {
 
   text = text.replace(/\n{3,}/g, '\n\n').trim();
 
-  return { text, images, videos, links };
+  return { text, images, videos, links, mentions };
+}
+
+export function resolveContentMentions(
+  text: string,
+  mentions: NostrMention[],
+  profileLookup?: Map<string, { name?: string; display_name?: string }>
+): string {
+  let resolved = text;
+  for (const mention of mentions) {
+    let displayName = "";
+    if (profileLookup) {
+      const profile = profileLookup.get(mention.pubkey);
+      if (profile) {
+        displayName = profile.display_name || profile.name || "";
+      }
+    }
+    if (!displayName) {
+      displayName = mention.pubkey.slice(0, 8);
+    }
+    while (resolved.includes(mention.original)) {
+      resolved = resolved.replace(mention.original, `@${displayName}`);
+    }
+  }
+  return resolved;
 }
 
 export function truncateNpub(handle: string): string {

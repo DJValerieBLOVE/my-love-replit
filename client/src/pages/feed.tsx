@@ -29,8 +29,8 @@ import { useNostr } from "@/contexts/nostr-context";
 import { LAB_RELAY_URL, PUBLIC_RELAYS } from "@/lib/relays";
 import { NDKEvent } from "@nostr-dev-kit/ndk";
 import { Skeleton } from "@/components/ui/skeleton";
-import { parseNostrContent, truncateNpub } from "@/lib/nostr-content";
-import { fetchPrimalFeed, fetchPrimalUserFeed, type ExploreMode, type PrimalEvent, type PrimalProfile, type PrimalEventStats } from "@/lib/primal-cache";
+import { parseNostrContent, truncateNpub, resolveContentMentions } from "@/lib/nostr-content";
+import { fetchPrimalFeed, fetchPrimalUserFeed, type ExploreMode, type PrimalEvent, type PrimalProfile, type PrimalEventStats, type ZapReceipt } from "@/lib/primal-cache";
 
 type FeedPost = {
   id: string;
@@ -50,6 +50,7 @@ type FeedPost = {
   zaps: number;
   reposts: number;
   satszapped: number;
+  zapReceipts?: { pubkey: string; amount: number; name?: string; avatar?: string }[];
   source?: "nostr" | "community" | "learning";
   relaySource?: "private" | "public";
   community?: string;
@@ -84,10 +85,21 @@ function primalEventToFeedPost(
   profiles: Map<string, PrimalProfile>,
   currentPubkey?: string,
   relaySource: "private" | "public" = "public",
-  stats?: Map<string, PrimalEventStats>
+  stats?: Map<string, PrimalEventStats>,
+  zapReceipts?: Map<string, ZapReceipt[]>
 ): FeedPost {
   const profileData = profiles.get(event.pubkey);
   const eventStats = stats?.get(event.id);
+  const rawZaps = zapReceipts?.get(event.id) || [];
+  const resolvedZaps = rawZaps.map(zr => {
+    const zapperProfile = profiles.get(zr.zapperPubkey);
+    return {
+      pubkey: zr.zapperPubkey,
+      amount: zr.amount,
+      name: zapperProfile?.display_name || zapperProfile?.name || zr.zapperPubkey.slice(0, 8),
+      avatar: zapperProfile?.picture || "",
+    };
+  });
   return {
     id: event.id,
     eventId: event.id,
@@ -105,6 +117,7 @@ function primalEventToFeedPost(
     zaps: eventStats?.zaps || 0,
     reposts: eventStats?.reposts || 0,
     satszapped: eventStats?.zapAmount || 0,
+    zapReceipts: resolvedZaps.length > 0 ? resolvedZaps : undefined,
     source: "nostr",
     relaySource,
     isOwnPost: event.pubkey === currentPubkey,
@@ -121,6 +134,7 @@ function useNostrFeed(tab: FeedTab, exploreMode: ExploreMode) {
   const [pendingPosts, setPendingPosts] = useState<FeedPost[]>([]);
   const latestPostIdRef = useRef<string | null>(null);
   const profileCacheRef = useRef<Map<string, { name: string; handle: string; avatar: string; lud16?: string }>>(new Map());
+  const primalProfilesRef = useRef<Map<string, PrimalProfile>>(new Map());
 
   const fetchProfileForPubkey = useCallback(async (pubkey: string) => {
     if (profileCacheRef.current.has(pubkey)) {
@@ -166,8 +180,9 @@ function useNostrFeed(tab: FeedTab, exploreMode: ExploreMode) {
         try {
           const result = await fetchPrimalUserFeed(profile.pubkey, { limit: 50 });
           if (result.events.length > 0) {
+            result.profiles.forEach((v, k) => primalProfilesRef.current.set(k, v));
             const feedPosts = result.events.map(e =>
-              primalEventToFeedPost(e, result.profiles, profile?.pubkey, "public", result.stats)
+              primalEventToFeedPost(e, result.profiles, profile?.pubkey, "public", result.stats, result.zapReceipts)
             );
             setPosts(feedPosts);
             setIsLoading(false);
@@ -260,8 +275,9 @@ function useNostrFeed(tab: FeedTab, exploreMode: ExploreMode) {
       } else if (tab === "explore") {
         try {
           const result = await fetchPrimalFeed(exploreMode, { limit: 50 });
+          result.profiles.forEach((v, k) => primalProfilesRef.current.set(k, v));
           const feedPosts = result.events.map(e =>
-            primalEventToFeedPost(e, result.profiles, profile?.pubkey, "public", result.stats)
+            primalEventToFeedPost(e, result.profiles, profile?.pubkey, "public", result.stats, result.zapReceipts)
           );
           setPosts(feedPosts);
         } catch (err) {
@@ -306,7 +322,7 @@ function useNostrFeed(tab: FeedTab, exploreMode: ExploreMode) {
           const newEvents = result.events.filter(e => !currentIds.has(e.id) && !pendingIds.has(e.id));
           if (newEvents.length > 0) {
             const newFeedPosts = newEvents.map(e =>
-              primalEventToFeedPost(e, result!.profiles, profile?.pubkey, "public", result!.stats)
+              primalEventToFeedPost(e, result!.profiles, profile?.pubkey, "public", result!.stats, result!.zapReceipts)
             );
             setPendingPosts(prev => [...newFeedPosts, ...prev]);
             setNewPostCount(prev => prev + newEvents.length);
@@ -338,7 +354,7 @@ function useNostrFeed(tab: FeedTab, exploreMode: ExploreMode) {
     await fetchFeed();
   }, [fetchFeed]);
 
-  return { posts, isLoading, isRefreshing, refetch: manualRefresh, ndkConnected, newPostCount, showNewPosts };
+  return { posts, isLoading, isRefreshing, refetch: manualRefresh, ndkConnected, newPostCount, showNewPosts, primalProfiles: primalProfilesRef.current };
 }
 
 type MediaItem = {
@@ -532,7 +548,7 @@ function FeedLoadingSkeleton() {
   );
 }
 
-function PostCard({ post }: { post: FeedPost }) {
+function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfiles?: Map<string, PrimalProfile> }) {
   const [isLiked, setIsLiked] = useState(false);
   const [likes, setLikes] = useState(post.likes);
   const [isReposted, setIsReposted] = useState(false);
@@ -616,9 +632,10 @@ function PostCard({ post }: { post: FeedPost }) {
           </div>
           {(() => {
             const parsed = parseNostrContent(post.content);
+            const resolvedText = resolveContentMentions(parsed.text, parsed.mentions, primalProfiles);
             return (
               <>
-                <p className="text-sm mt-1 leading-relaxed whitespace-pre-wrap">{parsed.text}</p>
+                <p className="text-sm mt-1 leading-relaxed whitespace-pre-wrap">{resolvedText}</p>
                 {parsed.images.length > 0 && (
                   <div className={`mt-3 gap-2 ${parsed.images.length === 1 ? '' : 'grid grid-cols-2'}`}>
                     {parsed.images.map((img, i) => (
@@ -645,6 +662,23 @@ function PostCard({ post }: { post: FeedPost }) {
               </>
             );
           })()}
+          {post.zapReceipts && post.zapReceipts.length > 0 && (
+            <div className="flex items-center gap-2 mt-2.5 mb-1 flex-wrap" data-testid={`zap-receipts-${post.id}`}>
+              <Zap className="w-3 h-3 text-[#6600ff]" />
+              {post.zapReceipts.slice(0, 5).map((zr, i) => (
+                <div key={`${zr.pubkey}-${i}`} className="flex items-center gap-1 bg-[#F0E6FF] rounded-full px-1.5 py-0.5" data-testid={`zap-receipt-${post.id}-${i}`}>
+                  <Avatar className="w-4 h-4">
+                    {zr.avatar && <AvatarImage src={zr.avatar} />}
+                    <AvatarFallback className="text-[6px]">{(zr.name || "?").slice(0, 1).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                  <span className="text-[10px] text-[#6600ff] font-medium">{formatSats(zr.amount)}</span>
+                </div>
+              ))}
+              {post.zapReceipts.length > 5 && (
+                <span className="text-[10px] text-muted-foreground">+{post.zapReceipts.length - 5} more</span>
+              )}
+            </div>
+          )}
           <div className="flex items-center gap-4 mt-3 pt-2 border-t border-border">
             <button className="flex items-center gap-1.5 text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF] rounded-md px-2 py-1 transition-colors text-sm" data-testid={`button-reply-${post.id}`}>
               <MessageCircle className="w-4 h-4" />
@@ -844,7 +878,7 @@ const EXPLORE_OPTIONS: { value: ExploreMode; label: string; icon: typeof Trendin
 export default function Feed() {
   const [activeTab, setActiveTab] = useState<FeedTab>("following");
   const [exploreMode, setExploreMode] = useState<ExploreMode>("trending");
-  const { posts, isLoading, isRefreshing, refetch, ndkConnected, newPostCount, showNewPosts } = useNostrFeed(activeTab, exploreMode);
+  const { posts, isLoading, isRefreshing, refetch, ndkConnected, newPostCount, showNewPosts, primalProfiles } = useNostrFeed(activeTab, exploreMode);
 
   const currentExploreOption = EXPLORE_OPTIONS.find(o => o.value === exploreMode) || EXPLORE_OPTIONS[0];
 
@@ -972,7 +1006,7 @@ export default function Feed() {
               <FeedLoadingSkeleton />
             ) : posts.length > 0 ? (
               posts.map((post) => (
-                <PostCard key={post.id} post={post} />
+                <PostCard key={post.id} post={post} primalProfiles={primalProfiles} />
               ))
             ) : (
               <div className="text-center py-12 text-muted-foreground">

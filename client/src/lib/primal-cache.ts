@@ -31,10 +31,17 @@ type PrimalEventStats = {
   zapAmount: number;
 };
 
+type ZapReceipt = {
+  zapperPubkey: string;
+  amount: number;
+  eventId: string;
+};
+
 type PrimalFeedResult = {
   events: PrimalEvent[];
   profiles: Map<string, PrimalProfile>;
   stats: Map<string, PrimalEventStats>;
+  zapReceipts: Map<string, ZapReceipt[]>;
 };
 
 type ExploreMode = "trending" | "most_zapped" | "media" | "latest";
@@ -43,10 +50,26 @@ function generateSubId(): string {
   return Math.random().toString(36).substring(2, 14);
 }
 
+function extractBolt11Amount(bolt11: string): number {
+  const match = bolt11.match(/ln(?:bc|tb|tbs)(\d+)([munp]?)/i);
+  if (!match) return 0;
+  const num = parseInt(match[1], 10);
+  const unit = match[2]?.toLowerCase() || '';
+  switch (unit) {
+    case '': return num * 100_000_000;
+    case 'm': return num * 100_000;
+    case 'u': return num * 100;
+    case 'n': return Math.round(num * 0.1);
+    case 'p': return Math.round(num * 0.0001);
+    default: return 0;
+  }
+}
+
 function parsePrimalResponse(messages: any[]): PrimalFeedResult {
   const events: PrimalEvent[] = [];
   const profiles = new Map<string, PrimalProfile>();
   const stats = new Map<string, PrimalEventStats>();
+  const zapReceipts = new Map<string, ZapReceipt[]>();
 
   for (const msg of messages) {
     if (!Array.isArray(msg)) continue;
@@ -68,6 +91,40 @@ function parsePrimalResponse(messages: any[]): PrimalFeedResult {
         } catch {}
       } else if (eventData.kind === 1) {
         events.push(eventData);
+      } else if (eventData.kind === 9735) {
+        try {
+          const eTags = eventData.tags?.filter((t: string[]) => t[0] === "e");
+          const descTag = eventData.tags?.find((t: string[]) => t[0] === "description");
+          const bolt11Tag = eventData.tags?.find((t: string[]) => t[0] === "bolt11");
+
+          if (eTags?.length > 0 && descTag) {
+            const zapRequest = JSON.parse(descTag[1]);
+            const zapperPubkey = zapRequest.pubkey;
+            let amount = 0;
+
+            if (bolt11Tag) {
+              amount = extractBolt11Amount(bolt11Tag[1]);
+            }
+            if (amount === 0) {
+              const amountTag = zapRequest.tags?.find((t: string[]) => t[0] === "amount");
+              if (amountTag) {
+                amount = Math.round(parseInt(amountTag[1], 10) / 1000);
+              }
+            }
+
+            for (const eTag of eTags) {
+              const eventId = eTag[1];
+              if (!zapReceipts.has(eventId)) {
+                zapReceipts.set(eventId, []);
+              }
+              const existing = zapReceipts.get(eventId)!;
+              const isDupe = existing.some(r => r.zapperPubkey === zapperPubkey && r.amount === amount);
+              if (!isDupe) {
+                existing.push({ zapperPubkey, amount, eventId });
+              }
+            }
+          }
+        } catch {}
       } else if (eventData.kind === 10000100 || eventData.kind === 10000174) {
         try {
           const parsed = JSON.parse(eventData.content);
@@ -103,7 +160,7 @@ function parsePrimalResponse(messages: any[]): PrimalFeedResult {
   }
 
   events.sort((a, b) => b.created_at - a.created_at);
-  return { events, profiles, stats };
+  return { events, profiles, stats, zapReceipts };
 }
 
 function buildPrimalWebSocket(): Promise<{ ws: WebSocket; messages: any[]; waitForEose: () => Promise<any[]> }> {
@@ -195,7 +252,7 @@ export async function fetchPrimalFeed(
     return parsePrimalResponse(messages);
   } catch (err) {
     console.error("[PrimalCache] Error:", err);
-    return { events: [], profiles: new Map(), stats: new Map() };
+    return { events: [], profiles: new Map(), stats: new Map(), zapReceipts: new Map() };
   }
 }
 
@@ -226,8 +283,8 @@ export async function fetchPrimalUserFeed(
     return parsePrimalResponse(messages);
   } catch (err) {
     console.error("[PrimalCache] User feed error:", err);
-    return { events: [], profiles: new Map(), stats: new Map() };
+    return { events: [], profiles: new Map(), stats: new Map(), zapReceipts: new Map() };
   }
 }
 
-export type { PrimalEvent, PrimalProfile, PrimalEventStats, PrimalFeedResult, ExploreMode };
+export type { PrimalEvent, PrimalProfile, PrimalEventStats, PrimalFeedResult, ExploreMode, ZapReceipt };
