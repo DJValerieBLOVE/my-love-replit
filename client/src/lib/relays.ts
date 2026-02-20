@@ -3,7 +3,8 @@ const LAB_RELAY_URL = 'wss://nostr-rs-relay-production-1569.up.railway.app';
 const PUBLIC_RELAYS = [
   'wss://relay.primal.net',
   'wss://relay.damus.io',
-  'wss://relay.ditto.pub',
+  'wss://nos.lol',
+  'wss://relay.nostr.band',
 ];
 
 const ADMIN_PUBKEY = '3d70ec1ea586650a0474d6858454209d222158f4079e8db806f017ef5e30e767';
