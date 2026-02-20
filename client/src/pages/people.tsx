@@ -967,8 +967,8 @@ export default function People() {
   return (
     <Layout>
       <div className="p-4 lg:p-6">
-        <div className="flex gap-6 max-w-[1100px] mx-auto">
-          <div className="flex-1 min-w-0 max-w-[720px]">
+        <div className="flex gap-6 max-w-[1024px] mx-auto">
+          <div className="flex-1 min-w-0">
             <div className="mb-2">
               <h1 className="text-2xl font-serif" data-testid="text-people-title">People</h1>
             </div>
@@ -978,7 +978,7 @@ export default function People() {
         </div>
 
         <div className="sticky top-14 md:top-20 z-[30] -mx-4 lg:-mx-6 px-4 lg:px-6 py-3 bg-[#FAFAFA] border-b border-gray-200">
-          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide max-w-[1100px] mx-auto">
+          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide max-w-[1024px] mx-auto">
             <TabDropdownBubble
               label="My Feed"
               icon={Globe}
@@ -1059,8 +1059,8 @@ export default function People() {
           </div>
         </div>
 
-        <div className="flex gap-6 mt-4 max-w-[1100px] mx-auto">
-          <div className="flex-1 min-w-0 max-w-[720px]">
+        <div className="flex gap-6 mt-4 max-w-[1024px] mx-auto">
+          <div className="flex-1 min-w-0">
             {activeTab === "feed" && <FeedTabContent subOption={feedSub} />}
             {activeTab === "tribes" && <TribesTabContent selectedTribeId={selectedTribeId} />}
             {activeTab === "buddies" && <BuddiesTabContent />}
