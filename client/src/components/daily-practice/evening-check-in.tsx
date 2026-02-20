@@ -115,7 +115,7 @@ export function EveningCheckIn({ morningData, onComplete }: EveningCheckInProps)
 
            <Button 
              size="lg" 
-             className="w-full bg-[#6600ff] hover:bg-[#5500dd] text-white font-bold py-8 text-xl rounded-2xl shadow-[0_10px_30px_rgba(102,0,255,0.3)] hover:shadow-[0_15px_40px_rgba(102,0,255,0.4)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+             className="w-full bg-foreground hover:bg-foreground/90 text-background font-bold py-8 text-xl rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
              onClick={handleComplete}
            >
              <Sparkles className="w-6 h-6 mr-2" strokeWidth={2} /> Complete Day & Save

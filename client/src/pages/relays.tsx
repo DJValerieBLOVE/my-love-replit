@@ -114,7 +114,7 @@ export default function RelaysPage() {
             </div>
             <Badge
               variant={connectedCount > 0 ? "default" : "destructive"}
-              className={connectedCount > 0 ? "bg-[#6600ff] hover:bg-[#5500dd]" : ""}
+              className={connectedCount > 0 ? "bg-foreground hover:bg-foreground/90" : ""}
               data-testid="badge-connection-status"
             >
               {connectedCount > 0 ? "Online" : "Offline"}
@@ -141,7 +141,7 @@ export default function RelaysPage() {
                 />
                 <Button
                   onClick={handleAddRelay}
-                  className="bg-[#6600ff] hover:bg-[#5500dd]"
+                  className=""
                   data-testid="button-add-relay"
                 >
                   Add

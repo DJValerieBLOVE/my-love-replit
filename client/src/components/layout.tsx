@@ -85,7 +85,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <ThemeCustomizer />
       
       {/* Top Navigation Bar */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl px-3 md:px-4 h-14 md:h-20 flex items-center justify-between">
+      <header className="sticky top-0 z-50 w-full border-b px-3 md:px-4 h-14 md:h-20 flex items-center justify-between" style={{ backgroundColor: '#ffffff' }}>
           {/* LEFT: Hamburger menu on mobile, Logo+Text on desktop */}
           <div className="flex items-center gap-2 md:gap-4">
             {/* Mobile: Hamburger menu button */}
@@ -222,7 +222,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       <div className="flex-1 flex">
         {/* Left Sidebar (Navigation) - Desktop only, sticky */}
-        <aside className="hidden lg:flex flex-col w-[240px] shrink-0 border-r bg-card/50 p-4 gap-2 sticky top-14 md:top-20 self-start max-h-[calc(100vh-56px)] md:max-h-[calc(100vh-80px)] overflow-y-auto">
+        <aside className="hidden lg:flex flex-col w-[240px] shrink-0 border-r bg-card/50 p-4 gap-2 sticky top-14 md:top-20 self-start h-[calc(100vh-56px)] md:h-[calc(100vh-80px)] overflow-y-auto">
           {desktopNavLinks.map((item) => {
             const isActive = location === item.href || (item.href !== "/" && location.startsWith(item.href));
             return (

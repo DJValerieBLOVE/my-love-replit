@@ -77,7 +77,7 @@ function FlipCard({ title, position, imageUrl, quote, progress, onClick, testId,
           <button
             className={`absolute top-2 right-2 p-1.5 rounded-full transition-colors z-10 ${
               isPinned 
-                ? "bg-[#6600ff] text-white" 
+                ? "bg-foreground text-background" 
                 : "bg-muted/50 text-muted-foreground hover:bg-muted"
             }`}
             onClick={(e) => {
@@ -104,7 +104,7 @@ function FlipCard({ title, position, imageUrl, quote, progress, onClick, testId,
           </div>
           <span className="text-foreground text-xs md:text-sm font-medium">{progress}% Progress</span>
           <button
-            className="mt-3 md:mt-4 px-3 md:px-4 py-1.5 md:py-2 bg-[#6600ff] hover:bg-[#5500dd] rounded-xs text-white text-xs md:text-sm transition-colors shadow-sm"
+            className="mt-3 md:mt-4 px-3 md:px-4 py-1.5 md:py-2 bg-foreground hover:bg-foreground/90 rounded-xs text-background text-xs md:text-sm transition-colors shadow-sm"
             onClick={(e) => {
               e.stopPropagation();
               onClick();

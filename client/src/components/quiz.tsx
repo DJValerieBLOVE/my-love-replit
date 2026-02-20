@@ -121,13 +121,13 @@ export function Quiz({ questions, onComplete, rewardAmount }: QuizProps) {
                             w-full text-left px-6 py-4 rounded-lg border transition-all flex items-center justify-between font-serif font-medium text-lg
                             ${isAnswered 
                                ? option === currentQuestion.correctAnswer 
-                                  ? 'bg-[#6600ff] text-white border-transparent shadow-sm'
+                                  ? 'bg-foreground text-background border-transparent shadow-sm'
                                   : selectedOption === option 
                                      ? 'bg-destructive text-destructive-foreground border-transparent shadow-sm opacity-70'
                                      : 'bg-white text-muted-foreground border-muted shadow-sm opacity-50'
                                : selectedOption === option
-                                  ? 'bg-[#F5F3FF] text-[#6600ff] border-[#6600ff]/50 shadow-md -translate-y-0.5 font-bold'
-                                  : 'bg-white text-muted-foreground border-muted shadow-sm hover:bg-[#F5F3FF] hover:text-[#6600ff] hover:border-[#6600ff]/50 hover:shadow-md hover:-translate-y-0.5'
+                                  ? 'bg-[#F5F3FF] text-foreground border-foreground/50 shadow-md -translate-y-0.5 font-bold'
+                                  : 'bg-white text-muted-foreground border-muted shadow-sm hover:bg-[#F5F3FF] hover:text-foreground hover:border-foreground/50 hover:shadow-md hover:-translate-y-0.5'
                             }
                          `}
                       >
@@ -152,7 +152,7 @@ export function Quiz({ questions, onComplete, rewardAmount }: QuizProps) {
                                text-base p-4 h-12 transition-all rounded-lg border font-serif
                                ${isAnswered
                                   ? isCorrect
-                                     ? 'bg-[#6600ff] text-white border-transparent shadow-sm'
+                                     ? 'bg-foreground text-background border-transparent shadow-sm'
                                      : 'bg-destructive text-destructive-foreground border-transparent shadow-sm'
                                   : 'bg-white text-muted-foreground border-muted shadow-sm focus:bg-[#F5F3FF] focus:text-[#6600ff] focus:border-[#6600ff]/50 focus:shadow-md focus:ring-0'
                                }

@@ -592,7 +592,7 @@ export default function Profile() {
                       className={cn(
                         "px-3 py-1.5 rounded-full text-xs font-medium transition-colors border",
                         editInterests.includes(interest)
-                          ? "bg-[#6600ff] text-white border-[#6600ff]"
+                          ? "bg-foreground text-background border-foreground"
                           : isPaidMember
                           ? "bg-muted hover:bg-[#F0E6FF] border-border text-foreground"
                           : "bg-muted border-border text-muted-foreground opacity-50 cursor-not-allowed"

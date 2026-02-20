@@ -1236,10 +1236,10 @@ export default function Feed() {
         
         <PostComposer onPostPublished={refetch} />
         
-        {/* Sticky tabs - stay visible during scroll */}
-        <div className="sticky top-14 md:top-20 z-[30] py-3 -mx-4 px-4 lg:-mx-6 lg:px-6" style={{ backgroundColor: '#ffffff', borderBottom: '1px solid #f3f4f6' }}>
-          <div className="flex items-center gap-2">
-            <div className="flex gap-1 flex-1">
+        {/* Sticky tabs - stay visible during scroll, spans feed + sidebar */}
+        <div className="sticky top-14 md:top-20 z-[30] py-3" style={{ backgroundColor: '#ffffff', borderBottom: '1px solid #e5e7eb' }}>
+          <div className="flex items-center">
+            <div className="flex gap-1 flex-1 max-w-[620px]">
               <button
                 onClick={() => setActiveTab("following")}
                 className={`px-4 py-1.5 rounded-full text-sm transition-colors border ${activeTab === "following" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
@@ -1269,34 +1269,65 @@ export default function Feed() {
               </button>
             </div>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm transition-colors border ${activeTab === "explore" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
-                  data-testid="tab-explore"
-                >
-                  <currentExploreOption.icon className="w-3.5 h-3.5" />
-                  {currentExploreOption.label}
-                  <ChevronDown className="w-3 h-3" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                {EXPLORE_OPTIONS.map((option) => (
-                  <DropdownMenuItem
-                    key={option.value}
-                    onClick={() => {
-                      setExploreMode(option.value);
-                      setActiveTab("explore");
-                    }}
-                    className={`cursor-pointer ${exploreMode === option.value && activeTab === "explore" ? "bg-gray-50" : ""}`}
-                    data-testid={`explore-option-${option.value}`}
+            <div className="hidden lg:flex w-[300px] shrink-0 ml-6 justify-center">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm transition-colors border ${activeTab === "explore" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
+                    data-testid="tab-explore"
                   >
-                    <option.icon className="w-4 h-4 mr-2 text-muted-foreground" />
-                    {option.label}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+                    <currentExploreOption.icon className="w-3.5 h-3.5" />
+                    {currentExploreOption.label}
+                    <ChevronDown className="w-3 h-3" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="center" className="w-48">
+                  {EXPLORE_OPTIONS.map((option) => (
+                    <DropdownMenuItem
+                      key={option.value}
+                      onClick={() => {
+                        setExploreMode(option.value);
+                        setActiveTab("explore");
+                      }}
+                      className={`cursor-pointer ${exploreMode === option.value && activeTab === "explore" ? "bg-gray-50" : ""}`}
+                      data-testid={`explore-option-${option.value}`}
+                    >
+                      <option.icon className="w-4 h-4 mr-2 text-muted-foreground" />
+                      {option.label}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+            <div className="lg:hidden ml-auto">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm transition-colors border ${activeTab === "explore" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
+                    data-testid="tab-explore-mobile"
+                  >
+                    <currentExploreOption.icon className="w-3.5 h-3.5" />
+                    {currentExploreOption.label}
+                    <ChevronDown className="w-3 h-3" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  {EXPLORE_OPTIONS.map((option) => (
+                    <DropdownMenuItem
+                      key={option.value}
+                      onClick={() => {
+                        setExploreMode(option.value);
+                        setActiveTab("explore");
+                      }}
+                      className={`cursor-pointer ${exploreMode === option.value && activeTab === "explore" ? "bg-gray-50" : ""}`}
+                    >
+                      <option.icon className="w-4 h-4 mr-2 text-muted-foreground" />
+                      {option.label}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
 
@@ -1313,26 +1344,26 @@ export default function Feed() {
 
         <div className="flex gap-6 mt-4">
           <div className="flex-1 space-y-4 min-w-0 max-w-[620px]">
-            {/* Floating new posts pill - dark purple for readability */}
+            {/* New posts pill - positioned below sticky tabs, not overlapping */}
             {newPostCount > 0 && (
-              <div className="fixed top-24 md:top-28 left-1/2 -translate-x-1/2 z-50">
+              <div className="flex justify-center -mt-2 mb-2">
                 <button
                   onClick={showNewPosts}
-                  className="flex items-center gap-2.5 px-4 py-2 bg-[#6600ff] rounded-full shadow-lg hover:shadow-xl hover:bg-[#5500dd] transition-all text-sm text-white"
+                  className="flex items-center gap-2.5 px-4 py-2 bg-foreground text-background rounded-full shadow-lg hover:shadow-xl hover:opacity-90 transition-all text-sm"
                   data-testid="button-show-new-posts"
                 >
                   <div className="flex -space-x-2">
                     {pendingPosts.slice(0, 3).map((p, i) => (
-                      <Avatar key={p.id} className="w-6 h-6 border-2 border-[#6600ff]" style={{ zIndex: 3 - i }}>
+                      <Avatar key={p.id} className="w-6 h-6 border-2 border-foreground" style={{ zIndex: 3 - i }}>
                         {p.author.avatar && <AvatarImage src={p.author.avatar} />}
-                        <AvatarFallback className="text-[8px] bg-[#5500dd] text-white">{p.author.name.slice(0, 1).toUpperCase()}</AvatarFallback>
+                        <AvatarFallback className="text-[8px] bg-muted-foreground text-background">{p.author.name.slice(0, 1).toUpperCase()}</AvatarFallback>
                       </Avatar>
                     ))}
                   </div>
                   <span className="font-medium">
                     {newPostCount} new {newPostCount === 1 ? "post" : "posts"}
                   </span>
-                  <ArrowUp className="w-3.5 h-3.5 text-white/70" />
+                  <ArrowUp className="w-3.5 h-3.5 opacity-70" />
                 </button>
               </div>
             )}
