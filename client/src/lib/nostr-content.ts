@@ -1,7 +1,5 @@
 import { nip19 } from "nostr-tools";
 
-const IMAGE_REGEX = /https?:\/\/\S+\.(?:jpg|jpeg|png|gif|webp|svg|bmp)(?:\?\S*)?/gi;
-const VIDEO_REGEX = /https?:\/\/\S+\.(?:mp4|webm|mov|avi)(?:\?\S*)?/gi;
 const NOSTR_IMAGE_HOSTS = [
   'nostr.build',
   'image.nostr.build',
@@ -15,7 +13,7 @@ const NOSTR_IMAGE_HOSTS = [
 ];
 
 const GENERIC_URL_REGEX = /https?:\/\/\S+/gi;
-const NOSTR_MENTION_REGEX = /nostr:(npub1[a-z0-9]+|nprofile1[a-z0-9]+)/g;
+const NOSTR_ENTITY_REGEX = /nostr:(npub1[a-z0-9]+|nprofile1[a-z0-9]+|nevent1[a-z0-9]+|note1[a-z0-9]+|naddr1[a-z0-9]+)/g;
 
 function isImageUrl(url: string): boolean {
   const lower = url.toLowerCase();
@@ -36,12 +34,45 @@ export type NostrMention = {
   displayName?: string;
 };
 
+export type NostrEntity = {
+  original: string;
+  type: "npub" | "nprofile" | "nevent" | "note" | "naddr";
+  pubkey?: string;
+  eventId?: string;
+  bech32: string;
+};
+
 export interface ParsedContent {
   text: string;
   images: string[];
   videos: string[];
   links: string[];
   mentions: NostrMention[];
+  entities: NostrEntity[];
+}
+
+export function decodeNostrEntity(bech32: string): NostrEntity | null {
+  try {
+    const decoded = nip19.decode(bech32);
+    if (decoded.type === "npub") {
+      return { original: `nostr:${bech32}`, type: "npub", pubkey: decoded.data as string, bech32 };
+    }
+    if (decoded.type === "nprofile") {
+      return { original: `nostr:${bech32}`, type: "nprofile", pubkey: (decoded.data as { pubkey: string }).pubkey, bech32 };
+    }
+    if (decoded.type === "nevent") {
+      const data = decoded.data as { id: string; author?: string };
+      return { original: `nostr:${bech32}`, type: "nevent", eventId: data.id, pubkey: data.author, bech32 };
+    }
+    if (decoded.type === "note") {
+      return { original: `nostr:${bech32}`, type: "note", eventId: decoded.data as string, bech32 };
+    }
+    if (decoded.type === "naddr") {
+      const data = decoded.data as { pubkey: string };
+      return { original: `nostr:${bech32}`, type: "naddr", pubkey: data.pubkey, bech32 };
+    }
+  } catch {}
+  return null;
 }
 
 export function decodeMentionPubkey(bech32: string): string | null {
@@ -75,13 +106,17 @@ export function parseNostrContent(content: string): ParsedContent {
   }
 
   const mentions: NostrMention[] = [];
-  let mentionMatch;
-  const mentionRegex = new RegExp(NOSTR_MENTION_REGEX.source, 'g');
-  while ((mentionMatch = mentionRegex.exec(content)) !== null) {
-    const bech32 = mentionMatch[1];
-    const pubkey = decodeMentionPubkey(bech32);
-    if (pubkey) {
-      mentions.push({ original: mentionMatch[0], pubkey });
+  const entities: NostrEntity[] = [];
+  let entityMatch;
+  const entityRegex = new RegExp(NOSTR_ENTITY_REGEX.source, 'g');
+  while ((entityMatch = entityRegex.exec(content)) !== null) {
+    const bech32 = entityMatch[1];
+    const entity = decodeNostrEntity(bech32);
+    if (entity) {
+      entities.push(entity);
+      if (entity.type === "npub" || entity.type === "nprofile") {
+        mentions.push({ original: entity.original, pubkey: entity.pubkey! });
+      }
     }
   }
 
@@ -95,7 +130,7 @@ export function parseNostrContent(content: string): ParsedContent {
 
   text = text.replace(/\n{3,}/g, '\n\n').trim();
 
-  return { text, images, videos, links, mentions };
+  return { text, images, videos, links, mentions, entities };
 }
 
 export function resolveContentMentions(

@@ -2249,5 +2249,122 @@ export async function registerRoutes(
     }
   });
 
+  const linkPreviewCache = new Map<string, { data: any; timestamp: number }>();
+  const CACHE_TTL = 3600000;
+  const MAX_CACHE_SIZE = 200;
+
+  app.get("/api/link-preview", async (req, res) => {
+    try {
+      const url = req.query.url as string;
+      if (!url || !url.startsWith('http')) {
+        return res.status(400).json({ error: "Invalid URL" });
+      }
+
+      const cached = linkPreviewCache.get(url);
+      if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+        return res.json(cached.data);
+      }
+
+      try {
+        const urlObj = new URL(url);
+        if (!['http:', 'https:'].includes(urlObj.protocol)) {
+          return res.status(400).json({ error: "Invalid protocol" });
+        }
+        const hostname = urlObj.hostname.toLowerCase();
+        const blockedPatterns = [
+          /^localhost$/i,
+          /^127\.\d+\.\d+\.\d+$/,
+          /^10\.\d+\.\d+\.\d+$/,
+          /^172\.(1[6-9]|2\d|3[01])\.\d+\.\d+$/,
+          /^192\.168\.\d+\.\d+$/,
+          /^0\.0\.0\.0$/,
+          /^169\.254\.\d+\.\d+$/,
+          /^\[?::1\]?$/,
+          /^\[?fe80:/i,
+          /^\[?fc00:/i,
+          /^\[?fd/i,
+          /\.local$/i,
+          /\.internal$/i,
+        ];
+        if (blockedPatterns.some(p => p.test(hostname))) {
+          return res.status(400).json({ error: "URL not allowed" });
+        }
+      } catch {
+        return res.status(400).json({ error: "Invalid URL" });
+      }
+
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5000);
+
+      try {
+        const response = await fetch(url, {
+          signal: controller.signal,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (compatible; MyMasterpiece/1.0; +https://mymasterpiece.app)',
+            'Accept': 'text/html',
+          },
+        });
+        clearTimeout(timeout);
+
+        if (!response.ok) {
+          return res.json({ url, title: null, description: null, image: null, siteName: null });
+        }
+
+        const contentType = response.headers.get('content-type') || '';
+        if (!contentType.includes('text/html')) {
+          return res.json({ url, title: null, description: null, image: null, siteName: null });
+        }
+
+        const html = await response.text();
+        const getMetaContent = (property: string): string | null => {
+          const patterns = [
+            new RegExp(`<meta[^>]+(?:property|name)=["']${property}["'][^>]+content=["']([^"']+)["']`, 'i'),
+            new RegExp(`<meta[^>]+content=["']([^"']+)["'][^>]+(?:property|name)=["']${property}["']`, 'i'),
+          ];
+          for (const pattern of patterns) {
+            const match = html.match(pattern);
+            if (match) return match[1];
+          }
+          return null;
+        };
+
+        const title = getMetaContent('og:title') || getMetaContent('twitter:title') || (() => {
+          const m = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+          return m ? m[1].trim() : null;
+        })();
+
+        const description = getMetaContent('og:description') || getMetaContent('twitter:description') || getMetaContent('description');
+
+        let image = getMetaContent('og:image') || getMetaContent('twitter:image');
+        if (image && !image.startsWith('http')) {
+          try {
+            const urlObj = new URL(url);
+            image = image.startsWith('/') ? `${urlObj.origin}${image}` : `${urlObj.origin}/${image}`;
+          } catch {}
+        }
+
+        const siteName = getMetaContent('og:site_name') || (() => {
+          try { return new URL(url).hostname.replace('www.', ''); } catch { return null; }
+        })();
+
+        const result = { url, title, description, image, siteName };
+        if (linkPreviewCache.size >= MAX_CACHE_SIZE) {
+          const firstKey = linkPreviewCache.keys().next().value;
+          if (firstKey) linkPreviewCache.delete(firstKey);
+        }
+        linkPreviewCache.set(url, { data: result, timestamp: Date.now() });
+        res.json(result);
+      } catch (fetchErr: any) {
+        clearTimeout(timeout);
+        if (fetchErr.name === 'AbortError') {
+          return res.json({ url, title: null, description: null, image: null, siteName: null });
+        }
+        res.json({ url, title: null, description: null, image: null, siteName: null });
+      }
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch link preview" });
+    }
+  });
+
   return httpServer;
 }

@@ -29,7 +29,7 @@ import { useNostr } from "@/contexts/nostr-context";
 import { LAB_RELAY_URL, PUBLIC_RELAYS } from "@/lib/relays";
 import { NDKEvent } from "@nostr-dev-kit/ndk";
 import { Skeleton } from "@/components/ui/skeleton";
-import { parseNostrContent, truncateNpub, resolveContentMentions } from "@/lib/nostr-content";
+import { parseNostrContent, truncateNpub, resolveContentMentions, type NostrEntity, type ParsedContent } from "@/lib/nostr-content";
 import { fetchPrimalFeed, fetchPrimalUserFeed, type ExploreMode, type PrimalEvent, type PrimalProfile, type PrimalEventStats, type ZapReceipt } from "@/lib/primal-cache";
 
 type FeedPost = {
@@ -548,6 +548,205 @@ function FeedLoadingSkeleton() {
   );
 }
 
+type LinkPreviewData = {
+  url: string;
+  title?: string;
+  description?: string;
+  image?: string;
+  siteName?: string;
+};
+
+function LinkPreviewCard({ url }: { url: string }) {
+  const [preview, setPreview] = useState<LinkPreviewData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    const fetchPreview = async () => {
+      try {
+        const res = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`);
+        if (!res.ok) throw new Error("Failed");
+        const data = await res.json();
+        if (!cancelled && (data.title || data.description || data.image)) {
+          setPreview(data);
+        } else if (!cancelled) {
+          setError(true);
+        }
+      } catch {
+        if (!cancelled) setError(true);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    fetchPreview();
+    return () => { cancelled = true; };
+  }, [url]);
+
+  if (error || (!loading && !preview)) return null;
+  if (loading) return (
+    <div className="mt-2 rounded-xs border border-border p-3 animate-pulse">
+      <div className="h-3 bg-muted rounded w-3/4 mb-2" />
+      <div className="h-3 bg-muted rounded w-1/2" />
+    </div>
+  );
+
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="mt-2 block rounded-xs border border-border overflow-hidden hover:border-[#6600ff] transition-colors group"
+      data-testid="link-preview-card"
+    >
+      {preview?.image && (
+        <div className="w-full h-40 overflow-hidden bg-muted">
+          <img
+            src={preview.image}
+            alt={preview.title || ""}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+          />
+        </div>
+      )}
+      <div className="p-3">
+        {preview?.siteName && (
+          <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">{preview.siteName}</p>
+        )}
+        {preview?.title && (
+          <p className="text-sm font-medium line-clamp-2 group-hover:text-[#6600ff] transition-colors">{preview.title}</p>
+        )}
+        {preview?.description && (
+          <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{preview.description}</p>
+        )}
+      </div>
+    </a>
+  );
+}
+
+function RichTextContent({ text, entities, links, primalProfiles }: {
+  text: string;
+  entities: NostrEntity[];
+  links: string[];
+  primalProfiles?: Map<string, PrimalProfile>;
+}) {
+  const URL_PATTERN = /https?:\/\/\S+/g;
+  const NOSTR_PATTERN = /nostr:(npub1[a-z0-9]+|nprofile1[a-z0-9]+|nevent1[a-z0-9]+|note1[a-z0-9]+|naddr1[a-z0-9]+)/g;
+  const HASHTAG_PATTERN = /#(\w+)/g;
+
+  const COMBINED_PATTERN = new RegExp(
+    `(${URL_PATTERN.source}|${NOSTR_PATTERN.source}|${HASHTAG_PATTERN.source})`,
+    'gi'
+  );
+
+  const entityMap = new Map<string, NostrEntity>();
+  for (const e of entities) {
+    entityMap.set(e.original, e);
+  }
+
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match;
+  const regex = new RegExp(COMBINED_PATTERN.source, 'gi');
+  let key = 0;
+
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+
+    const matched = match[0];
+
+    if (matched.startsWith('nostr:')) {
+      const entity = entityMap.get(matched);
+      if (entity && (entity.type === "npub" || entity.type === "nprofile")) {
+        let name = entity.pubkey?.slice(0, 8) || "user";
+        if (primalProfiles && entity.pubkey) {
+          const profile = primalProfiles.get(entity.pubkey);
+          if (profile) {
+            name = profile.display_name || profile.name || name;
+          }
+        }
+        parts.push(
+          <span key={key++} className="text-[#6600ff] cursor-pointer hover:underline" data-testid="mention-link">
+            @{name}
+          </span>
+        );
+      } else if (entity && (entity.type === "nevent" || entity.type === "note")) {
+        const shortId = entity.bech32.slice(0, 12) + "..." + entity.bech32.slice(-4);
+        parts.push(
+          <span key={key++} className="text-[#6600ff] cursor-pointer hover:underline text-xs" data-testid="nostr-event-link">
+            nostr:{shortId}
+          </span>
+        );
+      } else {
+        const shortBech = matched.slice(6, 18) + "..." + matched.slice(-4);
+        parts.push(
+          <span key={key++} className="text-[#6600ff] text-xs">
+            nostr:{shortBech}
+          </span>
+        );
+      }
+    } else if (matched.startsWith('#')) {
+      parts.push(
+        <span key={key++} className="text-[#6600ff] cursor-pointer hover:underline">
+          {matched}
+        </span>
+      );
+    } else if (matched.startsWith('http')) {
+      const cleanUrl = matched.replace(/[)}\]]+$/, '');
+      const trailing = matched.slice(cleanUrl.length);
+      let displayUrl = cleanUrl;
+      try {
+        const urlObj = new URL(cleanUrl);
+        displayUrl = urlObj.hostname + (urlObj.pathname !== '/' ? urlObj.pathname : '');
+        if (displayUrl.length > 40) displayUrl = displayUrl.slice(0, 37) + "...";
+      } catch {}
+      parts.push(
+        <a
+          key={key++}
+          href={cleanUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[#6600ff] hover:underline break-all"
+          data-testid="content-link"
+        >
+          {displayUrl}
+        </a>
+      );
+      if (trailing) parts.push(trailing);
+    } else {
+      parts.push(matched);
+    }
+
+    lastIndex = match.index + matched.length;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  const previewLinks = links.filter(l => {
+    const lower = l.toLowerCase();
+    return !(/\.(jpg|jpeg|png|gif|webp|svg|bmp|mp4|webm|mov|avi)(\?|$)/i.test(lower));
+  });
+
+  return (
+    <>
+      <p className="text-sm mt-1 leading-relaxed whitespace-pre-wrap" data-testid="post-content-text">
+        {parts}
+      </p>
+      {previewLinks.length > 0 && (
+        <div className="space-y-2">
+          {previewLinks.slice(0, 2).map((link, i) => (
+            <LinkPreviewCard key={link} url={link} />
+          ))}
+        </div>
+      )}
+    </>
+  );
+}
+
 function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfiles?: Map<string, PrimalProfile> }) {
   const [isLiked, setIsLiked] = useState(false);
   const [likes, setLikes] = useState(post.likes);
@@ -632,10 +831,14 @@ function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfiles?: M
           </div>
           {(() => {
             const parsed = parseNostrContent(post.content);
-            const resolvedText = resolveContentMentions(parsed.text, parsed.mentions, primalProfiles);
             return (
               <>
-                <p className="text-sm mt-1 leading-relaxed whitespace-pre-wrap">{resolvedText}</p>
+                <RichTextContent
+                  text={parsed.text}
+                  entities={parsed.entities}
+                  links={parsed.links}
+                  primalProfiles={primalProfiles}
+                />
                 {parsed.images.length > 0 && (
                   <div className={`mt-3 gap-2 ${parsed.images.length === 1 ? '' : 'grid grid-cols-2'}`}>
                     {parsed.images.map((img, i) => (
