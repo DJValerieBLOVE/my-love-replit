@@ -1,7 +1,7 @@
 import Layout from "@/components/layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Users, Plus, Lock, Check, Heart, Search, Loader2, Zap, Flame, Trophy, FlaskConical, Award, ChevronDown, X } from "lucide-react";
+import { ArrowRight, Users, Plus, Lock, Check, Heart, Search, Loader2, Zap, Flame, Trophy, FlaskConical, Award, X } from "lucide-react";
 import CommunityCover from "@assets/generated_images/community_cover.png";
 import { Link, useLocation } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { EXPERIMENT_CATEGORIES, EXPERIMENT_TAGS } from "@/lib/mock-data";
 
 const TRIBE_TABS = [
@@ -198,35 +199,27 @@ export default function Community() {
                 data-testid="input-search"
               />
             </div>
-            <div className="relative">
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="appearance-none bg-white border border-gray-200 rounded-md px-3 pr-8 text-sm text-[#2a2430] cursor-pointer hover:border-gray-400 transition-colors focus:outline-none focus:ring-1 focus:ring-[#6600ff] h-10"
-                style={{ fontFamily: "Marcellus, serif" }}
-                data-testid="select-tribe-category"
-              >
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger className="w-[160px] h-10" data-testid="select-tribe-category">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
                 {EXPERIMENT_CATEGORIES.map((cat) => (
-                  <option key={cat.id} value={cat.id}>{cat.label}</option>
+                  <SelectItem key={cat.id} value={cat.id}>{cat.label}</SelectItem>
                 ))}
-              </select>
-              <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-            </div>
-            <div className="relative">
-              <select
-                value={selectedTag}
-                onChange={(e) => setSelectedTag(e.target.value)}
-                className="appearance-none bg-white border border-gray-200 rounded-md px-3 pr-8 text-sm text-[#2a2430] cursor-pointer hover:border-gray-400 transition-colors focus:outline-none focus:ring-1 focus:ring-[#6600ff] h-10"
-                style={{ fontFamily: "Marcellus, serif" }}
-                data-testid="select-tribe-tag"
-              >
-                <option value="all">All Tags</option>
+              </SelectContent>
+            </Select>
+            <Select value={selectedTag} onValueChange={setSelectedTag}>
+              <SelectTrigger className="w-[140px] h-10" data-testid="select-tribe-tag">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Tags</SelectItem>
                 {EXPERIMENT_TAGS.map((tag) => (
-                  <option key={tag} value={tag}>{tag}</option>
+                  <SelectItem key={tag} value={tag}>{tag}</SelectItem>
                 ))}
-              </select>
-              <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-            </div>
+              </SelectContent>
+            </Select>
           </div>
         )}
 

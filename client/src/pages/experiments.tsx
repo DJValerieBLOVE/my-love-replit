@@ -2,10 +2,11 @@ import Layout from "@/components/layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { Search, Plus, FlaskConical, Loader2, Share2, ChevronDown, X } from "lucide-react";
+import { Search, Plus, FlaskConical, Loader2, Share2, X } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ShareConfirmationDialog } from "@/components/share-confirmation-dialog";
 import { useNostr } from "@/contexts/nostr-context";
 import { useQuery } from "@tanstack/react-query";
@@ -101,35 +102,27 @@ export default function Grow() {
               data-testid="input-search"
             />
           </div>
-          <div className="relative">
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="appearance-none bg-white border border-gray-200 rounded-md px-3 pr-8 text-sm text-[#2a2430] cursor-pointer hover:border-gray-400 transition-colors focus:outline-none focus:ring-1 focus:ring-[#6600ff] h-10"
-              style={{ fontFamily: "Marcellus, serif" }}
-              data-testid="select-category"
-            >
+          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <SelectTrigger className="w-[160px] h-10" data-testid="select-category">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
               {EXPERIMENT_CATEGORIES.map((cat) => (
-                <option key={cat.id} value={cat.id}>{cat.label}</option>
+                <SelectItem key={cat.id} value={cat.id}>{cat.label}</SelectItem>
               ))}
-            </select>
-            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-          </div>
-          <div className="relative">
-            <select
-              value={selectedTag}
-              onChange={(e) => setSelectedTag(e.target.value)}
-              className="appearance-none bg-white border border-gray-200 rounded-md px-3 pr-8 text-sm text-[#2a2430] cursor-pointer hover:border-gray-400 transition-colors focus:outline-none focus:ring-1 focus:ring-[#6600ff] h-10"
-              style={{ fontFamily: "Marcellus, serif" }}
-              data-testid="select-tag"
-            >
-              <option value="all">All Tags</option>
+            </SelectContent>
+          </Select>
+          <Select value={selectedTag} onValueChange={setSelectedTag}>
+            <SelectTrigger className="w-[140px] h-10" data-testid="select-tag">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Tags</SelectItem>
               {EXPERIMENT_TAGS.map((tag) => (
-                <option key={tag} value={tag}>{tag}</option>
+                <SelectItem key={tag} value={tag}>{tag}</SelectItem>
               ))}
-            </select>
-            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-          </div>
+            </SelectContent>
+          </Select>
         </div>
 
         {hasActiveFilters && (
