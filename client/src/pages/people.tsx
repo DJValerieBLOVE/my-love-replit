@@ -55,8 +55,9 @@ const PEOPLE_TABS: { id: PeopleTab; label: string; icon: typeof Users }[] = [
 ];
 
 function FeedTabContent() {
-  const [feedTab, setFeedTab] = useState<FeedTab>("following");
   const [exploreMode, setExploreMode] = useState<ExploreMode>("trending");
+  const [feedMode, setFeedMode] = useState<"following" | "explore">("following");
+  const feedTab: FeedTab = feedMode === "following" ? "following" : "explore";
   const { posts, isLoading, isRefreshing, refetch, newPostCount, showNewPosts, pendingPosts, primalProfiles } = useNostrFeed(feedTab, exploreMode);
   const currentExploreOption = EXPLORE_OPTIONS.find(o => o.value === exploreMode) || EXPLORE_OPTIONS[0];
 
@@ -64,33 +65,19 @@ function FeedTabContent() {
     <div>
       <PostComposer onPostPublished={refetch} />
 
-      <div className="flex items-center gap-2 mb-4 flex-wrap">
+      <div className="flex items-center gap-2 mb-4">
         <button
-          onClick={() => setFeedTab("following")}
-          className={`px-3.5 py-1.5 rounded-full text-sm transition-colors border ${feedTab === "following" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
+          onClick={() => setFeedMode("following")}
+          className={`px-3.5 py-1.5 rounded-full text-sm transition-colors border ${feedMode === "following" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
           data-testid="feed-sub-tab-following"
         >
           Following
-        </button>
-        <button
-          onClick={() => setFeedTab("tribe")}
-          className={`px-3.5 py-1.5 rounded-full text-sm transition-colors border ${feedTab === "tribe" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
-          data-testid="feed-sub-tab-tribe"
-        >
-          <span className="flex items-center gap-1.5"><Lock className="w-3 h-3" />Tribe</span>
-        </button>
-        <button
-          onClick={() => setFeedTab("buddies")}
-          className={`px-3.5 py-1.5 rounded-full text-sm transition-colors border ${feedTab === "buddies" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
-          data-testid="feed-sub-tab-buddies"
-        >
-          <span className="flex items-center gap-1.5"><Lock className="w-3 h-3" />Buddies</span>
         </button>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
-              className={`px-3.5 py-1.5 rounded-full text-sm transition-colors border flex items-center gap-1.5 ${feedTab === "explore" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
+              className={`px-3.5 py-1.5 rounded-full text-sm transition-colors border flex items-center gap-1.5 ${feedMode === "explore" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
               data-testid="feed-sub-tab-explore"
             >
               <currentExploreOption.icon className="w-3.5 h-3.5" strokeWidth={1.5} />
@@ -102,8 +89,8 @@ function FeedTabContent() {
             {EXPLORE_OPTIONS.map((option) => (
               <DropdownMenuItem
                 key={option.value}
-                onClick={() => { setExploreMode(option.value); setFeedTab("explore"); }}
-                className={`cursor-pointer ${exploreMode === option.value && feedTab === "explore" ? "bg-gray-50" : ""}`}
+                onClick={() => { setExploreMode(option.value); setFeedMode("explore"); }}
+                className={`cursor-pointer ${exploreMode === option.value && feedMode === "explore" ? "bg-gray-50" : ""}`}
               >
                 <option.icon className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} />
                 {option.label}
@@ -122,17 +109,6 @@ function FeedTabContent() {
           <RefreshCw className={`w-4 h-4 ${isRefreshing || isLoading ? "animate-spin" : ""}`} strokeWidth={1.5} />
         </button>
       </div>
-
-      {(feedTab === "tribe" || feedTab === "buddies") && (
-        <div className="flex items-center gap-2 mb-4 p-3 bg-gray-50 rounded-lg text-sm border border-gray-100">
-          <Lock className="w-4 h-4 text-muted-foreground shrink-0" strokeWidth={1.5} />
-          <span className="text-muted-foreground">
-            {feedTab === "tribe"
-              ? "Tribe posts are private and never shared publicly."
-              : "Buddy conversations are private and only visible to your buddies."}
-          </span>
-        </div>
-      )}
 
       <div className="space-y-4">
         {newPostCount > 0 && (
@@ -155,9 +131,7 @@ function FeedTabContent() {
           <div className="text-center py-12 text-muted-foreground">
             <p className="text-lg">No posts yet</p>
             <p className="text-sm mt-2">
-              {feedTab === "following" ? "Follow some people to see their posts here!"
-                : feedTab === "tribe" ? "No posts from your Tribe yet. Be the first to share!"
-                : feedTab === "buddies" ? "No buddy posts yet. Connect with a buddy to get started!"
+              {feedMode === "following" ? "Follow some people to see their posts here!"
                 : "No posts found. Try a different explore category!"}
             </p>
           </div>
@@ -333,10 +307,10 @@ function VictoriesTabContent() {
             </Avatar>
             <div className="flex-1">
               <Textarea
-                placeholder="What's your victory today? 🏆"
+                placeholder="What's your victory today?"
                 value={victoryContent}
                 onChange={(e) => setVictoryContent(e.target.value)}
-                className="min-h-[80px] border rounded-lg resize-none focus-visible:ring-1 px-3 py-2 text-sm"
+                className="min-h-[80px] resize-none"
                 data-testid="textarea-victory"
               />
               <div className="flex items-center justify-between mt-3 pt-3 border-t">
@@ -392,10 +366,10 @@ function GratitudeTabContent() {
             </Avatar>
             <div className="flex-1">
               <Textarea
-                placeholder="What are you grateful for today? ✨"
+                placeholder="What are you grateful for today?"
                 value={gratitudeContent}
                 onChange={(e) => setGratitudeContent(e.target.value)}
-                className="min-h-[80px] border rounded-lg resize-none focus-visible:ring-1 px-3 py-2 text-sm"
+                className="min-h-[80px] resize-none"
                 data-testid="textarea-gratitude"
               />
               <div className="flex items-center justify-between mt-3 pt-3 border-t">
@@ -492,7 +466,7 @@ function PrayersTabContent() {
               value={newPrayer}
               onChange={(e) => setNewPrayer(e.target.value)}
               rows={3}
-              className="bg-white resize-none border rounded-lg focus-visible:ring-1 px-3 py-2 text-sm"
+              className="resize-none"
               data-testid="input-prayer"
             />
             <div className="flex items-center justify-between">
@@ -655,7 +629,7 @@ function DiscoverTabContent() {
                 placeholder="Search tribes..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-white h-10 border rounded-lg focus-visible:ring-1"
+                className="pl-10 h-10"
                 data-testid="input-search-tribes"
               />
             </div>
@@ -703,7 +677,7 @@ function DiscoverTabContent() {
               </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {filteredCommunities.map((community: any) => {
                 const isMember = myMembershipIds.has(community.id);
                 return (
@@ -795,7 +769,7 @@ function FindMembersContent() {
             placeholder="Search members by name or interest..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-white h-10 border rounded-lg focus-visible:ring-1"
+            className="pl-10 h-10"
             data-testid="input-search-members"
           />
         </div>
@@ -869,45 +843,131 @@ function PrivacySelector({ value, onChange }: { value: "public" | "private" | "b
   );
 }
 
+function RightSidebar() {
+  return (
+    <div className="space-y-4">
+      <Card className="border-none shadow-sm bg-card rounded-xs">
+        <CardContent className="p-4">
+          <h3 className="font-normal text-sm text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+            <Zap className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} /> Top Zappers
+          </h3>
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">Individuals</p>
+              <div className="p-3 bg-[#F5F5F5] rounded-xs text-center">
+                <p className="text-xs text-muted-foreground" data-testid="text-zappers-coming-soon">Coming soon</p>
+              </div>
+            </div>
+            <div className="space-y-1">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">Tribes</p>
+              <div className="p-3 bg-[#F5F5F5] rounded-xs text-center">
+                <p className="text-xs text-muted-foreground">Coming soon</p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="border-none shadow-sm bg-card rounded-xs">
+        <CardContent className="p-4">
+          <h3 className="font-normal text-sm text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+            <Flame className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} /> Top Streaks
+          </h3>
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">Individuals</p>
+              <div className="p-3 bg-[#F5F5F5] rounded-xs text-center">
+                <p className="text-xs text-muted-foreground">Coming soon</p>
+              </div>
+            </div>
+            <div className="space-y-1">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">Tribes</p>
+              <div className="p-3 bg-[#F5F5F5] rounded-xs text-center">
+                <p className="text-xs text-muted-foreground">Coming soon</p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="border-none shadow-sm bg-card rounded-xs">
+        <CardContent className="p-4">
+          <h3 className="font-normal text-sm text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+            <Trophy className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} /> Progress & Completions
+          </h3>
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+                <FlaskConical className="w-3 h-3" /> Experiments
+              </p>
+              <div className="p-3 bg-[#F5F5F5] rounded-xs text-center">
+                <p className="text-xs text-muted-foreground">Coming soon</p>
+              </div>
+            </div>
+            <div className="space-y-1">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+                <Award className="w-3 h-3" /> 11x LOVE Code
+              </p>
+              <div className="p-3 bg-[#F5F5F5] rounded-xs text-center">
+                <p className="text-xs text-muted-foreground">Coming soon</p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 export default function People() {
   const [activeTab, setActiveTab] = useState<PeopleTab>("feed");
 
   return (
     <Layout>
-      <div className="p-4 lg:p-6 max-w-[960px] mx-auto" style={{ marginLeft: 'clamp(0px, calc(50vw - 550px), calc(100% - 960px))' }}>
-        <div className="flex items-center justify-between mb-2">
-          <h1 className="text-2xl font-serif" data-testid="text-people-title">People</h1>
-        </div>
-        <p className="text-muted-foreground text-sm mb-6">Your tribes, feed, victories, and connections — all in one place.</p>
-
-        <div className="sticky top-14 md:top-20 z-[30] py-3" style={{ backgroundColor: '#ffffff', borderBottom: '1px solid #e5e7eb' }}>
-          <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-hide">
-            {PEOPLE_TABS.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`px-3.5 py-1.5 rounded-full text-sm transition-colors border whitespace-nowrap flex items-center gap-1.5 ${
-                  activeTab === tab.id
-                    ? "bg-foreground text-background border-foreground"
-                    : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"
-                }`}
-                data-testid={`tab-${tab.id}`}
-              >
-                <tab.icon className="w-3.5 h-3.5" strokeWidth={1.5} />
-                {tab.label}
-              </button>
-            ))}
+      <div className="p-4 lg:p-6">
+        <div className="max-w-[1200px] mx-auto">
+          <div className="mb-2">
+            <h1 className="text-2xl font-serif" data-testid="text-people-title">People</h1>
           </div>
-        </div>
+          <p className="text-muted-foreground text-sm mb-4">Your tribes, feed, victories, and connections — all in one place.</p>
 
-        <div className="mt-4">
-          {activeTab === "feed" && <FeedTabContent />}
-          {activeTab === "tribes" && <TribesTabContent />}
-          {activeTab === "buddies" && <BuddiesTabContent />}
-          {activeTab === "victories" && <VictoriesTabContent />}
-          {activeTab === "gratitude" && <GratitudeTabContent />}
-          {activeTab === "prayers" && <PrayersTabContent />}
-          {activeTab === "discover" && <DiscoverTabContent />}
+          <div className="sticky top-14 md:top-20 z-[30] -mx-4 lg:-mx-6 px-4 lg:px-6 py-3 bg-[#FAFAFA] border-b border-gray-200">
+            <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide max-w-[1200px] mx-auto">
+              {PEOPLE_TABS.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`px-3 py-1.5 rounded-full text-sm transition-colors border whitespace-nowrap flex items-center gap-1.5 ${
+                    activeTab === tab.id
+                      ? "bg-foreground text-background border-foreground"
+                      : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"
+                  }`}
+                  data-testid={`tab-${tab.id}`}
+                >
+                  <tab.icon className="w-3.5 h-3.5" strokeWidth={1.5} />
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex gap-6 mt-4">
+            <div className="flex-1 min-w-0">
+              {activeTab === "feed" && <FeedTabContent />}
+              {activeTab === "tribes" && <TribesTabContent />}
+              {activeTab === "buddies" && <BuddiesTabContent />}
+              {activeTab === "victories" && <VictoriesTabContent />}
+              {activeTab === "gratitude" && <GratitudeTabContent />}
+              {activeTab === "prayers" && <PrayersTabContent />}
+              {activeTab === "discover" && <DiscoverTabContent />}
+            </div>
+
+            <div className="hidden lg:block w-[280px] shrink-0">
+              <div className="sticky top-36">
+                <RightSidebar />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </Layout>
