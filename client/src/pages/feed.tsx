@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Zap, Share2, MoreHorizontal, Radio, Calendar, UserPlus, Repeat2, Bookmark, Quote, Users, Image, Film, Smile, X, Link2, Copy, ExternalLink, Loader2, Lock, Globe, ChevronDown, TrendingUp, Flame, Camera, Clock } from "lucide-react";
+import { Heart, MessageCircle, Zap, Share2, MoreHorizontal, Radio, Calendar, UserPlus, Repeat2, Bookmark, Quote, Users, Image, Film, Smile, X, Link2, Copy, ExternalLink, Loader2, Lock, Globe, ChevronDown, TrendingUp, Flame, Camera, Clock, RefreshCw, ArrowUp } from "lucide-react";
 import { Link } from "wouter";
 import {
   DropdownMenu,
@@ -116,6 +116,10 @@ function useNostrFeed(tab: FeedTab, exploreMode: ExploreMode) {
   const { profile } = useNostr();
   const [posts, setPosts] = useState<FeedPost[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [newPostCount, setNewPostCount] = useState(0);
+  const [pendingPosts, setPendingPosts] = useState<FeedPost[]>([]);
+  const latestPostIdRef = useRef<string | null>(null);
   const profileCacheRef = useRef<Map<string, { name: string; handle: string; avatar: string; lud16?: string }>>(new Map());
 
   const fetchProfileForPubkey = useCallback(async (pubkey: string) => {
@@ -270,14 +274,71 @@ function useNostrFeed(tab: FeedTab, exploreMode: ExploreMode) {
       setPosts([]);
     } finally {
       setIsLoading(false);
+      setIsRefreshing(false);
     }
   }, [ndkConnected, tab, exploreMode, fetchEvents, fetchProfileForPubkey, profile?.pubkey]);
 
   useEffect(() => {
     fetchFeed();
+    setNewPostCount(0);
+    setPendingPosts([]);
   }, [fetchFeed]);
 
-  return { posts, isLoading, refetch: fetchFeed, ndkConnected };
+  useEffect(() => {
+    if (posts.length > 0) {
+      latestPostIdRef.current = posts[0].id;
+    }
+  }, [posts]);
+
+  const checkForNewPosts = useCallback(async () => {
+    if (!latestPostIdRef.current) return;
+    try {
+      if ((tab === "explore" || tab === "following") && (tab === "explore" || profile?.pubkey)) {
+        let result;
+        if (tab === "explore") {
+          result = await fetchPrimalFeed(exploreMode, { limit: 20 });
+        } else if (profile?.pubkey) {
+          result = await fetchPrimalUserFeed(profile.pubkey, { limit: 20 });
+        }
+        if (result && result.events.length > 0) {
+          const currentIds = new Set(posts.map(p => p.id));
+          const pendingIds = new Set(pendingPosts.map(p => p.id));
+          const newEvents = result.events.filter(e => !currentIds.has(e.id) && !pendingIds.has(e.id));
+          if (newEvents.length > 0) {
+            const newFeedPosts = newEvents.map(e =>
+              primalEventToFeedPost(e, result!.profiles, profile?.pubkey, "public", result!.stats)
+            );
+            setPendingPosts(prev => [...newFeedPosts, ...prev]);
+            setNewPostCount(prev => prev + newEvents.length);
+          }
+        }
+      }
+    } catch {}
+  }, [tab, exploreMode, profile?.pubkey, posts, pendingPosts]);
+
+  useEffect(() => {
+    if (tab !== "explore" && tab !== "following") return;
+    const interval = setInterval(checkForNewPosts, 30000);
+    return () => clearInterval(interval);
+  }, [checkForNewPosts, tab]);
+
+  const showNewPosts = useCallback(() => {
+    if (pendingPosts.length > 0) {
+      setPosts(prev => [...pendingPosts, ...prev]);
+      setPendingPosts([]);
+      setNewPostCount(0);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [pendingPosts]);
+
+  const manualRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    setNewPostCount(0);
+    setPendingPosts([]);
+    await fetchFeed();
+  }, [fetchFeed]);
+
+  return { posts, isLoading, isRefreshing, refetch: manualRefresh, ndkConnected, newPostCount, showNewPosts };
 }
 
 type MediaItem = {
@@ -783,7 +844,7 @@ const EXPLORE_OPTIONS: { value: ExploreMode; label: string; icon: typeof Trendin
 export default function Feed() {
   const [activeTab, setActiveTab] = useState<FeedTab>("following");
   const [exploreMode, setExploreMode] = useState<ExploreMode>("trending");
-  const { posts, isLoading, refetch, ndkConnected } = useNostrFeed(activeTab, exploreMode);
+  const { posts, isLoading, isRefreshing, refetch, ndkConnected, newPostCount, showNewPosts } = useNostrFeed(activeTab, exploreMode);
 
   const currentExploreOption = EXPLORE_OPTIONS.find(o => o.value === exploreMode) || EXPLORE_OPTIONS[0];
 
@@ -807,7 +868,18 @@ export default function Feed() {
   return (
     <Layout>
       <div className="max-w-4xl mx-auto p-4 lg:p-6">
-        <h1 className="text-2xl font-serif mb-2" data-testid="text-feed-title">Your Feed</h1>
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="text-2xl font-serif" data-testid="text-feed-title">Your Feed</h1>
+          <button
+            onClick={refetch}
+            disabled={isRefreshing || isLoading}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF] transition-colors disabled:opacity-50"
+            data-testid="button-refresh-feed"
+          >
+            <RefreshCw className={`w-4 h-4 ${isRefreshing || isLoading ? "animate-spin" : ""}`} />
+            {isRefreshing ? "Refreshing..." : "Refresh"}
+          </button>
+        </div>
         <p className="text-muted-foreground text-sm mb-6">Personalized updates from your courses, communities, and connections</p>
         
         <PostComposer onPostPublished={refetch} />
@@ -886,6 +958,16 @@ export default function Feed() {
 
         <div className="flex gap-6">
           <div className="flex-1 space-y-4 min-w-0">
+            {newPostCount > 0 && (
+              <button
+                onClick={showNewPosts}
+                className="w-full py-2.5 px-4 bg-[#6600ff] text-white rounded-lg text-sm font-medium hover:bg-[#5500dd] transition-colors flex items-center justify-center gap-2 shadow-md"
+                data-testid="button-show-new-posts"
+              >
+                <ArrowUp className="w-4 h-4" />
+                Show {newPostCount} new {newPostCount === 1 ? "post" : "posts"}
+              </button>
+            )}
             {isLoading ? (
               <FeedLoadingSkeleton />
             ) : posts.length > 0 ? (
