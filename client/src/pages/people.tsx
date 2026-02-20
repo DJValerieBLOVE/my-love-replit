@@ -44,65 +44,50 @@ import type { ExploreMode } from "@/lib/primal-cache";
 
 type PeopleTab = "feed" | "tribes" | "buddies" | "victories" | "gratitude" | "prayers" | "discover";
 
-const PEOPLE_TABS: { id: PeopleTab; label: string; icon: typeof Users }[] = [
-  { id: "feed", label: "My Feed", icon: Globe },
-  { id: "tribes", label: "My Tribes", icon: Users },
-  { id: "buddies", label: "Buddies", icon: Handshake },
-  { id: "victories", label: "Victories", icon: Trophy },
-  { id: "gratitude", label: "Gratitude", icon: Star },
-  { id: "prayers", label: "Prayers", icon: Heart },
-  { id: "discover", label: "Discover", icon: Search },
+type FeedSubOption = "following" | "trending" | "most_zapped" | "latest" | "media";
+type DiscoverSubOption = "tribes" | "members";
+type BuddySubOption = "find" | "messages" | "goals";
+
+const FEED_SUB_OPTIONS: { id: FeedSubOption; label: string; icon: typeof Globe }[] = [
+  { id: "following", label: "Following", icon: Users },
+  { id: "trending", label: "Trending", icon: TrendingUp },
+  { id: "most_zapped", label: "Most Zapped", icon: Zap },
+  { id: "latest", label: "Latest", icon: Clock },
+  { id: "media", label: "Media", icon: Camera },
 ];
 
-function FeedTabContent() {
-  const [exploreMode, setExploreMode] = useState<ExploreMode>("trending");
-  const [feedMode, setFeedMode] = useState<"following" | "explore">("following");
-  const feedTab: FeedTab = feedMode === "following" ? "following" : "explore";
+const DISCOVER_SUB_OPTIONS: { id: DiscoverSubOption; label: string; icon: typeof Search }[] = [
+  { id: "tribes", label: "Tribes", icon: Users },
+  { id: "members", label: "Find Members", icon: UserPlus },
+];
+
+const BUDDY_SUB_OPTIONS: { id: BuddySubOption; label: string; icon: typeof Handshake }[] = [
+  { id: "find", label: "Find a Buddy", icon: UserPlus },
+  { id: "messages", label: "Buddy Messages", icon: MessageCircle },
+  { id: "goals", label: "Shared Goals", icon: Trophy },
+];
+
+function FeedTabContent({ subOption }: { subOption: FeedSubOption }) {
+  const exploreMap: Record<FeedSubOption, ExploreMode> = {
+    following: "trending",
+    trending: "trending",
+    most_zapped: "most_zapped",
+    latest: "latest",
+    media: "media",
+  };
+  const feedTab: FeedTab = subOption === "following" ? "following" : "explore";
+  const exploreMode = exploreMap[subOption];
   const { posts, isLoading, isRefreshing, refetch, newPostCount, showNewPosts, pendingPosts, primalProfiles } = useNostrFeed(feedTab, exploreMode);
-  const currentExploreOption = EXPLORE_OPTIONS.find(o => o.value === exploreMode) || EXPLORE_OPTIONS[0];
 
   return (
     <div>
       <PostComposer onPostPublished={refetch} />
 
-      <div className="flex items-center gap-2 mb-4">
-        <button
-          onClick={() => setFeedMode("following")}
-          className={`px-3.5 py-1.5 rounded-full text-sm transition-colors border ${feedMode === "following" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
-          data-testid="feed-sub-tab-following"
-        >
-          Following
-        </button>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button
-              className={`px-3.5 py-1.5 rounded-full text-sm transition-colors border flex items-center gap-1.5 ${feedMode === "explore" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
-              data-testid="feed-sub-tab-explore"
-            >
-              <currentExploreOption.icon className="w-3.5 h-3.5" strokeWidth={1.5} />
-              {currentExploreOption.label}
-              <ChevronDown className="w-3 h-3" strokeWidth={1.5} />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="center" className="w-48">
-            {EXPLORE_OPTIONS.map((option) => (
-              <DropdownMenuItem
-                key={option.value}
-                onClick={() => { setExploreMode(option.value); setFeedMode("explore"); }}
-                className={`cursor-pointer ${exploreMode === option.value && feedMode === "explore" ? "bg-gray-50" : ""}`}
-              >
-                <option.icon className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} />
-                {option.label}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-
+      <div className="flex items-center justify-end mb-4">
         <button
           onClick={refetch}
           disabled={isRefreshing || isLoading}
-          className="ml-auto flex items-center justify-center w-8 h-8 rounded-full text-muted-foreground hover:text-foreground hover:bg-[#F0E6FF] transition-colors disabled:text-[#C4C4C4]"
+          className="flex items-center justify-center w-8 h-8 rounded-full text-muted-foreground hover:text-foreground hover:bg-[#F0E6FF] transition-colors disabled:text-[#C4C4C4]"
           data-testid="button-refresh-feed"
           title="Refresh feed"
         >
@@ -131,7 +116,7 @@ function FeedTabContent() {
           <div className="text-center py-12 text-muted-foreground">
             <p className="text-lg">No posts yet</p>
             <p className="text-sm mt-2">
-              {feedMode === "following" ? "Follow some people to see their posts here!"
+              {subOption === "following" ? "Follow some people to see their posts here!"
                 : "No posts found. Try a different explore category!"}
             </p>
           </div>
@@ -553,12 +538,11 @@ function PrayersTabContent() {
   );
 }
 
-function DiscoverTabContent() {
+function DiscoverTabContent({ subOption }: { subOption: DiscoverSubOption }) {
   const { isConnected } = useNostr();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedTag, setSelectedTag] = useState("all");
-  const [discoverSubTab, setDiscoverSubTab] = useState<"tribes" | "members">("tribes");
 
   const { data: communities = [], isLoading } = useQuery({
     queryKey: ["communities"],
@@ -603,24 +587,7 @@ function DiscoverTabContent() {
 
   return (
     <div>
-      <div className="flex items-center gap-2 mb-4">
-        <button
-          onClick={() => setDiscoverSubTab("tribes")}
-          className={`px-3.5 py-1.5 rounded-full text-sm transition-colors border ${discoverSubTab === "tribes" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
-          data-testid="discover-sub-tab-tribes"
-        >
-          Tribes
-        </button>
-        <button
-          onClick={() => setDiscoverSubTab("members")}
-          className={`px-3.5 py-1.5 rounded-full text-sm transition-colors border ${discoverSubTab === "members" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
-          data-testid="discover-sub-tab-members"
-        >
-          Find Members
-        </button>
-      </div>
-
-      {discoverSubTab === "tribes" ? (
+      {subOption === "tribes" ? (
         <>
           <div className="flex gap-2 items-stretch mb-6">
             <div className="relative flex-1">
@@ -919,47 +886,167 @@ function RightSidebar() {
   );
 }
 
+function TabDropdownBubble({ 
+  label, 
+  icon: Icon, 
+  isActive, 
+  items, 
+  activeItemLabel,
+  onSelect,
+  testId,
+}: {
+  label: string;
+  icon: typeof Globe;
+  isActive: boolean;
+  items: { id: string; label: string; icon: typeof Globe }[];
+  activeItemLabel?: string;
+  onSelect: (id: string) => void;
+  testId: string;
+}) {
+  const displayLabel = activeItemLabel && isActive ? activeItemLabel : label;
+
+  if (items.length === 0) {
+    return (
+      <button
+        onClick={() => onSelect("")}
+        className={`px-3 py-1.5 rounded-full text-sm transition-colors border whitespace-nowrap flex items-center gap-1.5 ${
+          isActive
+            ? "bg-foreground text-background border-foreground"
+            : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"
+        }`}
+        data-testid={testId}
+      >
+        <Icon className="w-3.5 h-3.5" strokeWidth={1.5} />
+        {displayLabel}
+      </button>
+    );
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          className={`px-3 py-1.5 rounded-full text-sm transition-colors border whitespace-nowrap flex items-center gap-1.5 ${
+            isActive
+              ? "bg-foreground text-background border-foreground"
+              : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"
+          }`}
+          data-testid={testId}
+        >
+          <Icon className="w-3.5 h-3.5" strokeWidth={1.5} />
+          {displayLabel}
+          <ChevronDown className="w-3 h-3" strokeWidth={1.5} />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-48">
+        {items.map((item) => (
+          <DropdownMenuItem
+            key={item.id}
+            onClick={() => onSelect(item.id)}
+            className="cursor-pointer gap-2"
+            data-testid={`${testId}-option-${item.id}`}
+          >
+            <item.icon className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+            <span className="text-sm">{item.label}</span>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
 export default function People() {
   const [activeTab, setActiveTab] = useState<PeopleTab>("feed");
+  const [feedSub, setFeedSub] = useState<FeedSubOption>("following");
+  const [discoverSub, setDiscoverSub] = useState<DiscoverSubOption>("tribes");
+  const [buddySub, setBuddySub] = useState<BuddySubOption>("find");
+
+  const feedSubLabel = FEED_SUB_OPTIONS.find(o => o.id === feedSub)?.label;
+  const discoverSubLabel = DISCOVER_SUB_OPTIONS.find(o => o.id === discoverSub)?.label;
+  const buddySubLabel = BUDDY_SUB_OPTIONS.find(o => o.id === buddySub)?.label;
 
   return (
     <Layout>
       <div className="p-4 lg:p-6">
-        <div className="max-w-[1200px] mx-auto">
+        <div className="max-w-[1100px] mx-auto">
           <div className="mb-2">
             <h1 className="text-2xl font-serif" data-testid="text-people-title">People</h1>
           </div>
           <p className="text-muted-foreground text-sm mb-4">Your tribes, feed, victories, and connections — all in one place.</p>
 
           <div className="sticky top-14 md:top-20 z-[30] -mx-4 lg:-mx-6 px-4 lg:px-6 py-3 bg-[#FAFAFA] border-b border-gray-200">
-            <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide max-w-[1200px] mx-auto">
-              {PEOPLE_TABS.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`px-3 py-1.5 rounded-full text-sm transition-colors border whitespace-nowrap flex items-center gap-1.5 ${
-                    activeTab === tab.id
-                      ? "bg-foreground text-background border-foreground"
-                      : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"
-                  }`}
-                  data-testid={`tab-${tab.id}`}
-                >
-                  <tab.icon className="w-3.5 h-3.5" strokeWidth={1.5} />
-                  {tab.label}
-                </button>
-              ))}
+            <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide max-w-[1100px] mx-auto">
+              <TabDropdownBubble
+                label="My Feed"
+                icon={Globe}
+                isActive={activeTab === "feed"}
+                items={FEED_SUB_OPTIONS}
+                activeItemLabel={feedSubLabel}
+                onSelect={(id) => { setActiveTab("feed"); setFeedSub(id as FeedSubOption); }}
+                testId="tab-feed"
+              />
+              <TabDropdownBubble
+                label="My Tribes"
+                icon={Users}
+                isActive={activeTab === "tribes"}
+                items={[]}
+                onSelect={() => setActiveTab("tribes")}
+                testId="tab-tribes"
+              />
+              <TabDropdownBubble
+                label="Buddies"
+                icon={Handshake}
+                isActive={activeTab === "buddies"}
+                items={BUDDY_SUB_OPTIONS}
+                activeItemLabel={buddySubLabel}
+                onSelect={(id) => { setActiveTab("buddies"); setBuddySub(id as BuddySubOption); }}
+                testId="tab-buddies"
+              />
+              <TabDropdownBubble
+                label="Victories"
+                icon={Trophy}
+                isActive={activeTab === "victories"}
+                items={[]}
+                onSelect={() => setActiveTab("victories")}
+                testId="tab-victories"
+              />
+              <TabDropdownBubble
+                label="Gratitude"
+                icon={Star}
+                isActive={activeTab === "gratitude"}
+                items={[]}
+                onSelect={() => setActiveTab("gratitude")}
+                testId="tab-gratitude"
+              />
+              <TabDropdownBubble
+                label="Prayers"
+                icon={Heart}
+                isActive={activeTab === "prayers"}
+                items={[]}
+                onSelect={() => setActiveTab("prayers")}
+                testId="tab-prayers"
+              />
+              <TabDropdownBubble
+                label="Discover"
+                icon={Search}
+                isActive={activeTab === "discover"}
+                items={DISCOVER_SUB_OPTIONS}
+                activeItemLabel={discoverSubLabel}
+                onSelect={(id) => { setActiveTab("discover"); setDiscoverSub(id as DiscoverSubOption); }}
+                testId="tab-discover"
+              />
             </div>
           </div>
 
           <div className="flex gap-6 mt-4">
-            <div className="flex-1 min-w-0">
-              {activeTab === "feed" && <FeedTabContent />}
+            <div className="flex-1 min-w-0 max-w-[720px] mx-auto">
+              {activeTab === "feed" && <FeedTabContent subOption={feedSub} />}
               {activeTab === "tribes" && <TribesTabContent />}
               {activeTab === "buddies" && <BuddiesTabContent />}
               {activeTab === "victories" && <VictoriesTabContent />}
               {activeTab === "gratitude" && <GratitudeTabContent />}
               {activeTab === "prayers" && <PrayersTabContent />}
-              {activeTab === "discover" && <DiscoverTabContent />}
+              {activeTab === "discover" && <DiscoverTabContent subOption={discoverSub} />}
             </div>
 
             <div className="hidden lg:block w-[280px] shrink-0">

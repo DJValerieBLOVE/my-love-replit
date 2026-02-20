@@ -3,6 +3,15 @@
 ## Overview
 My Masterpiece is a spiritual personal growth application designed to help users curate their personal growth journey. It offers a personalized dashboard, integrated consumption of courses/podcasts/music, collaboration tools, private journaling, and an AI coach with persistent memory. The app leverages a hybrid Nostr and PostgreSQL architecture, integrating Lightning payments for peer-to-peer interactions. The platform aims to combine features from various popular platforms into a singular, cohesive experience focused on personal transformation, hosting the "11x LOVE LaB" community.
 
+## Recent Changes (Feb 2026)
+- **Unified People Hub**: Merged separate Feed + Tribe pages into single People page (`/people`). Navigation sidebar now shows "People" instead of separate "Tribe" and "Feed" items.
+- **Dropdown Pill Bubbles**: People page top tabs are pill-shaped bubbles with dropdown sub-menus (My Feed has Following/Trending/Most Zapped/Latest/Media; Buddies has Find/Messages/Goals; Discover has Tribes/Find Members). Tabs without sub-options (Victories, Gratitude, Prayers, My Tribes) are direct-click pills.
+- **4-Tier Privacy System**: All post composers (Feed, Victories, Gratitude, Prayers) include a PrivacySelector dropdown: Public (Nostr), Tribe Only, Buddy Only, Secret (Vault).
+- **Text Input Redesign**: Global Input/Textarea components updated with consistent styling — white bg, rounded-lg, gray-200 borders, purple focus ring (`ring-[#6600ff]/20`).
+- **Profile Enhancements**: Added follower/following counts, location display, bio synced from Nostr. Breadcrumb updated to link to /people.
+- **Right Sidebar**: People page has sticky right sidebar with Top Zappers, Top Streaks, Progress & Completions placeholders (hidden on mobile).
+- **Content Width**: Main content area capped at 720px and centered under the page header. Overall container 1100px max.
+
 ## User Preferences
 - Preferred communication style: Simple, everyday language
 - Daily LOVE Practice is the MOST IMPORTANT feature (LOVE always capitalized)
@@ -11,9 +20,9 @@ My Masterpiece is a spiritual personal growth application designed to help users
 - All colors solid hex, no opacity values
 - Privacy-first: entries default to private, optional sharing
 - Love Board is a marketplace (For Sale, Help Wanted, Services, Other) for paid members at /leaderboard route
-- Prayer Requests live inside the Tribes page (any user can post, not just paid)
-- Tribes tabs: My Tribes, New, All, Suggested, Prayer Requests + Create Tribe button
-- Tribes page right sidebar has placeholder gamification: Top Zappers, Top Streaks, Progress & Completions
+- Prayer Requests live inside the People page Prayers tab (any user can post, not just paid)
+- People page is the unified social hub (replaced separate Feed + Tribe pages)
+- People page right sidebar has placeholder gamification: Top Zappers, Top Streaks, Progress & Completions
 - All Tribe content and Prayer Requests are PRIVATE (not shared to public Nostr)
 - Streak grid tracks Daily LOVE Practice completions: #EEEEEE (none), #D9C2FF (morning only), #A366FF (evening only), #6600FF (complete day)
 - NO gamification on Profile page (no XP, levels, badges, rewards)
@@ -47,7 +56,7 @@ My Masterpiece is a spiritual personal growth application designed to help users
   - Default/Primary: `bg-foreground text-background` (dark charcoal fill, white text). Hover: `hover:bg-white hover:border-[#E5E5E5] hover:text-foreground`.
   - Ghost Button Hover: Light purple `hover:bg-[#F0E6FF]`.
   - Never use blue for any button or hover state.
-- **Tabs / Pill Bubbles**: Consistent `rounded-full` shape with active state `bg-foreground text-background border-foreground` and inactive state `bg-white text-muted-foreground border-gray-200`. Used on Feed, Experiments, Events, Vault.
+- **Tabs / Pill Bubbles**: Consistent `rounded-full` shape with active state `bg-foreground text-background border-foreground` and inactive state `bg-white text-muted-foreground border-gray-200`. Used on Experiments, Events, Vault. People page uses dropdown pill bubbles — same bubble style but with ChevronDown icon and DropdownMenu for sub-options (matching category/tag dropdown pattern).
 - **Search Inputs**: Always `bg-white` with `Search` icon at `left-3` and `pl-10` for input.
 - **Cards**: `border-none shadow-sm bg-card rounded-xs` with `hover:shadow-md`. Images are 16:9 (`aspect-video`) with NO overlays/tags on images. Top accent is a thin purple line (`bg-primary`). Card titles turn purple on group hover. Dashed borders for placeholder cards. Tags, step counts, and categories go in the card info area below the image.
 - **Tags / Badges**: Light gray outline style: `bg-white border border-gray-200 text-muted-foreground text-xs px-2.5 py-0.5 rounded-md`. Always placed in card content area, never overlaid on images.
@@ -67,12 +76,13 @@ My Masterpiece is a spiritual personal growth application designed to help users
 - **Experiment Detail** (`/experiments/:id`): Lesson viewer with sequential unlocking, quiz integration, discovery completion, Lightning zap creator modal, share-to-Nostr completion flow.
 - **Events** (`/events`): 4 tabs with calendar and event cards. Create Event button in tab row.
 - **Event Create** (`/events/create`): Event creation with thumbnail image upload.
-- **Feed** (`/feed`): 4 tabs for Nostr social feed.
+- **People** (`/people`): Unified social hub replacing separate Feed + Tribe pages. Top tab bar uses dropdown pill bubbles with sub-menus. Tabs: My Feed (dropdown: Following, Trending, Most Zapped, Latest, Media), My Tribes (direct click, has tribe selector dropdown inside), Buddies (dropdown: Find a Buddy, Buddy Messages, Shared Goals), Victories (direct), Gratitude (direct), Prayers (direct), Discover (dropdown: Tribes, Find Members). Right sidebar with gamification placeholders. Two-column layout (content max-width 720px centered + 280px sidebar on desktop). 4-tier privacy selector on all post composers (Public/Nostr, Tribe Only, Buddy Only, Secret/Vault).
+- **Feed** (`/feed`): Legacy route still works but Feed nav item removed from sidebar. Users access feed through People page.
 - **Vault** (`/vault`): 6 tabs for personal content.
-- **Tribe/Community** (`/community`): Community listing, creation, and management. Create Tribe button below cover image. Category and tag dropdown filters.
+- **Tribe/Community** (`/community`): Community listing, creation, and management. Create Tribe button below cover image. Category and tag dropdown filters. Individual tribe pages still at /community/:id.
 - **Community Create** (`/community/create`): Tribe creation with thumbnail image upload, category/tag selection, access type settings.
 - **Love Board** (`/leaderboard`): Rankings (planned marketplace). Create Post button in header area.
-- **Profile** (`/profile/:id`): Clean Primal-style profile with no gamification.
+- **Profile** (`/profile/:id`): Clean Primal-style profile with no gamification. Shows follower/following counts, location (from Nostr metadata), bio synced from Nostr. Breadcrumb links to /people.
 - **Creator Dashboard** (`/creator`): Analytics for content creators.
 - **Wallet** (`/wallet`): Lightning wallet with NWC integration.
 - **Security**: Dual auth middleware (JWT, Nostr pubkey), NIP-07/NIP-46, ownership checks, Nostr query filtering, AI prompt injection protection, atomic transactions for AI usage.
@@ -98,8 +108,9 @@ My Masterpiece is a spiritual personal growth application designed to help users
 - Both paths lead to personalized dashboard with EQ visualizer
 
 ### Privacy Architecture
-- Three-tier privacy: encrypted tribe messages, private-by-default journals/AI conversations, shareable completions/feed posts.
+- Four-tier privacy system on all post composers: Public (Nostr), Tribe Only (private to specific tribe), Buddy Only (accountability buddy), Secret (vault only).
 - Dual-relay architecture: private Railway Relay for LaB data, public relays for general Nostr data.
+- Private-by-default journals/AI conversations, shareable completions/feed posts.
 - Users can provide their own AI API key (BYOK).
 
 ## External Dependencies
