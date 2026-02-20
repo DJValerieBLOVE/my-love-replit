@@ -1140,15 +1140,15 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
               )}
             </div>
           )}
-          <div className="flex items-center gap-1 mt-3 pt-2 border-t border-gray-100">
-            <button className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground rounded-full px-2.5 py-1 transition-colors text-xs" data-testid={`button-reply-${post.id}`}>
+          <div className="flex items-center justify-between mt-3 pt-2 border-t border-gray-100">
+            <button className="flex items-center justify-center gap-1.5 text-muted-foreground hover:text-foreground rounded-full px-2 py-1 transition-colors text-xs flex-1" data-testid={`button-reply-${post.id}`}>
               <MessageCircle className="w-3.5 h-3.5" strokeWidth={1.5} />
               <span>{post.comments > 0 ? post.comments : ""}</span>
             </button>
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 transition-colors text-xs ${isReposted ? 'text-[#6600ff]' : 'text-muted-foreground hover:text-foreground'}`} data-testid={`button-repost-${post.id}`}>
+                <button className={`flex items-center justify-center gap-1.5 rounded-full px-2 py-1 transition-colors text-xs flex-1 ${isReposted ? 'text-[#6600ff]' : 'text-muted-foreground hover:text-foreground'}`} data-testid={`button-repost-${post.id}`}>
                   <Repeat2 className="w-4 h-4" strokeWidth={1.5} />
                   <span>{post.reposts > 0 ? post.reposts : ""}</span>
                 </button>
@@ -1244,14 +1244,14 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
               </DialogContent>
             </Dialog>
 
-            <button className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground rounded-full px-2.5 py-1 transition-colors text-xs" data-testid={`button-zap-${post.id}`}>
+            <button className="flex items-center justify-center gap-1.5 text-muted-foreground hover:text-foreground rounded-full px-2 py-1 transition-colors text-xs flex-1" data-testid={`button-zap-${post.id}`}>
               <Zap className="w-3.5 h-3.5" strokeWidth={1.5} />
               <span data-testid={`count-zaps-${post.id}`}>{post.satszapped > 0 ? formatSats(post.satszapped) : ""}</span>
             </button>
 
             <button 
               onClick={handleLike}
-              className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 transition-colors text-xs ${isLiked ? 'text-[#6600ff]' : 'text-muted-foreground hover:text-foreground'}`} 
+              className={`flex items-center justify-center gap-1.5 rounded-full px-2 py-1 transition-colors text-xs flex-1 ${isLiked ? 'text-[#6600ff]' : 'text-muted-foreground hover:text-foreground'}`} 
               data-testid={`button-like-${post.id}`}
             >
               <Heart className="w-3.5 h-3.5" strokeWidth={1.5} fill={isLiked ? "currentColor" : "none"} />
@@ -1260,7 +1260,7 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
 
             <button 
               onClick={handleBookmark}
-              className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 transition-colors text-xs ${isBookmarked ? 'text-[#6600ff]' : 'text-muted-foreground hover:text-foreground'}`} 
+              className={`flex items-center justify-center gap-1.5 rounded-full px-2 py-1 transition-colors text-xs flex-1 ${isBookmarked ? 'text-[#6600ff]' : 'text-muted-foreground hover:text-foreground'}`} 
               data-testid={`button-bookmark-${post.id}`}
             >
               <Bookmark className="w-3.5 h-3.5" strokeWidth={1.5} fill={isBookmarked ? "currentColor" : "none"} />
@@ -1269,7 +1269,7 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button 
-                  className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground rounded-full px-2.5 py-1 transition-colors text-xs ml-auto" 
+                  className="flex items-center justify-center gap-1.5 text-muted-foreground hover:text-foreground rounded-full px-2 py-1 transition-colors text-xs flex-1" 
                   data-testid={`button-share-${post.id}`}
                 >
                   <Share2 className="w-4 h-4" strokeWidth={1.5} />

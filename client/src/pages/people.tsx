@@ -236,11 +236,10 @@ function BuddiesTabContent() {
 function VictoriesTabContent() {
   const { isConnected, profile } = useNostr();
   const [victoryContent, setVictoryContent] = useState("");
-  const [victoryPrivacy, setVictoryPrivacy] = useState<"public" | "private" | "buddy" | "secret">("public");
 
-  const handlePostVictory = () => {
+  const handlePostVictory = (privacy: string) => {
     if (!victoryContent.trim()) return;
-    toast.success("Victory shared!");
+    toast.success(privacy === "public" ? "Victory shared to Nostr!" : "Victory saved privately!");
     setVictoryContent("");
   };
 
@@ -267,16 +266,14 @@ function VictoriesTabContent() {
                 className="min-h-[80px] resize-none"
                 data-testid="textarea-victory"
               />
-              <div className="flex items-center justify-between mt-3 pt-3 border-t">
-                <PrivacySelector value={victoryPrivacy} onChange={setVictoryPrivacy} />
-                <Button
-                  onClick={handlePostVictory}
+              <div className="flex items-center justify-end mt-3 pt-3 border-t">
+                <PrivacySubmitButton
+                  label="Share Victory"
+                  icon={Trophy}
                   disabled={!victoryContent.trim()}
-                  className="px-5 gap-2"
-                  data-testid="button-post-victory"
-                >
-                  <Trophy className="w-4 h-4" /> Share Victory
-                </Button>
+                  onSubmit={handlePostVictory}
+                  testId="button-post-victory"
+                />
               </div>
             </div>
           </div>
@@ -295,11 +292,10 @@ function VictoriesTabContent() {
 function GratitudeTabContent() {
   const { isConnected, profile } = useNostr();
   const [gratitudeContent, setGratitudeContent] = useState("");
-  const [gratitudePrivacy, setGratitudePrivacy] = useState<"public" | "private" | "buddy" | "secret">("public");
 
-  const handlePostGratitude = () => {
+  const handlePostGratitude = (privacy: string) => {
     if (!gratitudeContent.trim()) return;
-    toast.success("Gratitude shared!");
+    toast.success(privacy === "public" ? "Gratitude shared to Nostr!" : "Gratitude saved privately!");
     setGratitudeContent("");
   };
 
@@ -326,16 +322,14 @@ function GratitudeTabContent() {
                 className="min-h-[80px] resize-none"
                 data-testid="textarea-gratitude"
               />
-              <div className="flex items-center justify-between mt-3 pt-3 border-t">
-                <PrivacySelector value={gratitudePrivacy} onChange={setGratitudePrivacy} />
-                <Button
-                  onClick={handlePostGratitude}
+              <div className="flex items-center justify-end mt-3 pt-3 border-t">
+                <PrivacySubmitButton
+                  label="Share Gratitude"
+                  icon={Star}
                   disabled={!gratitudeContent.trim()}
-                  className="px-5 gap-2"
-                  data-testid="button-post-gratitude"
-                >
-                  <Star className="w-4 h-4" /> Share Gratitude
-                </Button>
+                  onSubmit={handlePostGratitude}
+                  testId="button-post-gratitude"
+                />
               </div>
             </div>
           </div>
@@ -355,7 +349,6 @@ function PrayersTabContent() {
   const { isConnected, profile } = useNostr();
   const [newPrayer, setNewPrayer] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(false);
-  const [prayerPrivacy, setPrayerPrivacy] = useState<"public" | "private" | "buddy" | "secret">("public");
   const queryClient = useQueryClient();
 
   const { data: prayerRequests = [], isLoading } = useQuery({
@@ -424,28 +417,23 @@ function PrayersTabContent() {
               data-testid="input-prayer"
             />
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={isAnonymous}
-                    onChange={(e) => setIsAnonymous(e.target.checked)}
-                    className="rounded"
-                    data-testid="checkbox-anonymous"
-                  />
-                  Post anonymously
-                </label>
-                <PrivacySelector value={prayerPrivacy} onChange={setPrayerPrivacy} />
-              </div>
-              <Button
-                onClick={handleSubmitPrayer}
+              <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={isAnonymous}
+                  onChange={(e) => setIsAnonymous(e.target.checked)}
+                  className="rounded"
+                  data-testid="checkbox-anonymous"
+                />
+                Post anonymously
+              </label>
+              <PrivacySubmitButton
+                label={createPrayerMutation.isPending ? "Sharing..." : "Share Prayer"}
+                icon={Heart}
                 disabled={createPrayerMutation.isPending || !newPrayer.trim()}
-                className="gap-2"
-                data-testid="button-submit-prayer"
-              >
-                <Heart className="w-4 h-4" />
-                {createPrayerMutation.isPending ? "Sharing..." : "Share Prayer"}
-              </Button>
+                onSubmit={(privacy) => handleSubmitPrayer()}
+                testId="button-submit-prayer"
+              />
             </div>
           </CardContent>
         </Card>
@@ -734,6 +722,53 @@ function FindMembersContent() {
         </div>
       </div>
     </div>
+  );
+}
+
+function PrivacySubmitButton({ label, icon: Icon, disabled, onSubmit, testId }: {
+  label: string;
+  icon: typeof Globe;
+  disabled?: boolean;
+  onSubmit: (privacy: string) => void;
+  testId: string;
+}) {
+  const privacyOptions = [
+    { id: "public", label: "Public (Nostr)", icon: Globe, description: "Share to public Nostr relays" },
+    { id: "private", label: "Tribe Only", icon: Users, description: "Private to your tribe" },
+    { id: "buddy", label: "Buddy Only", icon: Handshake, description: "Share with accountability buddy" },
+    { id: "secret", label: "Secret (Vault)", icon: Lock, description: "Save to your private vault" },
+  ];
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          disabled={disabled}
+          className="gap-2"
+          data-testid={testId}
+        >
+          <Icon className="w-4 h-4" strokeWidth={1.5} />
+          {label}
+          <ChevronDown className="w-3.5 h-3.5 ml-1" strokeWidth={1.5} />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        {privacyOptions.map((option) => (
+          <DropdownMenuItem
+            key={option.id}
+            onClick={() => onSubmit(option.id)}
+            className="cursor-pointer"
+            data-testid={`${testId}-${option.id}`}
+          >
+            <option.icon className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} />
+            <div>
+              <p className="text-sm">{option.label}</p>
+              <p className="text-xs text-muted-foreground">{option.description}</p>
+            </div>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
