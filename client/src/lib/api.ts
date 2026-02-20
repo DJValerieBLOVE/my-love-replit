@@ -311,6 +311,33 @@ export async function getAllEvents() {
   return response.json();
 }
 
+export async function getEvent(id: string) {
+  const response = await fetch(`/api/events/${id}`);
+  if (!response.ok) throw new Error("Failed to fetch event");
+  return response.json();
+}
+
+export async function createEvent(data: {
+  title: string;
+  host: string;
+  date: string;
+  time: string;
+  type: string;
+  recurrence?: string;
+  attendees?: number;
+  image?: string;
+  description?: string;
+  category: string;
+}) {
+  const response = await fetch("/api/events", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error("Failed to create event");
+  return response.json();
+}
+
 export async function getRecentPosts(limit?: number) {
   const url = limit ? `/api/posts?limit=${limit}` : "/api/posts";
   const response = await authFetch(url);

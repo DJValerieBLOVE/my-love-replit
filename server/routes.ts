@@ -847,6 +847,19 @@ export async function registerRoutes(
     }
   });
 
+  // Get single event
+  app.get("/api/events/:id", async (req, res) => {
+    try {
+      const event = await storage.getEvent(req.params.id);
+      if (!event) {
+        return res.status(404).json({ error: "Event not found" });
+      }
+      res.json(event);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch event" });
+    }
+  });
+
   // Create event
   app.post("/api/events", async (req, res) => {
     try {

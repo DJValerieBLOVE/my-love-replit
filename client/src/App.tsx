@@ -23,6 +23,7 @@ import Journal from "@/pages/journal";
 import Wallet from "@/pages/wallet";
 import Profile from "@/pages/profile";
 import Events from "@/pages/events";
+import EventCreate from "@/pages/event-create";
 import EventDetail from "@/pages/event-detail";
 import Leaderboard from "@/pages/leaderboard";
 import Feed from "@/pages/feed";
@@ -54,6 +55,7 @@ function Router() {
       <Route path="/profile/:userId" component={Profile} />
       <Route path="/creator" component={CreatorDashboard} />
       <Route path="/events" component={Events} />
+      <Route path="/events/create" component={EventCreate} />
       <Route path="/events/:id" component={EventDetail} />
       <Route path="/leaderboard" component={Leaderboard} />
       <Route path="/feed" component={Feed} />

@@ -1,5 +1,4 @@
 import Layout from "@/components/layout";
-import { LEADERBOARD_DATA } from "@/lib/mock-data";
 import { Trophy, Zap, Award, TrendingUp, Loader2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -30,9 +29,7 @@ export default function Leaderboard() {
     queryFn: () => getLeaderboard(20),
   });
   
-  const displayData = leaderboardData && leaderboardData.length > 0 
-    ? leaderboardData 
-    : LEADERBOARD_DATA;
+  const displayData = leaderboardData || [];
   
   const getRankBadge = (rank: number) => {
     if (rank === 1) return "🥇";
@@ -67,7 +64,7 @@ export default function Leaderboard() {
             <p className="text-muted-foreground text-lg">Compete with the community • Level up together</p>
           </div>
           <div className="flex gap-1.5 flex-wrap items-center">
-            <Button className="gap-2 ml-auto" data-testid="button-create-post">
+            <Button className="gap-2 ml-auto" data-testid="button-create-post" disabled>
               <Plus className="w-4 h-4" /> Create Post
             </Button>
           </div>
@@ -117,6 +114,17 @@ export default function Leaderboard() {
             )}
           </div>
           <div className="space-y-3">
+            {isLoading && (
+              <div className="flex justify-center py-12">
+                <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+              </div>
+            )}
+            {!isLoading && displayData.length === 0 && (
+              <Card className="border-dashed border-2 p-8 text-center bg-muted/30">
+                <p className="text-muted-foreground mb-2">No members on the board yet</p>
+                <p className="text-sm text-muted-foreground">Be the first to join the community and start your journey!</p>
+              </Card>
+            )}
             {displayData.map((user, index) => {
               const rank = index + 1;
               const medal = getRankBadge(rank);

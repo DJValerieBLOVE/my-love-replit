@@ -97,6 +97,7 @@ export interface IStorage {
 
   // Events
   getAllEvents(): Promise<Event[]>;
+  getEvent(id: string): Promise<Event | undefined>;
   createEvent(event: InsertEvent): Promise<Event>;
 
   // Posts
@@ -602,6 +603,11 @@ export class DatabaseStorage implements IStorage {
   // Events
   async getAllEvents(): Promise<Event[]> {
     return await db.select().from(events).orderBy(desc(events.createdAt));
+  }
+
+  async getEvent(id: string): Promise<Event | undefined> {
+    const [event] = await db.select().from(events).where(eq(events.id, id));
+    return event || undefined;
   }
 
   async createEvent(event: InsertEvent): Promise<Event> {

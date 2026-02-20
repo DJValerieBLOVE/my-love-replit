@@ -1,15 +1,11 @@
 import { 
   Clock, 
   Users, 
-  MoreHorizontal, 
-  Video, 
-  ArrowRight,
   Calendar as CalendarIcon 
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { Badge } from "@/components/ui/badge";
 
 interface EventProps {
   event: {
@@ -29,32 +25,31 @@ interface EventProps {
 export function EventCard({ event }: EventProps) {
   return (
     <Link href={`/events/${event.id}`}>
-      <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-all group bg-card cursor-pointer flex flex-col h-full">
+      <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-all group bg-card cursor-pointer flex flex-col h-full rounded-xs">
+        <div className="h-[2px] w-full bg-primary" />
         <div className="relative aspect-video overflow-hidden bg-muted">
-          <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors z-10" />
           <img 
             src={event.image} 
             alt={event.title} 
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
           />
-          <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent z-20">
-            <div className="text-white font-normal text-xs flex items-center gap-1">
-              <CalendarIcon className="w-3 h-3" />
-              <span>{event.date === "Today" ? "TODAY" : "NOV 28"}</span>
-            </div>
-          </div>
         </div>
 
         <CardContent className="p-4 flex-1 flex flex-col justify-between min-w-0">
           <div>
-            <div className="flex justify-between items-start gap-2">
-              <h3 className="font-normal text-lg leading-tight text-muted-foreground group-hover:text-primary transition-colors line-clamp-1">
-                {event.title}
-              </h3>
-              <Button variant="ghost" size="icon" className="text-muted-foreground shrink-0">
-                <MoreHorizontal className="w-4 h-4" />
-              </Button>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-xs px-2.5 py-0.5 rounded-md border border-gray-200 bg-white text-muted-foreground">
+                {event.category}
+              </span>
+              <span className="text-xs text-muted-foreground flex items-center gap-1">
+                <CalendarIcon className="w-3 h-3" />
+                {event.date}
+              </span>
             </div>
+
+            <h3 className="font-normal text-lg leading-tight text-muted-foreground group-hover:text-primary transition-colors line-clamp-1">
+              {event.title}
+            </h3>
             
             <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1 mb-2">
               <span className="font-normal text-foreground">{event.time}</span>

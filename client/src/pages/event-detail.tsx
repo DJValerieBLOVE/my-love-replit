@@ -1,12 +1,10 @@
 import Layout from "@/components/layout";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
   Calendar, 
   Clock, 
-  MapPin, 
   Users, 
   Share2, 
   Heart, 
@@ -14,18 +12,26 @@ import {
   ArrowLeft,
   Video,
   CheckCircle2,
-  Repeat
+  Repeat,
+  Loader2
 } from "lucide-react";
 import { Link, useRoute } from "wouter";
-import { EVENTS } from "@/lib/mock-data";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+import { getEvent } from "@/lib/api";
+import type { Event } from "@shared/schema";
 
 export default function EventDetail() {
   const [, params] = useRoute("/events/:id");
   const eventId = params?.id;
-  const event = EVENTS.find(e => e.id === eventId) || EVENTS[0];
   const [isRsvped, setIsRsvped] = useState(false);
+
+  const { data: event, isLoading, error } = useQuery<Event>({
+    queryKey: ["event", eventId],
+    queryFn: () => getEvent(eventId!),
+    enabled: !!eventId,
+  });
 
   const handleRsvp = () => {
     setIsRsvped(!isRsvped);
@@ -34,11 +40,44 @@ export default function EventDetail() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="flex justify-center items-center py-24">
+          <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+        </div>
+      </Layout>
+    );
+  }
+
+  if (error || !event) {
+    return (
+      <Layout>
+        <div className="max-w-5xl mx-auto p-4 lg:p-8 text-center py-24">
+          <p className="text-muted-foreground mb-4">Event not found</p>
+          <Link href="/events">
+            <Button variant="outline">Back to Events</Button>
+          </Link>
+        </div>
+      </Layout>
+    );
+  }
+
+  const formatDate = (dateStr: string) => {
+    try {
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return dateStr;
+      return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    } catch {
+      return dateStr;
+    }
+  };
+
   return (
     <Layout>
       <div className="max-w-5xl mx-auto p-4 lg:p-8">
         <Link href="/events">
-          <Button variant="ghost" className="mb-6 pl-0 hover:bg-transparent hover:text-primary text-muted-foreground gap-2">
+          <Button variant="ghost" className="mb-6 pl-0 hover:bg-transparent hover:text-primary text-muted-foreground gap-2" data-testid="button-back">
             <ArrowLeft className="w-4 h-4" /> Back to Events
           </Button>
         </Link>
@@ -47,22 +86,27 @@ export default function EventDetail() {
           {/* Left Column: Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Hero Image */}
-            <div className="relative aspect-video rounded-xs overflow-hidden shadow-md group">
-              <img 
-                src={event.image} 
-                alt={event.title} 
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute top-4 left-4">
-                <Badge className="bg-white/90 text-black hover:bg-white font-normal backdrop-blur-md border-none">
-                  {event.category}
-                </Badge>
+            {event.image && (
+              <div className="relative aspect-video rounded-xs overflow-hidden shadow-md">
+                <img 
+                  src={event.image} 
+                  alt={event.title} 
+                  className="w-full h-full object-cover"
+                  data-testid="img-event-hero"
+                />
               </div>
-            </div>
+            )}
 
             {/* Header Info */}
             <div>
-              <h1 className="text-3xl md:text-4xl font-serif font-normal text-muted-foreground mb-4 leading-tight">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-xs px-2.5 py-0.5 rounded-md border border-gray-200 bg-white text-muted-foreground">
+                  {event.category}
+                </span>
+                <span className="text-xs text-muted-foreground">{event.type}</span>
+              </div>
+
+              <h1 className="text-3xl md:text-4xl font-serif font-normal text-muted-foreground mb-4 leading-tight" data-testid="text-event-title">
                 {event.title}
               </h1>
               
@@ -70,7 +114,7 @@ export default function EventDetail() {
                 <div className="flex items-center gap-2">
                   <Avatar className="w-8 h-8 border border-border">
                     <AvatarImage src={`https://i.pravatar.cc/150?u=${event.host}`} />
-                    <AvatarFallback>H</AvatarFallback>
+                    <AvatarFallback>{event.host.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <span className="text-sm">Hosted by <span className="font-normal text-foreground">{event.host}</span></span>
                 </div>
@@ -82,28 +126,23 @@ export default function EventDetail() {
               </div>
 
               {/* Description */}
-              <div className="prose prose-lg text-muted-foreground max-w-none">
-                <h3 className="font-serif font-normal text-xl text-muted-foreground mb-3">About this Event</h3>
-                <p className="text-lg leading-relaxed">
-                  {event.description} Join us for an incredible session of connection, learning, and growth. 
-                  This gathering is designed to bring our community together to share insights and support one another 
-                  on our collective journey.
-                </p>
-                <p className="text-lg leading-relaxed mt-4">
-                  Whether you're a seasoned member or just getting started, you'll find value in the deep discussions 
-                  and practical takeaways we have planned. Don't miss this opportunity to level up your vibration!
-                </p>
-              </div>
+              {event.description && (
+                <div className="prose prose-lg text-muted-foreground max-w-none">
+                  <h3 className="font-serif font-normal text-xl text-muted-foreground mb-3">About this Event</h3>
+                  <p className="text-lg leading-relaxed">
+                    {event.description}
+                  </p>
+                </div>
+              )}
             </div>
 
-            {/* Discussion / Comments Placeholder */}
+            {/* Discussion Placeholder */}
             <div className="pt-8 border-t border-border">
               <h3 className="font-serif font-normal text-xl text-muted-foreground mb-6 flex items-center gap-2">
                 <MessageSquare className="w-5 h-5" /> Discussion
               </h3>
               <div className="bg-muted/30 rounded-xs p-6 text-center">
                 <p className="text-muted-foreground mb-4">Join the event to participate in the discussion.</p>
-                <Button variant="outline">View 12 Comments</Button>
               </div>
             </div>
           </div>
@@ -120,19 +159,15 @@ export default function EventDetail() {
                     </div>
                     <div>
                       <p className="font-normal text-foreground">
-                        {event.date === "Today" ? "Today, November 28" : "Tomorrow, November 29"}
+                        {formatDate(event.date)}
                       </p>
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <span>Friday</span>
-                        {event.recurrence && (
-                          <>
-                            <span>•</span>
-                            <span className="flex items-center gap-1 text-primary font-normal">
-                              <Repeat className="w-3 h-3" /> {event.recurrence}
-                            </span>
-                          </>
-                        )}
-                      </div>
+                      {event.recurrence && (
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                          <span className="flex items-center gap-1 text-primary font-normal">
+                            <Repeat className="w-3 h-3" /> {event.recurrence}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
                   
@@ -141,8 +176,7 @@ export default function EventDetail() {
                       <Clock className="w-5 h-5" strokeWidth={1.5} />
                     </div>
                     <div>
-                      <p className="font-normal text-foreground">{event.time} - {parseInt(event.time) + 1}:00pm EST</p>
-                      <p className="text-sm text-muted-foreground">1 hour duration</p>
+                      <p className="font-normal text-foreground">{event.time}</p>
                     </div>
                   </div>
 
@@ -151,7 +185,7 @@ export default function EventDetail() {
                       <Video className="w-5 h-5" strokeWidth={1.5} />
                     </div>
                     <div>
-                      <p className="font-normal text-foreground">Online via Zoom</p>
+                      <p className="font-normal text-foreground">Online</p>
                       <p className="text-sm text-muted-foreground">Link visible after RSVP</p>
                     </div>
                   </div>
@@ -166,13 +200,14 @@ export default function EventDetail() {
                           <CheckCircle2 className="w-5 h-5" /> You're going!
                         </p>
                       </div>
-                      <Button className="w-full gap-2 font-normal" variant="outline">
+                      <Button className="w-full gap-2 font-normal" variant="outline" data-testid="button-join-meeting">
                         <Video className="w-4 h-4" /> Join Meeting
                       </Button>
                       <Button 
                         variant="ghost" 
                         className="w-full text-muted-foreground hover:text-destructive"
                         onClick={() => setIsRsvped(false)}
+                        data-testid="button-change-rsvp"
                       >
                         Change RSVP
                       </Button>
@@ -181,6 +216,7 @@ export default function EventDetail() {
                     <Button 
                       className="w-full font-normal shadow-lg shadow-primary/20" 
                       onClick={handleRsvp}
+                      data-testid="button-rsvp"
                     >
                       RSVP Now
                     </Button>
@@ -189,10 +225,10 @@ export default function EventDetail() {
 
                 {/* Social Actions */}
                 <div className="grid grid-cols-2 gap-3 pt-2">
-                  <Button variant="outline" className="w-full gap-2">
+                  <Button variant="outline" className="w-full gap-2" data-testid="button-save-event">
                     <Heart className="w-4 h-4" /> Save
                   </Button>
-                  <Button variant="outline" className="w-full gap-2">
+                  <Button variant="outline" className="w-full gap-2" data-testid="button-share-event">
                     <Share2 className="w-4 h-4" /> Share
                   </Button>
                 </div>
@@ -209,9 +245,11 @@ export default function EventDetail() {
                         <AvatarFallback>U{i}</AvatarFallback>
                       </Avatar>
                     ))}
-                    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-normal text-muted-foreground border border-card">
-                      +78
-                    </div>
+                    {event.attendees > 6 && (
+                      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-normal text-muted-foreground border border-card">
+                        +{event.attendees - 6}
+                      </div>
+                    )}
                   </div>
                 </div>
               </CardContent>
