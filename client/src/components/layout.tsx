@@ -249,7 +249,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   "flex items-center gap-3 px-4 py-1.5 rounded-lg transition-all duration-200 cursor-pointer group font-serif sidebar-menu text-base",
                   isActive 
                     ? "text-[#6600ff]" 
-                    : "text-muted-foreground hover:text-foreground hover:bg-[#F0E6FF]"
+                    : "text-muted-foreground hover:text-[#6600ff]"
                 )}>
                   <item.icon 
                     strokeWidth={1.5} 
