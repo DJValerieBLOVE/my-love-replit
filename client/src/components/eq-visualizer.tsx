@@ -136,7 +136,7 @@ export function EqVisualizer({ className, size = 120, isLogo = false }: EqVisual
   return (
     <div className={cn("relative flex items-center justify-center", className)} style={{ width: size, height: size }}>
       <TooltipProvider delayDuration={0}>
-        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="overflow-visible drop-shadow-2xl">
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="overflow-visible">
           <defs>
             {/* Strong Cyber Glow */}
             <filter id="cyber-glow" x="-100%" y="-100%" width="300%" height="300%">
@@ -154,13 +154,12 @@ export function EqVisualizer({ className, size = 120, isLogo = false }: EqVisual
           {/* Using full logoRadius to maximize size within the ring */}
           <circle cx={center} cy={center} r={logoRadius} fill="white" stroke="none" />
           <foreignObject x={center - logoRadius} y={center - logoRadius} width={logoRadius * 2} height={logoRadius * 2}>
-            <div className="w-full h-full flex items-center justify-center bg-white">
-              {/* Logo 10% smaller and visually centered */}
+            <div className="w-full h-full flex items-center justify-center bg-white rounded-full overflow-hidden">
               <img 
                 src={Logo} 
                 alt="11x Logo" 
                 className="w-full h-full object-contain" 
-                style={{ transform: 'scale(0.9) translateY(6%)' }}
+                style={{ transform: 'scale(0.9) translateY(6%)', imageRendering: 'auto' }}
               />
             </div>
           </foreignObject>

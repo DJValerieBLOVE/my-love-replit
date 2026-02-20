@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ArrowLeft, Globe, Lock, Zap, Plus, X, Users } from "lucide-react";
+import { ImageUpload } from "@/components/image-upload";
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { useNostr } from "@/contexts/nostr-context";
@@ -24,6 +25,7 @@ export default function CommunityCreate() {
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [image, setImage] = useState("");
   const [category, setCategory] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [accessType, setAccessType] = useState("public");
@@ -75,6 +77,7 @@ export default function CommunityCreate() {
     createMutation.mutate({
       name: name.trim(),
       description: description.trim(),
+      image: image.trim() || undefined,
       category: category || undefined,
       tags: selectedTags,
       accessType,
@@ -143,6 +146,14 @@ export default function CommunityCreate() {
                   onChange={(e) => setDescription(e.target.value)}
                   rows={3}
                   data-testid="input-description"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Thumbnail Image</Label>
+                <ImageUpload
+                  value={image}
+                  onChange={setImage}
                 />
               </div>
 

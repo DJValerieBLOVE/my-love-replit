@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Calendar, Clock, Save } from "lucide-react";
+import { ImageUpload } from "@/components/image-upload";
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -204,14 +205,10 @@ export default function EventCreate() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="image">Cover Image URL</Label>
-              <Input
-                id="image"
-                placeholder="https://example.com/image.jpg"
+              <Label>Thumbnail Image</Label>
+              <ImageUpload
                 value={image}
-                onChange={(e) => setImage(e.target.value)}
-                className="bg-white"
-                data-testid="input-image"
+                onChange={setImage}
               />
             </div>
 

@@ -44,6 +44,8 @@ import { useNostr } from "@/contexts/nostr-context";
 
 import { Quiz, Question } from "@/components/quiz";
 import { SurprisePortal } from "@/components/surprise-portal";
+import { ShareConfirmationDialog } from "@/components/share-confirmation-dialog";
+import { Share2 } from "lucide-react";
 
 export default function ExperimentDetail() {
   const [, params] = useRoute("/experiments/:id");
@@ -106,6 +108,10 @@ export default function ExperimentDetail() {
   }, []);
 
   const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [showZapModal, setShowZapModal] = useState(false);
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [zapAmount, setZapAmount] = useState(210);
+  const [lastCompletedDiscovery, setLastCompletedDiscovery] = useState<number | null>(null);
   
   // Transformed comments to match FeedPost structure
   const [comments, setComments] = useState([
@@ -182,13 +188,16 @@ export default function ExperimentDetail() {
         const newBalance = localWalletBalance + DISCOVERY_REWARD;
         setLocalWalletBalance(newBalance);
         
-        // 4. Feedback (Sound & Toast)
-        // Simulated sound
-        // new Audio('/sounds/coin.mp3').play().catch(() => {}); 
-        toast(`+${DISCOVERY_REWARD} Sats!`, {
+        setLastCompletedDiscovery(num);
+        
+        toast(`Discovery Complete!`, {
            icon: '⚡',
-           description: 'Discovery Completed'
+           description: `You finished "${newDiscoveries[index].title}"`
         });
+        
+        setTimeout(() => {
+          setShowZapModal(true);
+        }, 600);
 
         // 5. Trigger EQ Visualizer Animation (Top Global)
         window.dispatchEvent(new CustomEvent('eq-update', { 
@@ -529,18 +538,116 @@ export default function ExperimentDetail() {
           </div>
 
           <DialogFooter className="flex-col sm:flex-col gap-3">
+            <Button 
+              className="w-full h-12 text-lg font-normal gap-2"
+              size="lg"
+              onClick={() => {
+                setShowCompletionModal(false);
+                setTimeout(() => setShowZapModal(true), 300);
+              }}
+              data-testid="button-zap-creator-completion"
+            >
+              <Zap className="w-5 h-5" />
+              Zap {experiment.guide}
+            </Button>
+            <Button 
+              variant="outline" 
+              className="w-full h-12 text-lg font-normal gap-2"
+              size="lg"
+              onClick={() => {
+                setShowCompletionModal(false);
+                setTimeout(() => setShowShareDialog(true), 300);
+              }}
+              data-testid="button-share-completion"
+            >
+              <Share2 className="w-5 h-5" />
+              Share Your Win
+            </Button>
             <Link href="/experiments">
-               <Button className="w-full h-12 text-lg font-normal" size="lg">
+               <Button variant="ghost" className="w-full font-normal" size="lg">
                   Back to Experiments
                </Button>
             </Link>
-            <DialogClose asChild>
-               <Button variant="ghost" className="w-full">Close</Button>
-            </DialogClose>
           </DialogFooter>
         </DialogContent>
       </Dialog>
       
+      {/* Zap Creator Modal */}
+      <Dialog open={showZapModal} onOpenChange={setShowZapModal}>
+        <DialogContent className="sm:max-w-sm text-center border-primary/20">
+          <DialogHeader>
+            <div className="mx-auto w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-2">
+              <Zap className="w-8 h-8 text-orange-500" />
+            </div>
+            <DialogTitle className="text-xl font-serif font-normal text-center text-muted-foreground">
+              Zap the Creator
+            </DialogTitle>
+            <DialogDescription className="text-center mt-1">
+              {lastCompletedDiscovery
+                ? `You completed a lesson! Send some sats to ${experiment.guide} as a thank you.`
+                : `Show appreciation to ${experiment.guide} for this experiment.`
+              }
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="py-4 space-y-4">
+            <div className="flex justify-center gap-2">
+              {[21, 100, 210, 500, 1000].map((amount) => (
+                <button
+                  key={amount}
+                  onClick={() => setZapAmount(amount)}
+                  className={`px-3 py-2 rounded-lg text-sm font-normal transition-colors ${
+                    zapAmount === amount
+                      ? "bg-foreground text-background"
+                      : "bg-white border border-gray-200 text-muted-foreground hover:border-gray-400"
+                  }`}
+                  data-testid={`button-zap-${amount}`}
+                >
+                  {amount} sats
+                </button>
+              ))}
+            </div>
+
+            <div className="text-center">
+              <p className="text-xs text-muted-foreground">
+                Zaps go directly to the creator via Lightning
+              </p>
+            </div>
+          </div>
+
+          <DialogFooter className="flex-col sm:flex-col gap-2">
+            <Button
+              className="w-full gap-2"
+              onClick={() => {
+                toast(`Zapped ${zapAmount} sats to ${experiment.guide}!`, {
+                  icon: '⚡',
+                  description: 'Lightning payment sent'
+                });
+                setShowZapModal(false);
+              }}
+              data-testid="button-send-zap"
+            >
+              <Zap className="w-4 h-4" />
+              Send {zapAmount} Sats
+            </Button>
+            <DialogClose asChild>
+              <Button variant="ghost" className="w-full text-muted-foreground">
+                Maybe Later
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Share Dialog */}
+      <ShareConfirmationDialog
+        open={showShareDialog}
+        onOpenChange={setShowShareDialog}
+        contentType="experiment"
+        contentTitle={`I completed "${experiment.title}"!`}
+        contentPreview={`Just finished the ${experiment.title} experiment by ${experiment.guide} on My Masterpiece. Come check it out and start your own journey! #11xLOVE #MyMasterpiece`}
+      />
+
       {/* Surprise Portal */}
       <SurprisePortal 
          isOpen={showPortal} 

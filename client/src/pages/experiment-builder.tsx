@@ -6,7 +6,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Plus, GripVertical, Trash2, Save, ArrowLeft, FlaskConical, ChevronUp, ChevronDown } from "lucide-react";
+import { Plus, GripVertical, Trash2, Save, ArrowLeft, FlaskConical, ChevronUp, ChevronDown, Zap } from "lucide-react";
+import { ImageUpload } from "@/components/image-upload";
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { useNostr } from "@/contexts/nostr-context";
@@ -236,13 +237,10 @@ export default function ExperimentBuilder() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="image">Cover Image URL (optional)</Label>
-              <Input
-                id="image"
+              <Label>Thumbnail Image</Label>
+              <ImageUpload
                 value={image}
-                onChange={(e) => setImage(e.target.value)}
-                placeholder="https://..."
-                data-testid="input-image"
+                onChange={setImage}
               />
             </div>
 

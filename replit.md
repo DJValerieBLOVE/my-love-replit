@@ -62,16 +62,40 @@ My Masterpiece is a spiritual personal growth application designed to help users
 - **Home** (`/`): Prosperity Pyramid with flip card animations.
 - **Big Dreams** (`/big-dreams`): Primary daily hub/dashboard with Daily LOVE Practice CTA, streak grid, experiment progress, upcoming events, and 11 Big Dreams editor.
 - **Daily LOVE Practice** (`/daily-practice`): Full-page wizard, accessible only from Big Dreams dashboard.
-- **Experiments** (`/experiments`): 6 tabs for learning content. Create Experiment button in tab row.
+- **Experiments** (`/experiments`): 6 tabs for learning content. Create Experiment button in tab row. Category and tag dropdown filters using shadcn Select.
+- **Experiment Builder** (`/experiments/create`): Full experiment creation with thumbnail image upload (drag-and-drop), category/tag selection, step editor, and access type settings.
+- **Experiment Detail** (`/experiments/:id`): Lesson viewer with sequential unlocking, quiz integration, discovery completion, Lightning zap creator modal, share-to-Nostr completion flow.
 - **Events** (`/events`): 4 tabs with calendar and event cards. Create Event button in tab row.
+- **Event Create** (`/events/create`): Event creation with thumbnail image upload.
 - **Feed** (`/feed`): 4 tabs for Nostr social feed.
 - **Vault** (`/vault`): 6 tabs for personal content.
-- **Tribe/Community** (`/community`): Community listing, creation, and management. Create Tribe button below cover image.
+- **Tribe/Community** (`/community`): Community listing, creation, and management. Create Tribe button below cover image. Category and tag dropdown filters.
+- **Community Create** (`/community/create`): Tribe creation with thumbnail image upload, category/tag selection, access type settings.
 - **Love Board** (`/leaderboard`): Rankings (planned marketplace). Create Post button in header area.
 - **Profile** (`/profile/:id`): Clean Primal-style profile with no gamification.
 - **Creator Dashboard** (`/creator`): Analytics for content creators.
 - **Wallet** (`/wallet`): Lightning wallet with NWC integration.
 - **Security**: Dual auth middleware (JWT, Nostr pubkey), NIP-07/NIP-46, ownership checks, Nostr query filtering, AI prompt injection protection, atomic transactions for AI usage.
+
+### Value-for-Value Architecture
+- Experiments are public, value-for-value content: creators receive Lightning zaps from users
+- After each lesson completion AND experiment completion, users see a "Zap the Creator" modal with preset amounts (21, 100, 210, 500, 1000 sats)
+- Zaps go directly to creator via Lightning (lud16 address)
+- Experiment completion also offers "Share Your Win" to publish to public Nostr relays
+- Shared completion notes include app link to drive new user signups
+- Experiments live on private relay first; optional publish to public relays for discovery
+
+### Image Upload System
+- Server-side file upload via multer at `/api/upload`
+- Uploads stored in `/uploads/` directory, served as static files
+- 5MB file size limit, supports JPEG, PNG, GIF, WebP
+- Reusable `ImageUpload` component with drag-and-drop, preview, change/remove functionality
+- Used on Experiment Builder, Event Create, and Community Create pages
+
+### Onboarding Paths (Planned)
+- **Easy path**: New user fills in Big Dreams for all 11 areas (quick start)
+- **Detailed path**: New user completes the 11x LOVE Code experiment (deep onboarding)
+- Both paths lead to personalized dashboard with EQ visualizer
 
 ### Privacy Architecture
 - Three-tier privacy: encrypted tribe messages, private-by-default journals/AI conversations, shareable completions/feed posts.
