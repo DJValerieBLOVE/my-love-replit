@@ -3,15 +3,6 @@
 ## Overview
 My Masterpiece is a spiritual personal growth application designed to help users curate their personal growth journey. It offers a personalized dashboard, integrated consumption of courses/podcasts/music, collaboration tools, private journaling, and an AI coach with persistent memory. The app leverages a hybrid Nostr and PostgreSQL architecture, integrating Lightning payments for peer-to-peer interactions. The platform aims to combine features from various popular platforms into a singular, cohesive experience focused on personal transformation, hosting the "11x LOVE LaB" community.
 
-## Recent Changes (Feb 2026)
-- **Unified People Hub**: Merged separate Feed + Tribe pages into single People page (`/people`). Navigation sidebar now shows "People" instead of separate "Tribe" and "Feed" items.
-- **Dropdown Pill Bubbles**: People page top tabs are pill-shaped bubbles with dropdown sub-menus (My Feed has Following/Trending/Most Zapped/Latest/Media; Buddies has Find/Messages/Goals; Discover has Tribes/Find Members). Tabs without sub-options (Victories, Gratitude, Prayers, My Tribes) are direct-click pills.
-- **4-Tier Privacy System**: All post composers (Feed, Victories, Gratitude, Prayers) include a PrivacySelector dropdown: Public (Nostr), Tribe Only, Buddy Only, Secret (Vault).
-- **Text Input Redesign**: Global Input/Textarea components updated with consistent styling — white bg, rounded-lg, gray-200 borders, purple focus ring (`ring-[#6600ff]/20`).
-- **Profile Enhancements**: Added follower/following counts, location display, bio synced from Nostr. Breadcrumb updated to link to /people.
-- **Right Sidebar**: People page has sticky right sidebar with Top Zappers, Top Streaks, Progress & Completions placeholders (hidden on mobile).
-- **Content Width**: Main content area capped at 720px and centered under the page header. Overall container 1100px max.
-
 ## User Preferences
 - Preferred communication style: Simple, everyday language
 - Daily LOVE Practice is the MOST IMPORTANT feature (LOVE always capitalized)
@@ -26,7 +17,6 @@ My Masterpiece is a spiritual personal growth application designed to help users
 - All Tribe content and Prayer Requests are PRIVATE (not shared to public Nostr)
 - Streak grid tracks Daily LOVE Practice completions: #EEEEEE (none), #D9C2FF (morning only), #A366FF (evening only), #6600FF (complete day)
 - NO gamification on Profile page (no XP, levels, badges, rewards)
-- **Planned: Tribe Badges** — Each tribe gets one special badge that members earn and give to each other as gratitude. Scarce by design (one badge per tribe that keeps moving). Tracks engagement: most posts, most comments. Future implementation.
 - "Experiments" is the ONLY term for learning content (not "courses") - buttons say "Start Experiment" / "View Experiment"
 
 ## System Architecture
@@ -45,73 +35,53 @@ My Masterpiece is a spiritual personal growth application designed to help users
 - **Authentication**: Dual system with Email/password (bcrypt, JWT, optional TOTP) and Nostr Login (NIP-07, NIP-46). Email users auto-generate client-side Nostr keypairs for NIP-44 encryption.
 
 ### Design System (Style Guide)
-- **Typography**: Marcellus font, weight 400 ONLY everywhere. Global CSS enforces `font-weight: 400 !important`.
-- **Color Palette**:
-  - Background: `#FAFAFA`
-  - Foreground: `#2a2430` (Dark Purple-Black)
-  - Primary Brand: `#6600ff` (Purple - for links, accents, active nav)
-  - GOD/LOVE Dimension: `#eb00a8` (Pink - exclusively for GOD/LOVE)
-  - All colors must be solid hex values.
-- **Buttons**:
-  - Default/Primary: `bg-foreground text-background` (dark charcoal fill, white text). Hover: `hover:bg-white hover:border-[#E5E5E5] hover:text-foreground`.
-  - Ghost Button Hover: Light purple `hover:bg-[#F0E6FF]`.
-  - Never use blue for any button or hover state.
-- **Tabs / Pill Bubbles**: Consistent `rounded-full` shape with active state `bg-foreground text-background border-foreground` and inactive state `bg-white text-muted-foreground border-gray-200`. Used on Experiments, Events, Vault. People page uses dropdown pill bubbles — same bubble style but with ChevronDown icon and DropdownMenu for sub-options (matching category/tag dropdown pattern).
-- **Search Inputs**: Always `bg-white` with `Search` icon at `left-3` and `pl-10` for input.
-- **Cards**: `border-none shadow-sm bg-card rounded-xs` with `hover:shadow-md`. Images are 16:9 (`aspect-video`) with NO overlays/tags on images. Top accent is a thin purple line (`bg-primary`). Card titles turn purple on group hover. Dashed borders for placeholder cards. Tags, step counts, and categories go in the card info area below the image.
-- **Tags / Badges**: Light gray outline style: `bg-white border border-gray-200 text-muted-foreground text-xs px-2.5 py-0.5 rounded-md`. Always placed in card content area, never overlaid on images.
-- **Create Buttons**: Each listing page has a "Create" button in the tab/header row area (not in the page title). Experiments, Events, Tribe, and Love Board all have create buttons.
-- **Navigation**:
-  - Left Sidebar: White background, active/hover items use `text-[#6600ff]` (purple text only, no background highlight).
-  - Header: White background, sticky, `h-14 md:h-20`.
-  - Mobile: Hamburger menu, compact header.
+- **Typography**: Marcellus font, weight 400 ONLY everywhere.
+- **Color Palette**: Background `#FAFAFA`, Foreground `#2a2430`, Primary Brand `#6600ff`, GOD/LOVE Dimension `#eb00a8`. All colors are solid hex values.
+- **Buttons**: Default/Primary `bg-foreground text-background`. Ghost Button Hover `hover:bg-[#F0E6FF]`. Never use blue.
+- **Tabs / Pill Bubbles**: `rounded-full` shape with active (`bg-foreground text-background`) and inactive states. People page uses dropdown pill bubbles.
+- **Search Inputs**: Always `bg-white` with `Search` icon at `left-3` and `pl-10`.
+- **Cards**: `border-none shadow-sm bg-card rounded-xs` with `hover:shadow-md`. Images are 16:9 (`aspect-video`) with NO overlays/tags. Top accent is a thin purple line.
+- **Tags / Badges**: Light gray outline style: `bg-white border border-gray-200 text-muted-foreground text-xs px-2.5 py-0.5 rounded-md`. Placed in card content area.
+- **Create Buttons**: Each listing page has a "Create" button in the tab/header row area.
+- **Navigation**: Left Sidebar white background, active/hover items `text-[#6600ff]`. Header white background, sticky. Mobile has hamburger menu.
 - **Icons**: ALL icons use `text-muted-foreground` color, except the Sparkles icon for Magic Mentor AI. Lucide React icons with `strokeWidth={1.5}`.
 
 ### Key Pages & Features
 - **Home** (`/`): Prosperity Pyramid with flip card animations.
-- **Big Dreams** (`/big-dreams`): Primary daily hub/dashboard with Daily LOVE Practice CTA, streak grid, experiment progress, upcoming events, and 11 Big Dreams editor.
-- **Daily LOVE Practice** (`/daily-practice`): Full-page wizard, accessible only from Big Dreams dashboard.
-- **Experiments** (`/experiments`): 6 tabs for learning content. Create Experiment button in tab row. Category and tag dropdown filters using shadcn Select.
-- **Experiment Builder** (`/experiments/create`): Full experiment creation with thumbnail image upload (drag-and-drop), category/tag selection, step editor, and access type settings.
-- **Experiment Detail** (`/experiments/:id`): Lesson viewer with sequential unlocking, quiz integration, discovery completion, Lightning zap creator modal, share-to-Nostr completion flow.
-- **Events** (`/events`): 4 tabs with calendar and event cards. Create Event button in tab row.
-- **Event Create** (`/events/create`): Event creation with thumbnail image upload.
-- **People** (`/people`): Unified social hub replacing separate Feed + Tribe pages. Top tab bar uses dropdown pill bubbles with sub-menus. Tabs: My Feed (dropdown: Following, Trending, Most Zapped, Latest, Media), My Tribes (direct click, has tribe selector dropdown inside), Buddies (dropdown: Find a Buddy, Buddy Messages, Shared Goals), Victories (direct), Gratitude (direct), Prayers (direct), Discover (dropdown: Tribes, Find Members). Right sidebar with gamification placeholders. Two-column layout (content max-width 720px centered + 280px sidebar on desktop). 4-tier privacy selector on all post composers (Public/Nostr, Tribe Only, Buddy Only, Secret/Vault).
-- **Feed** (`/feed`): Legacy route still works but Feed nav item removed from sidebar. Users access feed through People page.
+- **Big Dreams** (`/big-dreams`): Daily hub with Daily LOVE Practice CTA, streak grid, experiment progress, upcoming events, and 11 Big Dreams editor.
+- **Daily LOVE Practice** (`/daily-practice`): Full-page wizard accessible from Big Dreams.
+- **Experiments** (`/experiments`): 6 tabs for learning content with creation and detail pages.
+- **Events** (`/events`): 4 tabs with calendar and event cards, with creation page.
+- **People** (`/people`): Unified social hub with dropdown pill bubbles for navigation, right sidebar with gamification placeholders, and 4-tier privacy selector on all post composers.
 - **Vault** (`/vault`): 6 tabs for personal content.
-- **Tribe/Community** (`/community`): Community listing, creation, and management. Create Tribe button below cover image. Category and tag dropdown filters. Individual tribe pages still at /community/:id.
-- **Community Create** (`/community/create`): Tribe creation with thumbnail image upload, category/tag selection, access type settings.
-- **Love Board** (`/leaderboard`): Rankings (planned marketplace). Create Post button in header area.
-- **Profile** (`/profile/:id`): Clean Primal-style profile with no gamification. Shows follower/following counts, location (from Nostr metadata), bio synced from Nostr. Breadcrumb links to /people.
+- **Tribe/Community** (`/community`): Listing, creation, and management of tribes.
+- **Love Board** (`/leaderboard`): Rankings (planned marketplace).
+- **Profile** (`/profile/:id`): Clean Primal-style profile with no gamification, showing Nostr synced data.
 - **Creator Dashboard** (`/creator`): Analytics for content creators.
 - **Wallet** (`/wallet`): Lightning wallet with NWC integration.
 - **Security**: Dual auth middleware (JWT, Nostr pubkey), NIP-07/NIP-46, ownership checks, Nostr query filtering, AI prompt injection protection, atomic transactions for AI usage.
 
 ### Value-for-Value Architecture
-- Experiments are public, value-for-value content: creators receive Lightning zaps from users
-- After each lesson completion AND experiment completion, users see a "Zap the Creator" modal with preset amounts (21, 100, 210, 500, 1000 sats)
-- Zaps go directly to creator via Lightning (lud16 address)
-- Experiment completion also offers "Share Your Win" to publish to public Nostr relays
-- Shared completion notes include app link to drive new user signups
-- Experiments live on private relay first; optional publish to public relays for discovery
+- Experiments are public, value-for-value content: creators receive Lightning zaps from users.
+- "Zap the Creator" modal after each lesson and experiment completion.
+- Experiment completion also offers "Share Your Win" to publish to public Nostr relays.
 
 ### Image Upload System
-- Server-side file upload via multer at `/api/upload`
-- Uploads stored in `/uploads/` directory, served as static files
-- 5MB file size limit, supports JPEG, PNG, GIF, WebP
-- Reusable `ImageUpload` component with drag-and-drop, preview, change/remove functionality
-- Used on Experiment Builder, Event Create, and Community Create pages
-
-### Onboarding Paths (Planned)
-- **Easy path**: New user fills in Big Dreams for all 11 areas (quick start)
-- **Detailed path**: New user completes the 11x LOVE Code experiment (deep onboarding)
-- Both paths lead to personalized dashboard with EQ visualizer
+- Server-side file upload via multer at `/api/upload`.
+- Stored in `/uploads/`, served as static files.
+- 5MB limit, JPEG, PNG, GIF, WebP.
+- Reusable `ImageUpload` component with drag-and-drop.
 
 ### Privacy Architecture
-- Four-tier privacy system on all post composers: Public (Nostr), Tribe Only (private to specific tribe), Buddy Only (accountability buddy), Secret (vault only).
+- Four-tier privacy system on all post composers: Public (Nostr), Tribe Only, Buddy Only, Secret (vault only).
 - Dual-relay architecture: private Railway Relay for LaB data, public relays for general Nostr data.
 - Private-by-default journals/AI conversations, shareable completions/feed posts.
-- Users can provide their own AI API key (BYOK).
+
+### Nostr NIPs Implementation
+- **Currently Implemented**: NIP-01 (Basic Protocol), NIP-05 (DNS Verification), NIP-07 (Browser Signer), NIP-10 (Reply Threading), NIP-19 (Bech32 Encoding), NIP-25 (Reactions), NIP-44 (Encrypted Payloads), NIP-46 (Nostr Connect), NIP-57 (Lightning Zaps), NIP-65 (Relay List Metadata).
+- **Key Event Kinds Used**: 0 (metadata), 1 (notes), 3 (contacts), 6 (reposts), 7 (reactions), 9 (group chat), 11 (group thread notes), 12 (group thread replies), 1059 (gift-wrapped), 1060 (sealed), 10002 (relay list), 30023 (long-form content), 30078 (app-specific data).
+- **Priority NIPs to Implement Next**: NIP-17 (Private DMs), NIP-29 (Relay-Based Groups), NIP-42 (Relay Authentication), NIP-51 (Lists), NIP-09 (Event Deletion), NIP-32 (Labeling), NIP-56 (Reporting), NIP-72 (Public Communities), NIP-94 (File Metadata), NIP-98 (HTTP Auth).
+- **Relay Architecture**: Private LaB Relay for all private/encrypted data. Public Relays for public content. Events with private tags NEVER go to public relays.
 
 ## External Dependencies
 - **PostgreSQL**: Primary database (Neon serverless).
