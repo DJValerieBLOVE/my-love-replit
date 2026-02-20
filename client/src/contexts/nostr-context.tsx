@@ -26,6 +26,7 @@ interface NostrProfile {
   about?: string;
   nip05?: string;
   lud16?: string;
+  banner?: string;
   buddyDescription?: string;
   lookingForBuddy?: boolean;
   labInterests?: string[];
@@ -84,6 +85,53 @@ export function NostrProvider({ children }: { children: ReactNode }) {
   
   const bunkerSignerRef = useRef<BunkerSigner | null>(null);
   const poolRef = useRef<SimplePool | null>(null);
+
+  const PUBLIC_RELAYS = [
+    "wss://relay.primal.net",
+    "wss://relay.damus.io",
+    "wss://purplepag.es",
+  ];
+
+  const fetchNostrMetadata = useCallback(async (pubkey: string) => {
+    try {
+      const pool = new SimplePool();
+      const events = await pool.querySync(PUBLIC_RELAYS, {
+        kinds: [0],
+        authors: [pubkey],
+        limit: 5,
+      });
+      pool.close(PUBLIC_RELAYS);
+
+      if (events.length > 0) {
+        const mostRecent = events.reduce((latest, event) =>
+          (event.created_at ?? 0) > (latest.created_at ?? 0) ? event : latest
+        );
+        const parsed = JSON.parse(mostRecent.content);
+        const name = parsed.display_name || parsed.name;
+        const picture = parsed.picture;
+        const about = parsed.about;
+        const nip05 = parsed.nip05;
+        const lud16 = parsed.lud16;
+
+        if (name) localStorage.setItem("nostr_name", name);
+        if (picture) localStorage.setItem("nostr_picture", picture);
+
+        setProfile(prev => prev ? {
+          ...prev,
+          name: name || prev.name,
+          picture: picture || prev.picture,
+          about: about || prev.about,
+          nip05: nip05 || prev.nip05,
+          lud16: lud16 || prev.lud16,
+        } : prev);
+
+        return { name, picture, about, nip05, lud16 };
+      }
+    } catch (e) {
+      console.error("[NostrContext] Failed to fetch Kind 0 metadata:", e);
+    }
+    return null;
+  }, []);
 
   const refreshUserStats = useCallback(async () => {
     try {
@@ -146,6 +194,8 @@ export function NostrProvider({ children }: { children: ReactNode }) {
         setIsConnected(true);
         setLoginMethod("bunker");
         
+        fetchNostrMetadata(savedPubkey);
+        
         try {
           const status = await getProfileStatus();
           setNeedsProfileCompletion(!status.profileComplete);
@@ -183,6 +233,8 @@ export function NostrProvider({ children }: { children: ReactNode }) {
             });
             setIsConnected(true);
             setLoginMethod("extension");
+            
+            fetchNostrMetadata(pubkey);
             
             try {
               const status = await getProfileStatus();
@@ -306,6 +358,8 @@ export function NostrProvider({ children }: { children: ReactNode }) {
       setIsConnected(true);
       setLoginMethod("extension");
       
+      fetchNostrMetadata(pubkey);
+      
       try {
         const status = await getProfileStatus();
         setNeedsProfileCompletion(!status.profileComplete);
@@ -376,6 +430,8 @@ export function NostrProvider({ children }: { children: ReactNode }) {
       });
       setIsConnected(true);
       setLoginMethod("bunker");
+      
+      fetchNostrMetadata(pubkey);
       
       try {
         const status = await getProfileStatus();
