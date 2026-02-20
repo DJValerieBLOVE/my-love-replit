@@ -874,13 +874,13 @@ export async function registerRoutes(
         const userCommunities = await storage.getUserCommunities(req.userId);
         
         // Get posts from each community
-        for (const community of userCommunities) {
-          const posts = await storage.getCommunityPosts(community.id);
+        for (const membership of userCommunities) {
+          const posts = await storage.getCommunityPosts(membership.communityId);
           const postsWithCommunity = posts.map(post => ({
             ...post,
             source: "community" as const,
-            communityName: community.name,
-            communityId: community.id,
+            communityName: membership.community.name,
+            communityId: membership.communityId,
           }));
           communityPosts = [...communityPosts, ...postsWithCommunity];
         }
@@ -1674,7 +1674,7 @@ export async function registerRoutes(
           return res.status(400).json({ error: "completedLessons must be an array" });
         }
         // Ensure no duplicates by using Set
-        const uniqueLessons = [...new Set(completedLessons)];
+        const uniqueLessons = Array.from(new Set(completedLessons));
         const course = await storage.getCourse(req.params.courseId);
         if (!course) {
           return res.status(404).json({ error: "Course not found" });

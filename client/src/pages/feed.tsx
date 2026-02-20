@@ -343,7 +343,6 @@ function useNostrFeed(tab: FeedTab, exploreMode: ExploreMode) {
       setPosts(prev => [...pendingPosts, ...prev]);
       setPendingPosts([]);
       setNewPostCount(0);
-      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }, [pendingPosts]);
 
@@ -354,7 +353,7 @@ function useNostrFeed(tab: FeedTab, exploreMode: ExploreMode) {
     await fetchFeed();
   }, [fetchFeed]);
 
-  return { posts, isLoading, isRefreshing, refetch: manualRefresh, ndkConnected, newPostCount, showNewPosts, primalProfiles: primalProfilesRef.current };
+  return { posts, isLoading, isRefreshing, refetch: manualRefresh, ndkConnected, newPostCount, showNewPosts, pendingPosts, primalProfiles: primalProfilesRef.current };
 }
 
 type MediaItem = {
@@ -436,13 +435,13 @@ function PostComposer({ onPostPublished }: { onPostPublished?: () => void }) {
   };
 
   return (
-    <Card className="p-4 mb-6">
+    <Card className="p-4 mb-6 border border-gray-100 shadow-none">
       <div className="flex gap-3">
         <Avatar className="w-10 h-10">
           {profile?.picture ? (
             <AvatarImage src={profile.picture} />
           ) : null}
-          <AvatarFallback>ME</AvatarFallback>
+          <AvatarFallback className="bg-gray-100 text-muted-foreground text-xs">ME</AvatarFallback>
         </Avatar>
         <div className="flex-1">
           <Textarea
@@ -480,7 +479,7 @@ function PostComposer({ onPostPublished }: { onPostPublished?: () => void }) {
                 variant="ghost"
                 size="sm"
                 onClick={() => handleFileSelect("image")}
-                className="text-muted-foreground hover:bg-[#F0E6FF]"
+                className="text-muted-foreground hover:bg-gray-50 hover:text-foreground"
                 data-testid="button-add-image"
               >
                 <Image className="w-5 h-5" />
@@ -489,7 +488,7 @@ function PostComposer({ onPostPublished }: { onPostPublished?: () => void }) {
                 variant="ghost"
                 size="sm"
                 onClick={handleGifSelect}
-                className="text-muted-foreground hover:bg-[#F0E6FF]"
+                className="text-muted-foreground hover:bg-gray-50 hover:text-foreground"
                 data-testid="button-add-gif"
               >
                 <Smile className="w-5 h-5" />
@@ -498,7 +497,7 @@ function PostComposer({ onPostPublished }: { onPostPublished?: () => void }) {
                 variant="ghost"
                 size="sm"
                 onClick={() => handleFileSelect("video")}
-                className="text-muted-foreground hover:bg-[#F0E6FF]"
+                className="text-muted-foreground hover:bg-gray-50 hover:text-foreground"
                 data-testid="button-add-video"
               >
                 <Film className="w-5 h-5" />
@@ -624,6 +623,113 @@ function LinkPreviewCard({ url }: { url: string }) {
   );
 }
 
+function EmbeddedNoteCard({ eventId, bech32 }: { eventId: string; bech32: string }) {
+  const [note, setNote] = useState<{ content: string; author: string; avatar: string; handle: string; timestamp: number } | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!eventId) { setLoading(false); return; }
+    let cancelled = false;
+    let ws: WebSocket | null = null;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const fetchNote = async () => {
+      try {
+        ws = new WebSocket("wss://cache1.primal.net/v1");
+        const requestId = `embed_${eventId.slice(0, 8)}`;
+        ws.onopen = () => {
+          ws?.send(JSON.stringify(["REQ", requestId, { cache: ["events", { event_ids: [eventId] }] }]));
+        };
+        const events: any[] = [];
+        const profiles = new Map<string, any>();
+        ws.onmessage = (msg) => {
+          try {
+            const data = JSON.parse(msg.data);
+            if (data[0] === "EVENT" && data[1] === requestId) {
+              const evt = data[2];
+              if (evt.kind === 0) {
+                try { profiles.set(evt.pubkey, JSON.parse(evt.content)); } catch {}
+              } else if (evt.kind === 1) {
+                events.push(evt);
+              }
+            } else if (data[0] === "EOSE" && data[1] === requestId) {
+              try { ws?.close(); } catch {}
+              if (!cancelled && events.length > 0) {
+                const evt = events[0];
+                const prof = profiles.get(evt.pubkey);
+                setNote({
+                  content: evt.content,
+                  author: prof?.display_name || prof?.name || evt.pubkey.slice(0, 8) + "...",
+                  avatar: prof?.picture || "",
+                  handle: `@${prof?.nip05 || prof?.name || evt.pubkey.slice(0, 8)}`,
+                  timestamp: evt.created_at,
+                });
+              }
+              if (!cancelled) setLoading(false);
+            }
+          } catch {}
+        };
+        ws.onerror = () => { if (!cancelled) setLoading(false); };
+        timer = setTimeout(() => { try { ws?.close(); } catch {} if (!cancelled) setLoading(false); }, 5000);
+      } catch {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    fetchNote();
+    return () => {
+      cancelled = true;
+      if (timer) clearTimeout(timer);
+      try { ws?.close(); } catch {}
+    };
+  }, [eventId]);
+
+  if (loading) {
+    return (
+      <div className="my-2 rounded-lg border border-gray-200 p-3 animate-pulse" data-testid="nostr-event-link">
+        <div className="h-3 bg-gray-100 rounded w-1/3 mb-2" />
+        <div className="h-3 bg-gray-100 rounded w-2/3" />
+      </div>
+    );
+  }
+
+  if (!note) {
+    return (
+      <a
+        href={`https://njump.me/${bech32}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="my-2 block rounded-lg border border-gray-200 p-3 text-xs text-muted-foreground hover:border-[#6600ff] transition-colors"
+        data-testid="nostr-event-link"
+      >
+        View note on Nostr
+      </a>
+    );
+  }
+
+  const truncatedContent = note.content.length > 280 ? note.content.slice(0, 280) + "..." : note.content;
+  const cleanContent = truncatedContent.replace(/https?:\/\/\S+/g, '').replace(/nostr:\S+/g, '').trim();
+
+  return (
+    <a
+      href={`https://njump.me/${bech32}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="my-2 block rounded-lg border border-gray-200 p-3 hover:border-[#6600ff] transition-colors group"
+      data-testid="nostr-event-link"
+    >
+      <div className="flex items-center gap-2 mb-1.5">
+        <Avatar className="w-5 h-5">
+          {note.avatar && <AvatarImage src={note.avatar} />}
+          <AvatarFallback className="text-[8px]">{note.author.slice(0, 1).toUpperCase()}</AvatarFallback>
+        </Avatar>
+        <span className="text-xs font-medium">{note.author}</span>
+        <span className="text-[10px] text-muted-foreground">{truncateNpub(note.handle)}</span>
+        <span className="text-[10px] text-muted-foreground ml-auto">{formatTimestamp(note.timestamp)}</span>
+      </div>
+      <p className="text-xs text-muted-foreground leading-relaxed line-clamp-4">{cleanContent}</p>
+    </a>
+  );
+}
+
 function RichTextContent({ text, entities, links, primalProfiles }: {
   text: string;
   entities: NostrEntity[];
@@ -673,10 +779,20 @@ function RichTextContent({ text, entities, links, primalProfiles }: {
           </span>
         );
       } else if (entity && (entity.type === "nevent" || entity.type === "note")) {
-        const shortId = entity.bech32.slice(0, 12) + "..." + entity.bech32.slice(-4);
         parts.push(
-          <span key={key++} className="text-[#6600ff] cursor-pointer hover:underline text-xs" data-testid="nostr-event-link">
-            nostr:{shortId}
+          <EmbeddedNoteCard key={key++} eventId={entity.eventId || ""} bech32={entity.bech32} />
+        );
+      } else if (entity && entity.type === "naddr") {
+        let name = entity.pubkey?.slice(0, 8) || "address";
+        if (primalProfiles && entity.pubkey) {
+          const profile = primalProfiles.get(entity.pubkey);
+          if (profile) {
+            name = profile.display_name || profile.name || name;
+          }
+        }
+        parts.push(
+          <span key={key++} className="text-[#6600ff] cursor-pointer hover:underline" data-testid="nostr-event-link">
+            @{name}
           </span>
         );
       } else {
@@ -806,26 +922,26 @@ function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfiles?: M
   };
 
   return (
-    <Card className="p-4 hover:shadow-md transition-shadow" data-testid={`post-${post.id}`}>
+    <Card className="p-4 border border-gray-100 shadow-none hover:border-gray-200 transition-colors" data-testid={`post-${post.id}`}>
       <div className="flex gap-3">
         <Avatar className="w-10 h-10">
           <AvatarImage src={post.author.avatar} />
-          <AvatarFallback>{post.author.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+          <AvatarFallback className="bg-gray-100 text-muted-foreground text-xs">{post.author.name.slice(0, 2).toUpperCase()}</AvatarFallback>
         </Avatar>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 min-w-0">
-            <span className="font-semibold text-sm truncate max-w-[140px]">{post.author.name}</span>
-            <span className="text-muted-foreground text-sm truncate max-w-[120px]">{truncateNpub(post.author.handle)}</span>
-            <span className="text-muted-foreground text-xs flex items-center gap-1 shrink-0">
+            <span className="text-sm truncate max-w-[140px]" style={{ fontFamily: 'Marcellus, serif' }}>{post.author.name}</span>
+            <span className="text-muted-foreground text-xs truncate max-w-[120px]">{truncateNpub(post.author.handle)}</span>
+            <span className="text-muted-foreground text-[11px] flex items-center gap-1 shrink-0">
               · {post.timestamp}
               {post.relaySource === "private" && (
-                <Lock className="w-3 h-3 text-muted-foreground" />
+                <Lock className="w-3 h-3" />
               )}
               {post.relaySource === "public" && (
-                <Globe className="w-3 h-3 text-muted-foreground" />
+                <Globe className="w-3 h-3" />
               )}
             </span>
-            <Button variant="ghost" size="icon" className="ml-auto h-8 w-8 hover:bg-[#F0E6FF] shrink-0" data-testid={`button-more-${post.id}`}>
+            <Button variant="ghost" size="icon" className="ml-auto h-7 w-7 hover:bg-gray-50 shrink-0" data-testid={`button-more-${post.id}`}>
               <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
             </Button>
           </div>
@@ -866,15 +982,15 @@ function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfiles?: M
             );
           })()}
           {post.zapReceipts && post.zapReceipts.length > 0 && (
-            <div className="flex items-center gap-2 mt-2.5 mb-1 flex-wrap" data-testid={`zap-receipts-${post.id}`}>
-              <Zap className="w-3 h-3 text-[#6600ff]" />
+            <div className="flex items-center gap-1.5 mt-2.5 mb-1 flex-wrap" data-testid={`zap-receipts-${post.id}`}>
+              <Zap className="w-3 h-3 text-muted-foreground" />
               {post.zapReceipts.slice(0, 5).map((zr, i) => (
-                <div key={`${zr.pubkey}-${i}`} className="flex items-center gap-1 bg-[#F0E6FF] rounded-full px-1.5 py-0.5" data-testid={`zap-receipt-${post.id}-${i}`}>
+                <div key={`${zr.pubkey}-${i}`} className="flex items-center gap-1 rounded-full px-1.5 py-0.5 border border-gray-200" style={{ backgroundColor: '#ffffff' }} data-testid={`zap-receipt-${post.id}-${i}`}>
                   <Avatar className="w-4 h-4">
                     {zr.avatar && <AvatarImage src={zr.avatar} />}
-                    <AvatarFallback className="text-[6px]">{(zr.name || "?").slice(0, 1).toUpperCase()}</AvatarFallback>
+                    <AvatarFallback className="text-[6px] bg-gray-100">{(zr.name || "?").slice(0, 1).toUpperCase()}</AvatarFallback>
                   </Avatar>
-                  <span className="text-[10px] text-[#6600ff] font-medium">{formatSats(zr.amount)}</span>
+                  <span className="text-[10px] text-muted-foreground">{formatSats(zr.amount)}</span>
                 </div>
               ))}
               {post.zapReceipts.length > 5 && (
@@ -882,15 +998,15 @@ function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfiles?: M
               )}
             </div>
           )}
-          <div className="flex items-center gap-4 mt-3 pt-2 border-t border-border">
-            <button className="flex items-center gap-1.5 text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF] rounded-md px-2 py-1 transition-colors text-sm" data-testid={`button-reply-${post.id}`}>
-              <MessageCircle className="w-4 h-4" />
+          <div className="flex items-center gap-1 mt-3 pt-2 border-t border-gray-100">
+            <button className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground rounded-full px-2.5 py-1 transition-colors text-xs" data-testid={`button-reply-${post.id}`}>
+              <MessageCircle className="w-3.5 h-3.5" />
               <span>{post.comments > 0 ? post.comments : ""}</span>
             </button>
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className={`flex items-center gap-1.5 rounded-md px-2 py-1 transition-colors text-sm ${isReposted ? 'text-[#6600ff]' : 'text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF]'}`} data-testid={`button-repost-${post.id}`}>
+                <button className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 transition-colors text-xs ${isReposted ? 'text-[#6600ff]' : 'text-muted-foreground hover:text-foreground'}`} data-testid={`button-repost-${post.id}`}>
                   <Repeat2 className="w-4 h-4" />
                   <span>{post.reposts > 0 ? post.reposts : ""}</span>
                 </button>
@@ -987,32 +1103,32 @@ function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfiles?: M
               </DialogContent>
             </Dialog>
 
-            <button className="flex items-center gap-1.5 text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF] rounded-md px-2 py-1 transition-colors text-sm" data-testid={`button-zap-${post.id}`}>
-              <Zap className="w-4 h-4" />
+            <button className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground rounded-full px-2.5 py-1 transition-colors text-xs" data-testid={`button-zap-${post.id}`}>
+              <Zap className="w-3.5 h-3.5" />
               <span data-testid={`count-zaps-${post.id}`}>{post.satszapped > 0 ? formatSats(post.satszapped) : ""}</span>
             </button>
 
             <button 
               onClick={handleLike}
-              className={`flex items-center gap-1.5 rounded-md px-2 py-1 transition-colors text-sm ${isLiked ? 'text-[#6600ff]' : 'text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF]'}`} 
+              className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 transition-colors text-xs ${isLiked ? 'text-[#6600ff]' : 'text-muted-foreground hover:text-foreground'}`} 
               data-testid={`button-like-${post.id}`}
             >
-              <Heart className="w-4 h-4" fill={isLiked ? "currentColor" : "none"} />
+              <Heart className="w-3.5 h-3.5" fill={isLiked ? "currentColor" : "none"} />
               <span data-testid={`count-likes-${post.id}`}>{likes > 0 ? likes : ""}</span>
             </button>
 
             <button 
               onClick={handleBookmark}
-              className={`flex items-center gap-1.5 rounded-md px-2 py-1 transition-colors text-sm ${isBookmarked ? 'text-[#6600ff]' : 'text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF]'}`} 
+              className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 transition-colors text-xs ${isBookmarked ? 'text-[#6600ff]' : 'text-muted-foreground hover:text-foreground'}`} 
               data-testid={`button-bookmark-${post.id}`}
             >
-              <Bookmark className="w-4 h-4" fill={isBookmarked ? "currentColor" : "none"} />
+              <Bookmark className="w-3.5 h-3.5" fill={isBookmarked ? "currentColor" : "none"} />
             </button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button 
-                  className="flex items-center gap-1.5 text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF] rounded-md px-2 py-1 transition-colors text-sm ml-auto" 
+                  className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground rounded-full px-2.5 py-1 transition-colors text-xs ml-auto" 
                   data-testid={`button-share-${post.id}`}
                 >
                   <Share2 className="w-4 h-4" />
@@ -1081,7 +1197,7 @@ const EXPLORE_OPTIONS: { value: ExploreMode; label: string; icon: typeof Trendin
 export default function Feed() {
   const [activeTab, setActiveTab] = useState<FeedTab>("following");
   const [exploreMode, setExploreMode] = useState<ExploreMode>("trending");
-  const { posts, isLoading, isRefreshing, refetch, ndkConnected, newPostCount, showNewPosts, primalProfiles } = useNostrFeed(activeTab, exploreMode);
+  const { posts, isLoading, isRefreshing, refetch, ndkConnected, newPostCount, showNewPosts, pendingPosts, primalProfiles } = useNostrFeed(activeTab, exploreMode);
 
   const currentExploreOption = EXPLORE_OPTIONS.find(o => o.value === exploreMode) || EXPLORE_OPTIONS[0];
 
@@ -1122,31 +1238,31 @@ export default function Feed() {
         <PostComposer onPostPublished={refetch} />
         
         <div className="flex items-center gap-2 mb-6">
-          <div className="flex bg-muted rounded-lg p-1 flex-1">
+          <div className="flex gap-1 flex-1">
             <button
               onClick={() => setActiveTab("following")}
-              className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === "following" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+              className={`px-4 py-1.5 rounded-full text-sm transition-colors border ${activeTab === "following" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
               data-testid="tab-following"
             >
               Following
             </button>
             <button
               onClick={() => setActiveTab("tribe")}
-              className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === "tribe" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+              className={`px-4 py-1.5 rounded-full text-sm transition-colors border ${activeTab === "tribe" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
               data-testid="tab-tribe"
             >
               <span className="flex items-center justify-center gap-1.5">
-                <Lock className="w-3.5 h-3.5" />
+                <Lock className="w-3 h-3" />
                 Tribes
               </span>
             </button>
             <button
               onClick={() => setActiveTab("buddies")}
-              className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === "buddies" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+              className={`px-4 py-1.5 rounded-full text-sm transition-colors border ${activeTab === "buddies" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
               data-testid="tab-buddies"
             >
               <span className="flex items-center justify-center gap-1.5">
-                <Lock className="w-3.5 h-3.5" />
+                <Lock className="w-3 h-3" />
                 Buddies
               </span>
             </button>
@@ -1155,12 +1271,12 @@ export default function Feed() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "explore" ? "bg-[#6600ff] text-white" : "bg-muted text-muted-foreground hover:text-foreground"}`}
+                className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm transition-colors border ${activeTab === "explore" ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
                 data-testid="tab-explore"
               >
-                <currentExploreOption.icon className="w-4 h-4" />
+                <currentExploreOption.icon className="w-3.5 h-3.5" />
                 {currentExploreOption.label}
-                <ChevronDown className="w-3.5 h-3.5" />
+                <ChevronDown className="w-3 h-3" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
@@ -1171,7 +1287,7 @@ export default function Feed() {
                     setExploreMode(option.value);
                     setActiveTab("explore");
                   }}
-                  className={`cursor-pointer ${exploreMode === option.value && activeTab === "explore" ? "bg-[#F0E6FF]" : ""}`}
+                  className={`cursor-pointer ${exploreMode === option.value && activeTab === "explore" ? "bg-gray-50" : ""}`}
                   data-testid={`explore-option-${option.value}`}
                 >
                   <option.icon className="w-4 h-4 mr-2 text-muted-foreground" />
@@ -1183,9 +1299,9 @@ export default function Feed() {
         </div>
 
         {(activeTab === "tribe" || activeTab === "buddies") && (
-          <div className="flex items-center gap-2 mb-4 p-3 bg-[#F0E6FF] rounded-lg text-sm">
-            <Lock className="w-4 h-4 text-[#6600ff] shrink-0" />
-            <span className="text-[#6600ff]">
+          <div className="flex items-center gap-2 mb-4 p-3 bg-gray-50 rounded-lg text-sm border border-gray-100">
+            <Lock className="w-4 h-4 text-muted-foreground shrink-0" />
+            <span className="text-muted-foreground">
               {activeTab === "tribe" 
                 ? "Tribe posts are private to the LaB community and never shared publicly."
                 : "Buddy conversations are private and only visible to your buddies."}
@@ -1195,15 +1311,28 @@ export default function Feed() {
 
         <div className="flex gap-6">
           <div className="flex-1 space-y-4 min-w-0">
+            {/* Floating new posts pill - fixed position */}
             {newPostCount > 0 && (
-              <button
-                onClick={showNewPosts}
-                className="w-full py-2.5 px-4 bg-[#6600ff] text-white rounded-lg text-sm font-medium hover:bg-[#5500dd] transition-colors flex items-center justify-center gap-2 shadow-md"
-                data-testid="button-show-new-posts"
-              >
-                <ArrowUp className="w-4 h-4" />
-                Show {newPostCount} new {newPostCount === 1 ? "post" : "posts"}
-              </button>
+              <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50">
+                <button
+                  onClick={showNewPosts}
+                  className="flex items-center gap-2.5 px-4 py-2 bg-white border border-gray-200 rounded-full shadow-lg hover:shadow-xl transition-all text-sm text-foreground hover:border-[#6600ff]"
+                  data-testid="button-show-new-posts"
+                >
+                  <div className="flex -space-x-2">
+                    {pendingPosts.slice(0, 3).map((p, i) => (
+                      <Avatar key={p.id} className="w-6 h-6 border-2 border-white" style={{ zIndex: 3 - i }}>
+                        {p.author.avatar && <AvatarImage src={p.author.avatar} />}
+                        <AvatarFallback className="text-[8px] bg-gray-100">{p.author.name.slice(0, 1).toUpperCase()}</AvatarFallback>
+                      </Avatar>
+                    ))}
+                  </div>
+                  <span className="font-medium">
+                    {newPostCount} new {newPostCount === 1 ? "post" : "posts"}
+                  </span>
+                  <ArrowUp className="w-3.5 h-3.5 text-muted-foreground" />
+                </button>
+              </div>
             )}
             {isLoading ? (
               <FeedLoadingSkeleton />
@@ -1229,43 +1358,43 @@ export default function Feed() {
 
           <div className="hidden lg:block w-72 shrink-0 space-y-4">
             <Link href="/daily-practice">
-              <Card className="p-4 hover:shadow-sm transition-shadow cursor-pointer border-none bg-gradient-to-br from-[#6600ff]/5 to-[#9900ff]/5" data-testid="card-daily-practice-cta">
+              <Card className="p-4 hover:border-gray-300 transition-colors cursor-pointer border border-gray-100 shadow-none" data-testid="card-daily-practice-cta">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#6600ff]/10 flex items-center justify-center">
-                    <Flame className="w-5 h-5 text-[#6600ff]" />
+                  <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center">
+                    <Flame className="w-5 h-5 text-muted-foreground" />
                   </div>
                   <div>
-                    <p className="text-sm font-serif">Daily LOVE Practice</p>
-                    <p className="text-xs text-muted-foreground font-serif">Start your morning ritual</p>
+                    <p className="text-sm" style={{ fontFamily: 'Marcellus, serif' }}>Daily LOVE Practice</p>
+                    <p className="text-xs text-muted-foreground">Start your morning ritual</p>
                   </div>
                 </div>
               </Card>
             </Link>
 
-            <Card className="p-4 border-none" data-testid="card-trending-topics">
-              <h3 className="text-xs font-serif text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+            <Card className="p-4 border border-gray-100 shadow-none" data-testid="card-trending-topics">
+              <h3 className="text-[11px] text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2" style={{ fontFamily: 'Marcellus, serif' }}>
                 <TrendingUp className="w-3.5 h-3.5" />
                 Trending on Nostr
               </h3>
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {trendingTags.length > 0 ? (
                   trendingTags.map((tag) => (
                     <div key={tag} className="flex items-center gap-2 text-sm" data-testid={`trending-tag-${tag}`}>
-                      <span className="text-[#6600ff] font-serif">#{tag}</span>
+                      <span className="text-[#6600ff]">#{tag}</span>
                     </div>
                   ))
                 ) : (
-                  <p className="text-xs text-muted-foreground font-serif italic">Loading trending topics...</p>
+                  <p className="text-xs text-muted-foreground italic">Loading trending topics...</p>
                 )}
               </div>
             </Card>
 
-            <Card className="p-4 border-none" data-testid="card-community-info">
-              <h3 className="text-xs font-serif text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+            <Card className="p-4 border border-gray-100 shadow-none" data-testid="card-community-info">
+              <h3 className="text-[11px] text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2" style={{ fontFamily: 'Marcellus, serif' }}>
                 <Users className="w-3.5 h-3.5" />
                 11x LOVE LaB
               </h3>
-              <p className="text-xs text-muted-foreground font-serif leading-relaxed">
+              <p className="text-xs text-muted-foreground leading-relaxed">
                 A community dedicated to personal growth through the Daily LOVE Practice framework. 
                 Elevate your vibe, set your vision, and celebrate your victories.
               </p>
