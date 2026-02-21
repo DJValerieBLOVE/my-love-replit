@@ -96,14 +96,9 @@ function StepEditor({
             data-testid={`input-step-title-${moduleIndex}-${stepIndex}`}
           />
 
-          <div className="border rounded-xs overflow-hidden">
-            <style>{richTextEditorStyles}</style>
-            {editor && <RichTextEditorContent editor={editor} className="min-h-[200px]" />}
-          </div>
-
           <div className="space-y-1">
             <Label className="text-xs text-muted-foreground flex items-center gap-1">
-              <Video className="w-3 h-3" /> YouTube / Vimeo URL (optional)
+              <Video className="w-3 h-3" /> Lesson Video <span className="text-muted-foreground/60">(optional)</span>
             </Label>
             <Input
               value={step.videoUrl || ""}
@@ -121,6 +116,11 @@ function StepEditor({
               placeholder="https://www.youtube.com/watch?v=..."
               data-testid={`input-step-video-${moduleIndex}-${stepIndex}`}
             />
+          </div>
+
+          <div>
+            <style>{richTextEditorStyles}</style>
+            {editor && <RichTextEditorContent editor={editor} className="min-h-[250px] border rounded-xs p-3" />}
           </div>
         </div>
       )}
@@ -276,16 +276,16 @@ export default function ExperimentBuilder() {
     updateModule(moduleId, { steps: newSteps.map((s, i) => ({ ...s, order: i })) });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (asDraft: boolean = false) => {
     if (!title.trim()) {
       toast({ title: "Missing Title", description: "Please enter an experiment title.", variant: "destructive" });
       return;
     }
-    if (!dimension) {
+    if (!asDraft && !dimension) {
       toast({ title: "Missing Dimension", description: "Please select a dimension.", variant: "destructive" });
       return;
     }
-    if (modules.length === 0) {
+    if (!asDraft && modules.length === 0) {
       toast({ title: "No Modules", description: "Please add at least one module to your experiment.", variant: "destructive" });
       return;
     }
@@ -294,7 +294,7 @@ export default function ExperimentBuilder() {
       title,
       description: description || undefined,
       image: image || undefined,
-      dimension,
+      dimension: dimension || "mind",
       benefitsFor: benefitsFor || undefined,
       outcomes: outcomes || undefined,
       tags: selectedTags,
@@ -302,7 +302,7 @@ export default function ExperimentBuilder() {
       accessType,
       communityId: accessType === "community" ? communityId : undefined,
       price: accessType === "paid" ? price : 0,
-      isPublished,
+      isPublished: asDraft ? false : isPublished,
     });
   };
 
@@ -678,14 +678,28 @@ export default function ExperimentBuilder() {
           </CardContent>
         </Card>
 
-        <div className="flex justify-end gap-3">
+        <div className="flex justify-between">
           <Button variant="outline" onClick={() => setLocation("/experiments")} data-testid="button-cancel">
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={createExperimentMutation.isPending} className="gap-2" data-testid="button-create">
-            <Save className="w-4 h-4" />
-            {createExperimentMutation.isPending ? "Creating..." : "Create Experiment"}
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              onClick={() => {
+                handleSubmit(true);
+              }}
+              disabled={createExperimentMutation.isPending}
+              className="gap-2"
+              data-testid="button-save-draft"
+            >
+              <Save className="w-4 h-4" />
+              Save Draft
+            </Button>
+            <Button onClick={() => handleSubmit(false)} disabled={createExperimentMutation.isPending} className="gap-2" data-testid="button-create">
+              <Save className="w-4 h-4" />
+              {createExperimentMutation.isPending ? "Creating..." : "Create Experiment"}
+            </Button>
+          </div>
         </div>
       </div>
       </MembershipGate>
