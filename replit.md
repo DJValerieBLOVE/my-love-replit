@@ -1,7 +1,7 @@
 # My Masterpiece App
 
 ## Overview
-My Masterpiece is a spiritual personal growth application designed to help users curate their personal growth journey. It offers a personalized dashboard, integrated consumption of courses/podcasts/music, collaboration tools, private journaling, and an AI coach with persistent memory. The app leverages a hybrid Nostr and PostgreSQL architecture, integrating Lightning payments for peer-to-peer interactions. The platform aims to combine features from various popular platforms into a singular, cohesive experience focused on personal transformation, hosting the "11x LOVE LaB" community.
+My Masterpiece is a spiritual personal growth application aiming to help users curate their personal growth journey. It provides a personalized dashboard, integrated consumption of growth content (courses, podcasts, music), collaboration tools, private journaling, and an AI coach with persistent memory. The app leverages a hybrid Nostr and PostgreSQL architecture, integrating Lightning payments for peer-to-peer interactions. The platform seeks to unify features from various popular platforms into a singular, cohesive experience focused on personal transformation, specifically hosting the "11x LOVE LaB" community.
 
 ## User Preferences
 - Preferred communication style: Simple, everyday language
@@ -28,101 +28,62 @@ My Masterpiece is a spiritual personal growth application designed to help users
 ### Core Frameworks & Curriculum
 - **The Prosperity Pyramid**: Organizes life into 11 Dimensions across 5 macro-categories.
 - **FCLADDD Villains Framework**: Identifies 7 "villains" for AI tracking and antidote suggestions.
-- **Daily LOVE Practice**: Structured morning (VIBE, VISION, VALUE, VILLAIN, VICTORY) and evening (CELEBRATIONS, LESSONS, BLESSINGS, DREAM VIBES) reflections.
+- **Daily LOVE Practice**: Structured morning and evening reflections.
 - **11x LOVE Code Curriculum**: An 18-lesson curriculum across 5 modules with sequential unlocking.
 
 ### Technical Stack
 - **Frontend**: React 18, TypeScript, Wouter, TanStack React Query, Tailwind CSS v4, shadcn/ui, Framer Motion, Vite.
 - **Backend**: Node.js, Express, TypeScript, RESTful JSON APIs, Drizzle ORM, Neon serverless PostgreSQL.
 - **Data Storage**: Hybrid PostgreSQL for public/structured data and Nostr Private Relay for encrypted personal data (NIP-44 encrypted).
-- **AI Integration (Magic Mentor)**: Uses Claude Haiku 4.5 via Anthropic SDK, with system prompts including user profile, journal, and dreams. Supports three-tier access (Free, Paid, BYOK) and planned 4-layer AI memory.
-- **Authentication**: Dual system with Email/password (bcrypt, JWT, optional TOTP) and Nostr Login (NIP-07, NIP-46). Email users auto-generate client-side Nostr keypairs for NIP-44 encryption.
+- **AI Integration (Magic Mentor)**: Uses Claude Haiku 4.5 via Anthropic SDK with system prompts including user profile, journal, and dreams. Supports three-tier access and planned 4-layer AI memory.
+- **Authentication**: Dual system with Email/password (bcrypt, JWT, optional TOTP) and Nostr Login (NIP-07, NIP-46, nsec paste with local signer). Email users auto-generate client-side Nostr keypairs for NIP-44 encryption.
 
 ### Design System (Style Guide)
-- **Typography**: Marcellus font, weight 400 ONLY everywhere.
-- **Color Palette**: Background `#FAFAFA`, Foreground `#2a2430`, Primary Brand `#6600ff`, GOD/LOVE Dimension `#eb00a8`, Muted/Subtle Gray `#F5F5F5`. All colors are solid hex values; no purple tints for neutral UI elements.
-- **Buttons**: Default/Primary `bg-foreground text-background`. Ghost Button Hover `hover:bg-[#F0E6FF]`. Never use blue.
-- **Tabs / Pill Bubbles**: `rounded-full` shape with active (`bg-foreground text-background`) and inactive states. People page uses dropdown pill bubbles.
-- **Search Inputs**: Always `bg-white` with `Search` icon at `left-3` and `pl-10`.
-- **Cards**: `border-none shadow-sm bg-card rounded-xs` with `hover:shadow-md`. Images are 16:9 (`aspect-video`) with NO overlays/tags. Top accent is a thin purple line.
-- **Tags / Badges**: Light gray outline style: `bg-white border border-gray-200 text-muted-foreground text-xs px-2.5 py-0.5 rounded-md`. Placed in card content area.
+- **Typography**: Marcellus font, weight 400.
+- **Color Palette**: Background `#FAFAFA`, Foreground `#2a2430`, Primary Brand `#6600ff`, GOD/LOVE Dimension `#eb00a8`, Muted/Subtle Gray `#F5F5F5`. All colors solid hex.
+- **Buttons**: Default/Primary `bg-foreground text-background`. Ghost Button Hover `hover:bg-[#F0E6FF]`. No blue.
+- **Tabs / Pill Bubbles**: `rounded-full` shape with active and inactive states.
+- **Search Inputs**: `bg-white` with `Search` icon at `left-3` and `pl-10`.
+- **Cards**: `border-none shadow-sm bg-card rounded-xs` with `hover:shadow-md`. Images are 16:9 (`aspect-video`) with no overlays/tags. Top accent is a thin purple line.
+- **Tags / Badges**: Light gray outline style: `bg-white border border-gray-200 text-muted-foreground text-xs px-2.5 py-0.5 rounded-md`.
 - **Create Buttons**: Each listing page has a "Create" button in the tab/header row area.
 - **Navigation**: Left Sidebar white background, active/hover items `text-[#6600ff]`. Header white background, sticky. Mobile has hamburger menu.
 - **Icons**: ALL icons use `text-muted-foreground` color, except the Sparkles icon for Magic Mentor AI. Lucide React icons with `strokeWidth={1.5}`.
 
-### Key Pages & Features
-- **Home** (`/`): Prosperity Pyramid with flip card animations.
-- **Big Dreams** (`/big-dreams`): Daily hub with Daily LOVE Practice CTA, streak grid, experiment progress, upcoming events, and 11 Big Dreams editor.
-- **Daily LOVE Practice** (`/daily-practice`): Full-page wizard accessible from Big Dreams.
-- **Experiments** (`/experiments`): Full curriculum platform with 11 Dimensions filter (colored dots), experiment cards with dimension accent colors. Experiment builder (`/experiments/create`) supports Module > Step hierarchy (modules contain steps/lessons), rich text content via shared TipTap editor, YouTube video embeds, quiz questions per step, "Who Could Benefit" and "Outcomes" fields. Guide auto-filled from user's Nostr profile. Thumbnails 16:9. Tiered privacy: catalog is public (PostgreSQL), lesson content behind auth. Completion posts can be shared to public Nostr as kind 1 notes with preview card linking back to app. Magic Mentor AI assists with content creation. Lightning zaps on step/module/experiment completion. See EXPERIMENT_BUILDER_PLAN.md for full implementation details.
-- **Events** (`/events`): 4 tabs with calendar and event cards, with creation page.
-- **People** (`/people`): Unified social hub with dropdown pill bubbles for navigation, right sidebar with gamification placeholders, and 4-tier privacy selector on all post composers.
-- **Vault** (`/vault`): 6 tabs for personal content.
-- **Tribe/Community** (`/community`): Listing, creation, and management of tribes.
-- **Love Board** (`/leaderboard`): Rankings (planned marketplace).
-- **Profile** (`/profile/:id`): Clean Primal-style profile with no gamification, showing Nostr synced data. Banner uses 3:1 aspect ratio. Follow/unfollow system with Kind 3 contact list management via NDK. Clickable following/followers counts open full user list dialogs with search and follow buttons. Supports viewing other users' profiles via `/profile/:pubkey` with Primal cache data loading. Feed post avatars/names link to user profiles.
-- **Creator Dashboard** (`/creator`): Analytics for content creators.
-- **Wallet** (`/wallet`): Lightning wallet with NWC integration.
-- **Security**: Dual auth middleware (JWT, Nostr pubkey), NIP-07/NIP-46, ownership checks, Nostr query filtering, AI prompt injection protection, atomic transactions for AI usage.
+### Key Features and Pages
+- **Home**: Prosperity Pyramid with flip card animations.
+- **Big Dreams**: Daily hub with Daily LOVE Practice CTA, streak grid, experiment progress, upcoming events, and 11 Big Dreams editor.
+- **Daily LOVE Practice**: Full-page wizard accessible from Big Dreams.
+- **Experiments** (`/experiments`): Full curriculum platform with 11 Dimensions filter (colored dots), experiment cards with dimension accent colors. Builder (`/experiments/create`) supports Module > Step hierarchy, TipTap rich text, YouTube/Vimeo embeds, quiz questions, "Who Could Benefit" and "Outcomes" fields. Auto-save drafts (5s debounce). Edit mode at `/experiments/edit/:id`. My Experiments section with Drafts/Published tabs. API: PUT/DELETE with ownership validation. Tiered privacy: catalog public, content behind auth. Lightning zaps on completion.
+- **Events**: Calendar and event cards.
+- **People**: Unified social hub with dropdown pill bubbles, right sidebar with gamification placeholders, and 4-tier privacy selector on all post composers.
+- **Vault**: Tabs for personal content.
+- **Tribe/Community**: Listing, creation, and management of tribes.
+- **Love Board**: Planned marketplace.
+- **Profile**: Clean Primal-style profile with no gamification, showing Nostr synced data. Follow/unfollow system with Kind 3 contact list management.
+- **Creator Dashboard**: Analytics for content creators.
+- **Wallet**: Lightning wallet with NWC integration.
+- **Security**: Dual auth middleware, NIP-07/NIP-46/nsec local signer, ownership checks, Nostr query filtering, AI prompt injection protection, atomic transactions for AI usage.
+- **Shared Rich Text Editor**: Reusable TipTap-based editor with toolbar.
+- **Value-for-Value Architecture**: Creators receive Lightning zaps for experiments.
+- **Image Upload System**: Server-side multer upload, stored locally, 5MB limit.
+- **Privacy Architecture**: Four-tier privacy system on composers, dual-relay architecture (private LaB Relay, public relays).
+- **Experiment Tiered Privacy**: Public catalog and completion posts (Nostr), private full content (behind auth).
+- **Nostr NIPs Implementation**: NIP-01, NIP-05, NIP-07, NIP-10, NIP-19, NIP-25, NIP-44, NIP-46, NIP-57, NIP-65 currently implemented.
+- **Article Editor**: Primal-style NIP-23 compliant article editor with drafts.
+- **Feed Features**: Primal-style text truncation, NIP-23 long-form article display, profile enhancements (tabbed follow dialog, context menu, banner, QR code).
 
-### Shared Rich Text Editor Architecture (DONE - Prompt 1 Complete)
-- Shared components extracted and working:
-  - `client/src/components/rich-text-editor.tsx` — useRichTextEditor hook (with content/onUpdate/placeholder options), RichTextEditorContent, EditorPreview, EditorModeToggle, richTextEditorStyles
-  - `client/src/components/editor-toolbar.tsx` — ToolbarButton, ToolbarSelect, EditorToolbar (full formatting toolbar)
-- Article editor (`article-editor.tsx`) refactored to use shared components — tested and working.
-- Experiment builder uses these same shared components for step content editing.
-- Shared utilities: `html-to-markdown.ts` converter, `ImageUpload` component, slug generation.
+### Nsec Login & Local Signer (Primal-Style)
+- **Local Signer** (`client/src/lib/local-signer.ts`): `createLocalSigner()` returns `signEvent`, `nip04.encrypt/decrypt`, `nip44.encrypt/decrypt`, `getPublicKey()`. Keys derived from nsec via `@noble/hashes` and `nostr-tools`. Helpers: `storeNsec`, `readStoredNsec`, `clearStoredNsec` (localStorage).
+- **NostrContext**: `connectWithNsec(nsec)` method. Session restore via `checkNsecSession()` on page refresh. Sign event priority: local signer > bunker > extension. Disconnect clears nsec.
+- **Login Dialog**: Nostr tab has 3 options — Extension (NIP-07), Private Key (nsec paste), Bunker (NIP-46). Nsec input has visibility toggle, security warning, back navigation.
+- **Login Methods**: `"extension" | "bunker" | "ncryptsec" | "email" | null`.
 
-### Experiment Builder Platform (DONE - Prompt 2 Complete)
-- **Database Schema**: `experiments` table uses `modules` JSON field (Module > Step hierarchy), `dimension` (required), `benefitsFor`, `outcomes`. Removed `guide`, `category`, `loveCodeArea`, `steps` columns.
-- **11 Dimensions**: `ELEVEN_DIMENSIONS` replaces `EXPERIMENT_CATEGORIES` everywhere. `LOVE_CODE_AREAS` kept as alias for backward compat. All dropdowns show colored dots.
-- **Builder** (`/experiments/create`): Form order — Title, 11 Dimensions, Tags (placeholder), Description, Who Could Benefit, Outcomes & Goals, compact Thumbnail upload (16:9). Guide auto-filled from Nostr profile. Module > Step hierarchy with TipTap rich text, YouTube/Vimeo URL validation. Access type + publish toggle.
-- **Listing** (`/experiments`): Dimension filter with colored dots, tag filter, search. Cards show dimension accent bar.
-- **Detail** (`/experiments/:id`): Sidebar curriculum navigation, YouTube embeds, tiered privacy (content behind auth).
-- **Tags**: Current experiment tags are placeholders — will be replaced with custom tags.
-
-### Value-for-Value Architecture
-- Experiments are public, value-for-value content: creators receive Lightning zaps from users.
-- "Zap the Creator" modal after each lesson and experiment completion.
-- Experiment completion also offers "Share Your Win" to publish to public Nostr relays.
-
-### Image Upload System
-- Server-side file upload via multer at `/api/upload`.
-- Stored in `/uploads/`, served as static files.
-- 5MB limit, JPEG, PNG, GIF, WebP.
-- Reusable `ImageUpload` component with drag-and-drop.
-
-### Privacy Architecture
-- Four-tier privacy system on all post composers: Public (Nostr), Tribe Only, Buddy Only, Secret (vault only).
-- Dual-relay architecture: private Railway Relay for LaB data, public relays for general Nostr data.
-- Private-by-default journals/AI conversations, shareable completions/feed posts.
-
-### Experiment Tiered Privacy (Value-for-Value Strategy)
-- **Goal**: Use Nostr for discovery/marketing, keep curriculum behind login to build community and drive paid memberships.
-- **PUBLIC** (PostgreSQL + public Nostr relays): Experiment catalog (titles, descriptions, thumbnails, dimensions), module/step titles (table of contents only), completion celebration posts (kind 1, user-controlled with reflection + preview card + link back to app), "I'm starting [Experiment]!" posts (optional).
-- **PRIVATE** (Railway relay + behind auth): Full step/lesson content (the actual curriculum), user journals/reflections, progress data (streaks, scores, quiz results), tribe discussions about experiments, comments on specific steps, quiz answers and results.
-- Completion posts are authentic Nostr kind 1 posts that live on the user's feed, get zapped, get replies — not walled-garden ads. They include the user's personal insight and a beautiful card preview linking back to the app.
-
-### Nostr NIPs Implementation
-- **Currently Implemented**: NIP-01, NIP-05, NIP-07, NIP-10, NIP-19, NIP-25, NIP-44, NIP-46, NIP-57, NIP-65.
-- **Key Event Kinds Used**: 0, 1, 3, 6, 7, 9, 11, 12, 1059, 1060, 10002, 30023, 30078.
-- **Priority NIPs to Implement Next**: NIP-17, NIP-29, NIP-42, NIP-51, NIP-09, NIP-32, NIP-56, NIP-72, NIP-94, NIP-98.
-- **Relay Architecture**: Private LaB Relay for all private/encrypted data. Public Relays for public content. Events with private tags NEVER go to public relays.
-
-### Article Editor (Primal-Style)
-- **Route**: `/articles/edit` for new articles, `/articles/edit/:naddr` for editing existing.
-- **My Articles**: `/articles` page lists published articles and drafts with edit/delete actions.
-- **Rich Text Editor**: TipTap (ProseMirror-based) with toolbar: block type selector, bold, italic, underline, strikethrough, bullet/ordered lists, table, image, blockquote, link, code block, horizontal rule.
-- **NIP-23 Compliant**: Articles published as kind 30023 events with Markdown content. Tags include: d (identifier), title, summary, image, published_at, t (hashtags), client.
-- **Drafts**: Kind 30024 events saved privately (no published_at tag). Drafts only go to LAB relay.
-- **Preview Mode**: Toggle between edit and preview in right sidebar.
-- **Options**: Show/hide article metadata, enable/disable hero image.
-- **HTML-to-Markdown**: Custom converter ensures NIP-23 content interoperability.
-
-### Feed Features (Primal-Style)
-- **Text Truncation**: Primal-style "see more" truncation on long posts (1400 char / 200 word limits). Purple "see more" link expands content inline.
-- **Long-form Articles (NIP-23)**: Kind 30023 long-form content displayed as collapsed article cards in the feed. Parses title, summary, image, hashtags, and published_at from NIP-23 tags. Also handles Primal's kind 10030023 shell events for article previews. Articles are deduplicated and sorted, interleaved every 5 posts in the explore feed.
-- **Profile Enhancements**: Primal-style tabbed follow dialog (Following/Followers tabs with counts). Context menu on "..." button (Add user feed, Copy user link, Copy public key). 3:1 banner aspect ratio with no rounded corners. Avatar overlaps banner bottom edge. QR code button copies public key. Follower counts from kind 10000108/10000133 events.
+### Experiment Builder Implementation Details
+- **Database Schema**: `experiments` table has `modules` JSON field (Module > Step hierarchy), `dimension` (required), `benefitsFor`, `outcomes`, `isPublished`, `accessType`, `price`. 11 Dimensions replace categories.
+- **Builder Features**: Auto-save drafts (5s debounce), edit mode (`/experiments/edit/:id`) with ownership check, My Experiments with Drafts/Published tabs, Module > Step hierarchy with collapsible/reorderable UI, TipTap rich text per step, YouTube/Vimeo URL validation per step.
+- **API**: `POST /api/experiments` (create), `PUT /api/experiments/:id` (update with ownership), `DELETE /api/experiments/:id` (delete with ownership), `GET /api/experiments/my` (user's experiments).
+- **Tags**: Current tags are placeholders — will be replaced with custom tags system.
 
 ## External Dependencies
 - **PostgreSQL**: Primary database (Neon serverless).

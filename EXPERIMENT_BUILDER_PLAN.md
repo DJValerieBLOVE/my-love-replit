@@ -20,6 +20,12 @@ Full experiment builder redesign completed:
 - **Detail Page** (`/experiments/:id`): Sidebar with Module > Step curriculum navigation, YouTube/Vimeo embeds, dimension badge with colored dot, benefits/outcomes sections. Tiered privacy: full content only for authenticated users, catalog preview with "Login to start" CTA for unauthenticated visitors.
 - **Tags**: Current tags are placeholders — will be replaced with custom tags later.
 
+### Prompt 2.5 - Nsec Login & Local Signer (DONE)
+- Created `client/src/lib/local-signer.ts` — Primal-style local signer with `createLocalSigner()`, `storeNsec`, `readStoredNsec`, `clearStoredNsec`.
+- Added `connectWithNsec(nsec)` to NostrContext with session restore via `checkNsecSession()`.
+- Updated login dialog with 3 Nostr options: Extension, nsec paste, Bunker.
+- Sign event priority: local signer > bunker > extension. Nsec never sent to server.
+
 ## Remaining Prompts (use in order, one per chat)
 
 ### Prompt 3 - Magic Mentor AI Formatting Assistant
@@ -100,16 +106,18 @@ PRIVATE (Railway relay + behind auth):
 - `client/src/components/rich-text-editor.tsx` - Shared TipTap editor (DONE)
 - `client/src/components/editor-toolbar.tsx` - Shared toolbar (DONE)
 - `client/src/pages/article-editor.tsx` - Article editor using shared components (DONE)
-- `client/src/pages/experiment-builder.tsx` - Experiment builder (DONE - Prompt 2)
+- `client/src/pages/experiment-builder.tsx` - Experiment builder with auto-save, edit mode (DONE - Prompt 2)
 - `client/src/pages/experiment-detail.tsx` - Experiment viewer (DONE - Prompt 2)
-- `client/src/pages/experiments.tsx` - Experiments listing (DONE - Prompt 2)
+- `client/src/pages/experiments.tsx` - Experiments listing with My Experiments (DONE - Prompt 2)
 - `client/src/lib/mock-data.ts` - ELEVEN_DIMENSIONS (canonical) / LOVE_CODE_AREAS (alias)
 - `client/src/lib/html-to-markdown.ts` - HTML-to-Markdown converter
+- `client/src/lib/local-signer.ts` - Primal-style nsec local signer (DONE - Prompt 2.5)
 - `client/src/contexts/ndk-context.tsx` - NDK/Nostr context
-- `client/src/contexts/nostr-context.tsx` - Nostr context with AI integration
+- `client/src/contexts/nostr-context.tsx` - Nostr context with AI integration + nsec login (DONE - Prompt 2.5)
+- `client/src/components/nostr-login-dialog.tsx` - Login dialog with Extension/nsec/Bunker/Email (DONE - Prompt 2.5)
 - `client/src/lib/relays.ts` - Relay privacy architecture
 - `shared/schema.ts` - Database schema (experiments table)
-- `server/routes.ts` - API routes
+- `server/routes.ts` - API routes (experiments CRUD with ownership)
 - `server/storage.ts` - Storage interface
 - `NOSTR_GUIDELINES.md` - Nostr development rules
 - `replit.md` - Project plan and style guide
