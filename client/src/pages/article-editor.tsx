@@ -1,53 +1,30 @@
 import Layout from "@/components/layout";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ImageUpload } from "@/components/image-upload";
 import { useNostr } from "@/contexts/nostr-context";
 import { useNDK } from "@/contexts/ndk-context";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, useParams } from "wouter";
 import { NDKEvent } from "@nostr-dev-kit/ndk";
 import { nip19 } from "nostr-tools";
 import {
   ArrowLeft,
-  Bold,
-  Italic,
-  Underline as UnderlineIcon,
-  Strikethrough,
-  List,
-  ListOrdered,
-  Image as ImageIcon,
-  Link as LinkIcon,
-  Code,
-  Quote,
-  Heading1,
-  Heading2,
-  Heading3,
-  Table,
-  Minus,
-  Undo,
-  Redo,
   FileText,
   Loader2,
-  Eye,
-  Pencil,
   Save,
   Send,
 } from "lucide-react";
-import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import TiptapImage from "@tiptap/extension-image";
-import TiptapLink from "@tiptap/extension-link";
-import TiptapUnderline from "@tiptap/extension-underline";
-import Placeholder from "@tiptap/extension-placeholder";
-import { Table as TableExtension } from "@tiptap/extension-table";
-import TableRow from "@tiptap/extension-table-row";
-import TableCell from "@tiptap/extension-table-cell";
-import TableHeader from "@tiptap/extension-table-header";
 import { htmlToMarkdown } from "@/lib/html-to-markdown";
+import {
+  useRichTextEditor,
+  RichTextEditorContent,
+  EditorPreview,
+  EditorModeToggle,
+  richTextEditorStyles,
+} from "@/components/rich-text-editor";
 
 function generateSlug(title: string): string {
   return title
@@ -55,11 +32,6 @@ function generateSlug(title: string): string {
     .replace(/\s+/g, "-")
     .replace(/[^a-z0-9-]/g, "")
     .slice(0, 80);
-}
-
-function editorContentToMarkdown(editor: any): string {
-  if (!editor) return "";
-  return editor.getHTML();
 }
 
 export default function ArticleEditor() {
@@ -81,39 +53,7 @@ export default function ArticleEditor() {
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
   const [existingIdentifier, setExistingIdentifier] = useState("");
 
-  const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        heading: { levels: [1, 2, 3] },
-      }),
-      TiptapImage.configure({
-        inline: false,
-        allowBase64: false,
-      }),
-      TiptapLink.configure({
-        openOnClick: false,
-        HTMLAttributes: {
-          class: "text-[#6600ff] underline cursor-pointer",
-        },
-      }),
-      TiptapUnderline,
-      Placeholder.configure({
-        placeholder: "Start writing your article...",
-      }),
-      TableExtension.configure({
-        resizable: true,
-      }),
-      TableRow,
-      TableCell,
-      TableHeader,
-    ],
-    editorProps: {
-      attributes: {
-        class:
-          "prose prose-sm sm:prose lg:prose-lg max-w-none focus:outline-none min-h-[400px] font-serif",
-      },
-    },
-  });
+  const editor = useRichTextEditor({ placeholder: "Start writing your article..." });
 
   useEffect(() => {
     if (params.id && ndk) {
@@ -157,30 +97,6 @@ export default function ArticleEditor() {
       console.error("Failed to load article:", err);
     }
   };
-
-  const addImage = useCallback(() => {
-    const url = window.prompt("Enter image URL:");
-    if (url && editor) {
-      editor.chain().focus().setImage({ src: url }).run();
-    }
-  }, [editor]);
-
-  const addLink = useCallback(() => {
-    if (!editor) return;
-    const previousUrl = editor.getAttributes("link").href;
-    const url = window.prompt("Enter URL:", previousUrl);
-    if (url === null) return;
-    if (url === "") {
-      editor.chain().focus().extendMarkRange("link").unsetLink().run();
-      return;
-    }
-    editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
-  }, [editor]);
-
-  const insertTable = useCallback(() => {
-    if (!editor) return;
-    editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
-  }, [editor]);
 
   const getArticleContent = (): string => {
     if (!editor) return "";
@@ -409,103 +325,7 @@ export default function ArticleEditor() {
               )}
 
               {previewMode === "editor" && editor && (
-                <>
-                  <div
-                    className="sticky top-[64px] z-10 bg-white border-b border-gray-200 py-2 flex flex-wrap items-center gap-0.5"
-                    id="editor_toolbar"
-                    data-testid="editor-toolbar"
-                  >
-                    <ToolbarSelect editor={editor} />
-                    <div className="w-px h-6 bg-gray-200 mx-1" />
-
-                    <ToolbarButton
-                      icon={Bold}
-                      active={editor.isActive("bold")}
-                      onClick={() => editor.chain().focus().toggleBold().run()}
-                      tooltip="Bold"
-                    />
-                    <ToolbarButton
-                      icon={Italic}
-                      active={editor.isActive("italic")}
-                      onClick={() => editor.chain().focus().toggleItalic().run()}
-                      tooltip="Italic"
-                    />
-                    <ToolbarButton
-                      icon={UnderlineIcon}
-                      active={editor.isActive("underline")}
-                      onClick={() => editor.chain().focus().toggleUnderline().run()}
-                      tooltip="Underline"
-                    />
-                    <ToolbarButton
-                      icon={Strikethrough}
-                      active={editor.isActive("strike")}
-                      onClick={() => editor.chain().focus().toggleStrike().run()}
-                      tooltip="Strikethrough"
-                    />
-
-                    <div className="w-px h-6 bg-gray-200 mx-1" />
-
-                    <ToolbarButton
-                      icon={List}
-                      active={editor.isActive("bulletList")}
-                      onClick={() => editor.chain().focus().toggleBulletList().run()}
-                      tooltip="Bullet List"
-                    />
-                    <ToolbarButton
-                      icon={ListOrdered}
-                      active={editor.isActive("orderedList")}
-                      onClick={() => editor.chain().focus().toggleOrderedList().run()}
-                      tooltip="Ordered List"
-                    />
-
-                    <div className="w-px h-6 bg-gray-200 mx-1" />
-
-                    <ToolbarButton
-                      icon={Table}
-                      active={false}
-                      onClick={insertTable}
-                      tooltip="Insert Table"
-                    />
-                    <ToolbarButton
-                      icon={ImageIcon}
-                      active={false}
-                      onClick={addImage}
-                      tooltip="Insert Image"
-                    />
-                    <ToolbarButton
-                      icon={Quote}
-                      active={editor.isActive("blockquote")}
-                      onClick={() => editor.chain().focus().toggleBlockquote().run()}
-                      tooltip="Quote"
-                    />
-                    <ToolbarButton
-                      icon={LinkIcon}
-                      active={editor.isActive("link")}
-                      onClick={addLink}
-                      tooltip="Link"
-                    />
-                    <ToolbarButton
-                      icon={Code}
-                      active={editor.isActive("codeBlock")}
-                      onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-                      tooltip="Code Block"
-                    />
-                    <ToolbarButton
-                      icon={Minus}
-                      active={false}
-                      onClick={() => editor.chain().focus().setHorizontalRule().run()}
-                      tooltip="Horizontal Rule"
-                    />
-                  </div>
-
-                  <div className="min-h-[400px] bg-white">
-                    <EditorContent
-                      editor={editor}
-                      className="article-editor-content"
-                      data-testid="editor-content"
-                    />
-                  </div>
-                </>
+                <RichTextEditorContent editor={editor} />
               )}
 
               {previewMode === "preview" && (
@@ -527,12 +347,7 @@ export default function ArticleEditor() {
                       {summary}
                     </p>
                   )}
-                  <div
-                    className="prose prose-sm sm:prose lg:prose-lg max-w-none font-serif"
-                    dangerouslySetInnerHTML={{
-                      __html: editor?.getHTML() || "",
-                    }}
-                  />
+                  <EditorPreview html={editor?.getHTML() || ""} />
                   {tags && (
                     <div className="flex flex-wrap gap-2 mt-8 pt-4 border-t border-gray-200">
                       {tags
@@ -584,36 +399,7 @@ export default function ArticleEditor() {
 
               <div className="space-y-3">
                 <h3 className="text-sm font-serif text-foreground">Edit & Preview</h3>
-                <div className="flex rounded-full border border-gray-200 overflow-hidden">
-                  <button
-                    className={`flex-1 py-2 px-4 text-sm font-serif transition-colors ${
-                      previewMode === "editor"
-                        ? "bg-foreground text-background"
-                        : "bg-white text-foreground hover:bg-[#F5F5F5]"
-                    }`}
-                    onClick={() => setPreviewMode("editor")}
-                    data-testid="button-edit-mode"
-                  >
-                    <div className="flex items-center justify-center gap-1.5">
-                      <Pencil className="w-3.5 h-3.5" strokeWidth={1.5} />
-                      Edit Mode
-                    </div>
-                  </button>
-                  <button
-                    className={`flex-1 py-2 px-4 text-sm font-serif transition-colors ${
-                      previewMode === "preview"
-                        ? "bg-foreground text-background"
-                        : "bg-white text-foreground hover:bg-[#F5F5F5]"
-                    }`}
-                    onClick={() => setPreviewMode("preview")}
-                    data-testid="button-preview-mode"
-                  >
-                    <div className="flex items-center justify-center gap-1.5">
-                      <Eye className="w-3.5 h-3.5" strokeWidth={1.5} />
-                      Preview
-                    </div>
-                  </button>
-                </div>
+                <EditorModeToggle mode={previewMode} onModeChange={setPreviewMode} />
               </div>
 
               <div className="space-y-3">
@@ -671,215 +457,7 @@ export default function ArticleEditor() {
         </div>
       </div>
 
-      <style>{`
-        .article-editor-content .tiptap {
-          outline: none;
-          min-height: 400px;
-          font-family: 'Marcellus', serif;
-        }
-        .article-editor-content .tiptap p.is-editor-empty:first-child::before {
-          content: attr(data-placeholder);
-          float: left;
-          color: #9ca3af;
-          pointer-events: none;
-          height: 0;
-        }
-        .article-editor-content .tiptap h1 {
-          font-size: 2em;
-          font-weight: 400;
-          margin-top: 1em;
-          margin-bottom: 0.5em;
-          font-family: 'Marcellus', serif;
-        }
-        .article-editor-content .tiptap h2 {
-          font-size: 1.5em;
-          font-weight: 400;
-          margin-top: 0.8em;
-          margin-bottom: 0.4em;
-          font-family: 'Marcellus', serif;
-        }
-        .article-editor-content .tiptap h3 {
-          font-size: 1.25em;
-          font-weight: 400;
-          margin-top: 0.6em;
-          margin-bottom: 0.3em;
-          font-family: 'Marcellus', serif;
-        }
-        .article-editor-content .tiptap p {
-          margin-bottom: 0.75em;
-          line-height: 1.7;
-        }
-        .article-editor-content .tiptap blockquote {
-          border-left: 3px solid #6600ff;
-          padding-left: 1em;
-          color: #666;
-          margin: 1em 0;
-          font-style: italic;
-        }
-        .article-editor-content .tiptap pre {
-          background: #1e1e2e;
-          color: #cdd6f4;
-          padding: 1em;
-          border-radius: 8px;
-          overflow-x: auto;
-          margin: 1em 0;
-        }
-        .article-editor-content .tiptap code {
-          background: #f0f0f0;
-          padding: 0.2em 0.4em;
-          border-radius: 4px;
-          font-size: 0.85em;
-        }
-        .article-editor-content .tiptap pre code {
-          background: none;
-          padding: 0;
-          border-radius: 0;
-          color: inherit;
-        }
-        .article-editor-content .tiptap img {
-          max-width: 100%;
-          height: auto;
-          border-radius: 8px;
-          margin: 1em 0;
-        }
-        .article-editor-content .tiptap ul,
-        .article-editor-content .tiptap ol {
-          padding-left: 1.5em;
-          margin: 0.5em 0;
-        }
-        .article-editor-content .tiptap li {
-          margin-bottom: 0.25em;
-        }
-        .article-editor-content .tiptap hr {
-          border: none;
-          border-top: 1px solid #e5e5e5;
-          margin: 1.5em 0;
-        }
-        .article-editor-content .tiptap a {
-          color: #6600ff;
-          text-decoration: underline;
-        }
-        .article-editor-content .tiptap table {
-          border-collapse: collapse;
-          width: 100%;
-          margin: 1em 0;
-        }
-        .article-editor-content .tiptap table td,
-        .article-editor-content .tiptap table th {
-          border: 1px solid #e5e5e5;
-          padding: 0.5em 0.75em;
-          text-align: left;
-        }
-        .article-editor-content .tiptap table th {
-          background: #f5f5f5;
-          font-weight: 400;
-        }
-      `}</style>
+      <style>{richTextEditorStyles}</style>
     </Layout>
-  );
-}
-
-function ToolbarButton({
-  icon: Icon,
-  active,
-  onClick,
-  tooltip,
-}: {
-  icon: any;
-  active: boolean;
-  onClick: () => void;
-  tooltip: string;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      title={tooltip}
-      className={`p-1.5 rounded transition-colors ${
-        active
-          ? "bg-[#F0E6FF] text-[#6600ff]"
-          : "text-muted-foreground hover:bg-[#F5F5F5] hover:text-foreground"
-      }`}
-      data-testid={`toolbar-${tooltip.toLowerCase().replace(/\s+/g, "-")}`}
-    >
-      <Icon className="w-4 h-4" strokeWidth={1.5} />
-    </button>
-  );
-}
-
-function ToolbarSelect({ editor }: { editor: any }) {
-  const [open, setOpen] = useState(false);
-
-  const getCurrentBlock = () => {
-    if (editor.isActive("heading", { level: 1 })) return "Heading 1";
-    if (editor.isActive("heading", { level: 2 })) return "Heading 2";
-    if (editor.isActive("heading", { level: 3 })) return "Heading 3";
-    if (editor.isActive("codeBlock")) return "Code Block";
-    if (editor.isActive("blockquote")) return "Quote";
-    return "Normal text";
-  };
-
-  const setBlock = (type: string) => {
-    switch (type) {
-      case "paragraph":
-        editor.chain().focus().setParagraph().run();
-        break;
-      case "h1":
-        editor.chain().focus().toggleHeading({ level: 1 }).run();
-        break;
-      case "h2":
-        editor.chain().focus().toggleHeading({ level: 2 }).run();
-        break;
-      case "h3":
-        editor.chain().focus().toggleHeading({ level: 3 }).run();
-        break;
-      case "code":
-        editor.chain().focus().toggleCodeBlock().run();
-        break;
-      case "quote":
-        editor.chain().focus().toggleBlockquote().run();
-        break;
-    }
-    setOpen(false);
-  };
-
-  return (
-    <div className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-1 px-2 py-1.5 text-sm font-serif text-foreground hover:bg-[#F5F5F5] rounded transition-colors min-w-[120px]"
-        data-testid="toolbar-block-selector"
-      >
-        {getCurrentBlock()}
-        <svg className="w-3 h-3 ml-auto" viewBox="0 0 12 12" fill="none">
-          <path d="M3 5L6 8L9 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </button>
-      {open && (
-        <>
-          <div className="fixed inset-0 z-20" onClick={() => setOpen(false)} />
-          <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-30 min-w-[160px]">
-            {[
-              { id: "paragraph", label: "Normal text" },
-              { id: "h1", label: "Heading 1" },
-              { id: "h2", label: "Heading 2" },
-              { id: "h3", label: "Heading 3" },
-              { id: "code", label: "Code Block" },
-              { id: "quote", label: "Quote" },
-            ].map((item) => (
-              <button
-                key={item.id}
-                onClick={() => setBlock(item.id)}
-                className="w-full text-left px-3 py-1.5 text-sm font-serif hover:bg-[#F5F5F5] transition-colors"
-                data-testid={`block-${item.id}`}
-              >
-                {item.label}
-              </button>
-            ))}
-          </div>
-        </>
-      )}
-    </div>
   );
 }
