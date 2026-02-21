@@ -1,0 +1,70 @@
+PROMPT: Events, Love Board, Notes, Vault & Private Data Infrastructure
+
+Read replit.md, EXPERIMENT_BUILDER_PLAN.md, and NOSTR_GUIDELINES.md fully before starting. This is a large prompt covering multiple feature areas that need to be built or fixed to work end-to-end. Work through them in order.
+
+A. Events System (Full CRUD + RSVP):
+
+Make the Events page (/events) fully functional end-to-end with real database CRUD
+Event Create page (/event-create) should save events to the database with: title, description, date, time, location (virtual or physical), image, dimension (11 Dimensions dropdown with colored dots), recurring options
+Event Detail page (/events/:id) should show full event info, RSVP button that saves to database, attendee count, share button
+RSVP system: track RSVPs in database (create eventRsvps table if needed), show "Going" badge, attendee list
+Events listing should show real data from database, with filter by dimension and upcoming/past tabs
+Calendar view should work with real event dates
+Check existing schema in shared/schema.ts for events table and update as needed
+Check existing API routes in server/routes.ts and storage in server/storage.ts
+B. Love Board / Marketplace (at /leaderboard route):
+
+Make the Love Board fully functional for paid members
+Categories: For Sale, Help Wanted, Services, Other
+Full CRUD: create listings, edit own listings, delete own listings
+Each listing has: title, description, category, price (optional), contact info, dimension tag, image
+Check existing Love Board create page (/love-board-create) and listing page (/leaderboard)
+Check existing schema and routes — the loveBoardPosts table may already exist
+Membership gate should work (only paid members can post, everyone can browse)
+Search and filter by category tabs
+C. Notes System:
+
+Build/verify a working Notes system accessible from the Vault page
+Notes CRUD: create, read, update, delete personal notes
+Notes should be stored in PostgreSQL with user ownership
+Check if notes or similar table exists in schema, create if needed
+Notes should have: title, content (rich text via TipTap editor), dimension tag (optional), created/updated timestamps
+Notes list view and detail/edit view
+D. Vault Page — Private Data Hub:
+
+The Vault page (/vault) should be the central hub for all user's private data
+Tabs or sections for: Daily LOVE Practice entries, Journal entries, Experiment progress, Notes, Saved content
+Each section should pull REAL data from the database (not mock/placeholder)
+Daily LOVE Practice entries should show actual saved practice data
+Journal entries should show actual journal data
+Experiment progress should show enrolled experiments with completion status
+Notes section should show user's notes from the Notes system above
+Add download/export functionality for user data (JSON export of all personal data)
+E. Private Relay Data Sync (Foundation):
+
+Read NOSTR_GUIDELINES.md for relay architecture rules
+Ensure all personal data (journal entries, daily practice, notes, dreams) is NIP-44 encrypted when stored
+Personal data should sync to the private Railway relay (wss://nostr-rs-relay-production-1569.up.railway.app)
+This is the foundation for data portability — users should eventually be able to download and unlock their data anywhere
+For now, focus on ensuring the encryption and private relay publish pipeline works for at least journal entries and daily practice data
+Do NOT publish any personal data to public relays — only the private LaB relay
+Design Rules (must follow):
+
+Marcellus font, weight 400 ONLY
+Primary: #6600ff, Background: #FAFAFA, Foreground: #2a2430
+ALL icons: text-muted-foreground EXCEPT Sparkles (Magic Mentor AI only)
+Colored dots next to 11 Dimension names in ALL dropdowns/filters
+Cards: border-none shadow-sm bg-card rounded-xs with hover:shadow-md, 16:9 images, thin purple accent line at top
+Tags/Badges: bg-white border border-gray-200 text-muted-foreground text-xs px-2.5 py-0.5 rounded-md
+Buttons: Primary bg-foreground text-background, Ghost hover hover:bg-[#F0E6FF]
+Search Inputs: bg-white with Search icon at left-3 and pl-10
+Create Buttons: Each listing page has a "Create" button in the tab/header row area
+Key files: shared/schema.ts, server/routes.ts, server/storage.ts, client/src/lib/api.ts, client/src/pages/events.tsx, client/src/pages/event-detail.tsx, client/src/pages/event-create.tsx, client/src/pages/leaderboard.tsx, client/src/pages/love-board-create.tsx, client/src/pages/vault.tsx, client/src/pages/note.tsx, client/src/pages/journal.tsx, client/src/pages/daily-practice.tsx, client/src/lib/relays.ts, NOSTR_GUIDELINES.md
+
+Important: Update replit.md and EXPERIMENT_BUILDER_PLAN.md when each section is complete. Make sure all changes are saved so they sync properly.
+
+That covers Events, Love Board, Notes, Vault, and the private data foundation. After that prompt is done, the remaining experiment builder prompts from the plan would be:
+
+Prompt 4: Lightning Zaps (Value-for-Value)
+Prompt 5: Magic Mentor AI Setup
+Prompt 6: Custom Tags System
