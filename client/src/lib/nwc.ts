@@ -228,7 +228,8 @@ export async function fetchLNURLPayInfo(lud16: string): Promise<LNURLPayInfo> {
 export async function getInvoiceFromLNURL(
   lnurlPayInfo: LNURLPayInfo & { commentAllowed?: number },
   amountSats: number,
-  comment?: string
+  comment?: string,
+  nostr?: string
 ): Promise<string> {
   const amountMsat = amountSats * 1000;
   
@@ -244,6 +245,10 @@ export async function getInvoiceFromLNURL(
     if (maxCommentLength > 0) {
       url.searchParams.set("comment", comment.slice(0, maxCommentLength));
     }
+  }
+  
+  if (nostr) {
+    url.searchParams.set("nostr", nostr);
   }
   
   const response = await fetch(url.toString());
@@ -329,10 +334,46 @@ export async function zapViaLightning(
   connection: NWCConnection,
   recipientLud16: string,
   amountSats: number,
-  comment?: string
+  comment?: string,
+  zapRequestOptions?: {
+    senderPubkey: string;
+    recipientPubkey: string;
+    eventId?: string;
+    signEvent: (event: any) => Promise<any>;
+  }
 ): Promise<{ paymentHash: string; preimage: string; invoice: string }> {
   const lnurlInfo = await fetchLNURLPayInfo(recipientLud16);
-  const invoice = await getInvoiceFromLNURL(lnurlInfo, amountSats, comment);
+  
+  let nostrParam: string | undefined;
+  
+  if (zapRequestOptions && zapRequestOptions.senderPubkey && lnurlInfo.allowsNostr === true && lnurlInfo.nostrPubkey) {
+    const amountMsats = amountSats * 1000;
+    const lnurlPayUrl = lud16ToUrl(recipientLud16) || "";
+    
+    const tags: string[][] = [
+      ["relays", "wss://relay.primal.net", "wss://relay.damus.io", "wss://nos.lol"],
+      ["amount", amountMsats.toString()],
+      ["p", zapRequestOptions.recipientPubkey],
+    ];
+    
+    if (zapRequestOptions.eventId) {
+      tags.push(["e", zapRequestOptions.eventId]);
+    }
+    
+    tags.push(["lnurl", lnurlPayUrl]);
+    
+    const unsignedEvent = {
+      kind: 9734,
+      created_at: Math.floor(Date.now() / 1000),
+      tags,
+      content: comment || "",
+    };
+    
+    const signedEvent = await zapRequestOptions.signEvent(unsignedEvent);
+    nostrParam = JSON.stringify(signedEvent);
+  }
+  
+  const invoice = await getInvoiceFromLNURL(lnurlInfo, amountSats, comment, nostrParam);
   const result = await payInvoice(connection, invoice);
   
   const paymentHash = extractPaymentHashFromBolt11(invoice) || result.preimage;

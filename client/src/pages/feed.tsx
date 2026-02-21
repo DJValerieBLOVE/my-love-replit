@@ -1371,7 +1371,26 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
       let paymentHash: string | undefined;
       if (nwcConnection && post.author.lud16) {
         try {
-          const result = await zapViaLightning(nwcConnection, post.author.lud16, zapAmount, zapComment || undefined);
+          const result = await zapViaLightning(
+            nwcConnection,
+            post.author.lud16,
+            zapAmount,
+            zapComment || undefined,
+            post.author.pubkey && ndk ? {
+              senderPubkey: profile?.pubkey || "",
+              recipientPubkey: post.author.pubkey,
+              eventId: post.eventId,
+              signEvent: async (eventData: any) => {
+                const ndkEvent = new NDKEvent(ndk);
+                ndkEvent.kind = eventData.kind;
+                ndkEvent.content = eventData.content;
+                ndkEvent.tags = eventData.tags;
+                ndkEvent.created_at = eventData.created_at;
+                await ndkEvent.sign();
+                return ndkEvent.rawEvent();
+              }
+            } : undefined
+          );
           paymentHash = result.paymentHash;
           toast.success("Lightning Zap Sent!", { description: `You sent ${zapAmount} sats to ${post.author.name} via Lightning` });
         } catch (lightningError: any) {
@@ -1466,7 +1485,7 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
                 className="cursor-pointer"
                 onClick={(e) => {
                   if ((e.target as HTMLElement).closest('a, button, video, img, [role="button"]')) return;
-                  navigate(`/note/${post.id}`);
+                  navigate(`/note/${post.eventId || post.id}`);
                 }}
                 data-testid={`link-thread-${post.id}`}
               >
@@ -1525,17 +1544,17 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
           <div className="flex items-center justify-between mt-3 pt-2 border-t border-gray-100">
             <button 
               onClick={handleReply}
-              className={`flex items-center justify-center gap-1.5 rounded-full px-2 py-1 transition-colors text-xs flex-1 ${replyOpen ? 'text-[#6600ff]' : 'text-muted-foreground hover:text-foreground'}`} 
+              className={`flex items-center justify-center gap-1.5 rounded-full px-2 py-1 transition-colors text-xs flex-1 text-muted-foreground hover:text-foreground`} 
               data-testid={`button-reply-${post.id}`}
             >
-              <MessageCircle className="w-3.5 h-3.5" strokeWidth={1.5} />
+              <MessageCircle className={`w-3.5 h-3.5 ${replyOpen ? 'text-[#6600ff]' : ''}`} strokeWidth={1.5} />
               <span>{post.comments > 0 ? post.comments : ""}</span>
             </button>
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className={`flex items-center justify-center gap-1.5 rounded-full px-2 py-1 transition-colors text-xs flex-1 outline-none focus:outline-none focus-visible:outline-none ring-0 focus:ring-0 ${isReposted ? 'text-[#6600ff]' : 'text-muted-foreground hover:text-foreground'}`} data-testid={`button-repost-${post.id}`}>
-                  <Repeat2 className="w-4 h-4" strokeWidth={1.5} />
+                <button className={`flex items-center justify-center gap-1.5 rounded-full px-2 py-1 transition-colors text-xs flex-1 outline-none focus:outline-none focus-visible:outline-none ring-0 focus:ring-0 text-muted-foreground hover:text-foreground`} data-testid={`button-repost-${post.id}`}>
+                  <Repeat2 className={`w-4 h-4 ${isReposted ? 'text-[#6600ff]' : ''}`} strokeWidth={1.5} />
                   <span>{post.reposts > 0 ? post.reposts : ""}</span>
                 </button>
               </DropdownMenuTrigger>
@@ -1691,10 +1710,10 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
             }}>
               <button
                 onClick={() => setIsZapOpen(true)}
-                className={`flex items-center justify-center gap-1.5 rounded-full px-2 py-1 transition-colors text-xs flex-1 ${isZapped ? 'text-[#6600ff]' : 'text-muted-foreground hover:text-foreground'}`}
+                className={`flex items-center justify-center gap-1.5 rounded-full px-2 py-1 transition-colors text-xs flex-1 text-muted-foreground hover:text-foreground`}
                 data-testid={`button-zap-${post.id}`}
               >
-                <Zap className="w-3.5 h-3.5" strokeWidth={1.5} fill={isZapped ? "currentColor" : "none"} />
+                <Zap className={`w-3.5 h-3.5 ${isZapped ? 'text-[#6600ff]' : ''}`} strokeWidth={1.5} fill={isZapped ? "#6600ff" : "none"} />
                 <span data-testid={`count-zaps-${post.id}`}>{localSatsZapped > 0 ? formatSats(localSatsZapped) : ""}</span>
               </button>
               <DialogContent className="sm:max-w-md max-h-[85vh] overflow-y-auto">
@@ -1813,19 +1832,19 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
 
             <button 
               onClick={handleLike}
-              className={`flex items-center justify-center gap-1.5 rounded-full px-2 py-1 transition-colors text-xs flex-1 ${isLiked ? 'text-[#6600ff]' : 'text-muted-foreground hover:text-foreground'}`} 
+              className={`flex items-center justify-center gap-1.5 rounded-full px-2 py-1 transition-colors text-xs flex-1 text-muted-foreground hover:text-foreground`} 
               data-testid={`button-like-${post.id}`}
             >
-              <Heart className="w-3.5 h-3.5" strokeWidth={1.5} fill={isLiked ? "currentColor" : "none"} />
+              <Heart className={`w-3.5 h-3.5 ${isLiked ? 'text-[#eb00a8]' : ''}`} strokeWidth={1.5} fill={isLiked ? "#eb00a8" : "none"} />
               <span data-testid={`count-likes-${post.id}`}>{likes > 0 ? likes : ""}</span>
             </button>
 
             <button 
               onClick={handleBookmark}
-              className={`flex items-center justify-center gap-1.5 rounded-full px-2 py-1 transition-colors text-xs flex-1 ${isBookmarked ? 'text-[#6600ff]' : 'text-muted-foreground hover:text-foreground'}`} 
+              className={`flex items-center justify-center gap-1.5 rounded-full px-2 py-1 transition-colors text-xs flex-1 text-muted-foreground hover:text-foreground`} 
               data-testid={`button-bookmark-${post.id}`}
             >
-              <Bookmark className="w-3.5 h-3.5" strokeWidth={1.5} fill={isBookmarked ? "currentColor" : "none"} />
+              <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? 'text-[#6600ff]' : ''}`} strokeWidth={1.5} fill={isBookmarked ? "#6600ff" : "none"} />
             </button>
 
             <DropdownMenu>

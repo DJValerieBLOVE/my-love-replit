@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { Link, useLocation } from "wouter";
 import { 
   Clock, 
   Heart, 
@@ -124,6 +125,7 @@ function truncateText(text: string): string {
 export function FeedPost({ post }: FeedPostProps) {
   const { isConnected, profile } = useNostr();
   const { publishSmart, ndk } = useNDK();
+  const [, navigate] = useLocation();
   const [zaps, setZaps] = useState(post.zaps);
   const [isZapped, setIsZapped] = useState(false);
   const [isContentExpanded, setIsContentExpanded] = useState(false);
@@ -360,7 +362,21 @@ export function FeedPost({ post }: FeedPostProps) {
             nwcConnection,
             post.author.lud16,
             zapAmount,
-            zapComment || undefined
+            zapComment || undefined,
+            post.author.pubkey && ndk ? {
+              senderPubkey: profile?.pubkey || "",
+              recipientPubkey: post.author.pubkey,
+              eventId: post.eventId,
+              signEvent: async (eventData: any) => {
+                const ndkEvent = new NDKEvent(ndk);
+                ndkEvent.kind = eventData.kind;
+                ndkEvent.content = eventData.content;
+                ndkEvent.tags = eventData.tags;
+                ndkEvent.created_at = eventData.created_at;
+                await ndkEvent.sign();
+                return ndkEvent.rawEvent();
+              }
+            } : undefined
           );
           paymentHash = result.paymentHash;
           
@@ -432,16 +448,31 @@ export function FeedPost({ post }: FeedPostProps) {
     <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow bg-card mb-4">
       <CardContent className="p-0">
         <div className="p-4 flex gap-3">
-          <Avatar className="w-10 h-10 border-2 border-border">
-            <AvatarImage src={post.author.avatar} />
-            <AvatarFallback>{post.author.name[0]}</AvatarFallback>
-          </Avatar>
+          {post.author.pubkey ? (
+            <Link href={`/profile/${post.author.pubkey}`} className="shrink-0">
+              <Avatar className="w-10 h-10 border-2 border-border cursor-pointer">
+                <AvatarImage src={post.author.avatar} />
+                <AvatarFallback>{post.author.name[0]}</AvatarFallback>
+              </Avatar>
+            </Link>
+          ) : (
+            <Avatar className="w-10 h-10 border-2 border-border shrink-0">
+              <AvatarImage src={post.author.avatar} />
+              <AvatarFallback>{post.author.name[0]}</AvatarFallback>
+            </Avatar>
+          )}
           <div className="flex-1 min-w-0">
             <div className="flex justify-between items-start min-w-0">
               <div className="flex items-center gap-2 min-w-0 flex-1">
-                <h3 className="font-normal text-foreground text-sm truncate max-w-[160px]">
-                  {post.author.name}
-                </h3>
+                {post.author.pubkey ? (
+                  <Link href={`/profile/${post.author.pubkey}`} className="text-sm truncate max-w-[140px] hover:underline cursor-pointer" style={{ fontFamily: 'Marcellus, serif' }}>
+                    {post.author.name}
+                  </Link>
+                ) : (
+                  <h3 className="font-normal text-foreground text-sm truncate max-w-[160px]">
+                    {post.author.name}
+                  </h3>
+                )}
                 <span className="text-muted-foreground font-normal text-sm flex items-center gap-1 shrink-0">
                   {post.relaySource === "private" && (
                     <Lock className="w-3 h-3 text-muted-foreground" />
@@ -462,7 +493,15 @@ export function FeedPost({ post }: FeedPostProps) {
               const needsTruncation = !isContentExpanded && shouldTruncateContent(parsed.text);
               const displayText = needsTruncation ? truncateText(parsed.text) : parsed.text;
               return (
-                <>
+                <div
+                  className="cursor-pointer"
+                  onClick={(e) => {
+                    if ((e.target as HTMLElement).closest('a, button, video, img, [role="button"]')) return;
+                    const noteId = post.eventId || post.id;
+                    navigate(`/note/${noteId}`);
+                  }}
+                  data-testid={`link-thread-${post.id}`}
+                >
                   <p className="mt-2 text-base leading-relaxed text-foreground/90 whitespace-pre-wrap">
                     {displayText}
                     {needsTruncation && (
@@ -501,7 +540,7 @@ export function FeedPost({ post }: FeedPostProps) {
                       ))}
                     </div>
                   )}
-                </>
+                </div>
               );
             })()}
             
@@ -515,21 +554,21 @@ export function FeedPost({ post }: FeedPostProps) {
               <Button 
                 variant="ghost" 
                 onClick={() => setShowReplyInput(!showReplyInput)}
-                className={`px-2 gap-1.5 min-w-[60px] ${showReplyInput ? 'text-love-time' : 'text-muted-foreground hover:text-love-time hover:bg-love-time-light'}`}
+                className={`px-2 gap-1.5 min-w-[60px] text-muted-foreground hover:text-foreground`}
                 data-testid={`button-reply-${post.id}`}
               >
-                <MessageSquare className="w-[18px] h-[18px]" strokeWidth={1.5} />
-                <span className="text-sm font-normal">{post.comments > 0 ? post.comments : ""}</span>
+                <MessageSquare className={`w-[18px] h-[18px] ${showReplyInput ? 'text-[#6600ff]' : ''}`} strokeWidth={1.5} />
+                <span className="text-sm font-normal text-muted-foreground">{post.comments > 0 ? post.comments : ""}</span>
               </Button>
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button 
                     variant="ghost" 
-                    className={`px-2 gap-1.5 min-w-[60px] ${isReposted ? 'text-love-mission' : 'text-muted-foreground hover:text-love-mission hover:bg-love-mission-light'}`}
+                    className={`px-2 gap-1.5 min-w-[60px] text-muted-foreground hover:text-foreground`}
                     data-testid={`button-repost-${post.id}`}
                   >
-                    <Repeat2 className="w-[22px] h-[22px]" strokeWidth={1.5} />
+                    <Repeat2 className={`w-[22px] h-[22px] ${isReposted ? 'text-[#6600ff]' : ''}`} strokeWidth={1.5} />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="center" className="w-56">
@@ -685,14 +724,14 @@ export function FeedPost({ post }: FeedPostProps) {
                 <DialogTrigger asChild>
                   <Button 
                     variant="ghost" 
-                    className={`px-2 rounded-full transition-all group min-w-[60px] ${isZapped || zaps > 0 ? 'text-[#6600ff]' : 'text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF]'}`}
+                    className={`px-2 rounded-full transition-all group min-w-[60px] text-muted-foreground hover:text-foreground`}
                   >
                     <Zap 
-                      className={`mr-1.5 transition-all ${isZapped || zaps > 0 ? 'text-[#6600ff] w-[22px] h-[22px]' : 'w-[22px] h-[22px] group-hover:scale-110'}`} 
+                      className={`mr-1.5 transition-all ${isZapped ? 'text-[#6600ff]' : ''} w-[22px] h-[22px] group-hover:scale-110`} 
                       strokeWidth={1.5}
-                      fill={isZapped ? "currentColor" : "none"}
+                      fill={isZapped ? "#6600ff" : "none"}
                     />
-                    <span className="text-sm font-normal">
+                    <span className="text-sm font-normal text-muted-foreground">
                       {zaps > 0 ? zaps.toLocaleString() : ""}
                     </span>
                   </Button>
@@ -814,20 +853,20 @@ export function FeedPost({ post }: FeedPostProps) {
               <Button 
                 variant="ghost" 
                 onClick={handleLike}
-                className={`px-2 gap-1.5 min-w-[60px] ${isLiked ? 'text-love-romance' : 'text-muted-foreground hover:text-love-romance hover:bg-love-romance-light'}`}
+                className={`px-2 gap-1.5 min-w-[60px] text-muted-foreground hover:text-foreground`}
                 data-testid={`button-like-${post.id}`}
               >
-                <Heart className="w-[18px] h-[18px]" strokeWidth={1.5} fill={isLiked ? "currentColor" : "none"} />
-                <span className="text-sm font-normal">{likes > 0 ? likes : ""}</span>
+                <Heart className={`w-[18px] h-[18px] ${isLiked ? 'text-[#eb00a8]' : ''}`} strokeWidth={1.5} fill={isLiked ? "#eb00a8" : "none"} />
+                <span className="text-sm font-normal text-muted-foreground">{likes > 0 ? likes : ""}</span>
               </Button>
 
               <Button 
                 variant="ghost" 
                 onClick={handleBookmark}
-                className={`px-2 gap-1.5 min-w-[50px] ${isBookmarked ? 'text-love-body' : 'text-muted-foreground hover:text-love-body hover:bg-love-body-light'}`}
+                className={`px-2 gap-1.5 min-w-[50px] text-muted-foreground hover:text-foreground`}
                 data-testid={`button-bookmark-${post.id}`}
               >
-                <Bookmark className="w-[18px] h-[18px]" strokeWidth={1.5} fill={isBookmarked ? "currentColor" : "none"} />
+                <Bookmark className={`w-[18px] h-[18px] ${isBookmarked ? 'text-[#6600ff]' : ''}`} strokeWidth={1.5} fill={isBookmarked ? "#6600ff" : "none"} />
               </Button>
 
               <DropdownMenu>

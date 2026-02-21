@@ -101,6 +101,9 @@ My Masterpiece is a spiritual personal growth application designed to help users
 - Input/textarea focus rings changed from purple to neutral gray
 - All dropdown/context/select menu hover states unified to bg-muted (removed hardcoded #EBEBEB)
 - Link preview cards redesigned to horizontal layout (thumbnail left, info right) with bg-muted background
+- NIP-57 zap compliance: zapViaLightning now creates kind 9734 zap request events with proper tags (relays, amount, p, e, lnurl) and includes them in LNURL callback so zap receipts show on Primal
+- FeedPost component: added click-to-navigate on content area (goes to /note/:eventId), avatar/name link to profile
+- Action button colors: icon-only color changes when active (heart pink #eb00a8, zap/repost/bookmark purple #6600ff), count text always stays muted
 
 ## External Dependencies
 - **PostgreSQL**: Primary database (Neon serverless).
