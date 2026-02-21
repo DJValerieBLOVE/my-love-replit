@@ -993,14 +993,18 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
   const [replyOpen, setReplyOpen] = useState(false);
   const [replyText, setReplyText] = useState("");
   const [zapAmount, setZapAmount] = useState(21);
+  const [zapInputValue, setZapInputValue] = useState("21");
   const [zapComment, setZapComment] = useState("");
   const [isZapOpen, setIsZapOpen] = useState(false);
   const [isZapping, setIsZapping] = useState(false);
   const [isZapped, setIsZapped] = useState(false);
+  const [localZapReceipts, setLocalZapReceipts] = useState(post.zapReceipts || []);
+  const [localSatsZapped, setLocalSatsZapped] = useState(post.satszapped);
   const [replyImage, setReplyImage] = useState<string | null>(null);
   const [quoteImage, setQuoteImage] = useState<string | null>(null);
   const [showReplyGifPicker, setShowReplyGifPicker] = useState(false);
   const [showQuoteGifPicker, setShowQuoteGifPicker] = useState(false);
+  const [editingPresets, setEditingPresets] = useState(false);
   const replyFileRef = useRef<HTMLInputElement>(null);
   const quoteFileRef = useRef<HTMLInputElement>(null);
   const { publishSmart, ndk, isConnected: ndkConnected } = useNDK();
@@ -1166,9 +1170,18 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
         toast.info("Recipient has no Lightning address", { description: "Recording zap to community leaderboard only" });
       }
       setIsZapped(true);
+      setLocalSatsZapped(prev => prev + zapAmount);
+      const myReceipt = {
+        pubkey: profile?.pubkey || "",
+        amount: zapAmount,
+        name: profile?.name || "You",
+        avatar: profile?.picture || "",
+      };
+      setLocalZapReceipts(prev => [myReceipt, ...prev]);
       setIsZapOpen(false);
       setZapComment("");
       setZapAmount(21);
+      setZapInputValue("21");
     } catch (error: any) {
       console.error("Zap error:", error);
       toast.error("Failed to zap", { description: error.message || "Please try again" });
@@ -1176,7 +1189,24 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
       setIsZapping(false);
     }
   };
-  const ZAP_PRESETS = [21, 50, 100, 500, 1000, 5000];
+
+  const getZapPresets = (): number[] => {
+    if (typeof window === 'undefined') return [21, 50, 100, 500, 1000, 5000];
+    try {
+      const saved = localStorage.getItem("zapPresets");
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return [21, 50, 100, 500, 1000, 5000];
+  };
+  const [zapPresets, setZapPresets] = useState<number[]>(getZapPresets);
+  const [editPresetValues, setEditPresetValues] = useState<string[]>(zapPresets.map(String));
+
+  const savePresets = () => {
+    const newPresets = editPresetValues.map(v => Math.max(1, parseInt(v) || 21));
+    setZapPresets(newPresets);
+    localStorage.setItem("zapPresets", JSON.stringify(newPresets));
+    setEditingPresets(false);
+  };
 
   return (
     <Card className="p-4 border border-gray-100 shadow-none hover:border-gray-200 transition-colors" data-testid={`post-${post.id}`}>
@@ -1245,10 +1275,10 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
               </div>
             );
           })()}
-          {post.zapReceipts && post.zapReceipts.length > 0 && (
+          {localZapReceipts.length > 0 && (
             <div className="flex items-center gap-1.5 mt-2.5 mb-1 flex-wrap" data-testid={`zap-receipts-${post.id}`}>
               <Zap className="w-3 h-3 text-muted-foreground" strokeWidth={1.5} />
-              {post.zapReceipts.slice(0, 5).map((zr, i) => (
+              {localZapReceipts.slice(0, 5).map((zr, i) => (
                 <div key={`${zr.pubkey}-${i}`} className="flex items-center gap-1 rounded-full px-1.5 py-0.5 border border-gray-200" style={{ backgroundColor: '#ffffff' }} data-testid={`zap-receipt-${post.id}-${i}`}>
                   <Avatar className="w-4 h-4">
                     {zr.avatar && <AvatarImage src={zr.avatar} />}
@@ -1257,8 +1287,8 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
                   <span className="text-[10px] text-muted-foreground">{formatSats(zr.amount)}</span>
                 </div>
               ))}
-              {post.zapReceipts.length > 5 && (
-                <span className="text-[10px] text-muted-foreground">+{post.zapReceipts.length - 5} more</span>
+              {localZapReceipts.length > 5 && (
+                <span className="text-[10px] text-muted-foreground">+{localZapReceipts.length - 5} more</span>
               )}
             </div>
           )}
@@ -1425,77 +1455,127 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
               </DialogContent>
             </Dialog>
 
-            <Dialog open={isZapOpen} onOpenChange={setIsZapOpen}>
+            <Dialog open={isZapOpen} onOpenChange={(open) => {
+              setIsZapOpen(open);
+              if (!open) setEditingPresets(false);
+            }}>
               <button
                 onClick={() => setIsZapOpen(true)}
-                className={`flex items-center justify-center gap-1.5 rounded-full px-2 py-1 transition-colors text-xs flex-1 ${isZapped ? 'text-[#FF6B00]' : 'text-muted-foreground hover:text-foreground'}`}
+                className={`flex items-center justify-center gap-1.5 rounded-full px-2 py-1 transition-colors text-xs flex-1 ${isZapped ? 'text-[#6600ff]' : 'text-muted-foreground hover:text-foreground'}`}
                 data-testid={`button-zap-${post.id}`}
               >
                 <Zap className="w-3.5 h-3.5" strokeWidth={1.5} fill={isZapped ? "currentColor" : "none"} />
-                <span data-testid={`count-zaps-${post.id}`}>{post.satszapped > 0 ? formatSats(post.satszapped) : ""}</span>
+                <span data-testid={`count-zaps-${post.id}`}>{localSatsZapped > 0 ? formatSats(localSatsZapped) : ""}</span>
               </button>
               <DialogContent className="sm:max-w-md max-h-[85vh] overflow-y-auto">
                 <DialogHeader>
-                  <DialogTitle className="flex items-center gap-2 font-serif text-2xl">
-                    <span className="text-[#FF6B00]">⚡</span> Zap {post.author.name}
+                  <DialogTitle className="flex items-center gap-2 text-xl font-normal">
+                    <Zap className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} /> Zap {post.author.name}
                   </DialogTitle>
                   <DialogDescription>
                     Send sats directly to their Lightning Address.
                   </DialogDescription>
                 </DialogHeader>
-                <div className="flex flex-col gap-6 py-4">
-                  <div className="grid grid-cols-3 gap-3">
-                    {ZAP_PRESETS.map((amount) => (
-                      <Button
-                        key={amount}
-                        variant={zapAmount === amount ? "default" : "outline"}
-                        className={`text-lg font-normal ${
-                          zapAmount === amount
-                            ? "bg-[#FF6B00] hover:bg-[#E65C00] text-white border-[#FF6B00]"
-                            : "border-[#E5E5E5] hover:border-[#FF6B00] hover:bg-orange-50 text-muted-foreground"
-                        }`}
-                        onClick={() => setZapAmount(amount)}
+                <div className="flex flex-col gap-5 py-3">
+                  {editingPresets ? (
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-3 gap-2">
+                        {editPresetValues.map((val, i) => (
+                          <Input
+                            key={i}
+                            type="number"
+                            value={val}
+                            onChange={(e) => {
+                              const newVals = [...editPresetValues];
+                              newVals[i] = e.target.value;
+                              setEditPresetValues(newVals);
+                            }}
+                            className="text-center text-sm h-9"
+                            data-testid={`input-preset-${i}`}
+                          />
+                        ))}
+                      </div>
+                      <div className="flex justify-end gap-2">
+                        <Button variant="ghost" size="sm" onClick={() => setEditingPresets(false)} className="text-xs hover:bg-[#F0E6FF]">Cancel</Button>
+                        <Button size="sm" onClick={savePresets} className="text-xs bg-foreground text-background hover:bg-foreground/90">Save</Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <div className="grid grid-cols-3 gap-2">
+                        {zapPresets.map((amount) => (
+                          <button
+                            key={amount}
+                            className={`h-9 rounded-md text-sm font-normal flex items-center justify-center gap-1 transition-colors border ${
+                              zapAmount === amount
+                                ? "bg-foreground text-background border-foreground"
+                                : "border-border hover:border-foreground/30 hover:bg-[#F0E6FF] text-foreground"
+                            }`}
+                            onClick={() => {
+                              setZapAmount(amount);
+                              setZapInputValue(String(amount));
+                            }}
+                            data-testid={`button-preset-${amount}`}
+                          >
+                            <Zap className="w-3 h-3" strokeWidth={1.5} /> {amount.toLocaleString()}
+                          </button>
+                        ))}
+                      </div>
+                      <button
+                        onClick={() => {
+                          setEditPresetValues(zapPresets.map(String));
+                          setEditingPresets(true);
+                        }}
+                        className="text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+                        data-testid="button-edit-presets"
                       >
-                        ⚡ {amount}
-                      </Button>
-                    ))}
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor={`custom-amount-${post.id}`} className="text-muted-foreground font-serif">Custom Amount (Sats)</Label>
+                        customize amounts
+                      </button>
+                    </div>
+                  )}
+
+                  <div className="space-y-1.5">
+                    <Label htmlFor={`custom-amount-${post.id}`} className="text-sm text-muted-foreground">Custom Amount (Sats)</Label>
                     <div className="relative">
-                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[#FF6B00] font-normal">⚡</div>
+                      <Zap className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" strokeWidth={1.5} />
                       <Input
                         id={`custom-amount-${post.id}`}
-                        type="number"
-                        value={zapAmount}
-                        onChange={(e) => setZapAmount(Number(e.target.value))}
-                        className="pl-9 text-lg font-normal bg-[#FAFAFA] border-muted"
+                        type="text"
+                        inputMode="numeric"
+                        value={zapInputValue}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/[^0-9]/g, '');
+                          setZapInputValue(val);
+                          setZapAmount(parseInt(val) || 0);
+                        }}
+                        onFocus={(e) => e.target.select()}
+                        className="pl-9 text-sm font-normal bg-[#FAFAFA] border-muted"
                       />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor={`zap-comment-${post.id}`} className="text-muted-foreground font-serif">Comment (Optional)</Label>
+                  <div className="space-y-1.5">
+                    <Label htmlFor={`zap-comment-${post.id}`} className="text-sm text-muted-foreground">Comment (Optional)</Label>
                     <Input
                       id={`zap-comment-${post.id}`}
                       placeholder="Great post!"
                       value={zapComment}
                       onChange={(e) => setZapComment(e.target.value)}
-                      className="bg-[#FAFAFA] border-muted"
+                      className="bg-[#FAFAFA] border-muted text-sm"
                     />
                   </div>
                 </div>
                 <DialogFooter className="sm:justify-between gap-2">
                   <DialogClose asChild>
-                    <Button type="button" variant="ghost">Cancel</Button>
+                    <Button type="button" variant="ghost" className="hover:bg-[#F0E6FF]">Cancel</Button>
                   </DialogClose>
                   <Button
                     type="submit"
                     onClick={handleZap}
-                    disabled={isZapping || !isConnected}
-                    className="bg-[#FF6B00] hover:bg-[#E65C00] text-white font-normal px-8 w-full sm:w-auto disabled:opacity-50"
+                    disabled={isZapping || !isConnected || zapAmount <= 0}
+                    className="bg-foreground hover:bg-foreground/90 text-background font-normal px-8 w-full sm:w-auto disabled:opacity-50"
                     data-testid={`button-confirm-zap-${post.id}`}
                   >
-                    {isZapping ? "Zapping..." : `Zap ${zapAmount} Sats ⚡`}
+                    {isZapping ? "Zapping..." : `Zap ${zapAmount.toLocaleString()} Sats`}
                   </Button>
                 </DialogFooter>
               </DialogContent>
