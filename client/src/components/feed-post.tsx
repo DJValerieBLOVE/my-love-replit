@@ -85,8 +85,8 @@ interface FeedPostProps {
   };
 }
 
-const SHORT_NOTE_CHARS = 1400;
-const SHORT_NOTE_WORDS = 200;
+const SHORT_NOTE_CHARS = 500;
+const SHORT_NOTE_WORDS = 100;
 
 function shouldTruncateContent(text: string): boolean {
   if (text.length > SHORT_NOTE_CHARS) return true;
