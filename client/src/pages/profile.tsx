@@ -30,8 +30,12 @@ import {
   Pencil,
   Lock,
   Zap,
-  Calendar,
-  MapPin,
+  MoreHorizontal,
+  QrCode,
+  Mail,
+  LinkIcon,
+  Copy,
+  Check,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -112,6 +116,19 @@ function ContentCard({
   );
 }
 
+function formatNumber(num: number): string {
+  if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+  return num.toLocaleString();
+}
+
+function formatJoinedDate(timestamp: number): string {
+  if (!timestamp) return '';
+  const date = new Date(timestamp * 1000);
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return `Joined Nostr on ${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+}
+
 export default function Profile() {
   const params = useParams<{ userId?: string }>();
   const [, setLocation] = useLocation();
@@ -123,6 +140,7 @@ export default function Profile() {
   const [editBuddyDesc, setEditBuddyDesc] = useState("");
   const [editLookingForBuddy, setEditLookingForBuddy] = useState(false);
   const [editInterests, setEditInterests] = useState<string[]>([]);
+  const [copiedNpub, setCopiedNpub] = useState(false);
 
   const profileMutation = useMutation({
     mutationFn: updateProfile,
@@ -164,6 +182,15 @@ export default function Profile() {
     );
   };
 
+  const copyNpub = () => {
+    if (profile?.npub) {
+      navigator.clipboard.writeText(profile.npub);
+      setCopiedNpub(true);
+      toast.success("Public key copied!");
+      setTimeout(() => setCopiedNpub(false), 2000);
+    }
+  };
+
   const { data: publicProfile, isLoading: profileLoading } = useQuery({
     queryKey: ["profile", targetUserId],
     queryFn: () => getPublicProfile(targetUserId!),
@@ -191,11 +218,12 @@ export default function Profile() {
   const displayName = nostrProfile?.display_name || nostrProfile?.name || profile?.name || "Guest";
   const displayPicture = nostrProfile?.picture || profile?.picture || "";
   const aboutText = nostrProfile?.about || "";
+  const bannerImage = nostrProfile?.banner || "";
 
   const user = isOwnProfile ? {
     id: currentUserId || "guest",
     name: displayName,
-    handle: displayName.toLowerCase().replace(/\s+/g, '-'),
+    handle: nostrProfile?.name || displayName.toLowerCase().replace(/\s+/g, '-'),
     avatar: displayPicture,
   } : publicProfile ? {
     id: publicProfile.id,
@@ -260,173 +288,274 @@ export default function Profile() {
   const lookingForBuddy = isOwnProfile ? profile?.lookingForBuddy : publicProfile?.lookingForBuddy;
   const buddyDesc = isOwnProfile ? profile?.buddyDescription : publicProfile?.buddyDescription;
 
+  const rectifyUrl = (url: string) => {
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      return `http://${url}`;
+    }
+    return url;
+  };
+
   return (
     <Layout>
-      <div className="max-w-3xl mx-auto p-4 lg:p-8 space-y-6">
-
-        {!isOwnProfile && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
-            <Link href="/people" className="hover:text-primary">People</Link>
-            <span>/</span>
-            <span>{user.name}'s Profile</span>
-          </div>
-        )}
-
-        <div className="flex items-start gap-6">
-          <div className="w-20 h-20 md:w-24 md:h-24 shrink-0 rounded-full bg-muted flex items-center justify-center overflow-hidden border-2 border-border">
-            {user.avatar ? (
-              <img src={user.avatar} alt={user.name} className="w-full h-full rounded-full object-cover" data-testid="img-avatar" />
+      <div className="max-w-4xl mx-auto">
+        <div className="relative bg-background pb-2">
+          <div className="w-full h-[200px] overflow-hidden bg-muted" data-testid="profile-banner">
+            {bannerImage ? (
+              <img
+                src={bannerImage}
+                alt="Profile banner"
+                className="w-full h-[200px] object-cover"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
+              />
             ) : (
-              <span className="text-3xl font-normal text-muted-foreground">{user.name.charAt(0)}</span>
+              <div className="w-full h-full bg-gradient-to-r from-purple-400/30 via-pink-400/20 to-orange-400/30" />
             )}
           </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="text-2xl font-serif font-normal text-foreground" data-testid="text-display-name">{user.name}</h1>
-              {isOwnProfile && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={openEditDialog}
-                  className="gap-1.5"
-                  data-testid="button-edit-profile"
-                >
-                  <Pencil className="w-3.5 h-3.5" /> Edit Profile
-                </Button>
-              )}
-            </div>
-            <p className="text-sm text-muted-foreground mt-0.5" data-testid="text-handle">@{user.handle}</p>
 
-            {nostrProfile?.nip05 && (
-              <div className="mt-1.5 flex items-center gap-1 text-xs text-muted-foreground" data-testid="text-nip05">
-                <BadgeCheck className="w-3.5 h-3.5 text-primary" />
-                <span>{nostrProfile.nip05}</span>
-              </div>
-            )}
-            {nostrProfile?.lud16 && (
-              <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground" data-testid="text-lightning">
-                <Zap className="w-3.5 h-3.5 text-yellow-500" />
-                <span>{nostrProfile.lud16}</span>
-              </div>
-            )}
-
-            <div className="flex items-center gap-4 mt-3 text-sm">
-              <button className="flex items-center gap-1 hover:underline" data-testid="text-following-count">
-                <span className="font-normal text-foreground">{nostrProfile?.following_count || 0}</span>
-                <span className="text-muted-foreground">Following</span>
-              </button>
-              <button className="flex items-center gap-1 hover:underline" data-testid="text-followers-count">
-                <span className="font-normal text-foreground">{nostrProfile?.followers_count || 0}</span>
-                <span className="text-muted-foreground">Followers</span>
-              </button>
-            </div>
-
-            <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground flex-wrap">
-              {nostrProfile?.location && (
-                <div className="flex items-center gap-1" data-testid="text-location">
-                  <MapPin className="w-3 h-3" />
-                  <span>{nostrProfile.location}</span>
-                </div>
-              )}
-              {publicProfile?.createdAt && (
-                <div className="flex items-center gap-1" data-testid="text-joined">
-                  <Calendar className="w-3 h-3" />
-                  <span>Joined {new Date(publicProfile.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+          <div className="absolute top-[140px] left-[14px] z-10" data-testid="profile-avatar-wrapper">
+            <div className="w-[120px] h-[120px] rounded-full border-4 border-background overflow-hidden bg-muted">
+              {user.avatar ? (
+                <img
+                  src={user.avatar}
+                  alt={user.name}
+                  className="w-full h-full object-cover"
+                  data-testid="img-avatar"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-muted">
+                  <span className="text-4xl font-normal text-muted-foreground">{user.name.charAt(0)}</span>
                 </div>
               )}
             </div>
+          </div>
+
+          <div className="flex justify-end items-center gap-2 pt-3 pr-3 pb-5" data-testid="profile-actions">
+            <button
+              className="w-10 h-10 rounded-md border border-border bg-card flex items-center justify-center hover:bg-muted transition-colors"
+              data-testid="button-context-menu"
+              title="More options"
+            >
+              <MoreHorizontal className="w-[18px] h-[18px] text-foreground" />
+            </button>
+            <button
+              className="w-10 h-10 rounded-md border border-border bg-card flex items-center justify-center hover:bg-muted transition-colors"
+              data-testid="button-qr-code"
+              title="QR Code"
+            >
+              <QrCode className="w-[16px] h-[16px] text-foreground" />
+            </button>
+            <button
+              className="w-10 h-10 rounded-md border border-border bg-card flex items-center justify-center hover:bg-muted transition-colors"
+              data-testid="button-message"
+              title="Message"
+            >
+              <Mail className="w-[18px] h-[18px] text-foreground" />
+            </button>
+            {isOwnProfile && (
+              <button
+                onClick={openEditDialog}
+                className="h-10 px-4 rounded-md text-sm font-bold text-foreground border border-transparent"
+                style={{
+                  background: 'linear-gradient(var(--card), var(--card)) padding-box, linear-gradient(135deg, #bc1888, #e1306c, #f77737, #fcaf45, #ffdc80) border-box',
+                }}
+                data-testid="button-edit-profile"
+              >
+                edit profile
+              </button>
+            )}
+          </div>
+
+          <div className="px-5 pt-2" data-testid="profile-card">
+            <div className="flex justify-between items-start">
+              <div className="flex-1 min-w-0 space-y-2">
+                <div className="flex items-center gap-1" data-testid="profile-name-row">
+                  <h1 className="text-xl font-bold text-foreground truncate max-w-[250px]" data-testid="text-display-name">
+                    {displayName}
+                  </h1>
+                  {nostrProfile?.nip05 && (
+                    <BadgeCheck className="w-5 h-5 text-primary shrink-0" />
+                  )}
+                  {isPaidMember && (
+                    <span className="ml-1 px-2 py-0.5 text-xs font-medium rounded bg-gradient-to-r from-purple-500 to-pink-500 text-white shrink-0" data-testid="badge-premium">
+                      Premium
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2 text-sm text-muted-foreground" data-testid="profile-verification-row">
+                  {nostrProfile?.nip05 && (
+                    <span className="truncate max-w-[400px]" data-testid="text-nip05">{nostrProfile.nip05}</span>
+                  )}
+                </div>
+
+                {aboutText && (
+                  <div className="text-sm text-foreground leading-relaxed whitespace-pre-line max-w-lg" data-testid="text-about">
+                    {aboutText}
+                  </div>
+                )}
+
+                {nostrProfile?.website && (
+                  <div className="flex items-center gap-1 text-sm" data-testid="profile-website">
+                    <LinkIcon className="w-4 h-4 text-muted-foreground shrink-0" />
+                    <a
+                      href={rectifyUrl(nostrProfile.website)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline truncate max-w-[350px]"
+                    >
+                      {nostrProfile.website.replace(/^https?:\/\//, '')}
+                    </a>
+                  </div>
+                )}
+
+                {nostrProfile?.lud16 && (
+                  <div className="flex items-center gap-1 text-sm text-muted-foreground" data-testid="text-lightning">
+                    <Zap className="w-4 h-4 text-yellow-500 shrink-0" />
+                    <span className="truncate">{nostrProfile.lud16}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-col items-end gap-2 shrink-0 ml-4">
+                <div className="flex items-center gap-3" data-testid="profile-follow-stats">
+                  <button className="flex items-center gap-1 hover:opacity-80 transition-opacity" data-testid="text-following-count">
+                    <span className="text-sm font-semibold text-foreground">{formatNumber(nostrProfile?.following_count || 0)}</span>
+                    <span className="text-sm text-muted-foreground">following</span>
+                  </button>
+                  <button className="flex items-center gap-1 hover:opacity-80 transition-opacity" data-testid="text-followers-count">
+                    <span className="text-sm font-semibold text-foreground">{formatNumber(nostrProfile?.followers_count || 0)}</span>
+                    <span className="text-sm text-muted-foreground">followers</span>
+                  </button>
+                </div>
+
+                {nostrProfile?.time_joined ? (
+                  <span className="text-sm text-muted-foreground" data-testid="text-joined">
+                    {formatJoinedDate(nostrProfile.time_joined)}
+                  </span>
+                ) : null}
+
+                {profile?.npub && (
+                  <button
+                    onClick={copyNpub}
+                    className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    data-testid="button-copy-npub"
+                  >
+                    <span className="truncate max-w-[180px] text-xs font-mono">
+                      {profile.npub.substring(0, 12)}...{profile.npub.substring(profile.npub.length - 8)}
+                    </span>
+                    {copiedNpub ? (
+                      <Check className="w-3.5 h-3.5 text-green-500" />
+                    ) : (
+                      <Copy className="w-3.5 h-3.5" />
+                    )}
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-0 mx-5 mt-4 py-3 border-t border-border" data-testid="profile-stats-bar">
+            {[
+              { value: nostrProfile?.note_count || 0, label: 'notes' },
+              { value: nostrProfile?.reply_count || 0, label: 'replies' },
+              { value: nostrProfile?.long_form_note_count || 0, label: 'reads' },
+              { value: nostrProfile?.media_count || 0, label: 'media' },
+              { value: nostrProfile?.total_zap_count || 0, label: 'zaps' },
+              { value: nostrProfile?.relay_count || 0, label: 'relays' },
+            ].map((stat) => (
+              <div key={stat.label} className="flex items-baseline mr-7" data-testid={`stat-${stat.label}`}>
+                <span className="text-3xl font-light text-foreground">{formatNumber(stat.value)}</span>
+                <span className="text-base text-muted-foreground ml-2 lowercase">{stat.label}</span>
+              </div>
+            ))}
           </div>
         </div>
 
-        {aboutText && (
-          <Card className="rounded-xs border-none shadow-sm" data-testid="card-about">
-            <CardContent className="p-5">
-              <p className="text-sm text-foreground/80 whitespace-pre-line">{aboutText}</p>
-            </CardContent>
-          </Card>
-        )}
-
-        {lookingForBuddy && (
-          <Card className="rounded-xs border-none shadow-sm bg-purple-50/50" data-testid="card-buddy">
-            <CardContent className="p-5">
-              <div className="flex items-center gap-2 mb-2">
-                <Users className="w-4 h-4 text-primary" />
-                <span className="text-sm text-primary">Looking for an accountability buddy</span>
-              </div>
-              {buddyDesc && <p className="text-sm text-muted-foreground">{buddyDesc}</p>}
-              {buddyInterests.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 mt-3">
-                  {buddyInterests.map((interest: string) => (
-                    <span key={interest} className="text-xs px-2.5 py-0.5 rounded-md border border-gray-200 bg-white text-muted-foreground">
-                      {interest}
-                    </span>
-                  ))}
+        <div className="px-5 pb-8 space-y-6 mt-4">
+          {lookingForBuddy && (
+            <Card className="rounded-lg border shadow-sm bg-purple-50/50 dark:bg-purple-950/20" data-testid="card-buddy">
+              <CardContent className="p-5">
+                <div className="flex items-center gap-2 mb-2">
+                  <Users className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-semibold text-primary">Looking for an accountability buddy</span>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
-
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="font-serif text-lg font-normal text-muted-foreground">Published Content</h2>
-            {isOwnProfile && (
-              <Button variant="outline" size="sm" onClick={() => setLocation("/creator")} data-testid="button-go-creator">
-                Creator Dashboard
-              </Button>
-            )}
-          </div>
-
-          {content.experiments.length > 0 && (
-            <div className="space-y-3">
-              <h3 className="font-normal text-sm text-muted-foreground flex items-center gap-2">
-                <FlaskConical className="w-4 h-4" /> Experiments ({stats.experimentsCount})
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {content.experiments.map((exp) => (
-                  <ContentCard key={exp.id} title={exp.title} description={exp.description} type="experiment" href={`/experiments/${exp.id}`} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {content.courses.length > 0 && (
-            <div className="space-y-3">
-              <h3 className="font-normal text-sm text-muted-foreground flex items-center gap-2">
-                <BookOpen className="w-4 h-4" /> Courses ({stats.coursesCount})
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {content.courses.map((course) => (
-                  <ContentCard key={course.id} title={course.title} description={course.description} type="course" href={`/experiments/course/${course.id}`} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {content.communities.length > 0 && (
-            <div className="space-y-3">
-              <h3 className="font-normal text-sm text-muted-foreground flex items-center gap-2">
-                <Users className="w-4 h-4" /> Communities ({stats.communitiesCount})
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {content.communities.map((community) => (
-                  <ContentCard key={community.id} title={community.name} description={community.description} type="community" href={`/community/${community.id}`} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {content.experiments.length === 0 && content.courses.length === 0 && content.communities.length === 0 && (
-            <Card className="p-8 text-center border-dashed">
-              <p className="text-muted-foreground">{isOwnProfile ? "You haven't published any content yet." : "This user hasn't published any content yet."}</p>
+                {buddyDesc && <p className="text-sm text-muted-foreground">{buddyDesc}</p>}
+                {buddyInterests.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mt-3">
+                    {buddyInterests.map((interest: string) => (
+                      <span key={interest} className="text-xs px-2.5 py-0.5 rounded-md border border-border bg-background text-muted-foreground">
+                        {interest}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
             </Card>
           )}
+
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-foreground">Published Content</h2>
+              {isOwnProfile && (
+                <Button variant="outline" size="sm" onClick={() => setLocation("/creator")} data-testid="button-go-creator">
+                  Creator Dashboard
+                </Button>
+              )}
+            </div>
+
+            {content.experiments.length > 0 && (
+              <div className="space-y-3">
+                <h3 className="font-normal text-sm text-muted-foreground flex items-center gap-2">
+                  <FlaskConical className="w-4 h-4" /> Experiments ({stats.experimentsCount})
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {content.experiments.map((exp) => (
+                    <ContentCard key={exp.id} title={exp.title} description={exp.description} type="experiment" href={`/experiments/${exp.id}`} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {content.courses.length > 0 && (
+              <div className="space-y-3">
+                <h3 className="font-normal text-sm text-muted-foreground flex items-center gap-2">
+                  <BookOpen className="w-4 h-4" /> Courses ({stats.coursesCount})
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {content.courses.map((course) => (
+                    <ContentCard key={course.id} title={course.title} description={course.description} type="course" href={`/experiments/course/${course.id}`} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {content.communities.length > 0 && (
+              <div className="space-y-3">
+                <h3 className="font-normal text-sm text-muted-foreground flex items-center gap-2">
+                  <Users className="w-4 h-4" /> Communities ({stats.communitiesCount})
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {content.communities.map((community) => (
+                    <ContentCard key={community.id} title={community.name} description={community.description} type="community" href={`/community/${community.id}`} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {content.experiments.length === 0 && content.courses.length === 0 && content.communities.length === 0 && (
+              <Card className="p-8 text-center border-dashed">
+                <p className="text-muted-foreground">{isOwnProfile ? "You haven't published any content yet." : "This user hasn't published any content yet."}</p>
+              </Card>
+            )}
+          </div>
         </div>
 
         <Dialog open={editOpen} onOpenChange={setEditOpen}>
           <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="font-serif text-xl">Edit Profile</DialogTitle>
+              <DialogTitle className="text-xl font-bold">Edit Profile</DialogTitle>
               <DialogDescription>Update your profile information and preferences</DialogDescription>
             </DialogHeader>
 

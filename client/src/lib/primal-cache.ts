@@ -598,40 +598,71 @@ export async function fetchPrimalThread(eventId: string, options: { userPubkey?:
   }
 }
 
-export async function fetchPrimalUserStats(pubkey: string): Promise<{ followers_count: number; following_count: number }> {
+export interface PrimalUserStats {
+  followers_count: number;
+  following_count: number;
+  note_count: number;
+  reply_count: number;
+  media_count: number;
+  total_zap_count: number;
+  relay_count: number;
+  time_joined: number;
+  long_form_note_count: number;
+  total_satszapped: number;
+}
+
+export async function fetchPrimalUserStats(pubkey: string): Promise<PrimalUserStats> {
+  const result: PrimalUserStats = {
+    followers_count: 0,
+    following_count: 0,
+    note_count: 0,
+    reply_count: 0,
+    media_count: 0,
+    total_zap_count: 0,
+    relay_count: 0,
+    time_joined: 0,
+    long_form_note_count: 0,
+    total_satszapped: 0,
+  };
+
   try {
     const messages = await primalCache.sendRequest({ cache: ["user_profile", { pubkey }] });
-    let followers_count = 0;
-    let following_count = 0;
 
     for (const msg of messages) {
       if (!Array.isArray(msg)) continue;
       const [type, , eventData] = msg;
       if (type === "EVENT" && eventData) {
         const k = eventData.kind;
-        if (k >= 10000100 && k <= 10000200) {
+        if (k === 10000105) {
           try {
             const stats = JSON.parse(eventData.content);
             if (typeof stats === "object" && stats !== null) {
-              if (stats.followers_count !== undefined) followers_count = Number(stats.followers_count);
-              if (stats.follows_count !== undefined) following_count = Number(stats.follows_count);
-              if (stats.following_count !== undefined) following_count = Number(stats.following_count);
+              if (stats.followers_count !== undefined) result.followers_count = Number(stats.followers_count);
+              if (stats.follows_count !== undefined) result.following_count = Number(stats.follows_count);
+              if (stats.note_count !== undefined) result.note_count = Number(stats.note_count);
+              if (stats.reply_count !== undefined) result.reply_count = Number(stats.reply_count);
+              if (stats.media_count !== undefined) result.media_count = Number(stats.media_count);
+              if (stats.total_zap_count !== undefined) result.total_zap_count = Number(stats.total_zap_count);
+              if (stats.relay_count !== undefined) result.relay_count = Number(stats.relay_count);
+              if (stats.time_joined !== undefined) result.time_joined = Number(stats.time_joined);
+              if (stats.long_form_note_count !== undefined) result.long_form_note_count = Number(stats.long_form_note_count);
+              if (stats.total_satszapped !== undefined) result.total_satszapped = Number(stats.total_satszapped);
             }
           } catch {}
         }
-        if (k === 3) {
+        if (k === 3 && result.following_count === 0) {
           const pTags = (eventData.tags || []).filter((t: string[]) => t[0] === "p");
-          if (pTags.length > 0 && following_count === 0) {
-            following_count = pTags.length;
+          if (pTags.length > 0) {
+            result.following_count = pTags.length;
           }
         }
       }
     }
 
-    return { followers_count, following_count };
+    return result;
   } catch (err) {
     console.error("[PrimalCache] User stats error:", err);
-    return { followers_count: 0, following_count: 0 };
+    return result;
   }
 }
 

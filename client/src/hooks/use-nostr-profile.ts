@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { NDKEvent } from "@nostr-dev-kit/ndk";
 import { useNDK } from "@/contexts/ndk-context";
-import { fetchPrimalUserStats } from "@/lib/primal-cache";
+import { fetchPrimalUserStats, type PrimalUserStats } from "@/lib/primal-cache";
 
 export interface NostrMetadata {
   name?: string;
@@ -15,6 +15,14 @@ export interface NostrMetadata {
   location?: string;
   following_count?: number;
   followers_count?: number;
+  note_count?: number;
+  reply_count?: number;
+  media_count?: number;
+  total_zap_count?: number;
+  relay_count?: number;
+  time_joined?: number;
+  long_form_note_count?: number;
+  total_satszapped?: number;
 }
 
 export function useNostrProfile(pubkey: string | undefined) {
@@ -62,6 +70,14 @@ export function useNostrProfile(pubkey: string | undefined) {
           ...prev,
           following_count: stats.following_count,
           followers_count: stats.followers_count,
+          note_count: stats.note_count,
+          reply_count: stats.reply_count,
+          media_count: stats.media_count,
+          total_zap_count: stats.total_zap_count,
+          relay_count: stats.relay_count,
+          time_joined: stats.time_joined,
+          long_form_note_count: stats.long_form_note_count,
+          total_satszapped: stats.total_satszapped,
         }));
       } catch (err) {
         console.error("[useNostrProfile] Error fetching social counts:", err);
