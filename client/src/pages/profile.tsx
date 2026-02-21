@@ -658,7 +658,7 @@ export default function Profile() {
       <div className="max-w-2xl mx-auto">
         <div className="bg-background pb-2">
           <div className="relative">
-            <div className="w-full aspect-[3/1] overflow-hidden bg-muted rounded-b-lg" data-testid="profile-banner">
+            <div className="w-full aspect-[3/1] overflow-hidden bg-muted" data-testid="profile-banner">
               {bannerImage ? (
                 <img
                   src={bannerImage}
