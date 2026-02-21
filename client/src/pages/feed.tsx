@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Zap, Share2, MoreHorizontal, Radio, Calendar, UserPlus, Repeat2, Bookmark, Quote, Users, Image, Film, Smile, X, Link2, Copy, ExternalLink, Loader2, Lock, Globe, ChevronDown, TrendingUp, Flame, Camera, Clock, RefreshCw, ArrowUp, Plus } from "lucide-react";
+import { Heart, MessageCircle, Zap, Share2, MoreHorizontal, Radio, Calendar, UserPlus, Repeat2, Bookmark, Quote, Users, Image as ImageIcon, Film, Smile, X, Link2, Copy, ExternalLink, Loader2, Lock, Globe, ChevronDown, TrendingUp, Flame, Camera, Clock, RefreshCw, ArrowUp, Plus } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import {
   DropdownMenu,
@@ -31,6 +31,11 @@ import { NDKEvent } from "@nostr-dev-kit/ndk";
 import { Skeleton } from "@/components/ui/skeleton";
 import { parseNostrContent, truncateNpub, resolveContentMentions, type NostrEntity, type ParsedContent } from "@/lib/nostr-content";
 import { fetchPrimalFeed, fetchPrimalUserFeed, fetchPrimalEvent, type ExploreMode, type PrimalEvent, type PrimalProfile, type PrimalEventStats, type ZapReceipt } from "@/lib/primal-cache";
+import { GifPicker } from "@/components/gif-picker";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { zapPost } from "@/lib/api";
+import { loadNWCConnection, zapViaLightning } from "@/lib/nwc";
 
 export type FeedPost = {
   id: string;
@@ -482,7 +487,7 @@ export function PostComposer({ onPostPublished }: { onPostPublished?: () => void
                 className="text-muted-foreground hover:bg-[#F0E6FF] hover:text-foreground"
                 data-testid="button-add-image"
               >
-                <Image className="w-5 h-5" strokeWidth={1.5} />
+                <ImageIcon className="w-5 h-5" strokeWidth={1.5} />
               </Button>
               <Button
                 variant="ghost"
@@ -643,7 +648,7 @@ export function CompactPostBar({ onPostPublished, autoOpen }: { onPostPublished?
                 </DropdownMenuContent>
               </DropdownMenu>
               <Button variant="ghost" size="sm" className="text-muted-foreground hover:bg-[#F0E6FF] h-8 w-8 p-0" data-testid="button-modal-add-image">
-                <Image className="w-4 h-4" strokeWidth={1.5} />
+                <ImageIcon className="w-4 h-4" strokeWidth={1.5} />
               </Button>
               <Button variant="ghost" size="sm" className="text-muted-foreground hover:bg-[#F0E6FF] h-8 w-8 p-0" data-testid="button-modal-add-gif">
                 <Smile className="w-4 h-4" strokeWidth={1.5} />
@@ -987,12 +992,38 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
   const [quoteText, setQuoteText] = useState("");
   const [replyOpen, setReplyOpen] = useState(false);
   const [replyText, setReplyText] = useState("");
+  const [zapAmount, setZapAmount] = useState(21);
+  const [zapComment, setZapComment] = useState("");
+  const [isZapOpen, setIsZapOpen] = useState(false);
+  const [isZapping, setIsZapping] = useState(false);
+  const [isZapped, setIsZapped] = useState(false);
+  const [replyImage, setReplyImage] = useState<string | null>(null);
+  const [quoteImage, setQuoteImage] = useState<string | null>(null);
+  const [showReplyGifPicker, setShowReplyGifPicker] = useState(false);
+  const [showQuoteGifPicker, setShowQuoteGifPicker] = useState(false);
+  const replyFileRef = useRef<HTMLInputElement>(null);
+  const quoteFileRef = useRef<HTMLInputElement>(null);
   const { publishSmart, ndk, isConnected: ndkConnected } = useNDK();
+  const { isConnected, profile } = useNostr();
   const [, navigate] = useLocation();
 
   const isGroupPost = isGroupContent(post);
   const canRepostPublic = canSharePublicly(post);
   const groupName = getGroupName(post);
+
+  const handleImageUpload = async (file: File, setter: (url: string | null) => void) => {
+    const formData = new FormData();
+    formData.append("image", file);
+    try {
+      const response = await fetch("/api/upload", { method: "POST", body: formData });
+      if (response.ok) {
+        const data = await response.json();
+        setter(data.url);
+      }
+    } catch {
+      toast.error("Failed to upload image");
+    }
+  };
 
   const handleLike = () => {
     setIsLiked(!isLiked);
@@ -1045,7 +1076,11 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
       const event = new NDKEvent(ndk);
       event.kind = 1;
       const noteRef = `nostr:${post.id}`;
-      event.content = quoteText ? `${quoteText}\n\n${noteRef}` : noteRef;
+      let content = quoteText ? `${quoteText}\n\n${noteRef}` : noteRef;
+      if (quoteImage) {
+        content += `\n${quoteImage}`;
+      }
+      event.content = content;
       event.tags = [
         ["e", post.id, "", "mention"],
         ["p", post.author.pubkey || ""],
@@ -1064,6 +1099,7 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
       setIsReposted(true);
       setQuoteRepostOpen(false);
       setQuoteText("");
+      setQuoteImage(null);
     } catch (err) {
       toast.error("Failed to post quote");
     }
@@ -1079,7 +1115,7 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
   };
 
   const handleSubmitReply = async () => {
-    if (!replyText.trim()) return;
+    if (!replyText.trim() && !replyImage) return;
     if (!ndk || !ndkConnected) {
       toast.error("Not connected to Nostr");
       return;
@@ -1087,7 +1123,11 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
     try {
       const event = new NDKEvent(ndk);
       event.kind = 1;
-      event.content = replyText;
+      let content = replyText.trim();
+      if (replyImage) {
+        content += (content ? "\n" : "") + replyImage;
+      }
+      event.content = content;
       event.tags = [
         ["e", post.id, "", "reply"],
         ["p", post.author.pubkey || ""],
@@ -1095,11 +1135,48 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
       await publishSmart(event, true);
       toast("Reply posted!", { description: `Replied to ${post.author.name}` });
       setReplyText("");
+      setReplyImage(null);
       setReplyOpen(false);
     } catch (err) {
       toast.error("Failed to post reply");
     }
   };
+
+  const handleZap = async () => {
+    if (!isConnected) {
+      toast.error("Please login to zap posts", { description: "Connect your Nostr account to send zaps" });
+      return;
+    }
+    setIsZapping(true);
+    try {
+      const nwcConnection = loadNWCConnection();
+      let paymentHash: string | undefined;
+      if (nwcConnection && post.author.lud16) {
+        try {
+          const result = await zapViaLightning(nwcConnection, post.author.lud16, zapAmount, zapComment || undefined);
+          paymentHash = result.paymentHash;
+          toast.success("Lightning Zap Sent!", { description: `You sent ${zapAmount} sats to ${post.author.name} via Lightning` });
+        } catch (lightningError: any) {
+          console.error("Lightning payment failed:", lightningError);
+          toast.error("Lightning payment failed", { description: lightningError.message || "Please try again" });
+        }
+      } else if (!nwcConnection) {
+        toast.info("No wallet connected", { description: "Connect a Lightning wallet in the Wallet page for real payments" });
+      } else if (!post.author.lud16) {
+        toast.info("Recipient has no Lightning address", { description: "Recording zap to community leaderboard only" });
+      }
+      setIsZapped(true);
+      setIsZapOpen(false);
+      setZapComment("");
+      setZapAmount(21);
+    } catch (error: any) {
+      console.error("Zap error:", error);
+      toast.error("Failed to zap", { description: error.message || "Please try again" });
+    } finally {
+      setIsZapping(false);
+    }
+  };
+  const ZAP_PRESETS = [21, 50, 100, 500, 1000, 5000];
 
   return (
     <Card className="p-4 border border-gray-100 shadow-none hover:border-gray-200 transition-colors" data-testid={`post-${post.id}`}>
@@ -1241,8 +1318,11 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Dialog open={quoteRepostOpen} onOpenChange={setQuoteRepostOpen}>
-              <DialogContent className="sm:max-w-md">
+            <Dialog open={quoteRepostOpen} onOpenChange={(open) => {
+              setQuoteRepostOpen(open);
+              if (!open) { setShowQuoteGifPicker(false); setQuoteImage(null); }
+            }}>
+              <DialogContent className="sm:max-w-md max-h-[85vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle className="font-serif text-xl">Quote Repost</DialogTitle>
                   <DialogDescription>
@@ -1260,14 +1340,66 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
                     </p>
                   </div>
                 )}
-                <div className="space-y-4 py-4">
+                <div className="space-y-3">
                   <Textarea 
                     placeholder="What are your thoughts?"
                     value={quoteText}
                     onChange={(e) => setQuoteText(e.target.value)}
-                    className="min-h-[100px]"
+                    className="min-h-[80px] resize-none"
                     data-testid={`textarea-quote-${post.id}`}
                   />
+                  {quoteImage && (
+                    <div className="relative inline-block">
+                      <img src={quoteImage} alt="Attachment" className="max-h-32 rounded-lg" />
+                      <Button
+                        variant="secondary"
+                        size="icon"
+                        className="absolute top-1 right-1 w-5 h-5"
+                        onClick={() => setQuoteImage(null)}
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-1">
+                    <input
+                      ref={quoteFileRef}
+                      type="file"
+                      accept="image/*,image/gif"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleImageUpload(file, setQuoteImage);
+                      }}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF] rounded-full"
+                      onClick={() => quoteFileRef.current?.click()}
+                      data-testid={`button-quote-image-${post.id}`}
+                    >
+                      <ImageIcon className="w-4 h-4" strokeWidth={1.5} />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF] rounded-full"
+                      onClick={() => setShowQuoteGifPicker(!showQuoteGifPicker)}
+                      data-testid={`button-quote-gif-${post.id}`}
+                    >
+                      <Smile className="w-4 h-4" strokeWidth={1.5} />
+                    </Button>
+                  </div>
+                  {showQuoteGifPicker && (
+                    <GifPicker
+                      onSelect={(gifUrl) => {
+                        setQuoteImage(gifUrl);
+                        setShowQuoteGifPicker(false);
+                      }}
+                      onClose={() => setShowQuoteGifPicker(false)}
+                    />
+                  )}
                   <Card className="p-3 bg-[#F4F4F5] overflow-hidden">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Avatar className="w-6 h-6 shrink-0">
@@ -1293,10 +1425,81 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
               </DialogContent>
             </Dialog>
 
-            <button className="flex items-center justify-center gap-1.5 text-muted-foreground hover:text-foreground rounded-full px-2 py-1 transition-colors text-xs flex-1" data-testid={`button-zap-${post.id}`}>
-              <Zap className="w-3.5 h-3.5" strokeWidth={1.5} />
-              <span data-testid={`count-zaps-${post.id}`}>{post.satszapped > 0 ? formatSats(post.satszapped) : ""}</span>
-            </button>
+            <Dialog open={isZapOpen} onOpenChange={setIsZapOpen}>
+              <button
+                onClick={() => setIsZapOpen(true)}
+                className={`flex items-center justify-center gap-1.5 rounded-full px-2 py-1 transition-colors text-xs flex-1 ${isZapped ? 'text-[#FF6B00]' : 'text-muted-foreground hover:text-foreground'}`}
+                data-testid={`button-zap-${post.id}`}
+              >
+                <Zap className="w-3.5 h-3.5" strokeWidth={1.5} fill={isZapped ? "currentColor" : "none"} />
+                <span data-testid={`count-zaps-${post.id}`}>{post.satszapped > 0 ? formatSats(post.satszapped) : ""}</span>
+              </button>
+              <DialogContent className="sm:max-w-md max-h-[85vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2 font-serif text-2xl">
+                    <span className="text-[#FF6B00]">⚡</span> Zap {post.author.name}
+                  </DialogTitle>
+                  <DialogDescription>
+                    Send sats directly to their Lightning Address.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="flex flex-col gap-6 py-4">
+                  <div className="grid grid-cols-3 gap-3">
+                    {ZAP_PRESETS.map((amount) => (
+                      <Button
+                        key={amount}
+                        variant={zapAmount === amount ? "default" : "outline"}
+                        className={`text-lg font-normal ${
+                          zapAmount === amount
+                            ? "bg-[#FF6B00] hover:bg-[#E65C00] text-white border-[#FF6B00]"
+                            : "border-[#E5E5E5] hover:border-[#FF6B00] hover:bg-orange-50 text-muted-foreground"
+                        }`}
+                        onClick={() => setZapAmount(amount)}
+                      >
+                        ⚡ {amount}
+                      </Button>
+                    ))}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor={`custom-amount-${post.id}`} className="text-muted-foreground font-serif">Custom Amount (Sats)</Label>
+                    <div className="relative">
+                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[#FF6B00] font-normal">⚡</div>
+                      <Input
+                        id={`custom-amount-${post.id}`}
+                        type="number"
+                        value={zapAmount}
+                        onChange={(e) => setZapAmount(Number(e.target.value))}
+                        className="pl-9 text-lg font-normal bg-[#FAFAFA] border-muted"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor={`zap-comment-${post.id}`} className="text-muted-foreground font-serif">Comment (Optional)</Label>
+                    <Input
+                      id={`zap-comment-${post.id}`}
+                      placeholder="Great post!"
+                      value={zapComment}
+                      onChange={(e) => setZapComment(e.target.value)}
+                      className="bg-[#FAFAFA] border-muted"
+                    />
+                  </div>
+                </div>
+                <DialogFooter className="sm:justify-between gap-2">
+                  <DialogClose asChild>
+                    <Button type="button" variant="ghost">Cancel</Button>
+                  </DialogClose>
+                  <Button
+                    type="submit"
+                    onClick={handleZap}
+                    disabled={isZapping || !isConnected}
+                    className="bg-[#FF6B00] hover:bg-[#E65C00] text-white font-normal px-8 w-full sm:w-auto disabled:opacity-50"
+                    data-testid={`button-confirm-zap-${post.id}`}
+                  >
+                    {isZapping ? "Zapping..." : `Zap ${zapAmount} Sats ⚡`}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
 
             <button 
               onClick={handleLike}
@@ -1373,36 +1576,90 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
           </div>
           {replyOpen && (
             <div className="mt-3 pt-3 border-t border-gray-100" data-testid={`reply-composer-${post.id}`}>
-              <div className="flex gap-2">
-                <Textarea
-                  placeholder={`Reply to ${post.author.name}...`}
-                  value={replyText}
-                  onChange={(e) => setReplyText(e.target.value)}
-                  className="min-h-[60px] text-sm resize-none"
-                  autoFocus
-                  data-testid={`textarea-reply-${post.id}`}
-                />
+              <Textarea
+                placeholder={`Reply to ${post.author.name}...`}
+                value={replyText}
+                onChange={(e) => setReplyText(e.target.value)}
+                className="min-h-[60px] text-sm resize-none"
+                autoFocus
+                data-testid={`textarea-reply-${post.id}`}
+              />
+              {replyImage && (
+                <div className="relative inline-block mt-2">
+                  <img src={replyImage} alt="Attachment" className="max-h-24 rounded-lg" />
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    className="absolute top-1 right-1 w-5 h-5"
+                    onClick={() => setReplyImage(null)}
+                  >
+                    <X className="w-3 h-3" />
+                  </Button>
+                </div>
+              )}
+              <div className="flex items-center justify-between mt-2">
+                <div className="flex items-center gap-1">
+                  <input
+                    ref={replyFileRef}
+                    type="file"
+                    accept="image/*,image/gif"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleImageUpload(file, setReplyImage);
+                    }}
+                  />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF] rounded-full"
+                    onClick={() => replyFileRef.current?.click()}
+                    data-testid={`button-reply-image-${post.id}`}
+                  >
+                    <ImageIcon className="w-3.5 h-3.5" strokeWidth={1.5} />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF] rounded-full"
+                    onClick={() => setShowReplyGifPicker(!showReplyGifPicker)}
+                    data-testid={`button-reply-gif-${post.id}`}
+                  >
+                    <Smile className="w-3.5 h-3.5" strokeWidth={1.5} />
+                  </Button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => { setReplyOpen(false); setReplyText(""); setReplyImage(null); setShowReplyGifPicker(false); }}
+                    className="text-xs hover:bg-[#F0E6FF]"
+                    data-testid={`button-cancel-reply-${post.id}`}
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    onClick={handleSubmitReply}
+                    disabled={!replyText.trim() && !replyImage}
+                    className="text-xs bg-foreground text-background hover:bg-white hover:border-[#E5E5E5] hover:text-foreground border border-transparent"
+                    data-testid={`button-submit-reply-${post.id}`}
+                  >
+                    Reply
+                  </Button>
+                </div>
               </div>
-              <div className="flex justify-end gap-2 mt-2">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={() => { setReplyOpen(false); setReplyText(""); }}
-                  className="text-xs hover:bg-[#F0E6FF]"
-                  data-testid={`button-cancel-reply-${post.id}`}
-                >
-                  Cancel
-                </Button>
-                <Button 
-                  size="sm" 
-                  onClick={handleSubmitReply}
-                  disabled={!replyText.trim()}
-                  className="text-xs bg-foreground text-background hover:bg-white hover:border-[#E5E5E5] hover:text-foreground border border-transparent"
-                  data-testid={`button-submit-reply-${post.id}`}
-                >
-                  Reply
-                </Button>
-              </div>
+              {showReplyGifPicker && (
+                <div className="mt-2">
+                  <GifPicker
+                    onSelect={(gifUrl) => {
+                      setReplyImage(gifUrl);
+                      setShowReplyGifPicker(false);
+                    }}
+                    onClose={() => setShowReplyGifPicker(false)}
+                  />
+                </div>
+              )}
             </div>
           )}
         </div>

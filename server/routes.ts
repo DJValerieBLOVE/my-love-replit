@@ -82,6 +82,53 @@ export async function registerRoutes(
   const express = await import("express");
   app.use("/uploads", express.default.static(uploadsDir));
 
+  app.get("/api/gifs/search", async (req, res) => {
+    try {
+      const q = req.query.q as string;
+      const limit = parseInt(req.query.limit as string) || 20;
+      if (!q) return res.json({ results: [] });
+      
+      const tenorKey = process.env.TENOR_API_KEY || "AIzaSyAyimkuYQYF_FXVALexPuGQctUWRURdCYQ";
+      const url = `https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(q)}&key=${tenorKey}&client_key=my_masterpiece&limit=${limit}&contentfilter=medium&media_filter=gif,tinygif`;
+      const response = await fetch(url);
+      if (!response.ok) return res.json({ results: [] });
+      const data = await response.json();
+      const results = (data.results || []).map((g: any) => ({
+        id: g.id,
+        url: g.media_formats?.gif?.url || "",
+        preview: g.media_formats?.tinygif?.url || g.media_formats?.gif?.url || "",
+        width: g.media_formats?.gif?.dims?.[0] || 200,
+        height: g.media_formats?.gif?.dims?.[1] || 200,
+      }));
+      res.json({ results });
+    } catch (err) {
+      console.error("GIF search error:", err);
+      res.json({ results: [] });
+    }
+  });
+
+  app.get("/api/gifs/trending", async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 20;
+      const tenorKey = process.env.TENOR_API_KEY || "AIzaSyAyimkuYQYF_FXVALexPuGQctUWRURdCYQ";
+      const url = `https://tenor.googleapis.com/v2/featured?key=${tenorKey}&client_key=my_masterpiece&limit=${limit}&contentfilter=medium&media_filter=gif,tinygif`;
+      const response = await fetch(url);
+      if (!response.ok) return res.json({ results: [] });
+      const data = await response.json();
+      const results = (data.results || []).map((g: any) => ({
+        id: g.id,
+        url: g.media_formats?.gif?.url || "",
+        preview: g.media_formats?.tinygif?.url || g.media_formats?.gif?.url || "",
+        width: g.media_formats?.gif?.dims?.[0] || 200,
+        height: g.media_formats?.gif?.dims?.[1] || 200,
+      }));
+      res.json({ results });
+    } catch (err) {
+      console.error("GIF trending error:", err);
+      res.json({ results: [] });
+    }
+  });
+
   app.post("/api/upload", optionalAuth, upload.single("image"), (req, res) => {
     try {
       if (!req.file) {

@@ -598,6 +598,85 @@ export async function fetchPrimalThread(eventId: string, options: { userPubkey?:
   }
 }
 
+export async function fetchPrimalUserContacts(pubkey: string): Promise<{ following: PrimalProfile[]; followingCount: number }> {
+  try {
+    const messages = await primalCache.sendRequest({ cache: ["contact_list", { pubkey }] });
+    const profiles: PrimalProfile[] = [];
+    let followingPubkeys: string[] = [];
+
+    for (const msg of messages) {
+      if (!Array.isArray(msg)) continue;
+      const [type, , eventData] = msg;
+      if (type === "EVENT" && eventData) {
+        if (eventData.kind === 3) {
+          followingPubkeys = (eventData.tags || [])
+            .filter((t: string[]) => t[0] === "p")
+            .map((t: string[]) => t[1]);
+        } else if (eventData.kind === 0) {
+          try {
+            const meta = JSON.parse(eventData.content);
+            profiles.push({
+              pubkey: eventData.pubkey,
+              name: meta.name || "",
+              display_name: meta.display_name || meta.name || "",
+              picture: meta.picture || "",
+              about: meta.about || "",
+              nip05: meta.nip05 || "",
+              lud16: meta.lud16 || "",
+            });
+          } catch {}
+        }
+      }
+    }
+
+    return { following: profiles, followingCount: followingPubkeys.length || profiles.length };
+  } catch (err) {
+    console.error("[PrimalCache] Contact list error:", err);
+    return { following: [], followingCount: 0 };
+  }
+}
+
+export async function fetchPrimalUserFollowers(pubkey: string): Promise<{ followers: PrimalProfile[]; followersCount: number }> {
+  try {
+    const messages = await primalCache.sendRequest({ cache: ["user_followers", { pubkey }] });
+    const profiles: PrimalProfile[] = [];
+    let count = 0;
+
+    for (const msg of messages) {
+      if (!Array.isArray(msg)) continue;
+      const [type, , eventData] = msg;
+      if (type === "EVENT" && eventData) {
+        if (eventData.kind === 0) {
+          try {
+            const meta = JSON.parse(eventData.content);
+            profiles.push({
+              pubkey: eventData.pubkey,
+              name: meta.name || "",
+              display_name: meta.display_name || meta.name || "",
+              picture: meta.picture || "",
+              about: meta.about || "",
+              nip05: meta.nip05 || "",
+              lud16: meta.lud16 || "",
+            });
+          } catch {}
+        } else if (eventData.kind === 10000108) {
+          try {
+            const parsed = JSON.parse(eventData.content);
+            if (parsed && typeof parsed === "object") {
+              count = parsed.cnt || parsed.count || profiles.length;
+            }
+          } catch {}
+        }
+      }
+    }
+
+    return { followers: profiles, followersCount: count || profiles.length };
+  } catch (err) {
+    console.error("[PrimalCache] Followers error:", err);
+    return { followers: [], followersCount: 0 };
+  }
+}
+
 export function invalidatePrimalCache(keyPrefix?: string) {
   primalCache.invalidateCache(keyPrefix);
 }

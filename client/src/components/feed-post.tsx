@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { 
   Clock, 
   Heart, 
@@ -20,7 +20,10 @@ import {
   AlertCircle,
   Lock,
   Globe,
-  Send
+  Send,
+  Image as ImageIcon,
+  X,
+  Smile
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -54,6 +57,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { GifPicker } from "@/components/gif-picker";
 
 interface FeedPostProps {
   post: {
@@ -95,13 +99,33 @@ export function FeedPost({ post }: FeedPostProps) {
   const [likes, setLikes] = useState(post.likes);
   const [quoteRepostOpen, setQuoteRepostOpen] = useState(false);
   const [quoteText, setQuoteText] = useState("");
+  const [quoteImage, setQuoteImage] = useState<string | null>(null);
+  const [showQuoteGifPicker, setShowQuoteGifPicker] = useState(false);
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [replyText, setReplyText] = useState("");
+  const [replyImage, setReplyImage] = useState<string | null>(null);
+  const [showReplyGifPicker, setShowReplyGifPicker] = useState(false);
   const [isReplying, setIsReplying] = useState(false);
+  const replyFileRef = useRef<HTMLInputElement>(null);
+  const quoteFileRef = useRef<HTMLInputElement>(null);
 
   const isGroupPost = isGroupContent(post);
   const canRepostPublic = canSharePublicly(post);
   const groupName = getGroupName(post);
+
+  const handleImageUpload = async (file: File, setter: (url: string | null) => void) => {
+    const formData = new FormData();
+    formData.append("image", file);
+    try {
+      const response = await fetch("/api/upload", { method: "POST", body: formData });
+      if (response.ok) {
+        const data = await response.json();
+        setter(data.url);
+      }
+    } catch {
+      toast.error("Failed to upload image");
+    }
+  };
 
   const handleRepostPublic = async () => {
     if (!canRepostPublic) {
@@ -147,19 +171,42 @@ export function FeedPost({ post }: FeedPostProps) {
     setIsReposted(true);
   };
 
-  const handleQuoteRepost = () => {
-    if (!canRepostPublic) {
-      toast("Quote shared within group!", {
-        description: `Your quote was shared within ${groupName}`,
-      });
-    } else {
-      toast("Quote Posted to Nostr!", {
-        description: "Your quote repost was shared publicly",
-      });
+  const handleQuoteRepost = async () => {
+    if (!ndk) {
+      toast.error("Not connected to Nostr");
+      return;
     }
-    setIsReposted(true);
-    setQuoteRepostOpen(false);
-    setQuoteText("");
+    try {
+      const event = new NDKEvent(ndk);
+      event.kind = 1;
+      const noteRef = `nostr:${post.eventId || post.id}`;
+      let content = quoteText ? `${quoteText}\n\n${noteRef}` : noteRef;
+      if (quoteImage) {
+        content += `\n${quoteImage}`;
+      }
+      event.content = content;
+      event.tags = [
+        ["e", post.eventId || post.id, "", "mention"],
+        ["p", post.author.pubkey || ""],
+      ];
+      const isPublic = canRepostPublic;
+      await publishSmart(event, isPublic);
+      if (!isPublic) {
+        toast("Quote shared within group!", {
+          description: `Your quote was shared within ${groupName}`,
+        });
+      } else {
+        toast("Quote Posted to Nostr!", {
+          description: "Your quote repost was shared publicly",
+        });
+      }
+      setIsReposted(true);
+      setQuoteRepostOpen(false);
+      setQuoteText("");
+      setQuoteImage(null);
+    } catch (err) {
+      toast.error("Failed to post quote");
+    }
   };
 
   const handleBookmark = () => {
@@ -217,7 +264,7 @@ export function FeedPost({ post }: FeedPostProps) {
   };
 
   const handleReply = async () => {
-    if (!replyText.trim()) return;
+    if (!replyText.trim() && !replyImage) return;
     if (!post.eventId || !post.author.pubkey) {
       toast.error("Cannot interact with this post", {
         description: "Missing event or author information",
@@ -228,7 +275,11 @@ export function FeedPost({ post }: FeedPostProps) {
     try {
       const event = new NDKEvent(ndk!);
       event.kind = 1;
-      event.content = replyText.trim();
+      let content = replyText.trim();
+      if (replyImage) {
+        content += (content ? "\n" : "") + replyImage;
+      }
+      event.content = content;
       event.tags = [
         ["e", post.eventId, "", "reply"],
         ["p", post.author.pubkey],
@@ -238,6 +289,7 @@ export function FeedPost({ post }: FeedPostProps) {
         description: `Your reply to ${post.author.name} was published`,
       });
       setReplyText("");
+      setReplyImage(null);
       setShowReplyInput(false);
     } catch (error: any) {
       toast.error("Failed to send reply", {
@@ -252,13 +304,6 @@ export function FeedPost({ post }: FeedPostProps) {
     if (!isConnected) {
       toast.error("Please login to zap posts", {
         description: "Connect your Nostr account to send zaps"
-      });
-      return;
-    }
-    
-    if (!post.author.id) {
-      toast.error("Cannot zap this post", {
-        description: "Post author information is missing"
       });
       return;
     }
@@ -279,7 +324,7 @@ export function FeedPost({ post }: FeedPostProps) {
           );
           paymentHash = result.paymentHash;
           
-          toast.success("Lightning Zap Sent! ⚡", {
+          toast.success("Lightning Zap Sent!", {
             description: `You sent ${zapAmount} sats to ${post.author.name} via Lightning`,
           });
         } catch (lightningError: any) {
@@ -298,14 +343,16 @@ export function FeedPost({ post }: FeedPostProps) {
         });
       }
       
-      await zapPost(post.id, post.author.id, zapAmount, zapComment || undefined, paymentHash);
+      if (post.author.id) {
+        await zapPost(post.id, post.author.id, zapAmount, zapComment || undefined, paymentHash);
+      }
       
       setZaps(prev => prev + zapAmount);
       setIsZapped(true);
       setIsZapOpen(false);
       
-      if (!paymentHash) {
-        toast.success("Zap Recorded! ⚡", {
+      if (!paymentHash && post.author.id) {
+        toast.success("Zap Recorded!", {
           description: `${zapAmount} sats recorded for ${post.author.name}`,
         });
       }
@@ -394,7 +441,6 @@ export function FeedPost({ post }: FeedPostProps) {
             )}
 
             <div className="flex items-center justify-between mt-4 pt-2 border-t border-border px-2 h-12">
-              {/* 1. Reply/Comment */}
               <Button 
                 variant="ghost" 
                 onClick={() => setShowReplyInput(!showReplyInput)}
@@ -405,7 +451,6 @@ export function FeedPost({ post }: FeedPostProps) {
                 <span className="text-sm font-normal">{post.comments > 0 ? post.comments : ""}</span>
               </Button>
 
-              {/* 2. Repost with dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button 
@@ -417,7 +462,6 @@ export function FeedPost({ post }: FeedPostProps) {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="center" className="w-56">
-                  {/* Public Repost - only available for public posts or own group content */}
                   {canRepostPublic ? (
                     <DropdownMenuItem onClick={handleRepostPublic} data-testid={`menu-repost-${post.id}`}>
                       <Repeat2 className="w-4 h-4 mr-2" />
@@ -435,7 +479,6 @@ export function FeedPost({ post }: FeedPostProps) {
                       </div>
                     </DropdownMenuItem>
                   )}
-                  {/* Group Repost - only for group posts */}
                   {isGroupPost && (
                     <DropdownMenuItem onClick={handleRepostGroup} data-testid={`menu-repost-group-${post.id}`}>
                       <Users className="w-4 h-4 mr-2" />
@@ -445,7 +488,6 @@ export function FeedPost({ post }: FeedPostProps) {
                       </div>
                     </DropdownMenuItem>
                   )}
-                  {/* Quote Repost */}
                   <DropdownMenuItem onClick={() => setQuoteRepostOpen(true)} data-testid={`menu-quote-repost-${post.id}`}>
                     <Quote className="w-4 h-4 mr-2" />
                     <div>
@@ -458,15 +500,17 @@ export function FeedPost({ post }: FeedPostProps) {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Quote Repost Dialog */}
-              <Dialog open={quoteRepostOpen} onOpenChange={setQuoteRepostOpen}>
-                <DialogContent className="sm:max-w-md">
+              <Dialog open={quoteRepostOpen} onOpenChange={(open) => {
+                setQuoteRepostOpen(open);
+                if (!open) { setShowQuoteGifPicker(false); setQuoteImage(null); }
+              }}>
+                <DialogContent className="sm:max-w-md max-h-[85vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle className="font-serif text-xl">Quote Repost</DialogTitle>
                     <DialogDescription>
                       {isGroupPost && !post.isOwnPost 
                         ? `Add your thoughts - will be shared within ${post.community || "the group"} only`
-                        : "Add your thoughts to this post"
+                        : "Add your thoughts to share publicly"
                       }
                     </DialogDescription>
                   </DialogHeader>
@@ -478,23 +522,75 @@ export function FeedPost({ post }: FeedPostProps) {
                       </p>
                     </div>
                   )}
-                  <div className="space-y-4 py-4">
+                  <div className="space-y-3">
                     <Textarea 
                       placeholder="What are your thoughts?"
                       value={quoteText}
                       onChange={(e) => setQuoteText(e.target.value)}
-                      className="min-h-[100px]"
+                      className="min-h-[80px] resize-none"
                       data-testid={`textarea-quote-${post.id}`}
                     />
-                    <Card className="p-3 bg-muted/50">
+                    {quoteImage && (
+                      <div className="relative inline-block">
+                        <img src={quoteImage} alt="Attachment" className="max-h-32 rounded-lg" />
+                        <Button
+                          variant="secondary"
+                          size="icon"
+                          className="absolute top-1 right-1 w-5 h-5"
+                          onClick={() => setQuoteImage(null)}
+                        >
+                          <X className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-1">
+                      <input
+                        ref={quoteFileRef}
+                        type="file"
+                        accept="image/*,image/gif"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleImageUpload(file, setQuoteImage);
+                        }}
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF] rounded-full"
+                        onClick={() => quoteFileRef.current?.click()}
+                        data-testid={`button-quote-image-${post.id}`}
+                      >
+                        <ImageIcon className="w-4 h-4" strokeWidth={1.5} />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF] rounded-full"
+                        onClick={() => setShowQuoteGifPicker(!showQuoteGifPicker)}
+                        data-testid={`button-quote-gif-${post.id}`}
+                      >
+                        <Smile className="w-4 h-4" strokeWidth={1.5} />
+                      </Button>
+                    </div>
+                    {showQuoteGifPicker && (
+                      <GifPicker
+                        onSelect={(gifUrl) => {
+                          setQuoteImage(gifUrl);
+                          setShowQuoteGifPicker(false);
+                        }}
+                        onClose={() => setShowQuoteGifPicker(false)}
+                      />
+                    )}
+                    <Card className="p-3 bg-muted/50 overflow-hidden">
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Avatar className="w-6 h-6">
+                        <Avatar className="w-6 h-6 shrink-0">
                           <AvatarImage src={post.author.avatar} />
                           <AvatarFallback>{post.author.name[0]}</AvatarFallback>
                         </Avatar>
-                        <span className="font-normal">{post.author.name}</span>
+                        <span className="font-normal truncate">{post.author.name}</span>
                       </div>
-                      <p className="text-sm mt-2 line-clamp-2">{post.content}</p>
+                      <p className="text-sm mt-2 line-clamp-3 break-words">{post.content}</p>
                     </Card>
                   </div>
                   <DialogFooter>
@@ -511,7 +607,6 @@ export function FeedPost({ post }: FeedPostProps) {
                 </DialogContent>
               </Dialog>
 
-              {/* 3. Zap (Center, Largest) - Now with Dialog */}
               <Dialog open={isZapOpen} onOpenChange={setIsZapOpen}>
                 <DialogTrigger asChild>
                   <Button 
@@ -528,7 +623,7 @@ export function FeedPost({ post }: FeedPostProps) {
                     </span>
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-md border-love-family-light">
+                <DialogContent className="sm:max-w-md max-h-[85vh] overflow-y-auto border-love-family-light">
                   <DialogHeader>
                     <DialogTitle className="flex items-center gap-2 font-serif text-2xl">
                       <span className="text-love-family">⚡</span> Zap {post.author.name}
@@ -539,7 +634,6 @@ export function FeedPost({ post }: FeedPostProps) {
                   </DialogHeader>
                   
                   <div className="flex flex-col gap-6 py-4">
-                    {/* Presets */}
                     <div className="grid grid-cols-3 gap-3">
                       {ZAP_PRESETS.map((amount) => (
                         <Button
@@ -557,7 +651,6 @@ export function FeedPost({ post }: FeedPostProps) {
                       ))}
                     </div>
 
-                    {/* Custom Amount */}
                     <div className="space-y-2">
                       <Label htmlFor="custom-amount" className="text-muted-foreground font-serif">Custom Amount (Sats)</Label>
                       <div className="relative">
@@ -572,12 +665,11 @@ export function FeedPost({ post }: FeedPostProps) {
                       </div>
                     </div>
 
-                    {/* Comment */}
                     <div className="space-y-2">
                       <Label htmlFor="zap-comment" className="text-muted-foreground font-serif">Comment (Optional)</Label>
                       <Input 
                         id="zap-comment" 
-                        placeholder="Great post! 🔥" 
+                        placeholder="Great post!" 
                         value={zapComment}
                         onChange={(e) => setZapComment(e.target.value)}
                         className="bg-[#FAFAFA] border-muted"
@@ -602,7 +694,6 @@ export function FeedPost({ post }: FeedPostProps) {
                 </DialogContent>
               </Dialog>
 
-              {/* 4. Like */}
               <Button 
                 variant="ghost" 
                 onClick={handleLike}
@@ -613,7 +704,6 @@ export function FeedPost({ post }: FeedPostProps) {
                 <span className="text-sm font-normal">{likes > 0 ? likes : ""}</span>
               </Button>
 
-              {/* 5. Bookmark */}
               <Button 
                 variant="ghost" 
                 onClick={handleBookmark}
@@ -623,7 +713,6 @@ export function FeedPost({ post }: FeedPostProps) {
                 <Bookmark className="w-[18px] h-[18px]" strokeWidth={1.5} fill={isBookmarked ? "currentColor" : "none"} />
               </Button>
 
-              {/* 6. Share */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button 
@@ -673,27 +762,90 @@ export function FeedPost({ post }: FeedPostProps) {
             </div>
 
             {showReplyInput && (
-              <div className="mt-2 px-2 pb-2 flex gap-2 items-end" data-testid={`reply-input-container-${post.id}`}>
+              <div className="mt-3 pt-3 border-t border-border" data-testid={`reply-input-container-${post.id}`}>
                 <Textarea
                   placeholder={`Reply to ${post.author.name}...`}
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
-                  className="min-h-[60px] text-sm flex-1 resize-none"
+                  className="min-h-[60px] text-sm resize-none"
+                  autoFocus
                   data-testid={`textarea-reply-${post.id}`}
                 />
-                <Button
-                  size="sm"
-                  onClick={handleReply}
-                  disabled={isReplying || !replyText.trim()}
-                  className="shrink-0"
-                  data-testid={`button-submit-reply-${post.id}`}
-                >
-                  {isReplying ? (
-                    <span className="text-xs">Sending...</span>
-                  ) : (
-                    <Send className="w-4 h-4" />
-                  )}
-                </Button>
+                {replyImage && (
+                  <div className="relative inline-block mt-2">
+                    <img src={replyImage} alt="Attachment" className="max-h-24 rounded-lg" />
+                    <Button
+                      variant="secondary"
+                      size="icon"
+                      className="absolute top-1 right-1 w-5 h-5"
+                      onClick={() => setReplyImage(null)}
+                    >
+                      <X className="w-3 h-3" />
+                    </Button>
+                  </div>
+                )}
+                <div className="flex items-center justify-between mt-2">
+                  <div className="flex items-center gap-1">
+                    <input
+                      ref={replyFileRef}
+                      type="file"
+                      accept="image/*,image/gif"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleImageUpload(file, setReplyImage);
+                      }}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF] rounded-full"
+                      onClick={() => replyFileRef.current?.click()}
+                      data-testid={`button-reply-image-${post.id}`}
+                    >
+                      <ImageIcon className="w-3.5 h-3.5" strokeWidth={1.5} />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF] rounded-full"
+                      onClick={() => setShowReplyGifPicker(!showReplyGifPicker)}
+                      data-testid={`button-reply-gif-${post.id}`}
+                    >
+                      <Smile className="w-3.5 h-3.5" strokeWidth={1.5} />
+                    </Button>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => { setShowReplyInput(false); setReplyText(""); setReplyImage(null); setShowReplyGifPicker(false); }}
+                      className="text-xs"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={handleReply}
+                      disabled={isReplying || (!replyText.trim() && !replyImage)}
+                      className="shrink-0"
+                      data-testid={`button-submit-reply-${post.id}`}
+                    >
+                      {isReplying ? "Sending..." : "Reply"}
+                    </Button>
+                  </div>
+                </div>
+                {showReplyGifPicker && (
+                  <div className="mt-2">
+                    <GifPicker
+                      onSelect={(gifUrl) => {
+                        setReplyImage(gifUrl);
+                        setShowReplyGifPicker(false);
+                      }}
+                      onClose={() => setShowReplyGifPicker(false)}
+                    />
+                  </div>
+                )}
               </div>
             )}
           </div>
