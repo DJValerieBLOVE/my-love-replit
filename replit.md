@@ -70,8 +70,16 @@ My Masterpiece is a spiritual personal growth application designed to help users
   - `client/src/components/rich-text-editor.tsx` — useRichTextEditor hook (with content/onUpdate/placeholder options), RichTextEditorContent, EditorPreview, EditorModeToggle, richTextEditorStyles
   - `client/src/components/editor-toolbar.tsx` — ToolbarButton, ToolbarSelect, EditorToolbar (full formatting toolbar)
 - Article editor (`article-editor.tsx`) refactored to use shared components — tested and working.
-- Experiment builder will use these same shared components for step content editing.
+- Experiment builder uses these same shared components for step content editing.
 - Shared utilities: `html-to-markdown.ts` converter, `ImageUpload` component, slug generation.
+
+### Experiment Builder Platform (DONE - Prompt 2 Complete)
+- **Database Schema**: `experiments` table uses `modules` JSON field (Module > Step hierarchy), `dimension` (required), `benefitsFor`, `outcomes`. Removed `guide`, `category`, `loveCodeArea`, `steps` columns.
+- **11 Dimensions**: `ELEVEN_DIMENSIONS` replaces `EXPERIMENT_CATEGORIES` everywhere. `LOVE_CODE_AREAS` kept as alias for backward compat. All dropdowns show colored dots.
+- **Builder** (`/experiments/create`): Form order — Title, 11 Dimensions, Tags (placeholder), Description, Who Could Benefit, Outcomes & Goals, compact Thumbnail upload (16:9). Guide auto-filled from Nostr profile. Module > Step hierarchy with TipTap rich text, YouTube/Vimeo URL validation. Access type + publish toggle.
+- **Listing** (`/experiments`): Dimension filter with colored dots, tag filter, search. Cards show dimension accent bar.
+- **Detail** (`/experiments/:id`): Sidebar curriculum navigation, YouTube embeds, tiered privacy (content behind auth).
+- **Tags**: Current experiment tags are placeholders — will be replaced with custom tags.
 
 ### Value-for-Value Architecture
 - Experiments are public, value-for-value content: creators receive Lightning zaps from users.
