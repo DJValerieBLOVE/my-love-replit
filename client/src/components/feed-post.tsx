@@ -34,6 +34,7 @@ import SatsIcon from "@assets/generated_images/sats_icon.png";
 import { toast } from "sonner";
 import { isGroupContent, canSharePublicly, getGroupName, type ShareablePost } from "@/lib/sharing-rules";
 import { parseNostrContent, truncateNpub } from "@/lib/nostr-content";
+import { RichTextContent } from "@/pages/feed";
 import { useNostr } from "@/contexts/nostr-context";
 import { useNDK } from "@/contexts/ndk-context";
 import { NDKEvent } from "@nostr-dev-kit/ndk";
@@ -83,43 +84,6 @@ interface FeedPostProps {
     community?: string;
     isOwnPost?: boolean;
   };
-}
-
-const SHORT_NOTE_CHARS = 500;
-const SHORT_NOTE_WORDS = 100;
-
-function shouldTruncateContent(text: string): boolean {
-  if (text.length > SHORT_NOTE_CHARS) return true;
-  const wordCount = text.split(/\s+/).filter(w => w.length > 0).length;
-  return wordCount > SHORT_NOTE_WORDS;
-}
-
-function truncateText(text: string): string {
-  let cutoff: number;
-  if (text.length > SHORT_NOTE_CHARS) {
-    const nextBreak = text.slice(SHORT_NOTE_CHARS).search(/\s|\n|\r/);
-    cutoff = nextBreak >= 0 ? SHORT_NOTE_CHARS + nextBreak : SHORT_NOTE_CHARS;
-  } else {
-    const words = text.split(/(\s+)/);
-    let wordCount = 0;
-    let charIndex = 0;
-    for (const part of words) {
-      if (part.trim().length > 0) wordCount++;
-      charIndex += part.length;
-      if (wordCount >= SHORT_NOTE_WORDS) break;
-    }
-    cutoff = charIndex;
-  }
-  const TOKEN_PATTERN = /(?:https?:\/\/\S+|nostr:[a-z0-9]+)/gi;
-  let m;
-  while ((m = TOKEN_PATTERN.exec(text)) !== null) {
-    const tokenEnd = m.index + m[0].length;
-    if (m.index < cutoff && tokenEnd > cutoff) {
-      cutoff = m.index;
-      break;
-    }
-  }
-  return text.slice(0, cutoff);
 }
 
 export function FeedPost({ post }: FeedPostProps) {
@@ -486,8 +450,6 @@ export function FeedPost({ post }: FeedPostProps) {
             
             {(() => {
               const parsed = parseNostrContent(post.content);
-              const needsTruncation = !isContentExpanded && shouldTruncateContent(parsed.text);
-              const displayText = needsTruncation ? truncateText(parsed.text) : parsed.text;
               return (
                 <div
                   className="cursor-pointer"
@@ -498,21 +460,16 @@ export function FeedPost({ post }: FeedPostProps) {
                   }}
                   data-testid={`link-thread-${post.id}`}
                 >
-                  <p className="mt-2 text-base leading-relaxed text-foreground/90 whitespace-pre-wrap">
-                    {displayText}
-                    {needsTruncation && (
-                      <>
-                        {"... "}
-                        <button
-                          onClick={(e) => { e.stopPropagation(); setIsContentExpanded(true); }}
-                          className="text-[#6600ff] hover:underline text-base inline"
-                          data-testid="button-see-more"
-                        >
-                          see more
-                        </button>
-                      </>
-                    )}
-                  </p>
+                  <div className="mt-2">
+                    <RichTextContent
+                      text={parsed.text}
+                      entities={parsed.entities}
+                      links={parsed.links}
+                      shorten={true}
+                      isExpanded={isContentExpanded}
+                      onToggleExpand={() => setIsContentExpanded(true)}
+                    />
+                  </div>
                   {parsed.images.length > 0 && (
                     <div className={`mt-3 gap-2 ${parsed.images.length === 1 ? '' : 'grid grid-cols-2'}`}>
                       {parsed.images.map((img, i) => (
@@ -914,12 +871,12 @@ export function FeedPost({ post }: FeedPostProps) {
             </div>
 
             {showReplyInput && (
-              <div className="mt-3 pt-3 border-t border-border" data-testid={`reply-input-container-${post.id}`}>
+              <div className="mt-3 pt-3" data-testid={`reply-input-container-${post.id}`}>
                 <Textarea
                   placeholder={`Reply to ${post.author.name}...`}
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
-                  className="min-h-[60px] text-sm resize-none"
+                  className="min-h-[60px] text-sm resize-none rounded-sm border-none bg-[#F5F5F5] shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
                   autoFocus
                   data-testid={`textarea-reply-${post.id}`}
                 />

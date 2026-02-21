@@ -12,12 +12,13 @@ const NOSTR_IMAGE_HOSTS = [
   'nosta.me',
 ];
 
-const GENERIC_URL_REGEX = /https?:\/\/\S+/gi;
+const GENERIC_URL_REGEX = /(?:https?:\/\/\S+|\/uploads\/\S+)/gi;
 const NOSTR_ENTITY_REGEX = /nostr:(npub1[a-z0-9]+|nprofile1[a-z0-9]+|nevent1[a-z0-9]+|note1[a-z0-9]+|naddr1[a-z0-9]+)/g;
 
 function isImageUrl(url: string): boolean {
   const lower = url.toLowerCase();
   if (/\.(jpg|jpeg|png|gif|webp|svg|bmp)(\?|$)/i.test(lower)) return true;
+  if (lower.startsWith('/uploads/')) return true;
   for (const host of NOSTR_IMAGE_HOSTS) {
     if (lower.includes(host) && !lower.endsWith('.mp4') && !lower.endsWith('.webm')) return true;
   }
