@@ -526,6 +526,78 @@ export async function fetchPrimalEvent(eventId: string): Promise<{ event: Primal
   }
 }
 
+export type PrimalThreadResult = {
+  mainEvent: PrimalEvent | null;
+  replies: PrimalEvent[];
+  parentEvents: PrimalEvent[];
+  profiles: Map<string, PrimalProfile>;
+  stats: Map<string, PrimalEventStats>;
+  zapReceipts: Map<string, ZapReceipt[]>;
+};
+
+export async function fetchPrimalThread(eventId: string, options: { userPubkey?: string; limit?: number } = {}): Promise<PrimalThreadResult> {
+  const { userPubkey, limit = 100 } = options;
+  try {
+    const payload: any = { event_id: eventId, limit };
+    if (userPubkey) payload.user_pubkey = userPubkey;
+
+    const messages = await primalCache.sendRequest({ cache: ["thread_view", payload] });
+    const result = parsePrimalResponse(messages);
+
+    const mainEvent = result.events.find(e => e.id === eventId) || null;
+
+    const parentEventIds = new Set<string>();
+    if (mainEvent) {
+      for (const tag of mainEvent.tags) {
+        if (tag[0] === "e" && tag[3] === "reply") {
+          parentEventIds.add(tag[1]);
+        } else if (tag[0] === "e" && !tag[3]) {
+          parentEventIds.add(tag[1]);
+        }
+      }
+    }
+
+    const parentEvents: PrimalEvent[] = [];
+    const replies: PrimalEvent[] = [];
+
+    for (const event of result.events) {
+      if (event.id === eventId) continue;
+      if (parentEventIds.has(event.id)) {
+        parentEvents.push(event);
+      } else {
+        const isDirectReply = event.tags.some(t =>
+          t[0] === "e" && t[1] === eventId && (t[3] === "reply" || t[3] === "root" || !t[3])
+        );
+        if (isDirectReply) {
+          replies.push(event);
+        }
+      }
+    }
+
+    replies.sort((a, b) => a.created_at - b.created_at);
+    parentEvents.sort((a, b) => a.created_at - b.created_at);
+
+    return {
+      mainEvent,
+      replies,
+      parentEvents,
+      profiles: result.profiles,
+      stats: result.stats,
+      zapReceipts: result.zapReceipts,
+    };
+  } catch (err) {
+    console.error("[PrimalCache] Thread fetch error:", err);
+    return {
+      mainEvent: null,
+      replies: [],
+      parentEvents: [],
+      profiles: new Map(),
+      stats: new Map(),
+      zapReceipts: new Map(),
+    };
+  }
+}
+
 export function invalidatePrimalCache(keyPrefix?: string) {
   primalCache.invalidateCache(keyPrefix);
 }

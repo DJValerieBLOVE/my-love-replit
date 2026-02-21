@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Heart, MessageCircle, Zap, Share2, MoreHorizontal, Radio, Calendar, UserPlus, Repeat2, Bookmark, Quote, Users, Image, Film, Smile, X, Link2, Copy, ExternalLink, Loader2, Lock, Globe, ChevronDown, TrendingUp, Flame, Camera, Clock, RefreshCw, ArrowUp, Plus } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -988,6 +988,7 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
   const [replyOpen, setReplyOpen] = useState(false);
   const [replyText, setReplyText] = useState("");
   const { publishSmart, ndk, isConnected: ndkConnected } = useNDK();
+  const [, navigate] = useLocation();
 
   const isGroupPost = isGroupContent(post);
   const canRepostPublic = canSharePublicly(post);
@@ -1127,7 +1128,14 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
           {(() => {
             const parsed = parseNostrContent(post.content);
             return (
-              <>
+              <div
+                className="cursor-pointer"
+                onClick={(e) => {
+                  if ((e.target as HTMLElement).closest('a, button, video, img, [role="button"]')) return;
+                  navigate(`/note/${post.id}`);
+                }}
+                data-testid={`link-thread-${post.id}`}
+              >
                 <RichTextContent
                   text={parsed.text}
                   entities={parsed.entities}
@@ -1157,7 +1165,7 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
                     ))}
                   </div>
                 )}
-              </>
+              </div>
             );
           })()}
           {post.zapReceipts && post.zapReceipts.length > 0 && (

@@ -35,6 +35,7 @@ import MentorStudio from "@/pages/admin/mentor-studio";
 import HowToUse from "@/pages/how-to-use";
 import SettingsPage from "@/pages/settings";
 import RelaysPage from "@/pages/relays";
+import NotePage from "@/pages/note";
 
 function Router() {
   return (
@@ -67,6 +68,7 @@ function Router() {
       <Route path="/how-to-use" component={HowToUse} />
       <Route path="/settings" component={SettingsPage} />
       <Route path="/relays" component={RelaysPage} />
+      <Route path="/note/:id" component={NotePage} />
       <Route path="/admin/onboarding" component={AdminOnboarding} />
       <Route path="/admin/mentor" component={MentorStudio} />
       <Route component={NotFound} />
