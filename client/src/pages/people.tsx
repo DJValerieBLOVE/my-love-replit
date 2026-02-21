@@ -1,5 +1,5 @@
 import Layout from "@/components/layout";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -45,26 +45,26 @@ import type { ExploreMode } from "@/lib/primal-cache";
 type PeopleTab = "feed" | "tribes" | "buddies" | "victories" | "gratitude" | "prayers" | "discover";
 
 type FeedSubOption = "following" | "trending" | "most_zapped" | "latest" | "media";
-type DiscoverSubOption = "tribes" | "members";
-type BuddySubOption = "find" | "messages" | "goals";
+type DiscoverSubOption = "discover_buddies" | "discover_tribes" | "discover_people";
+type BuddySubOption = "find" | "messages";
 
-const FEED_SUB_OPTIONS: { id: FeedSubOption; label: string; icon: typeof Globe }[] = [
+const FEED_SUB_OPTIONS: { id: string; label: string; icon: typeof Globe }[] = [
   { id: "following", label: "Following", icon: Users },
   { id: "trending", label: "Trending", icon: TrendingUp },
   { id: "most_zapped", label: "Most Zapped", icon: Zap },
   { id: "latest", label: "Latest", icon: Clock },
-  { id: "media", label: "Media", icon: Camera },
+  { id: "__discover__", label: "Discover", icon: Search },
 ];
 
 const DISCOVER_SUB_OPTIONS: { id: DiscoverSubOption; label: string; icon: typeof Search }[] = [
-  { id: "tribes", label: "Tribes", icon: Users },
-  { id: "members", label: "Find Members", icon: UserPlus },
+  { id: "discover_buddies", label: "Discover Buddies", icon: Handshake },
+  { id: "discover_tribes", label: "Discover Tribes", icon: Users },
+  { id: "discover_people", label: "Discover People to Follow", icon: UserPlus },
 ];
 
-const BUDDY_SUB_OPTIONS: { id: BuddySubOption; label: string; icon: typeof Handshake }[] = [
+const BUDDY_SUB_OPTIONS: { id: string; label: string; icon: typeof Handshake }[] = [
+  { id: "my_buddies", label: "My Buddies", icon: Handshake },
   { id: "find", label: "Find a Buddy", icon: UserPlus },
-  { id: "messages", label: "Buddy Messages", icon: MessageCircle },
-  { id: "goals", label: "Shared Goals", icon: Trophy },
 ];
 
 function FeedTabContent({ subOption, autoCompose }: { subOption: FeedSubOption; autoCompose?: boolean }) {
@@ -130,7 +130,8 @@ function TribesTabContent({ selectedTribeId }: { selectedTribeId: string }) {
 
   const myMembershipIds = new Set(myCommunities.map((m: any) => m.communityId || m.id));
   const myTribes = communities.filter((c: any) => myMembershipIds.has(c.id));
-  const displayTribes = selectedTribeId === "all" ? myTribes : myTribes.filter((t: any) => t.id === selectedTribeId);
+  const showAllTribes = selectedTribeId === "all_tribes";
+  const displayTribes = showAllTribes ? communities : selectedTribeId === "all" ? myTribes : myTribes.filter((t: any) => t.id === selectedTribeId);
 
   return (
     <div>
@@ -173,7 +174,7 @@ function TribesTabContent({ selectedTribeId }: { selectedTribeId: string }) {
   );
 }
 
-function BuddiesTabContent() {
+function BuddiesTabContent({ subOption }: { subOption: BuddySubOption }) {
   const { isConnected, profile } = useNostr();
 
   return (
@@ -183,52 +184,33 @@ function BuddiesTabContent() {
         <span>Buddy conversations are private and only visible to you and your accountability buddy.</span>
       </div>
 
-      <div className="text-center py-12">
-        <Handshake className="w-12 h-12 mx-auto text-muted-foreground mb-4" strokeWidth={1} />
-        <h3 className="text-lg font-serif mb-2">Accountability Buddies</h3>
-        <p className="text-muted-foreground text-sm max-w-md mx-auto mb-6">
-          Connect with someone who shares your goals. Support each other daily, share victories, and grow together.
-        </p>
-        {isConnected ? (
-          <div className="space-y-4 max-w-md mx-auto">
-            <Card className="p-4 border border-gray-100 shadow-none text-left">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#F0E6FF] flex items-center justify-center">
-                  <UserPlus className="w-5 h-5 text-[#6600ff]" strokeWidth={1.5} />
-                </div>
-                <div>
-                  <p className="text-sm font-normal">Find a Buddy</p>
-                  <p className="text-xs text-muted-foreground">Browse members looking for accountability partners</p>
-                </div>
-              </div>
-            </Card>
-            <Card className="p-4 border border-gray-100 shadow-none text-left">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#F0E6FF] flex items-center justify-center">
-                  <MessageCircle className="w-5 h-5 text-[#6600ff]" strokeWidth={1.5} />
-                </div>
-                <div>
-                  <p className="text-sm font-normal">Buddy Messages</p>
-                  <p className="text-xs text-muted-foreground">Private check-ins with your buddy</p>
-                </div>
-              </div>
-            </Card>
-            <Card className="p-4 border border-gray-100 shadow-none text-left">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#F0E6FF] flex items-center justify-center">
-                  <Trophy className="w-5 h-5 text-[#6600ff]" strokeWidth={1.5} />
-                </div>
-                <div>
-                  <p className="text-sm font-normal">Shared Goals</p>
-                  <p className="text-xs text-muted-foreground">Track progress together on shared goals</p>
-                </div>
-              </div>
-            </Card>
-          </div>
-        ) : (
-          <p className="text-sm text-muted-foreground">Sign in to find an accountability buddy.</p>
-        )}
-      </div>
+      {subOption === "find" ? (
+        <div className="text-center py-12">
+          <UserPlus className="w-12 h-12 mx-auto text-muted-foreground mb-4" strokeWidth={1} />
+          <h3 className="text-lg font-serif mb-2">Find a Buddy</h3>
+          <p className="text-muted-foreground text-sm max-w-md mx-auto mb-6">
+            Browse members looking for accountability partners. Support each other daily, share victories, and grow together.
+          </p>
+          {isConnected ? (
+            <p className="text-sm text-muted-foreground">No members looking for buddies yet. Check back soon!</p>
+          ) : (
+            <p className="text-sm text-muted-foreground">Sign in to find an accountability buddy.</p>
+          )}
+        </div>
+      ) : (
+        <div className="text-center py-12">
+          <Handshake className="w-12 h-12 mx-auto text-muted-foreground mb-4" strokeWidth={1} />
+          <h3 className="text-lg font-serif mb-2">My Buddies</h3>
+          <p className="text-muted-foreground text-sm max-w-md mx-auto mb-6">
+            Your accountability partners and private check-ins appear here.
+          </p>
+          {isConnected ? (
+            <p className="text-sm text-muted-foreground">You don't have any buddies yet. Find one to get started!</p>
+          ) : (
+            <p className="text-sm text-muted-foreground">Sign in to see your buddies.</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -670,7 +652,7 @@ function DiscoverTabContent({ subOption }: { subOption: DiscoverSubOption }) {
 
   return (
     <div>
-      {subOption === "tribes" ? (
+      {subOption === "discover_tribes" ? (
         <>
           <div className="flex gap-2 items-stretch mb-6">
             <div className="relative flex-1">
@@ -1033,7 +1015,17 @@ function TabDropdownBubble({
   onSelect: (id: string) => void;
   testId: string;
 }) {
+  const [open, setOpen] = useState(false);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const displayLabel = activeItemLabel && isActive ? activeItemLabel : label;
+
+  const handleMouseEnter = () => {
+    if (closeTimer.current) { clearTimeout(closeTimer.current); closeTimer.current = null; }
+    if (items.length > 0) setOpen(true);
+  };
+  const handleMouseLeave = () => {
+    closeTimer.current = setTimeout(() => setOpen(false), 200);
+  };
 
   if (items.length === 0) {
     return (
@@ -1053,9 +1045,11 @@ function TabDropdownBubble({
   }
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <button
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
           className={`px-3 py-1.5 rounded-full text-sm transition-colors border whitespace-nowrap flex items-center gap-1.5 ${
             isActive
               ? "bg-foreground text-background border-foreground"
@@ -1065,14 +1059,19 @@ function TabDropdownBubble({
         >
           <Icon className="w-3.5 h-3.5" strokeWidth={1.5} />
           {displayLabel}
-          <ChevronDown className="w-3 h-3" strokeWidth={1.5} />
+          <ChevronDown className="w-5 h-5" strokeWidth={1.5} />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-48">
+      <DropdownMenuContent
+        align="start"
+        className="w-48"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
         {items.map((item) => (
           <DropdownMenuItem
             key={item.id}
-            onClick={() => onSelect(item.id)}
+            onClick={() => { onSelect(item.id); setOpen(false); }}
             className="cursor-pointer gap-2"
             data-testid={`${testId}-option-${item.id}`}
           >
@@ -1104,7 +1103,7 @@ function useMyTribesForDropdown() {
 export default function People() {
   const [activeTab, setActiveTab] = useState<PeopleTab>("feed");
   const [feedSub, setFeedSub] = useState<FeedSubOption>("following");
-  const [discoverSub, setDiscoverSub] = useState<DiscoverSubOption>("tribes");
+  const [discoverSub, setDiscoverSub] = useState<DiscoverSubOption>("discover_people");
   const [buddySub, setBuddySub] = useState<BuddySubOption>("find");
   const [selectedTribeId, setSelectedTribeId] = useState<string>("all");
   const [feedRefreshKey, setFeedRefreshKey] = useState(0);
@@ -1124,16 +1123,18 @@ export default function People() {
 
   const feedSubLabel = FEED_SUB_OPTIONS.find(o => o.id === feedSub)?.label;
   const discoverSubLabel = DISCOVER_SUB_OPTIONS.find(o => o.id === discoverSub)?.label;
-  const buddySubLabel = BUDDY_SUB_OPTIONS.find(o => o.id === buddySub)?.label;
+  const buddySubLabel = buddySub === "find" ? "Find a Buddy" : "My Buddies";
 
   const tribeDropdownItems: { id: string; label: string; icon: typeof Users }[] = [
-    { id: "all", label: "All My Tribes", icon: Users },
-    ...myTribes.map((t: any) => ({ id: t.id, label: t.name, icon: Users })),
-    { id: "__create__", label: "New Tribe", icon: Plus },
+    { id: "my_tribes", label: "My Tribes", icon: Users },
+    { id: "all_tribes", label: "All Tribes", icon: Globe },
+    { id: "__create__", label: "+ Create Tribe", icon: Plus },
   ];
-  const tribesActiveLabel = selectedTribeId === "all"
-    ? "My Tribes"
-    : myTribes.find((t: any) => t.id === selectedTribeId)?.name || "My Tribes";
+  const tribesActiveLabel = selectedTribeId === "all_tribes"
+    ? "All Tribes"
+    : selectedTribeId === "__create__"
+    ? "Tribes"
+    : "My Tribes";
 
   const [, setLocation] = useLocation();
 
@@ -1153,16 +1154,24 @@ export default function People() {
         <div className="sticky top-14 md:top-20 z-[30] -mx-4 lg:-mx-6 px-4 lg:px-6 py-3 bg-[#FAFAFA] border-b border-gray-200">
           <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide max-w-[940px] mx-auto">
             <TabDropdownBubble
-              label="My Feed"
+              label="Feed"
               icon={Globe}
               isActive={activeTab === "feed"}
               items={FEED_SUB_OPTIONS}
               activeItemLabel={feedSubLabel}
-              onSelect={(id) => { setActiveTab("feed"); setFeedSub(id as FeedSubOption); }}
+              onSelect={(id) => {
+                if (id === "__discover__") {
+                  setActiveTab("discover");
+                  setDiscoverSub("discover_people");
+                } else {
+                  setActiveTab("feed");
+                  setFeedSub(id as FeedSubOption);
+                }
+              }}
               testId="tab-feed"
             />
             <TabDropdownBubble
-              label="My Tribes"
+              label="Tribes"
               icon={Users}
               isActive={activeTab === "tribes"}
               items={tribeDropdownItems}
@@ -1172,7 +1181,7 @@ export default function People() {
                   setLocation("/community/create");
                 } else {
                   setActiveTab("tribes");
-                  setSelectedTribeId(id);
+                  setSelectedTribeId(id === "my_tribes" ? "all" : id);
                 }
               }}
               testId="tab-tribes"
@@ -1183,7 +1192,7 @@ export default function People() {
               isActive={activeTab === "buddies"}
               items={BUDDY_SUB_OPTIONS}
               activeItemLabel={buddySubLabel}
-              onSelect={(id) => { setActiveTab("buddies"); setBuddySub(id as BuddySubOption); }}
+              onSelect={(id) => { setActiveTab("buddies"); setBuddySub(id === "my_buddies" ? "messages" as BuddySubOption : "find"); }}
               testId="tab-buddies"
             />
             <TabDropdownBubble
@@ -1237,7 +1246,7 @@ export default function People() {
           <div className="flex-1 min-w-0">
             {activeTab === "feed" && <FeedTabContent key={feedRefreshKey} subOption={feedSub} autoCompose={autoCompose} />}
             {activeTab === "tribes" && <TribesTabContent selectedTribeId={selectedTribeId} />}
-            {activeTab === "buddies" && <BuddiesTabContent />}
+            {activeTab === "buddies" && <BuddiesTabContent subOption={buddySub} />}
             {activeTab === "victories" && <VictoriesTabContent />}
             {activeTab === "gratitude" && <GratitudeTabContent />}
             {activeTab === "prayers" && <PrayersTabContent />}
