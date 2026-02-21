@@ -3,6 +3,13 @@
 ## Overview
 My Masterpiece is a spiritual personal growth application designed to help users curate their personal growth journey. It offers a personalized dashboard, integrated consumption of courses/podcasts/music, collaboration tools, private journaling, and an AI coach with persistent memory. The app leverages a hybrid Nostr and PostgreSQL architecture, integrating Lightning payments for peer-to-peer interactions. The platform aims to combine features from various popular platforms into a singular, cohesive experience focused on personal transformation, hosting the "11x LOVE LaB" community.
 
+## CRITICAL AGENT RULES
+- **LISTEN TO THE USER FIRST.** When the user says to use a specific implementation (e.g., Primal, Blossom, etc.), DO NOT invent your own approach. Go directly to that project's source code (e.g., github.com/PrimalHQ/primal-web-app) and copy their exact patterns.
+- **Reference Primal's open-source code** for all Nostr UI/UX patterns, feed behavior, media uploads, profile layouts, and social interactions. Primal is the reference implementation for this app.
+- **Do NOT guess or improvise** Nostr protocol implementations. Look up the actual code from established clients (Primal, Damus, Amethyst) before writing anything.
+- **Stop wasting credits** on trial-and-error. Research first, implement once.
+- **Media Uploads**: Use Blossom protocol (BUD-01/BUD-02) via `@nostr-dev-kit/ndk-blossom` with `blossom.primal.net` as primary server. This is what Primal and all major Nostr clients use. Kind 24242 auth events, SHA-256 hash addressing, PUT /upload.
+
 ## User Preferences
 - Preferred communication style: Simple, everyday language
 - Daily LOVE Practice is the MOST IMPORTANT feature (LOVE always capitalized)
