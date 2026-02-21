@@ -9,6 +9,12 @@ My Masterpiece is a spiritual personal growth application designed to help users
 - **Do NOT guess or improvise** Nostr protocol implementations. Look up the actual code from established clients (Primal, Damus, Amethyst) before writing anything.
 - **Stop wasting credits** on trial-and-error. Research first, implement once.
 - **Media Uploads**: Use Blossom protocol (BUD-01/BUD-02) via `@nostr-dev-kit/ndk-blossom` with `blossom.primal.net` as primary server. This is what Primal and all major Nostr clients use. Kind 24242 auth events, SHA-256 hash addressing, PUT /upload.
+- **When the user corrects you, FIX IT IMMEDIATELY.** Do not argue, justify, or explain why your approach was "also valid." The user knows their product. Just do what they asked.
+- **Never invent your own protocol or API approach** when an established library or standard exists. Check npm, GitHub, and NIP specs BEFORE writing custom code.
+- **Read existing code BEFORE editing.** Understand what's already built, what patterns are used, what libraries are imported. Do not introduce duplicate logic or conflicting approaches.
+- **One implementation, done right.** Do not create something, then rewrite it, then rewrite it again. Research thoroughly upfront, implement once.
+- **Check the Nostr ecosystem first.** For any Nostr feature, check: (1) What NIP covers it, (2) How Primal implements it, (3) What NDK packages exist for it. In that order.
+- **Design System is LAW.** Follow the style guide in this file exactly. Marcellus font, #6600ff primary, muted-foreground icons, no colored icons, no blue buttons, no purple tints on neutral elements. Do not deviate.
 
 ## User Preferences
 - Preferred communication style: Simple, everyday language
