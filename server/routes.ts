@@ -2537,6 +2537,25 @@ export async function registerRoutes(
         }
 
         const html = await response.text();
+        const decodeHtmlEntities = (str: string): string => {
+          return str
+            .replace(/&#(\d+);/g, (_, num) => String.fromCharCode(parseInt(num, 10)))
+            .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&apos;/g, "'")
+            .replace(/&rsquo;/g, '\u2019')
+            .replace(/&lsquo;/g, '\u2018')
+            .replace(/&rdquo;/g, '\u201D')
+            .replace(/&ldquo;/g, '\u201C')
+            .replace(/&ndash;/g, '\u2013')
+            .replace(/&mdash;/g, '\u2014')
+            .replace(/&hellip;/g, '\u2026')
+            .replace(/&nbsp;/g, ' ');
+        };
+
         const getMetaContent = (property: string): string | null => {
           const patterns = [
             new RegExp(`<meta[^>]+(?:property|name)=["']${property}["'][^>]+content=["']([^"']+)["']`, 'i'),
@@ -2549,12 +2568,14 @@ export async function registerRoutes(
           return null;
         };
 
-        const title = getMetaContent('og:title') || getMetaContent('twitter:title') || (() => {
+        const rawTitle = getMetaContent('og:title') || getMetaContent('twitter:title') || (() => {
           const m = html.match(/<title[^>]*>([^<]+)<\/title>/i);
           return m ? m[1].trim() : null;
         })();
+        const title = rawTitle ? decodeHtmlEntities(rawTitle) : null;
 
-        const description = getMetaContent('og:description') || getMetaContent('twitter:description') || getMetaContent('description');
+        const rawDescription = getMetaContent('og:description') || getMetaContent('twitter:description') || getMetaContent('description');
+        const description = rawDescription ? decodeHtmlEntities(rawDescription) : null;
 
         let image = getMetaContent('og:image') || getMetaContent('twitter:image');
         if (image && !image.startsWith('http')) {
