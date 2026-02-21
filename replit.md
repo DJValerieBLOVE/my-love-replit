@@ -56,7 +56,7 @@ My Masterpiece is a spiritual personal growth application designed to help users
 - **Vault** (`/vault`): 6 tabs for personal content.
 - **Tribe/Community** (`/community`): Listing, creation, and management of tribes.
 - **Love Board** (`/leaderboard`): Rankings (planned marketplace).
-- **Profile** (`/profile/:id`): Clean Primal-style profile with no gamification, showing Nostr synced data.
+- **Profile** (`/profile/:id`): Clean Primal-style profile with no gamification, showing Nostr synced data. Banner uses 3:1 aspect ratio (Primal standard, no rounded corners). Follow/unfollow system with Kind 3 contact list management via NDK. Clickable following/followers counts open full user list dialogs with search and follow buttons. Supports viewing other users' profiles via `/profile/:pubkey` with Primal cache data loading. Feed post avatars/names link to user profiles.
 - **Creator Dashboard** (`/creator`): Analytics for content creators.
 - **Wallet** (`/wallet`): Lightning wallet with NWC integration.
 - **Security**: Dual auth middleware (JWT, Nostr pubkey), NIP-07/NIP-46, ownership checks, Nostr query filtering, AI prompt injection protection, atomic transactions for AI usage.
