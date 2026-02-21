@@ -40,6 +40,26 @@ const RECURRENCE_OPTIONS = [
   "Monthly",
 ];
 
+const DIMENSIONS = [
+  { id: "god", name: "God/LOVE", color: "#eb00a8" },
+  { id: "mission", name: "Mission", color: "#a2f005" },
+  { id: "body", name: "Body", color: "#6600ff" },
+  { id: "mind", name: "Mind", color: "#9900ff" },
+  { id: "soul", name: "Soul", color: "#cc00ff" },
+  { id: "romance", name: "Romance", color: "#e60023" },
+  { id: "family", name: "Family", color: "#ff6600" },
+  { id: "community", name: "Community", color: "#ffdf00" },
+  { id: "money", name: "Money", color: "#00d81c" },
+  { id: "time", name: "Time", color: "#00ccff" },
+  { id: "environment", name: "Environment", color: "#0033ff" },
+];
+
+const LOCATION_TYPES = [
+  { value: "virtual", label: "Virtual / Online" },
+  { value: "in-person", label: "In Person" },
+  { value: "hybrid", label: "Hybrid" },
+];
+
 export default function EventCreate() {
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
@@ -53,6 +73,9 @@ export default function EventCreate() {
   const [image, setImage] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("Gathering");
+  const [dimension, setDimension] = useState("");
+  const [locationType, setLocationType] = useState("virtual");
+  const [locationValue, setLocationValue] = useState("");
 
   const createMutation = useMutation({
     mutationFn: createEvent,
@@ -82,6 +105,9 @@ export default function EventCreate() {
       image: image.trim() || undefined,
       description: description.trim() || undefined,
       category,
+      dimension: dimension || undefined,
+      locationType,
+      location: locationValue.trim() || undefined,
     });
   };
 
@@ -190,18 +216,67 @@ export default function EventCreate() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label>Recurrence</Label>
-              <Select value={recurrence} onValueChange={setRecurrence}>
-                <SelectTrigger className="bg-white" data-testid="select-recurrence">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {RECURRENCE_OPTIONS.map((r) => (
-                    <SelectItem key={r} value={r}>{r}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Recurrence</Label>
+                <Select value={recurrence} onValueChange={setRecurrence}>
+                  <SelectTrigger className="bg-white" data-testid="select-recurrence">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {RECURRENCE_OPTIONS.map((r) => (
+                      <SelectItem key={r} value={r}>{r}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Dimension</Label>
+                <Select value={dimension} onValueChange={setDimension}>
+                  <SelectTrigger className="bg-white" data-testid="select-dimension">
+                    <SelectValue placeholder="Select dimension..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DIMENSIONS.map((d) => (
+                      <SelectItem key={d.id} value={d.id}>
+                        <span className="flex items-center gap-2">
+                          <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: d.color }} />
+                          {d.name}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Location Type</Label>
+                <Select value={locationType} onValueChange={setLocationType}>
+                  <SelectTrigger className="bg-white" data-testid="select-location-type">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LOCATION_TYPES.map((lt) => (
+                      <SelectItem key={lt.value} value={lt.value}>{lt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="location">{locationType === "virtual" ? "Meeting Link" : "Location"}</Label>
+                <Input
+                  id="location"
+                  placeholder={locationType === "virtual" ? "https://meet.google.com/..." : "123 Main St, City"}
+                  value={locationValue}
+                  onChange={(e) => setLocationValue(e.target.value)}
+                  className="bg-white"
+                  data-testid="input-location"
+                />
+              </div>
             </div>
 
             <div className="space-y-2">

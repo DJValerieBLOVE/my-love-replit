@@ -36,6 +36,8 @@ import {
   insertPrayerRequestSchema,
   insertGratitudePostSchema,
   insertVictoryPostSchema,
+  insertUserNoteSchema,
+  insertEventRsvpSchema,
 } from "@shared/schema";
 import { chat, validateApiKey, type ChatMessage, type UserContext } from "./anthropic";
 
@@ -1044,27 +1046,90 @@ export async function registerRoutes(
     }
   });
 
-  // Get single event
+  // Get single event with RSVP info
   app.get("/api/events/:id", async (req, res) => {
     try {
       const event = await storage.getEvent(req.params.id);
       if (!event) {
         return res.status(404).json({ error: "Event not found" });
       }
-      res.json(event);
+      const rsvps = await storage.getEventRsvps(req.params.id);
+      const attendeeCount = await storage.getEventAttendeeCount(req.params.id);
+      res.json({ ...event, attendees: attendeeCount, rsvpUsers: rsvps.map(r => ({ id: r.user.id, name: r.user.name, avatar: r.user.avatar, status: r.status })) });
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch event" });
     }
   });
 
   // Create event
-  app.post("/api/events", async (req, res) => {
+  app.post("/api/events", authMiddleware, async (req, res) => {
     try {
-      const validated = insertEventSchema.parse(req.body);
+      const validated = insertEventSchema.parse({ ...req.body, creatorId: req.userId });
       const event = await storage.createEvent(validated);
       res.status(201).json(event);
     } catch (error: any) {
       res.status(400).json({ error: error.message || "Invalid event data" });
+    }
+  });
+
+  // Update event (owner only)
+  app.put("/api/events/:id", authMiddleware, async (req, res) => {
+    try {
+      const event = await storage.getEvent(req.params.id);
+      if (!event) return res.status(404).json({ error: "Event not found" });
+      if (event.creatorId !== req.userId) return res.status(403).json({ error: "Not authorized" });
+      const updated = await storage.updateEvent(req.params.id, req.body);
+      res.json(updated);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message || "Failed to update event" });
+    }
+  });
+
+  // Delete event (owner only)
+  app.delete("/api/events/:id", authMiddleware, async (req, res) => {
+    try {
+      const event = await storage.getEvent(req.params.id);
+      if (!event) return res.status(404).json({ error: "Event not found" });
+      if (event.creatorId !== req.userId) return res.status(403).json({ error: "Not authorized" });
+      await storage.deleteEvent(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete event" });
+    }
+  });
+
+  // RSVP to event
+  app.post("/api/events/:id/rsvp", authMiddleware, async (req, res) => {
+    try {
+      const eventId = req.params.id;
+      const event = await storage.getEvent(eventId);
+      if (!event) return res.status(404).json({ error: "Event not found" });
+      const existing = await storage.getUserRsvp(req.userId!, eventId);
+      if (existing) return res.json(existing);
+      const rsvp = await storage.createRsvp({ eventId, userId: req.userId!, status: "going" });
+      res.status(201).json(rsvp);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to RSVP" });
+    }
+  });
+
+  // Cancel RSVP
+  app.delete("/api/events/:id/rsvp", authMiddleware, async (req, res) => {
+    try {
+      await storage.deleteRsvp(req.userId!, req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to cancel RSVP" });
+    }
+  });
+
+  // Check user RSVP status
+  app.get("/api/events/:id/rsvp", authMiddleware, async (req, res) => {
+    try {
+      const rsvp = await storage.getUserRsvp(req.userId!, req.params.id);
+      res.json({ isRsvped: !!rsvp, rsvp: rsvp || null });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to check RSVP" });
     }
   });
 
@@ -1240,13 +1305,123 @@ export async function registerRoutes(
     }
   });
 
-  app.post("/api/love-board", authMiddleware, requireTier("core"), async (req, res) => {
+  app.post("/api/love-board", authMiddleware, async (req, res) => {
     try {
-      const validated = insertLoveBoardPostSchema.parse(req.body);
+      const validated = insertLoveBoardPostSchema.parse({ ...req.body, authorId: req.userId });
       const post = await storage.createLoveBoardPost(validated);
       res.status(201).json(post);
     } catch (error: any) {
       res.status(400).json({ error: error.message || "Invalid post data" });
+    }
+  });
+
+  app.put("/api/love-board/:id", authMiddleware, async (req, res) => {
+    try {
+      const post = await storage.getLoveBoardPost(req.params.id);
+      if (!post) return res.status(404).json({ error: "Post not found" });
+      if (post.authorId !== req.userId) return res.status(403).json({ error: "Not authorized" });
+      const updated = await storage.updateLoveBoardPost(req.params.id, req.body);
+      res.json(updated);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message || "Failed to update listing" });
+    }
+  });
+
+  app.delete("/api/love-board/:id", authMiddleware, async (req, res) => {
+    try {
+      const post = await storage.getLoveBoardPost(req.params.id);
+      if (!post) return res.status(404).json({ error: "Post not found" });
+      if (post.authorId !== req.userId) return res.status(403).json({ error: "Not authorized" });
+      await storage.deleteLoveBoardPost(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete listing" });
+    }
+  });
+
+  // ===== PERSONAL NOTES =====
+
+  app.get("/api/notes", authMiddleware, async (req, res) => {
+    try {
+      const notes = await storage.getUserNotes(req.userId!);
+      res.json(notes);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch notes" });
+    }
+  });
+
+  app.get("/api/notes/:id", authMiddleware, async (req, res) => {
+    try {
+      const note = await storage.getUserNote(req.params.id);
+      if (!note) return res.status(404).json({ error: "Note not found" });
+      if (note.userId !== req.userId) return res.status(403).json({ error: "Not authorized" });
+      res.json(note);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch note" });
+    }
+  });
+
+  app.post("/api/notes", authMiddleware, async (req, res) => {
+    try {
+      const validated = insertUserNoteSchema.parse({ ...req.body, userId: req.userId });
+      const note = await storage.createUserNote(validated);
+      res.status(201).json(note);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message || "Invalid note data" });
+    }
+  });
+
+  app.put("/api/notes/:id", authMiddleware, async (req, res) => {
+    try {
+      const note = await storage.getUserNote(req.params.id);
+      if (!note) return res.status(404).json({ error: "Note not found" });
+      if (note.userId !== req.userId) return res.status(403).json({ error: "Not authorized" });
+      const updated = await storage.updateUserNote(req.params.id, req.body);
+      res.json(updated);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message || "Failed to update note" });
+    }
+  });
+
+  app.delete("/api/notes/:id", authMiddleware, async (req, res) => {
+    try {
+      const note = await storage.getUserNote(req.params.id);
+      if (!note) return res.status(404).json({ error: "Note not found" });
+      if (note.userId !== req.userId) return res.status(403).json({ error: "Not authorized" });
+      await storage.deleteUserNote(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete note" });
+    }
+  });
+
+  // ===== DATA EXPORT =====
+
+  app.get("/api/export/my-data", authMiddleware, async (req, res) => {
+    try {
+      const userId = req.userId!;
+      const [user, journals, practices, dreamsList, notesList, experimentProgress] = await Promise.all([
+        storage.getUser(userId),
+        storage.getJournalEntries(userId, 1000),
+        storage.getDailyPracticeHistory(userId, 1000),
+        storage.getDreamsByUser(userId),
+        storage.getUserNotes(userId),
+        storage.getUserExperiments(userId),
+      ]);
+      
+      const { password, passwordHash, twoFactorSecret, twoFactorRecoveryCodes, ...safeUser } = user || {} as any;
+      
+      res.json({
+        exportedAt: new Date().toISOString(),
+        user: safeUser,
+        journalEntries: journals,
+        dailyPractice: practices,
+        dreams: dreamsList,
+        notes: notesList,
+        experimentProgress,
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to export data" });
     }
   });
 

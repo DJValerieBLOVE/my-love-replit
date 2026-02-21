@@ -27,14 +27,23 @@ import {
   Play,
   Clock,
   Sparkles,
-  CalendarDays
+  CalendarDays,
+  StickyNote,
+  Pin,
+  Trash2,
+  Edit,
+  Loader2,
+  X
 } from "lucide-react";
 import { Link } from "wouter";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { getJournalEntries } from "@/lib/api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getJournalEntries, getUserNotes, createUserNote, updateUserNote, deleteUserNote, exportMyData } from "@/lib/api";
 import { useNostr } from "@/contexts/nostr-context";
 import {
   Tooltip,
@@ -42,6 +51,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { StreakGrid } from "@/components/streak-grid";
+import { toast } from "sonner";
 
 // 11 LOVE Code areas for tagging
 const LOVE_AREAS = [
@@ -649,6 +659,186 @@ function LibraryTab() {
   );
 }
 
+function NotesTab() {
+  const queryClient = useQueryClient();
+  const [isCreating, setIsCreating] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [dimension, setDimension] = useState("");
+
+  const { data: notes = [], isLoading } = useQuery<any[]>({
+    queryKey: ["userNotes"],
+    queryFn: getUserNotes,
+  });
+
+  const createMutation = useMutation({
+    mutationFn: createUserNote,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["userNotes"] });
+      resetForm();
+      toast.success("Note saved");
+    },
+    onError: () => toast.error("Failed to save note"),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: any }) => updateUserNote(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["userNotes"] });
+      resetForm();
+      toast.success("Note updated");
+    },
+    onError: () => toast.error("Failed to update note"),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteUserNote,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["userNotes"] });
+      toast.success("Note deleted");
+    },
+    onError: () => toast.error("Failed to delete note"),
+  });
+
+  const pinMutation = useMutation({
+    mutationFn: ({ id, isPinned }: { id: string; isPinned: boolean }) => updateUserNote(id, { isPinned }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["userNotes"] }),
+  });
+
+  const resetForm = () => {
+    setIsCreating(false);
+    setEditingId(null);
+    setTitle("");
+    setContent("");
+    setDimension("");
+  };
+
+  const startEdit = (note: any) => {
+    setEditingId(note.id);
+    setIsCreating(true);
+    setTitle(note.title);
+    setContent(note.content);
+    setDimension(note.dimension || "");
+  };
+
+  const handleSave = () => {
+    if (!title.trim() || !content.trim()) {
+      toast.error("Title and content are required");
+      return;
+    }
+    if (editingId) {
+      updateMutation.mutate({ id: editingId, data: { title: title.trim(), content: content.trim(), dimension: dimension || undefined } });
+    } else {
+      createMutation.mutate({ title: title.trim(), content: content.trim(), dimension: dimension || undefined });
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      {isCreating ? (
+        <Card className="border-none shadow-sm">
+          <CardContent className="p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-serif text-lg">{editingId ? "Edit Note" : "New Note"}</h3>
+              <Button variant="ghost" size="sm" onClick={resetForm}>
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+            <div className="space-y-2">
+              <Label>Title</Label>
+              <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Note title..." className="bg-white" data-testid="input-note-title" />
+            </div>
+            <div className="space-y-2">
+              <Label>Content</Label>
+              <Textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="Write your thoughts..." rows={6} className="bg-white" data-testid="input-note-content" />
+            </div>
+            <div className="space-y-2">
+              <Label>Dimension</Label>
+              <Select value={dimension} onValueChange={setDimension}>
+                <SelectTrigger className="bg-white" data-testid="select-note-dimension">
+                  <SelectValue placeholder="Select dimension..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {LOVE_AREAS.map((d) => (
+                    <SelectItem key={d.id} value={d.id}>
+                      <span className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: d.color }} />
+                        {d.name}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex gap-2 pt-2">
+              <Button variant="outline" onClick={resetForm}>Cancel</Button>
+              <Button onClick={handleSave} disabled={createMutation.isPending || updateMutation.isPending} data-testid="button-save-note">
+                {createMutation.isPending || updateMutation.isPending ? "Saving..." : "Save Note"}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <Button className="gap-2" onClick={() => setIsCreating(true)} data-testid="button-new-note">
+          <Plus className="w-4 h-4" /> New Note
+        </Button>
+      )}
+
+      {isLoading ? (
+        <div className="flex justify-center py-12">
+          <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+        </div>
+      ) : notes.length > 0 ? (
+        <div className="grid gap-3">
+          {notes.map((note: any) => {
+            const dim = LOVE_AREAS.find(a => a.id === note.dimension);
+            return (
+              <Card key={note.id} className="p-4 hover:shadow-md transition-shadow" data-testid={`card-note-${note.id}`}>
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      {note.isPinned && <Pin className="w-3 h-3 text-primary" />}
+                      {dim && <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: dim.color }} />}
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(note.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </span>
+                    </div>
+                    <h4 className="font-normal text-sm">{note.title}</h4>
+                    <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{note.content}</p>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => pinMutation.mutate({ id: note.id, isPinned: !note.isPinned })} data-testid={`button-pin-${note.id}`}>
+                      <Pin className={`w-4 h-4 ${note.isPinned ? "text-primary" : "text-muted-foreground"}`} />
+                    </Button>
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => startEdit(note)} data-testid={`button-edit-${note.id}`}>
+                      <Edit className="w-4 h-4 text-muted-foreground" />
+                    </Button>
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:text-destructive" onClick={() => { if (confirm("Delete this note?")) deleteMutation.mutate(note.id); }} data-testid={`button-delete-${note.id}`}>
+                      <Trash2 className="w-4 h-4 text-muted-foreground" />
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            );
+          })}
+        </div>
+      ) : (
+        <Card className="border-dashed border-2 bg-muted/20">
+          <CardContent className="p-8 text-center">
+            <StickyNote className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
+            <h3 className="font-normal text-lg mb-2">No notes yet</h3>
+            <p className="text-muted-foreground mb-4">Capture your thoughts, insights, and reflections.</p>
+            <Button className="gap-2" onClick={() => setIsCreating(true)}>
+              <Plus className="w-4 h-4" /> Create Your First Note
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+}
+
 export default function Vault() {
   const [activeTab, setActiveTab] = useState("daily-love");
   const [searchQuery, setSearchQuery] = useState("");
@@ -676,7 +866,21 @@ export default function Vault() {
                 className="pl-9 w-64" 
               />
             </div>
-            <Button variant="outline" className="gap-2">
+            <Button variant="outline" className="gap-2" data-testid="button-export" onClick={async () => {
+              try {
+                const data = await exportMyData();
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `my-masterpiece-export-${new Date().toISOString().split("T")[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                toast.success("Data exported successfully!");
+              } catch {
+                toast.error("Failed to export data. Please sign in first.");
+              }
+            }}>
               <Download className="w-4 h-4" /> Export
             </Button>
           </div>
@@ -687,6 +891,7 @@ export default function Vault() {
           {[
             { id: "daily-love", label: "Daily LOVE", icon: Heart },
             { id: "journal", label: "Journal", icon: PenLine },
+            { id: "notes", label: "Notes", icon: StickyNote },
             { id: "bookmarks", label: "Bookmarks", icon: Bookmark },
             { id: "assessments", label: "Assessments", icon: BarChart3 },
             { id: "music", label: "Music & Meditations", icon: Music },
@@ -706,6 +911,7 @@ export default function Vault() {
         <div className="space-y-6">
           {activeTab === "daily-love" && <DailyLovePracticeTab />}
           {activeTab === "journal" && <JournalTab />}
+          {activeTab === "notes" && <NotesTab />}
           {activeTab === "bookmarks" && <BookmarksTab />}
           {activeTab === "assessments" && <AssessmentsTab />}
           {activeTab === "music" && <MusicMeditationsTab />}

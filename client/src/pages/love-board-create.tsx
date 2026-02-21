@@ -21,6 +21,20 @@ const CATEGORIES = [
   { value: "other", label: "Other" },
 ];
 
+const DIMENSIONS = [
+  { id: "god", name: "God/LOVE", color: "#eb00a8" },
+  { id: "mission", name: "Mission", color: "#a2f005" },
+  { id: "body", name: "Body", color: "#6600ff" },
+  { id: "mind", name: "Mind", color: "#9900ff" },
+  { id: "soul", name: "Soul", color: "#cc00ff" },
+  { id: "romance", name: "Romance", color: "#e60023" },
+  { id: "family", name: "Family", color: "#ff6600" },
+  { id: "community", name: "Community", color: "#ffdf00" },
+  { id: "money", name: "Money", color: "#00d81c" },
+  { id: "time", name: "Time", color: "#00ccff" },
+  { id: "environment", name: "Environment", color: "#0033ff" },
+];
+
 export default function LoveBoardCreate() {
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
@@ -32,6 +46,7 @@ export default function LoveBoardCreate() {
   const [price, setPrice] = useState("");
   const [image, setImage] = useState("");
   const [contactInfo, setContactInfo] = useState("");
+  const [dimension, setDimension] = useState("");
 
   const createMutation = useMutation({
     mutationFn: createLoveBoardPost,
@@ -56,13 +71,13 @@ export default function LoveBoardCreate() {
     }
 
     createMutation.mutate({
-      authorId: profile.userId,
       title: title.trim(),
       description: description.trim(),
       category,
       price: price.trim() || undefined,
       image: image.trim() || undefined,
       contactInfo: contactInfo.trim() || undefined,
+      dimension: dimension || undefined,
     });
   };
 
@@ -149,6 +164,25 @@ export default function LoveBoardCreate() {
                   className="bg-white"
                   data-testid="input-image"
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Dimension</Label>
+                <Select value={dimension} onValueChange={setDimension}>
+                  <SelectTrigger className="bg-white" data-testid="select-dimension">
+                    <SelectValue placeholder="Select dimension..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DIMENSIONS.map((d) => (
+                      <SelectItem key={d.id} value={d.id}>
+                        <span className="flex items-center gap-2">
+                          <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: d.color }} />
+                          {d.name}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="space-y-2">

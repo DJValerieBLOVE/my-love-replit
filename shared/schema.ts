@@ -307,11 +307,15 @@ export type DiscoveryNote = typeof discoveryNotes.$inferSelect;
 // Events
 export const events = pgTable("events", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  creatorId: varchar("creator_id").references(() => users.id, { onDelete: "set null" }),
   title: text("title").notNull(),
   host: text("host").notNull(),
   date: text("date").notNull(),
   time: text("time").notNull(),
   type: text("type").notNull(),
+  location: text("location"),
+  locationType: text("location_type").default("virtual").notNull(),
+  dimension: text("dimension"),
   recurrence: text("recurrence"),
   attendees: integer("attendees").default(0).notNull(),
   image: text("image"),
@@ -322,11 +326,29 @@ export const events = pgTable("events", {
 
 export const insertEventSchema = createInsertSchema(events).omit({
   id: true,
+  attendees: true,
   createdAt: true,
 });
 
 export type InsertEvent = z.infer<typeof insertEventSchema>;
 export type Event = typeof events.$inferSelect;
+
+// Event RSVPs
+export const eventRsvps = pgTable("event_rsvps", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  eventId: varchar("event_id").notNull().references(() => events.id, { onDelete: "cascade" }),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  status: text("status").default("going").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertEventRsvpSchema = createInsertSchema(eventRsvps).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertEventRsvp = z.infer<typeof insertEventRsvpSchema>;
+export type EventRsvp = typeof eventRsvps.$inferSelect;
 
 // Feed Posts
 export const posts = pgTable("posts", {
@@ -590,7 +612,8 @@ export const loveBoardPosts = pgTable("love_board_posts", {
   authorId: varchar("author_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
   description: text("description").notNull(),
-  category: text("category").notNull(), // for_sale, help_wanted, services, other
+  category: text("category").notNull(),
+  dimension: text("dimension"),
   image: text("image"),
   price: text("price"),
   contactInfo: text("contact_info"),
@@ -610,6 +633,27 @@ export const insertLoveBoardPostSchema = createInsertSchema(loveBoardPosts).omit
 
 export type InsertLoveBoardPost = z.infer<typeof insertLoveBoardPostSchema>;
 export type LoveBoardPost = typeof loveBoardPosts.$inferSelect;
+
+// Personal Notes
+export const userNotes = pgTable("user_notes", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  dimension: text("dimension"),
+  isPinned: boolean("is_pinned").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertUserNoteSchema = createInsertSchema(userNotes).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertUserNote = z.infer<typeof insertUserNoteSchema>;
+export type UserNote = typeof userNotes.$inferSelect;
 
 // Prayer Requests (private, within Tribes)
 export const prayerRequests = pgTable("prayer_requests", {

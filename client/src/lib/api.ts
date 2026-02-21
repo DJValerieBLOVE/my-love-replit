@@ -383,13 +383,61 @@ export async function createEvent(data: {
   image?: string;
   description?: string;
   category: string;
+  location?: string;
+  locationType?: string;
+  dimension?: string;
 }) {
-  const response = await fetch("/api/events", {
+  const response = await authFetch("/api/events", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
   if (!response.ok) throw new Error("Failed to create event");
+  return response.json();
+}
+
+export async function updateEvent(id: string, data: Partial<{
+  title: string;
+  host: string;
+  date: string;
+  time: string;
+  type: string;
+  description: string;
+  location: string;
+  locationType: string;
+  dimension: string;
+  image: string;
+}>) {
+  const response = await authFetch(`/api/events/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error("Failed to update event");
+  return response.json();
+}
+
+export async function deleteEvent(id: string) {
+  const response = await authFetch(`/api/events/${id}`, { method: "DELETE" });
+  if (!response.ok) throw new Error("Failed to delete event");
+  return response.json();
+}
+
+export async function rsvpToEvent(eventId: string) {
+  const response = await authFetch(`/api/events/${eventId}/rsvp`, { method: "POST" });
+  if (!response.ok) throw new Error("Failed to RSVP");
+  return response.json();
+}
+
+export async function cancelRsvp(eventId: string) {
+  const response = await authFetch(`/api/events/${eventId}/rsvp`, { method: "DELETE" });
+  if (!response.ok) throw new Error("Failed to cancel RSVP");
+  return response.json();
+}
+
+export async function getMyRsvp(eventId: string) {
+  const response = await authFetch(`/api/events/${eventId}/rsvp`);
+  if (!response.ok) throw new Error("Failed to check RSVP");
   return response.json();
 }
 
@@ -404,13 +452,13 @@ export async function getLoveBoardPosts(category?: string) {
 }
 
 export async function createLoveBoardPost(data: {
-  authorId: string;
   title: string;
   description: string;
   category: string;
   image?: string;
   price?: string;
   contactInfo?: string;
+  dimension?: string;
 }) {
   const response = await authFetch("/api/love-board", {
     method: "POST",
@@ -418,6 +466,75 @@ export async function createLoveBoardPost(data: {
     body: JSON.stringify(data),
   });
   if (!response.ok) throw new Error("Failed to create post");
+  return response.json();
+}
+
+export async function updateLoveBoardPost(id: string, data: Partial<{
+  title: string;
+  description: string;
+  category: string;
+  image: string;
+  price: string;
+  contactInfo: string;
+  dimension: string;
+}>) {
+  const response = await authFetch(`/api/love-board/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error("Failed to update listing");
+  return response.json();
+}
+
+export async function deleteLoveBoardPost(id: string) {
+  const response = await authFetch(`/api/love-board/${id}`, { method: "DELETE" });
+  if (!response.ok) throw new Error("Failed to delete listing");
+  return response.json();
+}
+
+// Personal Notes
+export async function getUserNotes() {
+  const response = await authFetch("/api/notes");
+  if (!response.ok) throw new Error("Failed to fetch notes");
+  return response.json();
+}
+
+export async function getUserNote(id: string) {
+  const response = await authFetch(`/api/notes/${id}`);
+  if (!response.ok) throw new Error("Failed to fetch note");
+  return response.json();
+}
+
+export async function createUserNote(data: { title: string; content: string; dimension?: string; isPinned?: boolean }) {
+  const response = await authFetch("/api/notes", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error("Failed to create note");
+  return response.json();
+}
+
+export async function updateUserNote(id: string, data: Partial<{ title: string; content: string; dimension: string; isPinned: boolean }>) {
+  const response = await authFetch(`/api/notes/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error("Failed to update note");
+  return response.json();
+}
+
+export async function deleteUserNote(id: string) {
+  const response = await authFetch(`/api/notes/${id}`, { method: "DELETE" });
+  if (!response.ok) throw new Error("Failed to delete note");
+  return response.json();
+}
+
+export async function exportMyData() {
+  const response = await authFetch("/api/export/my-data");
+  if (!response.ok) throw new Error("Failed to export data");
   return response.json();
 }
 

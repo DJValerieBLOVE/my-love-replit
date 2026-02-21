@@ -1,9 +1,9 @@
 import {
   users, journalEntries, dailyPractice, dreams, areaProgress, experiments, userExperiments,
-  experimentNotes, discoveryNotes, events, posts, clubs, zaps, aiUsageLogs,
+  experimentNotes, discoveryNotes, events, eventRsvps, posts, clubs, zaps, aiUsageLogs,
   courses, lessons, courseEnrollments, lessonComments, courseComments,
   communities, communityMemberships, communityPosts,
-  loveBoardPosts, prayerRequests, gratitudePosts, victoryPosts,
+  loveBoardPosts, prayerRequests, gratitudePosts, victoryPosts, userNotes,
   type User, type InsertUser,
   type JournalEntry, type InsertJournalEntry,
   type DailyPractice, type InsertDailyPractice,
@@ -26,6 +26,8 @@ import {
   type CommunityMembership, type InsertCommunityMembership,
   type CommunityPost, type InsertCommunityPost,
   type LoveBoardPost, type InsertLoveBoardPost,
+  type EventRsvp, type InsertEventRsvp,
+  type UserNote, type InsertUserNote,
   type PrayerRequest, type InsertPrayerRequest,
   type GratitudePost, type InsertGratitudePost,
   type VictoryPost, type InsertVictoryPost,
@@ -107,6 +109,16 @@ export interface IStorage {
   getAllEvents(): Promise<Event[]>;
   getEvent(id: string): Promise<Event | undefined>;
   createEvent(event: InsertEvent): Promise<Event>;
+  updateEvent(id: string, updates: Partial<InsertEvent>): Promise<Event | undefined>;
+  deleteEvent(id: string): Promise<boolean>;
+  getEventsByCreator(creatorId: string): Promise<Event[]>;
+
+  // Event RSVPs
+  getEventRsvps(eventId: string): Promise<(EventRsvp & { user: User })[]>;
+  getUserRsvp(userId: string, eventId: string): Promise<EventRsvp | undefined>;
+  createRsvp(rsvp: InsertEventRsvp): Promise<EventRsvp>;
+  deleteRsvp(userId: string, eventId: string): Promise<boolean>;
+  getEventAttendeeCount(eventId: string): Promise<number>;
 
   // Posts
   getRecentPosts(limit?: number): Promise<(Post & { author: User })[]>;
@@ -118,6 +130,15 @@ export interface IStorage {
   getLoveBoardPosts(category?: string): Promise<(LoveBoardPost & { author: User })[]>;
   getLoveBoardPost(id: string): Promise<(LoveBoardPost & { author: User }) | undefined>;
   createLoveBoardPost(post: InsertLoveBoardPost): Promise<LoveBoardPost>;
+  updateLoveBoardPost(id: string, updates: Partial<InsertLoveBoardPost>): Promise<LoveBoardPost | undefined>;
+  deleteLoveBoardPost(id: string): Promise<boolean>;
+
+  // Personal Notes
+  getUserNotes(userId: string): Promise<UserNote[]>;
+  getUserNote(id: string): Promise<UserNote | undefined>;
+  createUserNote(note: InsertUserNote): Promise<UserNote>;
+  updateUserNote(id: string, updates: Partial<InsertUserNote>): Promise<UserNote | undefined>;
+  deleteUserNote(id: string): Promise<boolean>;
 
   // Prayer Requests
   getPrayerRequests(): Promise<(PrayerRequest & { author: User })[]>;
@@ -658,6 +679,58 @@ export class DatabaseStorage implements IStorage {
     return created;
   }
 
+  async updateEvent(id: string, updates: Partial<InsertEvent>): Promise<Event | undefined> {
+    const [updated] = await db.update(events).set(updates).where(eq(events.id, id)).returning();
+    return updated || undefined;
+  }
+
+  async deleteEvent(id: string): Promise<boolean> {
+    const result = await db.delete(events).where(eq(events.id, id));
+    return (result.rowCount ?? 0) > 0;
+  }
+
+  async getEventsByCreator(creatorId: string): Promise<Event[]> {
+    return await db.select().from(events).where(eq(events.creatorId, creatorId)).orderBy(desc(events.createdAt));
+  }
+
+  // Event RSVPs
+  async getEventRsvps(eventId: string): Promise<(EventRsvp & { user: User })[]> {
+    const rows = await db
+      .select({ rsvp: eventRsvps, user: users })
+      .from(eventRsvps)
+      .innerJoin(users, eq(eventRsvps.userId, users.id))
+      .where(eq(eventRsvps.eventId, eventId))
+      .orderBy(desc(eventRsvps.createdAt));
+    return rows.map(({ rsvp, user }) => ({ ...rsvp, user }));
+  }
+
+  async getUserRsvp(userId: string, eventId: string): Promise<EventRsvp | undefined> {
+    const [rsvp] = await db.select().from(eventRsvps)
+      .where(and(eq(eventRsvps.userId, userId), eq(eventRsvps.eventId, eventId)));
+    return rsvp || undefined;
+  }
+
+  async createRsvp(rsvp: InsertEventRsvp): Promise<EventRsvp> {
+    const [created] = await db.insert(eventRsvps).values(rsvp).returning();
+    await db.update(events).set({ attendees: sql`attendees + 1` }).where(eq(events.id, rsvp.eventId));
+    return created;
+  }
+
+  async deleteRsvp(userId: string, eventId: string): Promise<boolean> {
+    const result = await db.delete(eventRsvps)
+      .where(and(eq(eventRsvps.userId, userId), eq(eventRsvps.eventId, eventId)));
+    if ((result.rowCount ?? 0) > 0) {
+      await db.update(events).set({ attendees: sql`GREATEST(attendees - 1, 0)` }).where(eq(events.id, eventId));
+      return true;
+    }
+    return false;
+  }
+
+  async getEventAttendeeCount(eventId: string): Promise<number> {
+    const [result] = await db.select({ count: sql<number>`count(*)::int` }).from(eventRsvps).where(eq(eventRsvps.eventId, eventId));
+    return result?.count || 0;
+  }
+
   // Posts
   async getRecentPosts(limit: number = 50): Promise<(Post & { author: User })[]> {
     const results = await db.select()
@@ -728,6 +801,16 @@ export class DatabaseStorage implements IStorage {
   async createLoveBoardPost(post: InsertLoveBoardPost): Promise<LoveBoardPost> {
     const [created] = await db.insert(loveBoardPosts).values(post).returning();
     return created;
+  }
+
+  async updateLoveBoardPost(id: string, updates: Partial<InsertLoveBoardPost>): Promise<LoveBoardPost | undefined> {
+    const [updated] = await db.update(loveBoardPosts).set(updates).where(eq(loveBoardPosts.id, id)).returning();
+    return updated || undefined;
+  }
+
+  async deleteLoveBoardPost(id: string): Promise<boolean> {
+    const result = await db.delete(loveBoardPosts).where(eq(loveBoardPosts.id, id));
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Prayer Requests
@@ -1526,6 +1609,33 @@ export class DatabaseStorage implements IStorage {
       .where(eq(communityPosts.id, postId))
       .returning();
     return updated;
+  }
+
+  // Personal Notes
+  async getUserNotes(userId: string): Promise<UserNote[]> {
+    return await db.select().from(userNotes)
+      .where(eq(userNotes.userId, userId))
+      .orderBy(desc(userNotes.isPinned), desc(userNotes.updatedAt));
+  }
+
+  async getUserNote(id: string): Promise<UserNote | undefined> {
+    const [note] = await db.select().from(userNotes).where(eq(userNotes.id, id));
+    return note || undefined;
+  }
+
+  async createUserNote(note: InsertUserNote): Promise<UserNote> {
+    const [created] = await db.insert(userNotes).values(note).returning();
+    return created;
+  }
+
+  async updateUserNote(id: string, updates: Partial<InsertUserNote>): Promise<UserNote | undefined> {
+    const [updated] = await db.update(userNotes).set({ ...updates, updatedAt: new Date() }).where(eq(userNotes.id, id)).returning();
+    return updated || undefined;
+  }
+
+  async deleteUserNote(id: string): Promise<boolean> {
+    const result = await db.delete(userNotes).where(eq(userNotes.id, id));
+    return (result.rowCount ?? 0) > 0;
   }
 }
 
