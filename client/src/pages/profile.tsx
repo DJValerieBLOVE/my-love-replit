@@ -67,7 +67,7 @@ const LAB_INTEREST_OPTIONS = [
   "Spiritual Growth",
 ];
 
-type ProfileTab = "notes" | "replies" | "reads" | "media" | "zaps" | "relays";
+type ProfileTab = "notes" | "replies" | "reads";
 
 interface PublicProfile {
   id: string;
@@ -540,12 +540,9 @@ export default function Profile() {
     if (!targetPubkey) return;
     setNotesLoading(true);
     try {
-      const result = await fetchPrimalUserFeed(targetPubkey, { limit: 20, skipCache: true });
+      const notesType = activeTab === "replies" ? "replies" : "authored";
+      const result = await fetchPrimalUserFeed(targetPubkey, { limit: 20, skipCache: true, notes: notesType as 'authored' | 'replies' });
       const posts = result.events
-        .filter(e => {
-          if (activeTab === "replies") return e.tags?.some((t: string[]) => t[0] === "e");
-          return !e.tags?.some((t: string[]) => t[0] === "e" && t[3] === "reply");
-        })
         .map(e => primalEventToFeedPost(e, result.profiles, targetPubkey, "public", result.stats, result.zapReceipts));
       setUserNotes(posts);
       setNotesProfiles(result.profiles);
@@ -752,9 +749,6 @@ export default function Profile() {
     { key: "notes", value: nostrProfile?.note_count || 0, label: "notes" },
     { key: "replies", value: nostrProfile?.reply_count || 0, label: "replies" },
     { key: "reads", value: nostrProfile?.long_form_note_count || 0, label: "reads" },
-    { key: "media", value: nostrProfile?.media_count || 0, label: "media" },
-    { key: "zaps", value: nostrProfile?.total_zap_count || 0, label: "zaps" },
-    { key: "relays", value: nostrProfile?.relay_count || 0, label: "relays" },
   ];
 
   return (
@@ -1070,24 +1064,6 @@ export default function Profile() {
             </div>
           )}
 
-          {activeTab === "media" && (
-            <div className="text-center py-12">
-              <p className="text-sm text-muted-foreground">Media content will appear here</p>
-            </div>
-          )}
-
-          {activeTab === "zaps" && (
-            <div className="text-center py-12">
-              <Zap className="w-8 h-8 text-muted-foreground mx-auto mb-3" strokeWidth={1.5} />
-              <p className="text-sm text-muted-foreground">Zap history will appear here</p>
-            </div>
-          )}
-
-          {activeTab === "relays" && (
-            <div className="text-center py-12">
-              <p className="text-sm text-muted-foreground">Relay connections will appear here</p>
-            </div>
-          )}
 
           {isPaidMember && (
             <div className="mt-6 pt-4 border-t border-border space-y-4" data-testid="profile-published-content">

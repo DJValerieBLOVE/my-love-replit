@@ -536,22 +536,23 @@ export async function fetchPrimalFeed(
 
 export async function fetchPrimalUserFeed(
   pubkey: string,
-  options: { limit?: number; userPubkey?: string; until?: number; skipCache?: boolean } = {}
+  options: { limit?: number; userPubkey?: string; until?: number; skipCache?: boolean; notes?: 'authored' | 'replies' } = {}
 ): Promise<PrimalFeedResult> {
-  const { limit = 30, userPubkey, until, skipCache = false } = options;
+  const { limit = 30, userPubkey, until, skipCache = false, notes } = options;
 
-  const cacheKey = `userfeed:${pubkey}:${limit}:${userPubkey || "anon"}:${until || "latest"}`;
+  const cacheKey = `userfeed:${pubkey}:${notes || "timeline"}:${limit}:${userPubkey || "anon"}:${until || "latest"}`;
 
   if (!skipCache) {
     const cached = primalCache.getCached(cacheKey);
     if (cached) {
-      console.log(`[PrimalCache] Cache hit for userfeed:${pubkey.slice(0, 8)}`);
+      console.log(`[PrimalCache] Cache hit for userfeed:${pubkey.slice(0, 8)}:${notes || "timeline"}`);
       return cached;
     }
   }
 
   try {
     const payload: any = { pubkey, limit };
+    if (notes) payload.notes = notes;
     if (userPubkey) payload.user_pubkey = userPubkey;
     if (until && until > 0) payload.until = until;
     else payload.until = Math.ceil(Date.now() / 1000);
