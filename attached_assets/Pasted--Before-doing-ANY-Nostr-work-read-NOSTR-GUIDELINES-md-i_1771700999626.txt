@@ -1,0 +1,32 @@
+> Before doing ANY Nostr work, read NOSTR_GUIDELINES.md in the project root. Use the libraries listed there (NDK, ndk-blossom, nostr-tools) — do NOT write custom WebSocket, HTTP upload, or cryptographic code. For any Nostr feature, FIRST search the current NIP specs at https://github.com/nostr-protocol/nips (NIPs get updated frequently — always fetch the latest version, don't rely on cached knowledge). THEN check Primal's source code at https://github.com/PrimalHQ/primal-web-app for implementation patterns. THEN check if an NDK package exists on npm. Research first, implement once. Follow the design system in replit.md exactly. When I correct you, fix it immediately — don't argue.
+> 
+
+---
+
+**2. For your Notion notes — a permanent reference you can refine over time:**
+
+> **My Masterpiece — Nostr Development Rules**
+> 
+> 
+> **Golden Rule:** The agent must LISTEN to me first. When I say "use Primal" or "use Blossom," go to their actual source code and copy their patterns. Do not invent your own approach.
+> 
+> **Always-Current Sources (agent must fetch latest, not use cached knowledge):**
+> 
+> - NIPs (updated frequently): https://github.com/nostr-protocol/nips
+> - Primal Web App: https://github.com/PrimalHQ/primal-web-app
+> - NDK: https://github.com/nostr-dev-kit/ndk
+> - Blossom Spec: https://github.com/hzrd149/blossom
+> - NDK Blossom: https://www.npmjs.com/package/@nostr-dev-kit/ndk-blossom
+> 
+> **Required Libraries (do not reinvent):**
+> 
+> - @nostr-dev-kit/ndk (relay connections, subscriptions, signing)
+> - @nostr-dev-kit/ndk-blossom (media uploads via Blossom protocol)
+> - nostr-tools (keys, signing, bech32 encoding)
+> 
+> **Media Uploads:** Blossom protocol only. Primary server: blossom.primal.net. Fallback: blossom.nostr.build. Kind 24242 auth. SHA-256 hash addressing.
+> 
+> **Before ANY Nostr code:** (1) Which NIP? Fetch current version. (2) How does Primal do it? Check their GitHub. (3) Does an NDK package exist? Check npm. (4) Am I reinventing something? If yes, STOP.
+> 
+> **Design System:** Marcellus font (weight 400 only), #6600ff primary, #FAFAFA background, muted-foreground icons only, no colored icons, no blue, no purple tints on neutrals.
+>
