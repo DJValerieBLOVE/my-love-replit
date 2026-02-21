@@ -656,36 +656,38 @@ export default function Profile() {
   return (
     <Layout>
       <div className="max-w-2xl mx-auto">
-        <div className="relative bg-background pb-2">
-          <div className="w-full h-[180px] overflow-hidden bg-muted rounded-b-lg" data-testid="profile-banner">
-            {bannerImage ? (
-              <img
-                src={bannerImage}
-                alt="Profile banner"
-                className="w-full h-[180px] object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = 'none';
-                }}
-              />
-            ) : (
-              <div className="w-full h-full bg-gradient-to-br from-[#6600ff]/20 via-[#eb00a8]/15 to-[#6600ff]/10" />
-            )}
-          </div>
-
-          <div className="absolute top-[120px] left-5 z-10" data-testid="profile-avatar-wrapper">
-            <div className="w-[100px] h-[100px] rounded-full border-4 border-background overflow-hidden bg-muted shadow-md">
-              {user.avatar ? (
+        <div className="bg-background pb-2">
+          <div className="relative">
+            <div className="w-full aspect-[3/1] overflow-hidden bg-muted rounded-b-lg" data-testid="profile-banner">
+              {bannerImage ? (
                 <img
-                  src={user.avatar}
-                  alt={user.name}
+                  src={bannerImage}
+                  alt="Profile banner"
                   className="w-full h-full object-cover"
-                  data-testid="img-avatar"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = 'none';
+                  }}
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-muted">
-                  <span className="text-3xl text-muted-foreground">{user.name.charAt(0)}</span>
-                </div>
+                <div className="w-full h-full bg-gradient-to-br from-[#6600ff]/20 via-[#eb00a8]/15 to-[#6600ff]/10" />
               )}
+            </div>
+
+            <div className="absolute -bottom-[50px] left-5 z-10" data-testid="profile-avatar-wrapper">
+              <div className="w-[100px] h-[100px] rounded-full border-4 border-background overflow-hidden bg-muted shadow-md">
+                {user.avatar ? (
+                  <img
+                    src={user.avatar}
+                    alt={user.name}
+                    className="w-full h-full object-cover"
+                    data-testid="img-avatar"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-muted">
+                    <span className="text-3xl text-muted-foreground">{user.name.charAt(0)}</span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
