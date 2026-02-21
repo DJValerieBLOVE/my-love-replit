@@ -37,6 +37,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { zapPost } from "@/lib/api";
 import { loadNWCConnection, zapViaLightning } from "@/lib/nwc";
+import { uploadMedia } from "@/lib/media-upload";
 
 export type FeedPost = {
   id: string;
@@ -388,19 +389,11 @@ export function PostComposer({ onPostPublished }: { onPostPublished?: () => void
     const files = e.target.files;
     if (!files) return;
     for (const file of Array.from(files)) {
-      const formData = new FormData();
-      formData.append("image", file);
       try {
-        const response = await fetch("/api/upload", { method: "POST", body: formData });
-        if (response.ok) {
-          const data = await response.json();
-          setMediaItems(prev => [...prev, { type: "image", url: data.url, file }]);
-        } else {
-          toast.error("Failed to upload image");
-        }
+        const url = await uploadMedia(file, ndk);
+        setMediaItems(prev => [...prev, { type: "image", url, file }]);
       } catch {
-        const localUrl = URL.createObjectURL(file);
-        setMediaItems(prev => [...prev, { type: "image", url: localUrl, file }]);
+        toast.error("Failed to upload image");
       }
     }
     if (composerFileRef.current) composerFileRef.current.value = "";
@@ -584,19 +577,11 @@ export function CompactPostBar({ onPostPublished, autoOpen }: { onPostPublished?
     const files = e.target.files;
     if (!files) return;
     for (const file of Array.from(files)) {
-      const formData = new FormData();
-      formData.append("image", file);
       try {
-        const response = await fetch("/api/upload", { method: "POST", body: formData });
-        if (response.ok) {
-          const data = await response.json();
-          setMediaItems(prev => [...prev, { type: "image", url: data.url, file }]);
-        } else {
-          toast.error("Failed to upload image");
-        }
+        const url = await uploadMedia(file, ndk);
+        setMediaItems(prev => [...prev, { type: "image", url, file }]);
       } catch {
-        const localUrl = URL.createObjectURL(file);
-        setMediaItems(prev => [...prev, { type: "image", url: localUrl, file }]);
+        toast.error("Failed to upload image");
       }
     }
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -1253,14 +1238,9 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
   const groupName = getGroupName(post);
 
   const handleImageUpload = async (file: File, setter: (url: string | null) => void) => {
-    const formData = new FormData();
-    formData.append("image", file);
     try {
-      const response = await fetch("/api/upload", { method: "POST", body: formData });
-      if (response.ok) {
-        const data = await response.json();
-        setter(data.url);
-      }
+      const url = await uploadMedia(file, ndk);
+      setter(url);
     } catch {
       toast.error("Failed to upload image");
     }

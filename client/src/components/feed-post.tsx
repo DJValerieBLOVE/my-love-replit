@@ -156,14 +156,10 @@ export function FeedPost({ post }: FeedPostProps) {
   const groupName = getGroupName(post);
 
   const handleImageUpload = async (file: File, setter: (url: string | null) => void) => {
-    const formData = new FormData();
-    formData.append("image", file);
     try {
-      const response = await fetch("/api/upload", { method: "POST", body: formData });
-      if (response.ok) {
-        const data = await response.json();
-        setter(data.url);
-      }
+      const { uploadMedia } = await import("@/lib/media-upload");
+      const url = await uploadMedia(file, ndk);
+      setter(url);
     } catch {
       toast.error("Failed to upload image");
     }
