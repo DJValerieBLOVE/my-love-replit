@@ -534,7 +534,7 @@ export function PostComposer({ onPostPublished }: { onPostPublished?: () => void
             <Button
               onClick={handlePost}
               disabled={isPosting || (!content.trim() && mediaItems.length === 0)}
-              className="px-6 bg-[#6600ff] text-white hover:bg-[#5500dd] disabled:bg-[#C4C4C4] disabled:text-white disabled:opacity-100"
+              className="px-6 bg-foreground text-background hover:bg-foreground/90 disabled:bg-[#C4C4C4] disabled:text-white disabled:opacity-100"
               data-testid="button-post"
             >
               {isPosting ? "Posting..." : "Post"}
@@ -749,7 +749,7 @@ export function CompactPostBar({ onPostPublished, autoOpen }: { onPostPublished?
               <Button
                 onClick={handlePost}
                 disabled={isPosting || (!content.trim() && mediaItems.length === 0)}
-                className="px-6 bg-[#6600ff] text-white hover:bg-[#5500dd] disabled:bg-[#C4C4C4] disabled:text-white disabled:opacity-100"
+                className="px-6 bg-foreground text-background hover:bg-foreground/90 disabled:bg-[#C4C4C4] disabled:text-white disabled:opacity-100"
                 data-testid="button-modal-publish"
               >
                 {isPosting ? "Posting..." : "Post"}
