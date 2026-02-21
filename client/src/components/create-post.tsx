@@ -1,7 +1,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Calendar, Image as ImageIcon, Smile, Loader2, X } from "lucide-react";
+import { Image as ImageIcon, Smile, Loader2, X } from "lucide-react";
+import { GifPicker } from "@/components/gif-picker";
 import { useNostr } from "@/contexts/nostr-context";
 import { useState, useRef } from "react";
 
@@ -15,15 +16,18 @@ export function CreatePost({ placeholder = "Share something with the community..
   const [content, setContent] = useState("");
   const [image, setImage] = useState<string | null>(null);
   const [isPosting, setIsPosting] = useState(false);
+  const [showGifPicker, setShowGifPicker] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handlePost = async () => {
-    if (!content.trim() || !onPost) return;
+    if (!content.trim() && !image) return;
+    if (!onPost) return;
     setIsPosting(true);
     try {
       await onPost(content.trim(), image || undefined);
       setContent("");
       setImage(null);
+      setShowGifPicker(false);
     } finally {
       setIsPosting(false);
     }
@@ -38,6 +42,11 @@ export function CreatePost({ placeholder = "Share something with the community..
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleGifSelect = (gifUrl: string) => {
+    setImage(gifUrl);
+    setShowGifPicker(false);
   };
 
   if (!isConnected) {
@@ -56,7 +65,7 @@ export function CreatePost({ placeholder = "Share something with the community..
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder={placeholder}
-            className="w-full bg-muted rounded-lg px-4 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all font-serif placeholder:text-muted-foreground resize-none min-h-[80px]"
+            className="w-full bg-[#F5F5F5] rounded-sm px-4 py-2.5 text-base focus:outline-none transition-all font-serif placeholder:text-muted-foreground resize-none min-h-[80px]"
             rows={3}
             data-testid="input-post-content"
           />
@@ -74,13 +83,22 @@ export function CreatePost({ placeholder = "Share something with the community..
               </Button>
             </div>
           )}
+
+          {showGifPicker && (
+            <div className="mt-3">
+              <GifPicker
+                onSelect={handleGifSelect}
+                onClose={() => setShowGifPicker(false)}
+              />
+            </div>
+          )}
           
           <div className="flex items-center justify-between mt-3 px-1">
             <div className="flex items-center gap-1">
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="image/*"
+                accept="image/*,image/gif"
                 className="hidden"
                 onChange={handleImageUpload}
               />
@@ -93,17 +111,20 @@ export function CreatePost({ placeholder = "Share something with the community..
               >
                 <ImageIcon className="w-4 h-4" strokeWidth={1.5} />
               </Button>
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF] rounded-full">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className={`rounded-full ${showGifPicker ? 'text-[#6600ff] bg-[#F0E6FF]' : 'text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF]'}`}
+                onClick={() => setShowGifPicker(!showGifPicker)}
+                data-testid="button-add-gif"
+              >
                 <Smile className="w-4 h-4" strokeWidth={1.5} />
-              </Button>
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-[#6600ff] hover:bg-[#F0E6FF] rounded-full">
-                <Calendar className="w-4 h-4" strokeWidth={1.5} />
               </Button>
             </div>
             <Button 
               className="rounded-full px-6 font-normal" 
               onClick={handlePost}
-              disabled={!content.trim() || isPosting}
+              disabled={(!content.trim() && !image) || isPosting}
               data-testid="button-post"
             >
               {isPosting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Post"}
