@@ -9,7 +9,7 @@ import {
   Heart, MessageCircle, Zap, Users, Search, Loader2, Lock, Globe,
   ChevronDown, TrendingUp, Flame, Camera, Clock, RefreshCw, ArrowUp,
   Plus, ArrowRight, Check, Trophy, FlaskConical, Award, X, Star,
-  Handshake, Sparkles, UserPlus, Filter
+  Handshake, Sparkles, UserPlus, Filter, FileText
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import {
@@ -45,7 +45,7 @@ import type { ExploreMode } from "@/lib/primal-cache";
 
 type PeopleTab = "feed" | "tribes" | "buddies" | "victories" | "gratitude" | "prayers" | "discover";
 
-type FeedSubOption = "following" | "trending" | "most_zapped" | "latest" | "media";
+type FeedSubOption = "following" | "trending" | "most_zapped" | "latest" | "media" | "articles";
 type DiscoverSubOption = "discover_buddies" | "discover_tribes" | "discover_people";
 type BuddySubOption = "find" | "messages";
 
@@ -54,6 +54,7 @@ const FEED_SUB_OPTIONS: { id: string; label: string; icon: typeof Globe }[] = [
   { id: "trending", label: "Trending", icon: TrendingUp },
   { id: "most_zapped", label: "Most Zapped", icon: Zap },
   { id: "latest", label: "Latest", icon: Clock },
+  { id: "articles", label: "Articles", icon: FileText },
   { id: "__discover__", label: "Discover", icon: Search },
 ];
 
@@ -75,10 +76,36 @@ function FeedTabContent({ subOption, autoCompose }: { subOption: FeedSubOption; 
     most_zapped: "most_zapped",
     latest: "latest",
     media: "media",
+    articles: "trending",
   };
   const feedTab: FeedTab = subOption === "following" ? "following" : "explore";
   const exploreMode = exploreMap[subOption];
   const { posts, articles, isLoading, isRefreshing, refetch, newPostCount, showNewPosts, pendingPosts, primalProfiles } = useNostrFeed(feedTab, exploreMode);
+
+  if (subOption === "articles") {
+    return (
+      <div>
+        <div className="space-y-4">
+          {isLoading ? (
+            <FeedLoadingSkeleton />
+          ) : articles.length > 0 ? (
+            articles.map((article) => (
+              <ArticleCard
+                key={article.id}
+                article={article}
+                profile={primalProfiles.get(article.pubkey)}
+              />
+            ))
+          ) : (
+            <div className="text-center py-12 text-muted-foreground">
+              <p className="text-lg">No articles yet</p>
+              <p className="text-sm mt-2">Long-form articles from the network will appear here.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -104,10 +131,12 @@ function FeedTabContent({ subOption, autoCompose }: { subOption: FeedSubOption; 
             <div key={post.id}>
               <PostCard post={post} primalProfiles={primalProfiles} />
               {articles.length > 0 && (index + 1) % 5 === 0 && articles[Math.floor(index / 5)] && (
-                <ArticleCard
-                  article={articles[Math.floor(index / 5)]}
-                  profile={primalProfiles.get(articles[Math.floor(index / 5)].pubkey)}
-                />
+                <div className="mt-4">
+                  <ArticleCard
+                    article={articles[Math.floor(index / 5)]}
+                    profile={primalProfiles.get(articles[Math.floor(index / 5)].pubkey)}
+                  />
+                </div>
               )}
             </div>
           ))
@@ -1014,7 +1043,7 @@ function TabDropdownBubble({
   icon: Icon, 
   isActive, 
   items, 
-  activeItemLabel,
+  activeItemId,
   onSelect,
   testId,
 }: {
@@ -1022,13 +1051,12 @@ function TabDropdownBubble({
   icon: typeof Globe;
   isActive: boolean;
   items: { id: string; label: string; icon: typeof Globe }[];
-  activeItemLabel?: string;
+  activeItemId?: string;
   onSelect: (id: string) => void;
   testId: string;
 }) {
   const [open, setOpen] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const displayLabel = activeItemLabel && isActive ? activeItemLabel : label;
 
   const handleMouseEnter = () => {
     if (closeTimer.current) { clearTimeout(closeTimer.current); closeTimer.current = null; }
@@ -1042,7 +1070,7 @@ function TabDropdownBubble({
     return (
       <button
         onClick={() => onSelect("")}
-        className={`px-3 py-1.5 rounded-full text-sm transition-colors border whitespace-nowrap flex items-center gap-1.5 ${
+        className={`px-3 py-1.5 rounded-full text-sm transition-colors border whitespace-nowrap flex items-center gap-1.5 outline-none focus:outline-none focus-visible:outline-none ${
           isActive
             ? "bg-foreground text-background border-foreground"
             : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"
@@ -1050,7 +1078,7 @@ function TabDropdownBubble({
         data-testid={testId}
       >
         <Icon className="w-3.5 h-3.5" strokeWidth={1.5} />
-        {displayLabel}
+        {label}
       </button>
     );
   }
@@ -1061,7 +1089,7 @@ function TabDropdownBubble({
         <button
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
-          className={`px-3 py-1.5 rounded-full text-sm transition-colors border whitespace-nowrap flex items-center gap-1.5 ${
+          className={`px-3 py-1.5 rounded-full text-sm transition-colors border whitespace-nowrap flex items-center gap-1.5 outline-none focus:outline-none focus-visible:outline-none ${
             isActive
               ? "bg-foreground text-background border-foreground"
               : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"
@@ -1069,7 +1097,7 @@ function TabDropdownBubble({
           data-testid={testId}
         >
           <Icon className="w-3.5 h-3.5" strokeWidth={1.5} />
-          {displayLabel}
+          {label}
           <ChevronDown className="w-5 h-5" strokeWidth={1.5} />
         </button>
       </DropdownMenuTrigger>
@@ -1083,7 +1111,7 @@ function TabDropdownBubble({
           <DropdownMenuItem
             key={item.id}
             onClick={() => { onSelect(item.id); setOpen(false); }}
-            className="cursor-pointer gap-2"
+            className={`cursor-pointer gap-2 ${activeItemId === item.id ? "bg-[#F5F5F5]" : ""}`}
             data-testid={`${testId}-option-${item.id}`}
           >
             <item.icon className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
@@ -1132,20 +1160,11 @@ export default function People() {
 
   const myTribes = useMyTribesForDropdown();
 
-  const feedSubLabel = FEED_SUB_OPTIONS.find(o => o.id === feedSub)?.label;
-  const discoverSubLabel = DISCOVER_SUB_OPTIONS.find(o => o.id === discoverSub)?.label;
-  const buddySubLabel = buddySub === "find" ? "Find a Buddy" : "My Buddies";
-
   const tribeDropdownItems: { id: string; label: string; icon: typeof Users }[] = [
     { id: "my_tribes", label: "My Tribes", icon: Users },
     { id: "all_tribes", label: "All Tribes", icon: Globe },
     { id: "__create__", label: "+ Create Tribe", icon: Plus },
   ];
-  const tribesActiveLabel = selectedTribeId === "all_tribes"
-    ? "All Tribes"
-    : selectedTribeId === "__create__"
-    ? "Tribes"
-    : "My Tribes";
 
   const [, setLocation] = useLocation();
 
@@ -1169,7 +1188,7 @@ export default function People() {
               icon={Globe}
               isActive={activeTab === "feed"}
               items={FEED_SUB_OPTIONS}
-              activeItemLabel={feedSubLabel}
+              activeItemId={feedSub}
               onSelect={(id) => {
                 if (id === "__discover__") {
                   setActiveTab("discover");
@@ -1186,7 +1205,7 @@ export default function People() {
               icon={Users}
               isActive={activeTab === "tribes"}
               items={tribeDropdownItems}
-              activeItemLabel={tribesActiveLabel}
+              activeItemId={selectedTribeId === "all" ? "my_tribes" : selectedTribeId}
               onSelect={(id) => {
                 if (id === "__create__") {
                   setLocation("/community/create");
@@ -1202,7 +1221,7 @@ export default function People() {
               icon={Handshake}
               isActive={activeTab === "buddies"}
               items={BUDDY_SUB_OPTIONS}
-              activeItemLabel={buddySubLabel}
+              activeItemId={buddySub === "find" ? "find" : "my_buddies"}
               onSelect={(id) => { setActiveTab("buddies"); setBuddySub(id === "my_buddies" ? "messages" as BuddySubOption : "find"); }}
               testId="tab-buddies"
             />
@@ -1235,7 +1254,7 @@ export default function People() {
               icon={Search}
               isActive={activeTab === "discover"}
               items={DISCOVER_SUB_OPTIONS}
-              activeItemLabel={discoverSubLabel}
+              activeItemId={discoverSub}
               onSelect={(id) => { setActiveTab("discover"); setDiscoverSub(id as DiscoverSubOption); }}
               testId="tab-discover"
             />
