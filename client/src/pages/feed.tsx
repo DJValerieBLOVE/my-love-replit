@@ -839,7 +839,7 @@ function LinkPreviewCard({ url }: { url: string }) {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="mt-2 block rounded-s border border-border overflow-hidden hover:border-foreground/20 transition-colors group bg-muted"
+      className="mt-2 block rounded-sm border border-border overflow-hidden hover:border-foreground/20 transition-colors group bg-muted"
       data-testid="link-preview-card"
     >
       <div className="flex items-stretch">
@@ -897,7 +897,7 @@ function EmbeddedNoteCard({ eventId, bech32 }: { eventId: string; bech32: string
 
   if (loading) {
     return (
-      <div className="my-2 rounded-s border border-gray-200 p-3 animate-pulse" data-testid="nostr-event-link">
+      <div className="my-2 rounded-sm border border-gray-200 p-3 animate-pulse" data-testid="nostr-event-link">
         <div className="h-3 bg-gray-100 rounded w-1/3 mb-2" />
         <div className="h-3 bg-gray-100 rounded w-2/3" />
       </div>
@@ -910,7 +910,7 @@ function EmbeddedNoteCard({ eventId, bech32 }: { eventId: string; bech32: string
         href={`https://njump.me/${bech32}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="my-2 block rounded-s border border-gray-200 p-3 text-xs text-muted-foreground hover:border-[#6600ff] transition-colors"
+        className="my-2 block rounded-sm border border-gray-200 p-3 text-xs text-muted-foreground hover:border-[#6600ff] transition-colors"
         data-testid="nostr-event-link"
       >
         View note on Nostr
@@ -926,7 +926,7 @@ function EmbeddedNoteCard({ eventId, bech32 }: { eventId: string; bech32: string
       href={`https://njump.me/${bech32}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="my-2 block rounded-s border border-gray-200 p-3 hover:border-[#6600ff] transition-colors group"
+      className="my-2 block rounded-sm border border-gray-200 p-3 hover:border-[#6600ff] transition-colors group"
       data-testid="nostr-event-link"
     >
       <div className="flex items-center gap-2 mb-1.5">
