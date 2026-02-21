@@ -8,10 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import {
   Plus, GripVertical, Trash2, Save, ArrowLeft, FlaskConical,
-  ChevronUp, ChevronDown, ChevronRight, Video, User as UserIcon
+  ChevronUp, ChevronDown, ChevronRight, Video, User as UserIcon, Upload, Image as ImageIcon
 } from "lucide-react";
-import { ImageUpload } from "@/components/image-upload";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useLocation } from "wouter";
 import { useNostr } from "@/contexts/nostr-context";
 import { useToast } from "@/hooks/use-toast";
@@ -148,6 +147,24 @@ export default function ExperimentBuilder() {
   const [isPublished, setIsPublished] = useState(false);
   const [modules, setModules] = useState<ModuleState[]>([]);
   const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
+  const [isUploadingThumb, setIsUploadingThumb] = useState(false);
+  const thumbInputRef = useRef<HTMLInputElement>(null);
+
+  const handleThumbnailUpload = useCallback(async (file: File) => {
+    if (!file.type.startsWith("image/")) return;
+    if (file.size > 5 * 1024 * 1024) return;
+    setIsUploadingThumb(true);
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      if (!res.ok) throw new Error("Upload failed");
+      const data = await res.json();
+      setImage(data.url);
+    } catch {} finally {
+      setIsUploadingThumb(false);
+    }
+  }, []);
 
   const { data: communities = [] } = useQuery({
     queryKey: ["communities"],
@@ -361,23 +378,6 @@ export default function ExperimentBuilder() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Describe what participants will experience and learn..."
-                rows={3}
-                data-testid="input-description"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Thumbnail Image <span className="text-xs text-muted-foreground ml-1">(16:9 aspect ratio recommended)</span></Label>
-              <ImageUpload value={image} onChange={setImage} aspectRatio="video" />
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="dimension">11 Dimensions <span className="text-destructive">*</span></Label>
               <Select value={dimension} onValueChange={setDimension} data-testid="select-dimension">
                 <SelectTrigger id="dimension">
@@ -401,6 +401,47 @@ export default function ExperimentBuilder() {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Tags <span className="text-xs text-muted-foreground ml-1">(select up to 5)</span></Label>
+              <div className="flex flex-wrap gap-2">
+                {EXPERIMENT_TAGS.map((tag) => {
+                  const isSelected = selectedTags.includes(tag);
+                  return (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => {
+                        if (isSelected) {
+                          setSelectedTags(selectedTags.filter((t) => t !== tag));
+                        } else if (selectedTags.length < 5) {
+                          setSelectedTags([...selectedTags, tag]);
+                        }
+                      }}
+                      className={`text-xs px-2.5 py-1 rounded-md border transition-colors ${isSelected ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
+                      data-testid={`tag-${tag.toLowerCase().replace(/\s+/g, "-")}`}
+                    >
+                      {tag}
+                    </button>
+                  );
+                })}
+              </div>
+              {selectedTags.length > 0 && (
+                <p className="text-xs text-muted-foreground">{selectedTags.length}/5 tags selected</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Describe what participants will experience and learn..."
+                rows={3}
+                data-testid="input-description"
+              />
             </div>
 
             <div className="space-y-2">
@@ -428,31 +469,50 @@ export default function ExperimentBuilder() {
             </div>
 
             <div className="space-y-2">
-              <Label>Tags (select up to 5)</Label>
-              <div className="flex flex-wrap gap-2">
-                {EXPERIMENT_TAGS.map((tag) => {
-                  const isSelected = selectedTags.includes(tag);
-                  return (
-                    <button
-                      key={tag}
-                      type="button"
-                      onClick={() => {
-                        if (isSelected) {
-                          setSelectedTags(selectedTags.filter((t) => t !== tag));
-                        } else if (selectedTags.length < 5) {
-                          setSelectedTags([...selectedTags, tag]);
-                        }
-                      }}
-                      className={`text-xs px-2.5 py-1 rounded-md border transition-colors ${isSelected ? "bg-foreground text-background border-foreground" : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"}`}
-                      data-testid={`tag-${tag.toLowerCase().replace(/\s+/g, "-")}`}
-                    >
-                      {tag}
-                    </button>
-                  );
-                })}
-              </div>
-              {selectedTags.length > 0 && (
-                <p className="text-xs text-muted-foreground">{selectedTags.length}/5 tags selected</p>
+              <Label>Thumbnail</Label>
+              {image ? (
+                <div className="flex items-center gap-3">
+                  <div className="w-24 h-[54px] rounded border border-gray-200 overflow-hidden flex-shrink-0">
+                    <img src={image} alt="Thumbnail" className="w-full h-full object-cover" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-muted-foreground truncate">Thumbnail uploaded</p>
+                    <p className="text-[11px] text-muted-foreground">16:9 aspect ratio</p>
+                  </div>
+                  <Button variant="ghost" size="sm" className="text-xs text-muted-foreground" onClick={() => setImage("")} data-testid="button-remove-thumbnail">
+                    Remove
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <input
+                    ref={thumbInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/gif,image/webp"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleThumbnailUpload(file);
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => thumbInputRef.current?.click()}
+                    disabled={isUploadingThumb}
+                    className="flex items-center gap-2 px-3 py-2.5 rounded-md border border-dashed border-gray-300 hover:border-gray-400 text-sm text-muted-foreground hover:text-foreground transition-colors w-full"
+                    data-testid="button-upload-thumbnail"
+                  >
+                    {isUploadingThumb ? (
+                      <>Uploading...</>
+                    ) : (
+                      <>
+                        <ImageIcon className="w-4 h-4" />
+                        Upload Thumbnail
+                        <span className="text-xs text-muted-foreground ml-auto">16:9</span>
+                      </>
+                    )}
+                  </button>
+                </>
               )}
             </div>
           </CardContent>
