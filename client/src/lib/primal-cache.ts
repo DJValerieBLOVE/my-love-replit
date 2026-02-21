@@ -1,4 +1,4 @@
-const PRIMAL_CACHE_URL = "wss://cache1.primal.net/v1";
+const PRIMAL_CACHE_URL = "wss://cache2.primal.net/v1";
 
 const DAY_MS = 86400000;
 const HOUR_MS = 3600000;

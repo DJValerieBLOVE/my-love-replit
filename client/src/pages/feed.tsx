@@ -780,7 +780,7 @@ function EmbeddedNoteCard({ eventId, bech32 }: { eventId: string; bech32: string
     let timer: ReturnType<typeof setTimeout> | null = null;
     const fetchNote = async () => {
       try {
-        ws = new WebSocket("wss://cache1.primal.net/v1");
+        ws = new WebSocket("wss://cache2.primal.net/v1");
         const requestId = `embed_${eventId.slice(0, 8)}`;
         ws.onopen = () => {
           ws?.send(JSON.stringify(["REQ", requestId, { cache: ["events", { event_ids: [eventId] }] }]));
