@@ -80,6 +80,8 @@ export interface IStorage {
   getAllExperiments(): Promise<Experiment[]>;
   getExperiment(id: string): Promise<Experiment | undefined>;
   createExperiment(experiment: InsertExperiment): Promise<Experiment>;
+  updateExperiment(id: string, updates: Partial<InsertExperiment>): Promise<Experiment | undefined>;
+  deleteExperiment(id: string): Promise<boolean>;
   getExperimentsByCreator(creatorId: string): Promise<Experiment[]>;
   getExperimentParticipants(experimentId: string): Promise<(UserExperiment & { user: { id: string; nostrPubkey: string | null; displayName: string | null; } })[]>;
 
@@ -521,6 +523,19 @@ export class DatabaseStorage implements IStorage {
   async createExperiment(experiment: InsertExperiment): Promise<Experiment> {
     const [created] = await db.insert(experiments).values(experiment).returning();
     return created;
+  }
+
+  async updateExperiment(id: string, updates: Partial<InsertExperiment>): Promise<Experiment | undefined> {
+    const [updated] = await db.update(experiments)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(experiments.id, id))
+      .returning();
+    return updated || undefined;
+  }
+
+  async deleteExperiment(id: string): Promise<boolean> {
+    const result = await db.delete(experiments).where(eq(experiments.id, id)).returning();
+    return result.length > 0;
   }
 
   async getExperimentsByCreator(creatorId: string): Promise<Experiment[]> {

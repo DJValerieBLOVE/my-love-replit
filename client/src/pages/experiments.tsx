@@ -1,24 +1,25 @@
 import Layout from "@/components/layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Search, Plus, FlaskConical, Loader2, X } from "lucide-react";
+import { Search, Plus, FlaskConical, Loader2, X, Pencil, Trash2, FileText, Eye } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ShareConfirmationDialog } from "@/components/share-confirmation-dialog";
 import { useNostr } from "@/contexts/nostr-context";
-import { useQuery } from "@tanstack/react-query";
-import { getAllExperiments } from "@/lib/api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getAllExperiments, getCreatorExperiments, deleteExperiment } from "@/lib/api";
 import { ELEVEN_DIMENSIONS, EXPERIMENT_TAGS } from "@/lib/mock-data";
 import type { Experiment } from "@shared/schema";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 const TABS = [
+  { id: "all", label: "All" },
   { id: "in-progress", label: "In Progress" },
   { id: "my-experiments", label: "My Experiments" },
   { id: "new", label: "New" },
-  { id: "all", label: "All" },
   { id: "suggested", label: "Suggested" },
   { id: "complete", label: "Complete" },
 ];
@@ -26,6 +27,7 @@ const TABS = [
 export default function Grow() {
   const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState("all");
+  const [mySubTab, setMySubTab] = useState<"drafts" | "published">("drafts");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDimension, setSelectedDimension] = useState("all");
   const [selectedTag, setSelectedTag] = useState("all");
@@ -34,15 +36,37 @@ export default function Grow() {
     experiment: Experiment | null;
   }>({ open: false, experiment: null });
   const { isConnected, profile } = useNostr();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: experiments = [], isLoading: experimentsLoading } = useQuery({
     queryKey: ["experiments"],
     queryFn: getAllExperiments,
   });
 
+  const { data: creatorExperiments = [], isLoading: creatorLoading } = useQuery({
+    queryKey: ["creatorExperiments"],
+    queryFn: getCreatorExperiments,
+    enabled: isConnected && activeTab === "my-experiments",
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteExperiment,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["creatorExperiments"] });
+      queryClient.invalidateQueries({ queryKey: ["experiments"] });
+      toast({ title: "Deleted", description: "Experiment has been removed." });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to delete experiment.", variant: "destructive" });
+    },
+  });
+
   const allExperiments = experiments as Experiment[];
 
   const filteredExperiments = allExperiments.filter((exp) => {
+    if (!exp.isPublished) return false;
+
     const matchesSearch = exp.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (exp.description?.toLowerCase().includes(searchQuery.toLowerCase()));
 
@@ -60,8 +84,6 @@ export default function Grow() {
     switch (activeTab) {
       case "in-progress":
         return false;
-      case "my-experiments":
-        return exp.creatorId === profile?.userId;
       case "new":
         const oneWeekAgo = new Date();
         oneWeekAgo.setDate(oneWeekAgo.getDate() - 14);
@@ -76,6 +98,9 @@ export default function Grow() {
     }
   });
 
+  const myDrafts = (creatorExperiments as Experiment[]).filter((e) => !e.isPublished);
+  const myPublished = (creatorExperiments as Experiment[]).filter((e) => e.isPublished);
+
   const hasActiveFilters = selectedDimension !== "all" || selectedTag !== "all";
   const selectedDimensionData = ELEVEN_DIMENSIONS.find((d) => d.id === selectedDimension);
 
@@ -88,6 +113,183 @@ export default function Grow() {
     const mods = exp.modules as any[] | null;
     if (!mods || !Array.isArray(mods)) return 0;
     return mods.reduce((sum: number, mod: any) => sum + (mod.steps?.length || 0), 0);
+  };
+
+  const renderExperimentCard = (experiment: Experiment, showActions: boolean = false) => {
+    const dimData = getDimensionData(experiment.dimension);
+    const stepCount = getTotalStepCount(experiment);
+    return (
+      <div key={experiment.id} className="relative">
+        <Link href={showActions ? `/experiments/edit/${experiment.id}` : `/experiments/${experiment.id}`}>
+          <Card className="overflow-hidden hover:shadow-md transition-all duration-300 group border-none shadow-sm bg-card cursor-pointer flex flex-col h-full rounded-xs" data-testid={`card-experiment-${experiment.id}`}>
+            <div className="h-[2px] w-full" style={{ backgroundColor: dimData?.hex || '#6600ff' }} />
+            <div className="relative aspect-video overflow-hidden">
+              {experiment.image ? (
+                <img
+                  src={experiment.image}
+                  alt={experiment.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              ) : (
+                <div className="w-full h-full bg-[#F0E6FF] flex items-center justify-center">
+                  <FlaskConical className="w-16 h-16 text-muted-foreground" />
+                </div>
+              )}
+              {!experiment.isPublished && (
+                <div className="absolute top-2 right-2 bg-foreground/80 text-background text-[10px] px-2 py-0.5 rounded-full">
+                  Draft
+                </div>
+              )}
+            </div>
+            <CardContent className="p-5 flex-1 flex flex-col">
+              <div className="flex items-center gap-2 mb-2 flex-wrap">
+                {dimData && (
+                  <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-0.5 rounded-md border border-gray-200 bg-white text-muted-foreground" data-testid={`badge-dimension-${experiment.id}`}>
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: dimData.hex }} />
+                    {dimData.name}
+                  </span>
+                )}
+                {((experiment as any).tags as string[] | null)?.slice(0, 2).map((tag: string) => (
+                  <span key={tag} className="text-xs px-2.5 py-0.5 rounded-md border border-gray-200 bg-white text-muted-foreground" data-testid={`badge-tag-${experiment.id}`}>
+                    {tag}
+                  </span>
+                ))}
+                <span className="text-xs text-muted-foreground">
+                  {stepCount} step{stepCount !== 1 ? "s" : ""}
+                </span>
+              </div>
+              <h3 className="text-lg leading-tight mb-1 text-muted-foreground group-hover:text-primary transition-colors" data-testid={`text-experiment-${experiment.id}`}>
+                {experiment.title}
+              </h3>
+              {experiment.description && (
+                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{experiment.description}</p>
+              )}
+              {showActions ? (
+                <div className="mt-auto flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 gap-1.5"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setLocation(`/experiments/edit/${experiment.id}`);
+                    }}
+                    data-testid={`button-edit-${experiment.id}`}
+                  >
+                    <Pencil className="w-3.5 h-3.5" /> Edit
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (experiment.isPublished) {
+                        setLocation(`/experiments/${experiment.id}`);
+                      }
+                    }}
+                    disabled={!experiment.isPublished}
+                    data-testid={`button-view-${experiment.id}`}
+                  >
+                    <Eye className="w-3.5 h-3.5" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (confirm("Are you sure you want to delete this experiment?")) {
+                        deleteMutation.mutate(experiment.id);
+                      }
+                    }}
+                    data-testid={`button-delete-${experiment.id}`}
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="mt-auto">
+                  <Button className="w-full gap-2" data-testid={`button-experiment-${experiment.id}`}>
+                    <FlaskConical className="w-4 h-4" /> View Experiment
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </Link>
+      </div>
+    );
+  };
+
+  const renderMyExperiments = () => {
+    if (!isConnected) {
+      return (
+        <Card className="p-8 text-center border-dashed">
+          <FlaskConical className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+          <h3 className="text-lg mb-2">Sign In to View Your Experiments</h3>
+          <p className="text-muted-foreground">Log in to create and manage your experiments.</p>
+        </Card>
+      );
+    }
+
+    const myExperiments = mySubTab === "drafts" ? myDrafts : myPublished;
+
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setMySubTab("drafts")}
+            className={cn(
+              "px-3 py-1 rounded-full text-sm border transition-colors",
+              mySubTab === "drafts"
+                ? "bg-foreground text-background border-foreground"
+                : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"
+            )}
+            data-testid="subtab-drafts"
+          >
+            Drafts ({myDrafts.length})
+          </button>
+          <button
+            onClick={() => setMySubTab("published")}
+            className={cn(
+              "px-3 py-1 rounded-full text-sm border transition-colors",
+              mySubTab === "published"
+                ? "bg-foreground text-background border-foreground"
+                : "bg-white text-muted-foreground border-gray-200 hover:border-gray-400"
+            )}
+            data-testid="subtab-published"
+          >
+            Published ({myPublished.length})
+          </button>
+        </div>
+
+        {creatorLoading ? (
+          <div className="flex justify-center py-12">
+            <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+          </div>
+        ) : myExperiments.length === 0 ? (
+          <Card className="p-8 text-center border-dashed">
+            <FileText className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+            <h3 className="text-lg mb-2">
+              {mySubTab === "drafts" ? "No Drafts" : "No Published Experiments"}
+            </h3>
+            <p className="text-muted-foreground mb-4">
+              {mySubTab === "drafts"
+                ? "Start building a new experiment — your progress saves automatically."
+                : "Publish an experiment to share it with the community."}
+            </p>
+            <Button onClick={() => setLocation("/experiments/create")} className="gap-2">
+              <Plus className="w-4 h-4" /> Create New Experiment
+            </Button>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {myExperiments.map((exp) => renderExperimentCard(exp, true))}
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -109,47 +311,51 @@ export default function Grow() {
               data-testid="input-search"
             />
           </div>
-          <Select value={selectedDimension} onValueChange={setSelectedDimension}>
-            <SelectTrigger className="w-[180px] h-10" data-testid="select-dimension">
-              <SelectValue>
-                {selectedDimension === "all" ? (
-                  "All Dimensions"
-                ) : selectedDimensionData ? (
-                  <span className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: selectedDimensionData.hex }} />
-                    {selectedDimensionData.name}
-                  </span>
-                ) : (
-                  "All Dimensions"
-                )}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Dimensions</SelectItem>
-              {ELEVEN_DIMENSIONS.map((dim) => (
-                <SelectItem key={dim.id} value={dim.id}>
-                  <span className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: dim.hex }} />
-                    {dim.name}
-                  </span>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={selectedTag} onValueChange={setSelectedTag}>
-            <SelectTrigger className="w-[140px] h-10" data-testid="select-tag">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Tags</SelectItem>
-              {EXPERIMENT_TAGS.map((tag) => (
-                <SelectItem key={tag} value={tag}>{tag}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {activeTab !== "my-experiments" && (
+            <>
+              <Select value={selectedDimension} onValueChange={setSelectedDimension}>
+                <SelectTrigger className="w-[180px] h-10" data-testid="select-dimension">
+                  <SelectValue>
+                    {selectedDimension === "all" ? (
+                      "All Dimensions"
+                    ) : selectedDimensionData ? (
+                      <span className="flex items-center gap-2">
+                        <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: selectedDimensionData.hex }} />
+                        {selectedDimensionData.name}
+                      </span>
+                    ) : (
+                      "All Dimensions"
+                    )}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Dimensions</SelectItem>
+                  {ELEVEN_DIMENSIONS.map((dim) => (
+                    <SelectItem key={dim.id} value={dim.id}>
+                      <span className="flex items-center gap-2">
+                        <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: dim.hex }} />
+                        {dim.name}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={selectedTag} onValueChange={setSelectedTag}>
+                <SelectTrigger className="w-[140px] h-10" data-testid="select-tag">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Tags</SelectItem>
+                  {EXPERIMENT_TAGS.map((tag) => (
+                    <SelectItem key={tag} value={tag}>{tag}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </>
+          )}
         </div>
 
-        {hasActiveFilters && (
+        {hasActiveFilters && activeTab !== "my-experiments" && (
           <div className="flex items-center gap-2 flex-wrap">
             {selectedDimension !== "all" && selectedDimensionData && (
               <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-md border border-gray-200 bg-white text-muted-foreground">
@@ -199,7 +405,9 @@ export default function Grow() {
           </Button>
         </div>
 
-        {experimentsLoading ? (
+        {activeTab === "my-experiments" ? (
+          renderMyExperiments()
+        ) : experimentsLoading ? (
           <div className="flex justify-center py-12">
             <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
           </div>
@@ -208,7 +416,6 @@ export default function Grow() {
             <FlaskConical className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
             <h3 className="text-lg mb-2">
               {activeTab === "in-progress" && "No Experiments In Progress"}
-              {activeTab === "my-experiments" && "You Haven't Created Any Experiments"}
               {activeTab === "new" && "No New Experiments"}
               {activeTab === "complete" && "No Completed Experiments"}
               {activeTab === "suggested" && "No Suggestions Yet"}
@@ -216,74 +423,15 @@ export default function Grow() {
             </h3>
             <p className="text-muted-foreground mb-4">
               {activeTab === "in-progress" && "Start an experiment to track your progress here."}
-              {activeTab === "my-experiments" && "Create your first experiment to share with the community."}
               {activeTab === "new" && "Check back soon for new experiments."}
               {activeTab === "complete" && "Complete an experiment to see it here."}
               {activeTab === "suggested" && "Suggestions will appear as you use the platform."}
               {activeTab === "all" && "Be the first to create an experiment!"}
             </p>
-            {isConnected && activeTab === "my-experiments" && (
-              <Button onClick={() => setLocation("/experiments/create")} className="gap-2">
-                <Plus className="w-4 h-4" /> Create Experiment
-              </Button>
-            )}
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredExperiments.map((experiment) => {
-              const dimData = getDimensionData(experiment.dimension);
-              const stepCount = getTotalStepCount(experiment);
-              return (
-                <Link key={experiment.id} href={`/experiments/${experiment.id}`}>
-                  <Card className="overflow-hidden hover:shadow-md transition-all duration-300 group border-none shadow-sm bg-card cursor-pointer flex flex-col h-full rounded-xs" data-testid={`card-experiment-${experiment.id}`}>
-                    <div className="h-[2px] w-full" style={{ backgroundColor: dimData?.hex || '#6600ff' }} />
-                    <div className="relative aspect-video overflow-hidden">
-                      {experiment.image ? (
-                        <img
-                          src={experiment.image}
-                          alt={experiment.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-[#F0E6FF] flex items-center justify-center">
-                          <FlaskConical className="w-16 h-16 text-muted-foreground" />
-                        </div>
-                      )}
-                    </div>
-                    <CardContent className="p-5 flex-1 flex flex-col">
-                      <div className="flex items-center gap-2 mb-2 flex-wrap">
-                        {dimData && (
-                          <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-0.5 rounded-md border border-gray-200 bg-white text-muted-foreground" data-testid={`badge-dimension-${experiment.id}`}>
-                            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: dimData.hex }} />
-                            {dimData.name}
-                          </span>
-                        )}
-                        {((experiment as any).tags as string[] | null)?.slice(0, 2).map((tag: string) => (
-                          <span key={tag} className="text-xs px-2.5 py-0.5 rounded-md border border-gray-200 bg-white text-muted-foreground" data-testid={`badge-tag-${experiment.id}`}>
-                            {tag}
-                          </span>
-                        ))}
-                        <span className="text-xs text-muted-foreground">
-                          {stepCount} step{stepCount !== 1 ? "s" : ""}
-                        </span>
-                      </div>
-                      <h3 className="text-lg leading-tight mb-1 text-muted-foreground group-hover:text-primary transition-colors" data-testid={`text-experiment-${experiment.id}`}>
-                        {experiment.title}
-                      </h3>
-                      {experiment.description && (
-                        <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{experiment.description}</p>
-                      )}
-
-                      <div className="mt-auto">
-                        <Button className="w-full gap-2" data-testid={`button-experiment-${experiment.id}`}>
-                          <FlaskConical className="w-4 h-4" /> View Experiment
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              );
-            })}
+            {filteredExperiments.map((experiment) => renderExperimentCard(experiment))}
           </div>
         )}
       </div>

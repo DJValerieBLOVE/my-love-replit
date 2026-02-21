@@ -703,6 +703,32 @@ export async function registerRoutes(
     }
   });
 
+  app.put("/api/experiments/:id", authMiddleware, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const existing = await storage.getExperiment(id);
+      if (!existing) return res.status(404).json({ error: "Experiment not found" });
+      if (existing.creatorId !== req.userId) return res.status(403).json({ error: "Not authorized" });
+      const updated = await storage.updateExperiment(id, req.body);
+      res.json(updated);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message || "Failed to update experiment" });
+    }
+  });
+
+  app.delete("/api/experiments/:id", authMiddleware, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const existing = await storage.getExperiment(id);
+      if (!existing) return res.status(404).json({ error: "Experiment not found" });
+      if (existing.creatorId !== req.userId) return res.status(403).json({ error: "Not authorized" });
+      await storage.deleteExperiment(id);
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to delete experiment" });
+    }
+  });
+
   // Get authenticated user's enrolled experiments
   app.get("/api/user-experiments", authMiddleware, async (req, res) => {
     try {

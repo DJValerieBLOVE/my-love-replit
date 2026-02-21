@@ -7,15 +7,15 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import {
-  Plus, GripVertical, Trash2, Save, ArrowLeft, FlaskConical,
+  Plus, GripVertical, Trash2, Save, ArrowLeft, FlaskConical, Loader2,
   ChevronUp, ChevronDown, ChevronRight, Video, User as UserIcon, Upload, Image as ImageIcon
 } from "lucide-react";
-import { useState, useCallback, useRef } from "react";
-import { useLocation } from "wouter";
+import { useState, useCallback, useRef, useEffect } from "react";
+import { useLocation, useRoute } from "wouter";
 import { useNostr } from "@/contexts/nostr-context";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createExperiment, getAllCommunities } from "@/lib/api";
+import { createExperiment, updateExperiment, getExperiment, getAllCommunities } from "@/lib/api";
 import { MembershipGate } from "@/components/membership-gate";
 import { ELEVEN_DIMENSIONS, EXPERIMENT_TAGS } from "@/lib/mock-data";
 import { useRichTextEditor, RichTextEditorContent, richTextEditorStyles } from "@/components/rich-text-editor";
@@ -130,6 +130,9 @@ function StepEditor({
 
 export default function ExperimentBuilder() {
   const [, setLocation] = useLocation();
+  const [, editParams] = useRoute("/experiments/edit/:id");
+  const editId = editParams?.id;
+  const isEditMode = !!editId;
   const { isConnected, profile } = useNostr();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -148,7 +151,81 @@ export default function ExperimentBuilder() {
   const [modules, setModules] = useState<ModuleState[]>([]);
   const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
   const [isUploadingThumb, setIsUploadingThumb] = useState(false);
+  const [autoSaveStatus, setAutoSaveStatus] = useState<"saved" | "saving" | "unsaved" | "idle">("idle");
+  const [hasLoadedDraft, setHasLoadedDraft] = useState(false);
   const thumbInputRef = useRef<HTMLInputElement>(null);
+  const lastSavedRef = useRef<string>("");
+  const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const { data: existingExperiment, isLoading: isLoadingExperiment } = useQuery({
+    queryKey: ["experiment", editId],
+    queryFn: () => getExperiment(editId!),
+    enabled: isEditMode,
+  });
+
+  useEffect(() => {
+    if (existingExperiment && !hasLoadedDraft) {
+      setTitle(existingExperiment.title || "");
+      setDescription(existingExperiment.description || "");
+      setImage(existingExperiment.image || "");
+      setDimension(existingExperiment.dimension || "");
+      setBenefitsFor(existingExperiment.benefitsFor || "");
+      setOutcomes(existingExperiment.outcomes || "");
+      setSelectedTags(existingExperiment.tags || []);
+      setAccessType(existingExperiment.accessType || "public");
+      setCommunityId(existingExperiment.communityId || "");
+      setPrice(existingExperiment.price || 0);
+      setIsPublished(existingExperiment.isPublished || false);
+      setModules(existingExperiment.modules || []);
+      if (existingExperiment.modules?.length > 0) {
+        setExpandedModules(new Set([existingExperiment.modules[0].id]));
+      }
+      setHasLoadedDraft(true);
+      setAutoSaveStatus("saved");
+    }
+  }, [existingExperiment, hasLoadedDraft]);
+
+  const getCurrentData = useCallback(() => ({
+    title, description, image, dimension: dimension || "mind",
+    benefitsFor: benefitsFor || undefined, outcomes: outcomes || undefined,
+    tags: selectedTags, modules, accessType,
+    communityId: accessType === "community" ? communityId : undefined,
+    price: accessType === "paid" ? price : 0,
+    isPublished,
+  }), [title, description, image, dimension, benefitsFor, outcomes, selectedTags, modules, accessType, communityId, price, isPublished]);
+
+  useEffect(() => {
+    if (hasLoadedDraft && isEditMode) {
+      lastSavedRef.current = JSON.stringify(getCurrentData());
+    }
+  }, [hasLoadedDraft, isEditMode, getCurrentData]);
+
+  const autoSave = useCallback(async () => {
+    if (!editId || !title.trim()) return;
+    const currentSnapshot = JSON.stringify(getCurrentData());
+    if (currentSnapshot === lastSavedRef.current) return;
+    setAutoSaveStatus("saving");
+    try {
+      await updateExperiment(editId, getCurrentData());
+      lastSavedRef.current = currentSnapshot;
+      setAutoSaveStatus("saved");
+      queryClient.invalidateQueries({ queryKey: ["experiment", editId] });
+    } catch {
+      setAutoSaveStatus("unsaved");
+    }
+  }, [editId, title, getCurrentData, queryClient]);
+
+  useEffect(() => {
+    if (!isEditMode || !hasLoadedDraft) return;
+    if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    setAutoSaveStatus("unsaved");
+    autoSaveTimerRef.current = setTimeout(() => {
+      autoSave();
+    }, 5000);
+    return () => {
+      if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    };
+  }, [title, description, image, dimension, benefitsFor, outcomes, selectedTags, modules, accessType, communityId, price, isPublished, isEditMode, hasLoadedDraft, autoSave]);
 
   const handleThumbnailUpload = useCallback(async (file: File) => {
     if (!file.type.startsWith("image/")) return;
@@ -173,20 +250,31 @@ export default function ExperimentBuilder() {
 
   const createExperimentMutation = useMutation({
     mutationFn: async (data: any) => {
+      if (isEditMode) {
+        return updateExperiment(editId, data);
+      }
       return createExperiment(data);
     },
     onSuccess: (experiment) => {
       queryClient.invalidateQueries({ queryKey: ["experiments"] });
-      toast({
-        title: "Experiment Created",
-        description: "Your experiment has been created successfully.",
-      });
+      queryClient.invalidateQueries({ queryKey: ["creatorExperiments"] });
+      if (isEditMode) {
+        toast({
+          title: "Experiment Updated",
+          description: "Your changes have been saved.",
+        });
+      } else {
+        toast({
+          title: "Experiment Created",
+          description: "Your experiment has been created successfully.",
+        });
+      }
       setLocation(`/experiments/${experiment.id}`);
     },
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to create experiment. Please try again.",
+        description: isEditMode ? "Failed to update experiment." : "Failed to create experiment. Please try again.",
         variant: "destructive",
       });
     },
@@ -276,6 +364,28 @@ export default function ExperimentBuilder() {
     updateModule(moduleId, { steps: newSteps.map((s, i) => ({ ...s, order: i })) });
   };
 
+  const saveDraftMutation = useMutation({
+    mutationFn: async (data: any) => {
+      if (isEditMode) {
+        return updateExperiment(editId, data);
+      }
+      return createExperiment(data);
+    },
+    onSuccess: (experiment) => {
+      queryClient.invalidateQueries({ queryKey: ["experiments"] });
+      queryClient.invalidateQueries({ queryKey: ["creatorExperiments"] });
+      toast({ title: "Draft Saved", description: "Your progress has been saved." });
+      if (!isEditMode) {
+        setLocation(`/experiments/edit/${experiment.id}`);
+      }
+      lastSavedRef.current = JSON.stringify(getCurrentData());
+      setAutoSaveStatus("saved");
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to save draft.", variant: "destructive" });
+    },
+  });
+
   const handleSubmit = (asDraft: boolean = false) => {
     if (!title.trim()) {
       toast({ title: "Missing Title", description: "Please enter an experiment title.", variant: "destructive" });
@@ -290,7 +400,7 @@ export default function ExperimentBuilder() {
       return;
     }
 
-    createExperimentMutation.mutate({
+    const data = {
       title,
       description: description || undefined,
       image: image || undefined,
@@ -303,10 +413,26 @@ export default function ExperimentBuilder() {
       communityId: accessType === "community" ? communityId : undefined,
       price: accessType === "paid" ? price : 0,
       isPublished: asDraft ? false : isPublished,
-    });
+    };
+
+    if (asDraft) {
+      saveDraftMutation.mutate(data);
+    } else {
+      createExperimentMutation.mutate(data);
+    }
   };
 
   const selectedDimension = ELEVEN_DIMENSIONS.find((d) => d.id === dimension);
+
+  if (isEditMode && isLoadingExperiment) {
+    return (
+      <Layout>
+        <div className="max-w-4xl mx-auto p-4 lg:p-8 flex justify-center py-20">
+          <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+        </div>
+      </Layout>
+    );
+  }
 
   if (!isConnected) {
     return (
@@ -334,14 +460,25 @@ export default function ExperimentBuilder() {
         </div>
       }>
       <div className="max-w-4xl mx-auto p-4 lg:p-8 space-y-6">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => setLocation("/experiments")} data-testid="button-back">
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <div>
-            <h1 className="text-2xl font-serif font-normal text-muted-foreground">Create Experiment</h1>
-            <p className="text-muted-foreground">Design a transformative life experiment</p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" onClick={() => setLocation("/experiments")} data-testid="button-back">
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <div>
+              <h1 className="text-2xl font-serif font-normal text-muted-foreground">
+                {isEditMode ? "Edit Experiment" : "Create Experiment"}
+              </h1>
+              <p className="text-muted-foreground">Design a transformative life experiment</p>
+            </div>
           </div>
+          {isEditMode && (
+            <div className="text-xs text-muted-foreground" data-testid="text-autosave-status">
+              {autoSaveStatus === "saving" && "Saving..."}
+              {autoSaveStatus === "saved" && "All changes saved"}
+              {autoSaveStatus === "unsaved" && "Unsaved changes"}
+            </div>
+          )}
         </div>
 
         <Card className="rounded-xs">
@@ -685,19 +822,24 @@ export default function ExperimentBuilder() {
           <div className="flex gap-3">
             <Button
               variant="outline"
-              onClick={() => {
-                handleSubmit(true);
-              }}
-              disabled={createExperimentMutation.isPending}
+              onClick={() => handleSubmit(true)}
+              disabled={saveDraftMutation.isPending}
               className="gap-2"
               data-testid="button-save-draft"
             >
               <Save className="w-4 h-4" />
-              Save Draft
+              {saveDraftMutation.isPending ? "Saving..." : "Save Draft"}
             </Button>
-            <Button onClick={() => handleSubmit(false)} disabled={createExperimentMutation.isPending} className="gap-2" data-testid="button-create">
+            <Button
+              onClick={() => handleSubmit(false)}
+              disabled={createExperimentMutation.isPending}
+              className="gap-2"
+              data-testid="button-publish"
+            >
               <Save className="w-4 h-4" />
-              {createExperimentMutation.isPending ? "Creating..." : "Create Experiment"}
+              {createExperimentMutation.isPending
+                ? (isEditMode ? "Saving..." : "Creating...")
+                : (isEditMode ? "Publish Experiment" : "Create Experiment")}
             </Button>
           </div>
         </div>

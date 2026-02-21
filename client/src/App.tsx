@@ -49,6 +49,7 @@ function Router() {
       <Route path="/community/:id" component={ClubDetail} />
       <Route path="/experiments" component={Experiments} />
       <Route path="/experiments/create" component={ExperimentBuilder} />
+      <Route path="/experiments/edit/:id" component={ExperimentBuilder} />
       <Route path="/experiments/course/create" component={CourseBuilder} />
       <Route path="/experiments/course/:id" component={CourseDetail} />
       <Route path="/experiments/:id" component={ExperimentDetail} />

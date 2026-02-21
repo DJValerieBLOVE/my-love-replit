@@ -264,6 +264,36 @@ export async function getExperiment(id: string) {
   return response.json();
 }
 
+export async function updateExperiment(id: string, data: Partial<{
+  title: string;
+  description?: string;
+  image?: string;
+  dimension: string;
+  benefitsFor?: string;
+  outcomes?: string;
+  modules?: any[];
+  tags?: string[];
+  accessType?: string;
+  communityId?: string;
+  price?: number;
+  isPublished?: boolean;
+}>) {
+  const response = await authFetch(`/api/experiments/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error("Failed to update experiment");
+  return response.json();
+}
+
+export async function deleteExperiment(id: string) {
+  const response = await authFetch(`/api/experiments/${id}`, {
+    method: "DELETE",
+  });
+  if (!response.ok) throw new Error("Failed to delete experiment");
+  return response.json();
+}
+
 export async function getCreatorExperiments() {
   const response = await authFetch("/api/creator/experiments");
   if (!response.ok) throw new Error("Failed to fetch creator experiments");
