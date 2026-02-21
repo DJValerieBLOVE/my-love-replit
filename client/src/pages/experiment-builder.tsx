@@ -472,7 +472,7 @@ export default function ExperimentBuilder() {
               <Label>Thumbnail</Label>
               {image ? (
                 <div className="flex items-center gap-3">
-                  <div className="w-24 h-[54px] rounded border border-gray-200 overflow-hidden flex-shrink-0">
+                  <div className="w-40 h-[90px] border border-gray-200 overflow-hidden flex-shrink-0">
                     <img src={image} alt="Thumbnail" className="w-full h-full object-cover" />
                   </div>
                   <div className="flex-1 min-w-0">
