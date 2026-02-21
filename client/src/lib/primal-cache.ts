@@ -27,6 +27,7 @@ type PrimalProfile = {
   about?: string;
   nip05?: string;
   lud16?: string;
+  followers_count?: number;
 };
 
 type PrimalEventStats = {
@@ -671,6 +672,7 @@ export async function fetchPrimalUserContacts(pubkey: string): Promise<{ followi
     const messages = await primalCache.sendRequest({ cache: ["contact_list", { pubkey, extended_response: true }] });
     const profiles: PrimalProfile[] = [];
     let followingPubkeys: string[] = [];
+    const followerCounts = new Map<string, number>();
 
     for (const msg of messages) {
       if (!Array.isArray(msg)) continue;
@@ -693,7 +695,26 @@ export async function fetchPrimalUserContacts(pubkey: string): Promise<{ followi
               lud16: meta.lud16 || "",
             });
           } catch {}
+        } else if (eventData.kind === 10000108 || eventData.kind === 10000133) {
+          try {
+            const parsed = JSON.parse(eventData.content);
+            if (parsed && typeof parsed === "object") {
+              for (const [pk, data] of Object.entries(parsed)) {
+                if (typeof data === "object" && data !== null && "followers_count" in data) {
+                  followerCounts.set(pk, (data as any).followers_count);
+                } else if (typeof data === "number") {
+                  followerCounts.set(pk, data);
+                }
+              }
+            }
+          } catch {}
         }
+      }
+    }
+
+    for (const p of profiles) {
+      if (followerCounts.has(p.pubkey)) {
+        p.followers_count = followerCounts.get(p.pubkey);
       }
     }
 
@@ -709,6 +730,7 @@ export async function fetchPrimalUserFollowers(pubkey: string): Promise<{ follow
     const messages = await primalCache.sendRequest({ cache: ["user_followers", { pubkey }] });
     const profiles: PrimalProfile[] = [];
     let count = 0;
+    const followerCounts = new Map<string, number>();
 
     for (const msg of messages) {
       if (!Array.isArray(msg)) continue;
@@ -727,14 +749,30 @@ export async function fetchPrimalUserFollowers(pubkey: string): Promise<{ follow
               lud16: meta.lud16 || "",
             });
           } catch {}
-        } else if (eventData.kind === 10000108) {
+        } else if (eventData.kind === 10000108 || eventData.kind === 10000133) {
           try {
             const parsed = JSON.parse(eventData.content);
             if (parsed && typeof parsed === "object") {
-              count = parsed.cnt || parsed.count || profiles.length;
+              if (parsed.cnt !== undefined || parsed.count !== undefined) {
+                count = parsed.cnt || parsed.count || profiles.length;
+              } else {
+                for (const [pk, data] of Object.entries(parsed)) {
+                  if (typeof data === "object" && data !== null && "followers_count" in data) {
+                    followerCounts.set(pk, (data as any).followers_count);
+                  } else if (typeof data === "number") {
+                    followerCounts.set(pk, data);
+                  }
+                }
+              }
             }
           } catch {}
         }
+      }
+    }
+
+    for (const p of profiles) {
+      if (followerCounts.has(p.pubkey)) {
+        p.followers_count = followerCounts.get(p.pubkey);
       }
     }
 

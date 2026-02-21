@@ -40,6 +40,8 @@ import {
   UserPlus,
   UserMinus,
   Search,
+  Rss,
+  Key,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -247,23 +249,26 @@ function UserListItem({
   isOwnPubkey,
   onToggleFollow,
   isActionInProgress,
+  onNavigate,
 }: {
   user: PrimalProfile;
   isFollowing: boolean;
   isOwnPubkey: boolean;
   onToggleFollow: ((pubkey: string) => void) | null;
   isActionInProgress: boolean;
+  onNavigate?: () => void;
 }) {
   const [, setLocation] = useLocation();
   const displayName = user.display_name || user.name || user.pubkey.substring(0, 8);
 
+  const handleNavigate = () => {
+    onNavigate?.();
+    setLocation(`/profile/${user.pubkey}`);
+  };
+
   return (
     <div className="flex items-center gap-3 py-3 px-1" data-testid={`user-list-item-${user.pubkey.substring(0, 8)}`}>
-      <button
-        onClick={() => setLocation(`/profile/${user.pubkey}`)}
-        className="shrink-0"
-        data-testid={`avatar-link-${user.pubkey.substring(0, 8)}`}
-      >
+      <button onClick={handleNavigate} className="shrink-0">
         <Avatar className="w-10 h-10">
           {user.picture ? <AvatarImage src={user.picture} alt={displayName} /> : null}
           <AvatarFallback className="bg-muted text-muted-foreground text-xs">
@@ -271,52 +276,57 @@ function UserListItem({
           </AvatarFallback>
         </Avatar>
       </button>
-      <button
-        onClick={() => setLocation(`/profile/${user.pubkey}`)}
-        className="flex-1 min-w-0 text-left"
-      >
+      <button onClick={handleNavigate} className="flex-1 min-w-0 text-left">
         <div className="flex items-center gap-1.5">
           <span className="text-sm font-normal text-foreground truncate">{displayName}</span>
           {user.nip05 && <BadgeCheck className="w-3.5 h-3.5 text-[#6600ff] shrink-0" />}
         </div>
-        {user.nip05 && (
+        {user.nip05 ? (
           <p className="text-xs text-muted-foreground truncate">{user.nip05}</p>
-        )}
-        {!user.nip05 && user.name && (
+        ) : user.name ? (
           <p className="text-xs text-muted-foreground truncate">@{user.name}</p>
-        )}
+        ) : null}
       </button>
-      {!isOwnPubkey && onToggleFollow && (
-        <button
-          onClick={() => onToggleFollow(user.pubkey)}
-          disabled={isActionInProgress}
-          className={cn(
-            "px-3 py-1.5 rounded-full text-xs font-normal transition-colors border shrink-0",
-            isFollowing
-              ? "bg-white text-foreground border-gray-200 hover:border-red-300 hover:text-red-500"
-              : "bg-foreground text-background border-foreground hover:bg-foreground/90"
-          )}
-          data-testid={`button-follow-${user.pubkey.substring(0, 8)}`}
-        >
-          {isActionInProgress ? (
-            <Loader2 className="w-3 h-3 animate-spin" />
-          ) : isFollowing ? (
-            "Following"
-          ) : (
-            "Follow"
-          )}
-        </button>
-      )}
+      <div className="flex items-center gap-3 shrink-0">
+        {user.followers_count !== undefined && user.followers_count > 0 && (
+          <div className="text-right">
+            <span className="text-sm font-normal text-foreground">{formatNumber(user.followers_count)}</span>
+            <p className="text-[11px] text-muted-foreground leading-tight">followers</p>
+          </div>
+        )}
+        {!isOwnPubkey && onToggleFollow && (
+          <button
+            onClick={() => onToggleFollow(user.pubkey)}
+            disabled={isActionInProgress}
+            className={cn(
+              "px-3 py-1.5 rounded-md text-xs font-normal transition-colors border shrink-0 min-w-[72px]",
+              isFollowing
+                ? "bg-white text-foreground border-gray-200 hover:border-red-300 hover:text-red-500"
+                : "bg-foreground text-background border-foreground hover:bg-foreground/90"
+            )}
+            data-testid={`button-follow-${user.pubkey.substring(0, 8)}`}
+          >
+            {isActionInProgress ? (
+              <Loader2 className="w-3 h-3 animate-spin mx-auto" />
+            ) : isFollowing ? (
+              "unfollow"
+            ) : (
+              "follow"
+            )}
+          </button>
+        )}
+      </div>
     </div>
   );
 }
 
-function FollowListDialog({
+function FollowTabbedDialog({
   open,
   onOpenChange,
-  title,
   pubkey,
-  mode,
+  initialTab,
+  followingCount,
+  followersCount,
   myPubkey,
   isFollowing,
   onToggleFollow,
@@ -324,35 +334,54 @@ function FollowListDialog({
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  title: string;
   pubkey: string;
-  mode: "following" | "followers";
+  initialTab: "following" | "followers";
+  followingCount: number;
+  followersCount: number;
   myPubkey: string | undefined;
   isFollowing: (pubkey: string) => boolean;
   onToggleFollow: ((pubkey: string) => void) | null;
   actionInProgress: string | null;
 }) {
-  const [users, setUsers] = useState<PrimalProfile[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<"following" | "followers">(initialTab);
+  const [followingUsers, setFollowingUsers] = useState<PrimalProfile[]>([]);
+  const [followerUsers, setFollowerUsers] = useState<PrimalProfile[]>([]);
+  const [followingLoading, setFollowingLoading] = useState(false);
+  const [followersLoading, setFollowersLoading] = useState(false);
+  const [followingLoaded, setFollowingLoaded] = useState(false);
+  const [followersLoaded, setFollowersLoaded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    if (open && pubkey) {
-      setLoading(true);
+    if (open) {
+      setActiveTab(initialTab);
       setSearchQuery("");
-      const fetchData = mode === "following"
-        ? fetchPrimalUserContacts(pubkey).then(r => r.following)
-        : fetchPrimalUserFollowers(pubkey).then(r => r.followers);
-
-      fetchData.then(profiles => {
-        setUsers(profiles);
-      }).catch(err => {
-        console.error(`[FollowList] Error loading ${mode}:`, err);
-      }).finally(() => {
-        setLoading(false);
-      });
+      setFollowingLoaded(false);
+      setFollowersLoaded(false);
+      setFollowingUsers([]);
+      setFollowerUsers([]);
     }
-  }, [open, pubkey, mode]);
+  }, [open, pubkey]);
+
+  useEffect(() => {
+    if (!open || !pubkey) return;
+    if (activeTab === "following" && !followingLoaded) {
+      setFollowingLoading(true);
+      fetchPrimalUserContacts(pubkey)
+        .then(r => { setFollowingUsers(r.following); setFollowingLoaded(true); })
+        .catch(err => console.error("[FollowList] Error loading following:", err))
+        .finally(() => setFollowingLoading(false));
+    } else if (activeTab === "followers" && !followersLoaded) {
+      setFollowersLoading(true);
+      fetchPrimalUserFollowers(pubkey)
+        .then(r => { setFollowerUsers(r.followers); setFollowersLoaded(true); })
+        .catch(err => console.error("[FollowList] Error loading followers:", err))
+        .finally(() => setFollowersLoading(false));
+    }
+  }, [open, pubkey, activeTab, followingLoaded, followersLoaded]);
+
+  const users = activeTab === "following" ? followingUsers : followerUsers;
+  const loading = activeTab === "following" ? followingLoading : followersLoading;
 
   const filteredUsers = searchQuery.trim()
     ? users.filter(u =>
@@ -365,11 +394,35 @@ function FollowListDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md max-h-[80vh] flex flex-col p-0">
-        <DialogHeader className="px-5 pt-5 pb-0">
-          <DialogTitle className="text-lg font-normal">{title}</DialogTitle>
-          <DialogDescription className="sr-only">
-            {mode === "following" ? "People this user follows" : "People following this user"}
-          </DialogDescription>
+        <DialogHeader className="px-0 pt-0 pb-0 border-b border-border">
+          <DialogTitle className="sr-only">Following and Followers</DialogTitle>
+          <DialogDescription className="sr-only">View following and followers lists</DialogDescription>
+          <div className="flex">
+            <button
+              onClick={() => { setActiveTab("following"); setSearchQuery(""); }}
+              className={cn(
+                "flex-1 py-3.5 text-sm font-normal text-center border-b-2 transition-colors",
+                activeTab === "following"
+                  ? "border-[#6600ff] text-foreground"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              )}
+              data-testid="tab-following"
+            >
+              Following ({formatNumber(followingCount)})
+            </button>
+            <button
+              onClick={() => { setActiveTab("followers"); setSearchQuery(""); }}
+              className={cn(
+                "flex-1 py-3.5 text-sm font-normal text-center border-b-2 transition-colors",
+                activeTab === "followers"
+                  ? "border-[#6600ff] text-foreground"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              )}
+              data-testid="tab-followers"
+            >
+              Followers ({formatNumber(followersCount)})
+            </button>
+          </div>
         </DialogHeader>
 
         <div className="px-5 pt-3 pb-2">
@@ -395,7 +448,7 @@ function FollowListDialog({
                     <Skeleton className="h-3.5 w-32" />
                     <Skeleton className="h-3 w-24" />
                   </div>
-                  <Skeleton className="h-7 w-20 rounded-full" />
+                  <Skeleton className="h-7 w-20 rounded-md" />
                 </div>
               ))}
             </div>
@@ -409,13 +462,14 @@ function FollowListDialog({
                   isOwnPubkey={user.pubkey === myPubkey}
                   onToggleFollow={onToggleFollow}
                   isActionInProgress={actionInProgress === user.pubkey}
+                  onNavigate={() => onOpenChange(false)}
                 />
               ))}
             </div>
           ) : (
             <div className="text-center py-8">
               <p className="text-sm text-muted-foreground">
-                {searchQuery ? "No users found matching your search" : `No ${mode} yet`}
+                {searchQuery ? "No users found matching your search" : `No ${activeTab} yet`}
               </p>
             </div>
           )}
@@ -440,8 +494,9 @@ export default function Profile() {
   const [userNotes, setUserNotes] = useState<FeedPost[]>([]);
   const [notesLoading, setNotesLoading] = useState(false);
   const [notesProfiles, setNotesProfiles] = useState<Map<string, PrimalProfile>>(new Map());
-  const [followingOpen, setFollowingOpen] = useState(false);
-  const [followersOpen, setFollowersOpen] = useState(false);
+  const [followDialogOpen, setFollowDialogOpen] = useState(false);
+  const [followDialogTab, setFollowDialogTab] = useState<"following" | "followers">("following");
+  const [contextMenuOpen, setContextMenuOpen] = useState(false);
 
   const currentUserId = profile?.userId;
   const viewingPubkey = params.userId || undefined;
@@ -531,6 +586,55 @@ export default function Profile() {
       setCopiedNpub(true);
       toast.success("Public key copied!");
       setTimeout(() => setCopiedNpub(false), 2000);
+    }
+  };
+
+  const copyProfileLink = () => {
+    const key = isOwnProfile ? profile?.pubkey : targetPubkey;
+    if (key) {
+      navigator.clipboard.writeText(`${window.location.origin}/profile/${key}`);
+      toast.success("Profile link copied!");
+    } else {
+      toast.info("No profile link available");
+    }
+    setContextMenuOpen(false);
+  };
+
+  const copyPublicKey = () => {
+    const key = isOwnProfile ? profile?.npub || profile?.pubkey : targetPubkey;
+    if (key) {
+      navigator.clipboard.writeText(key);
+      toast.success("Public key copied!");
+    } else {
+      toast.info("No public key available");
+    }
+    setContextMenuOpen(false);
+  };
+
+  const addUserFeed = () => {
+    toast.success("User feed added to home!");
+    setContextMenuOpen(false);
+  };
+
+  const contextMenuRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!contextMenuOpen) return;
+    const handleClick = (e: MouseEvent) => {
+      if (contextMenuRef.current && !contextMenuRef.current.contains(e.target as Node)) {
+        setContextMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [contextMenuOpen]);
+
+  const showQrCode = () => {
+    const key = isOwnProfile ? profile?.npub || profile?.pubkey : targetPubkey;
+    if (key) {
+      navigator.clipboard.writeText(key);
+      toast.success("Public key copied to clipboard!");
+    } else {
+      toast.info("No public key available");
     }
   };
 
@@ -692,14 +796,46 @@ export default function Profile() {
           </div>
 
           <div className="flex justify-end items-center gap-2 pt-3 pr-5 pb-4" data-testid="profile-actions">
+            <div className="relative" ref={contextMenuRef}>
+              <button
+                onClick={() => setContextMenuOpen(!contextMenuOpen)}
+                className="w-9 h-9 rounded-md border border-border bg-card flex items-center justify-center hover:bg-[#F0E6FF] transition-colors"
+                data-testid="button-context-menu"
+                title="More options"
+              >
+                <MoreHorizontal className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+              </button>
+              {contextMenuOpen && (
+                <div className="absolute right-0 top-full mt-1 w-56 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50" data-testid="context-menu-dropdown">
+                  <button
+                    onClick={addUserFeed}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-gray-50 transition-colors"
+                    data-testid="menu-add-feed"
+                  >
+                    <Rss className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+                    Add user feed
+                  </button>
+                  <button
+                    onClick={copyProfileLink}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-gray-50 transition-colors"
+                    data-testid="menu-copy-link"
+                  >
+                    <LinkIcon className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+                    Copy user link
+                  </button>
+                  <button
+                    onClick={copyPublicKey}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-gray-50 transition-colors"
+                    data-testid="menu-copy-pubkey"
+                  >
+                    <Key className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+                    Copy user public key
+                  </button>
+                </div>
+              )}
+            </div>
             <button
-              className="w-9 h-9 rounded-md border border-border bg-card flex items-center justify-center hover:bg-[#F0E6FF] transition-colors"
-              data-testid="button-context-menu"
-              title="More options"
-            >
-              <MoreHorizontal className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-            </button>
-            <button
+              onClick={showQrCode}
               className="w-9 h-9 rounded-md border border-border bg-card flex items-center justify-center hover:bg-[#F0E6FF] transition-colors"
               data-testid="button-qr-code"
               title="QR Code"
@@ -707,6 +843,7 @@ export default function Profile() {
               <QrCode className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
             </button>
             <button
+              onClick={() => toast.info("Direct messages coming soon!")}
               className="w-9 h-9 rounded-md border border-border bg-card flex items-center justify-center hover:bg-[#F0E6FF] transition-colors"
               data-testid="button-message"
               title="Message"
@@ -812,7 +949,7 @@ export default function Profile() {
               <div className="flex flex-col items-end gap-1.5 shrink-0 pt-1">
                 <div className="flex items-center gap-2" data-testid="profile-follow-stats">
                   <button
-                    onClick={() => targetPubkey && setFollowingOpen(true)}
+                    onClick={() => { if (targetPubkey) { setFollowDialogTab("following"); setFollowDialogOpen(true); } }}
                     className="flex items-center gap-1 hover:opacity-70 transition-opacity"
                     data-testid="text-following-count"
                   >
@@ -820,7 +957,7 @@ export default function Profile() {
                     <span className="text-sm text-muted-foreground">following</span>
                   </button>
                   <button
-                    onClick={() => targetPubkey && setFollowersOpen(true)}
+                    onClick={() => { if (targetPubkey) { setFollowDialogTab("followers"); setFollowDialogOpen(true); } }}
                     className="flex items-center gap-1 hover:opacity-70 transition-opacity"
                     data-testid="text-followers-count"
                   >
@@ -1108,30 +1245,18 @@ export default function Profile() {
         </Dialog>
 
         {targetPubkey && (
-          <>
-            <FollowListDialog
-              open={followingOpen}
-              onOpenChange={setFollowingOpen}
-              title={`${isOwnProfile ? "You are" : displayName + " is"} following`}
-              pubkey={targetPubkey}
-              mode="following"
-              myPubkey={profile?.pubkey}
-              isFollowing={isFollowing}
-              onToggleFollow={profile?.pubkey ? toggleFollow : null}
-              actionInProgress={actionInProgress}
-            />
-            <FollowListDialog
-              open={followersOpen}
-              onOpenChange={setFollowersOpen}
-              title={`${isOwnProfile ? "Your" : displayName + "'s"} followers`}
-              pubkey={targetPubkey}
-              mode="followers"
-              myPubkey={profile?.pubkey}
-              isFollowing={isFollowing}
-              onToggleFollow={profile?.pubkey ? toggleFollow : null}
-              actionInProgress={actionInProgress}
-            />
-          </>
+          <FollowTabbedDialog
+            open={followDialogOpen}
+            onOpenChange={setFollowDialogOpen}
+            pubkey={targetPubkey}
+            initialTab={followDialogTab}
+            followingCount={nostrProfile?.following_count || 0}
+            followersCount={nostrProfile?.followers_count || 0}
+            myPubkey={profile?.pubkey}
+            isFollowing={isFollowing}
+            onToggleFollow={profile?.pubkey ? toggleFollow : null}
+            actionInProgress={actionInProgress}
+          />
         )}
       </div>
     </Layout>
