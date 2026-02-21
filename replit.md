@@ -3,6 +3,20 @@
 ## Overview
 My Masterpiece is a spiritual personal growth application aiming to help users curate their personal growth journey. It provides a personalized dashboard, integrated consumption of growth content (courses, podcasts, music), collaboration tools, private journaling, and an AI coach with persistent memory. The app leverages a hybrid Nostr and PostgreSQL architecture, integrating Lightning payments for peer-to-peer interactions. The platform seeks to unify features from various popular platforms into a singular, cohesive experience focused on personal transformation, specifically hosting the "11x LOVE LaB" community.
 
+## Recent Changes (February 21, 2026)
+- **Prompt 3 Complete**: Quizzes, Progress Tracking & Social Sharing
+  - Added quiz builder to experiment steps (multiple choice with correct answer marking)
+  - Added quiz player in experiment detail (confetti on correct, score tracking, result persistence)
+  - Added enrollment flow with "Start Experiment" / "Enroll Now" buttons
+  - Added step completion with "Mark Complete" button and server-side progress calculation
+  - Added progress bars on experiment cards, experiment detail sidebar, and Big Dreams page
+  - "In Progress" and "Complete" tabs on experiments page now filter by actual enrollment data
+  - Module completion modal with "Share Your Progress" and experiment completion modal with "Share Your Win"
+  - Quiz performance summary shown in completion modal
+  - Server-side totalSteps validation (prevents client tampering)
+  - Database: Added completedSteps (text[]), quizResults (jsonb), completedAt (timestamp) columns to userExperiments table
+  - New API routes: GET /api/user-experiments/experiment/:experimentId, POST /api/user-experiments/:id/complete-step, POST /api/user-experiments/:id/quiz-result
+
 ## User Preferences
 - Preferred communication style: Simple, everyday language
 - Daily LOVE Practice is the MOST IMPORTANT feature (LOVE always capitalized)
@@ -52,14 +66,15 @@ My Masterpiece is a spiritual personal growth application aiming to help users c
 
 ### Key Features and Pages
 - **Home**: Prosperity Pyramid with flip card animations.
-- **Big Dreams**: Daily hub with Daily LOVE Practice CTA, streak grid, experiment progress, upcoming events, and 11 Big Dreams editor.
+- **Big Dreams**: Daily hub with Daily LOVE Practice CTA, streak grid, experiment progress (shows enrolled experiments with real progress data), upcoming events, and 11 Big Dreams editor.
 - **Daily LOVE Practice**: Full-page wizard accessible from Big Dreams.
-- **Experiments** (`/experiments`): Full curriculum platform with 11 Dimensions filter (colored dots), experiment cards with dimension accent colors. Builder (`/experiments/create`) supports Module > Step hierarchy, TipTap rich text, YouTube/Vimeo embeds, quiz questions, "Who Could Benefit" and "Outcomes" fields. Auto-save drafts (5s debounce). Edit mode at `/experiments/edit/:id`. My Experiments section with Drafts/Published tabs. API: PUT/DELETE with ownership validation. Tiered privacy: catalog public, content behind auth. Lightning zaps on completion.
+- **Experiments** (`/experiments`): Full curriculum platform with 11 Dimensions filter (colored dots), experiment cards with dimension accent colors and progress bars for enrolled users. Builder (`/experiments/create`) supports Module > Step hierarchy, TipTap rich text, YouTube/Vimeo embeds, quiz questions per step, "Who Could Benefit" and "Outcomes" fields. Auto-save drafts (5s debounce). Edit mode at `/experiments/edit/:id`. My Experiments section with Drafts/Published tabs. In-Progress and Complete tabs filter by actual enrollment data. API: PUT/DELETE with ownership validation. Tiered privacy: catalog public, content behind auth. Lightning zaps on completion.
+- **Experiment Detail** (`/experiments/:id`): Full step viewer with enrollment flow, quiz player (confetti, score tracking), step completion ("Mark Complete" button), progress sidebar, module/experiment completion modals with "Share Your Win" social sharing.
 - **Events**: Calendar and event cards.
 - **People**: Unified social hub with dropdown pill bubbles, right sidebar with gamification placeholders, and 4-tier privacy selector on all post composers.
 - **Vault**: Tabs for personal content.
 - **Tribe/Community**: Listing, creation, and management of tribes.
-- **Love Board**: Planned marketplace.
+- **Love Board**: Planned marketplace at /leaderboard route.
 - **Profile**: Clean Primal-style profile with no gamification, showing Nostr synced data. Follow/unfollow system with Kind 3 contact list management.
 - **Creator Dashboard**: Analytics for content creators.
 - **Wallet**: Lightning wallet with NWC integration.
@@ -73,6 +88,15 @@ My Masterpiece is a spiritual personal growth application aiming to help users c
 - **Article Editor**: Primal-style NIP-23 compliant article editor with drafts.
 - **Feed Features**: Primal-style text truncation, NIP-23 long-form article display, profile enhancements (tabbed follow dialog, context menu, banner, QR code). Primal-style image lightbox on feed posts (click to expand fullscreen with keyboard nav).
 
+### Experiment Progress Tracking System
+- **Database Schema**: `userExperiments` table tracks enrollment with `completedSteps` (text[]), `quizResults` (jsonb of StepQuizResult[]), `completedAt` (timestamp), `progress` (0-100 integer), `completedDiscoveries` (count).
+- **StepQuizResult Interface**: `{ stepId: string, score: number, total: number, completedAt: string }`.
+- **QuizQuestion Interface**: `{ question: string, options: string[], correctIndex: number }` — stored in experiment step modules JSON.
+- **API Routes**: `GET /api/user-experiments/experiment/:experimentId` (get enrollment), `POST /api/user-experiments` (enroll, idempotent), `POST /api/user-experiments/:id/complete-step` (mark step done, server computes progress from experiment modules), `POST /api/user-experiments/:id/quiz-result` (save quiz score, replaces previous attempt for same step).
+- **Progress Calculation**: Server-side only — reads experiment modules to count total steps, divides completed steps by total. Prevents client tampering.
+- **Quiz Builder**: In experiment builder, each step has "Add Quiz Question" button. Supports 2-6 options per question, radio button to mark correct answer. Questions stored in step's `quizQuestions` array within modules JSON.
+- **Quiz Player**: StepQuiz component shows questions one at a time, instant feedback (green/red), confetti on correct, score summary at end. Persists results to DB. Shows "Quiz Completed" badge if already taken.
+
 ### Nsec Login & Local Signer (Primal-Style)
 - **Local Signer** (`client/src/lib/local-signer.ts`): `createLocalSigner()` returns `signEvent`, `nip04.encrypt/decrypt`, `nip44.encrypt/decrypt`, `getPublicKey()`. Keys derived from nsec via `@noble/hashes` and `nostr-tools`. Helpers: `storeNsec`, `readStoredNsec`, `clearStoredNsec` (localStorage).
 - **NostrContext**: `connectWithNsec(nsec)` method. Session restore via `checkNsecSession()` on page refresh. Sign event priority: local signer > bunker > extension. Disconnect clears nsec.
@@ -80,10 +104,19 @@ My Masterpiece is a spiritual personal growth application aiming to help users c
 - **Login Methods**: `"extension" | "bunker" | "ncryptsec" | "email" | null`.
 
 ### Experiment Builder Implementation Details
-- **Database Schema**: `experiments` table has `modules` JSON field (Module > Step hierarchy), `dimension` (required), `benefitsFor`, `outcomes`, `isPublished`, `accessType`, `price`. 11 Dimensions replace categories.
-- **Builder Features**: Auto-save drafts (5s debounce), edit mode (`/experiments/edit/:id`) with ownership check, My Experiments with Drafts/Published tabs, Module > Step hierarchy with collapsible/reorderable UI, TipTap rich text per step, YouTube/Vimeo URL validation per step.
+- **Database Schema**: `experiments` table has `modules` JSON field (Module > Step hierarchy), `dimension` (required), `benefitsFor`, `outcomes`, `isPublished`, `accessType`, `price`. 11 Dimensions replace categories. Each step can have `quizQuestions` array.
+- **Builder Features**: Auto-save drafts (5s debounce), edit mode (`/experiments/edit/:id`) with ownership check, My Experiments with Drafts/Published tabs, Module > Step hierarchy with collapsible/reorderable UI, TipTap rich text per step, YouTube/Vimeo URL validation per step, quiz question builder per step.
 - **API**: `POST /api/experiments` (create), `PUT /api/experiments/:id` (update with ownership), `DELETE /api/experiments/:id` (delete with ownership), `GET /api/experiments/my` (user's experiments).
 - **Tags**: Current tags are placeholders — will be replaced with custom tags system.
+
+## What Still Needs Work
+- **Events**: Full CRUD, RSVP system, calendar integration, event detail pages need to be functional end-to-end
+- **Love Board / Marketplace**: Build out marketplace listings (For Sale, Help Wanted, Services, Other) at /leaderboard route for paid members
+- **Vault Private Data**: Connect daily journals, experiment progress, notes to Vault page with NIP-44 encryption on private relay — user data portable and downloadable
+- **Daily LOVE Practice ↔ Vault**: Ensure practice entries are stored encrypted on private relay and accessible from Vault
+- **Notes System**: Build/verify notes CRUD and make sure they work properly
+- **Private Relay Data Sync**: All personal data (journals, experiments, notes, dreams) should be NIP-44 encrypted on private relay so users can download/unlock anywhere
+- **Social Sharing**: Verify Nostr kind 1 posts actually publish to relays on experiment/module completion
 
 ## External Dependencies
 - **PostgreSQL**: Primary database (Neon serverless).

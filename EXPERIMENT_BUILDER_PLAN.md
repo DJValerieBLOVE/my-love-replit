@@ -33,27 +33,18 @@ Full experiment builder redesign completed:
 
 ## Remaining Prompts (use in order, one per chat)
 
-### Prompt 3 - Quizzes, Progress Tracking & Social Sharing
-
-> Read EXPERIMENT_BUILDER_PLAN.md and replit.md fully before starting. Read NOSTR_GUIDELINES.md for any Nostr work. This prompt builds the core curriculum interactivity:
->
-> **A. Quizzes**:
-> - Add quiz builder UI in the experiment builder: after each step, guide can add quiz questions (multiple choice). Schema: `{question: string, options: string[], correctIndex: number}[]` per step.
-> - In the experiment detail/player: after completing a step's content, show the quiz. On correct answers, play a celebration animation (confetti/sparkle) and auto-load the next step. Track quiz results per user.
->
-> **B. Progress Tracking**:
-> - Track user progress per step, per module, and per experiment (percentage completion).
-> - Show progress bars on experiment cards and detail pages.
-> - Link experiment progress to the Big Dreams tracker on `/big-dreams` page.
-> - Progress cards showing active experiments and completion status.
-> - Visualize with streak-style grids or progress rings.
->
-> **C. Social Sharing & Auto-Share**:
-> - On module and experiment completion, offer "Share Your Win" that creates a kind 1 Nostr note posted to PUBLIC relays. The note includes: experiment name, teaser description, user's personal reflection (they write it), beautiful card preview image, link back to the app (e.g., `11xlove.shakespeare.wtf/experiments/[slug]`).
-> - Auto-share option: users can opt-in to automatically post completion notes.
-> - Comments on individual steps/experiments are PRIVATE (Railway relay only) but can receive zaps from other community members.
->
-> Key files: `client/src/pages/experiment-detail.tsx`, `client/src/pages/experiment-builder.tsx`, `client/src/pages/big-dreams.tsx`, `client/src/contexts/ndk-context.tsx`, `client/src/lib/relays.ts`, `shared/schema.ts`, `NOSTR_GUIDELINES.md`
+### Prompt 3 - Quizzes, Progress Tracking & Social Sharing (DONE)
+- Quiz builder added to experiment builder (per-step, multiple choice, 2-6 options, correct answer marking)
+- Quiz player in experiment detail (confetti on correct, score tracking, result persistence, "Quiz Completed" badge)
+- Enrollment flow with "Start Experiment" / "Enroll Now" buttons (idempotent)
+- Step completion with "Mark Complete" button, server-side progress calculation from experiment modules
+- Progress bars on experiment cards, experiment detail sidebar, and Big Dreams page
+- "In Progress" and "Complete" tabs on experiments page filter by actual enrollment data
+- Module completion modal with "Share Your Progress" and experiment completion modal with "Share Your Win"
+- Quiz performance summary shown in completion modal
+- Database: Added completedSteps (text[]), quizResults (jsonb), completedAt (timestamp) to userExperiments
+- New API routes: GET /api/user-experiments/experiment/:experimentId, POST /api/user-experiments/:id/complete-step, POST /api/user-experiments/:id/quiz-result
+- Key files updated: `shared/schema.ts`, `server/routes.ts`, `server/storage.ts`, `client/src/pages/experiment-detail.tsx`, `client/src/pages/experiment-builder.tsx`, `client/src/pages/experiments.tsx`, `client/src/pages/big-dreams.tsx`, `client/src/lib/api.ts`
 
 ### Prompt 4 - Lightning Zaps (Value-for-Value)
 
