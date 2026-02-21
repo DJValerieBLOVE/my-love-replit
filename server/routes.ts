@@ -749,15 +749,85 @@ export async function registerRoutes(
     }
   });
 
+  // Get user's enrollment for a specific experiment
+  app.get("/api/user-experiments/experiment/:experimentId", authMiddleware, async (req, res) => {
+    try {
+      const enrollment = await storage.getUserExperimentByExperimentId(req.userId!, req.params.experimentId);
+      res.json(enrollment || null);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch enrollment" });
+    }
+  });
+
   // Enroll authenticated user in experiment
   app.post("/api/user-experiments", authMiddleware, async (req, res) => {
     try {
-      const data = { ...req.body, userId: req.userId };
+      const existing = await storage.getUserExperimentByExperimentId(req.userId!, req.body.experimentId);
+      if (existing) {
+        return res.json(existing);
+      }
+      const data = { ...req.body, userId: req.userId, completedDiscoveries: 0, progress: 0 };
       const validated = insertUserExperimentSchema.parse(data);
       const userExperiment = await storage.enrollUserInExperiment(validated);
       res.status(201).json(userExperiment);
     } catch (error: any) {
       res.status(400).json({ error: error.message || "Invalid enrollment data" });
+    }
+  });
+
+  // Complete a step
+  app.post("/api/user-experiments/:id/complete-step", authMiddleware, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { stepId } = req.body;
+      if (!stepId) return res.status(400).json({ error: "stepId is required" });
+
+      const enrollment = await storage.updateUserExperimentProgress(id, {});
+      if (!enrollment) return res.status(404).json({ error: "Enrollment not found" });
+
+      const experiment = await storage.getExperiment(enrollment.experimentId);
+      if (!experiment) return res.status(404).json({ error: "Experiment not found" });
+
+      const modules = (experiment.modules as any[]) || [];
+      const serverTotalSteps = modules.reduce((sum: number, mod: any) => sum + (mod.steps?.length || 0), 0);
+
+      const completedSteps = [...new Set([...(enrollment.completedSteps || []), stepId])];
+      const progress = serverTotalSteps > 0 ? Math.round((completedSteps.length / serverTotalSteps) * 100) : 0;
+      const isComplete = progress >= 100;
+
+      const updated = await storage.updateUserExperimentProgress(id, {
+        completedSteps,
+        completedDiscoveries: completedSteps.length,
+        progress: Math.min(progress, 100),
+        completedAt: isComplete ? new Date() : undefined,
+      });
+
+      res.json(updated);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to complete step" });
+    }
+  });
+
+  // Save quiz results for a step
+  app.post("/api/user-experiments/:id/quiz-result", authMiddleware, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { stepId, score, total } = req.body;
+      if (!stepId || score === undefined || !total) {
+        return res.status(400).json({ error: "stepId, score, and total are required" });
+      }
+
+      const enrollment = await storage.updateUserExperimentProgress(id, {});
+      if (!enrollment) return res.status(404).json({ error: "Enrollment not found" });
+
+      const existingResults = (enrollment.quizResults as any[]) || [];
+      const filteredResults = existingResults.filter((r: any) => r.stepId !== stepId);
+      const quizResults = [...filteredResults, { stepId, score, total, completedAt: new Date().toISOString() }];
+
+      const updated = await storage.updateUserExperimentProgress(id, { quizResults });
+      res.json(updated);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to save quiz result" });
     }
   });
 

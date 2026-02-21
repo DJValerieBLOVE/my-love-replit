@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { StreakGrid } from "@/components/streak-grid";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getDreams, getAreaProgress, saveDream, getAllExperiments } from "@/lib/api";
+import { getDreams, getAreaProgress, saveDream, getAllExperiments, getUserExperiments } from "@/lib/api";
 import { useNostr } from "@/contexts/nostr-context";
 import { toast } from "sonner";
 import { ShareConfirmationDialog } from "@/components/share-confirmation-dialog";
@@ -44,6 +44,12 @@ export default function BigDreams() {
     queryFn: getAllExperiments,
   });
 
+  const { data: userExperimentsList = [] } = useQuery({
+    queryKey: ["userExperiments"],
+    queryFn: getUserExperiments,
+    enabled: isConnected,
+  });
+
   const saveDreamMutation = useMutation({
     mutationFn: ({ areaId, dream }: { areaId: string; dream: string }) => saveDream(areaId, dream),
     onSuccess: () => {
@@ -76,7 +82,13 @@ export default function BigDreams() {
 
   const currentStreak = userStats?.streak || 0;
   const upcomingEvents = EVENTS.slice(0, 3);
-  const recentExperiments = (experiments as Experiment[]).slice(0, 3);
+
+  const activeExperiments = (userExperimentsList as any[])
+    .filter((ue: any) => ue.experiment && (ue.progress || 0) < 100)
+    .slice(0, 3);
+  const recentExperiments = activeExperiments.length > 0
+    ? activeExperiments.map((ue: any) => ue.experiment)
+    : (experiments as Experiment[]).slice(0, 3);
 
   const getTimeGreeting = () => {
     const hour = new Date().getHours();
@@ -210,15 +222,16 @@ export default function BigDreams() {
                   {recentExperiments.map((exp) => {
                     const mods = exp.modules as any[] | null;
                     const totalSteps = mods ? mods.reduce((sum: number, m: any) => sum + (m.steps?.length || 0), 0) : 0;
-                    const completedSteps = 0;
-                    const progressPercent = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
+                    const enrollment = (userExperimentsList as any[]).find((ue: any) => ue.experimentId === exp.id);
+                    const completedCount = enrollment?.completedSteps?.length || 0;
+                    const progressPercent = enrollment?.progress || (totalSteps > 0 ? Math.round((completedCount / totalSteps) * 100) : 0);
 
                     return (
                       <Link key={exp.id} href={`/experiments/${exp.id}`}>
                         <Card className="p-3 hover:shadow-md transition-shadow cursor-pointer group" data-testid={`card-experiment-${exp.id}`}>
                           <div className="flex items-center justify-between mb-1.5">
                             <h4 className="font-normal text-sm truncate group-hover:text-primary transition-colors flex-1 min-w-0">{exp.title}</h4>
-                            <span className="text-xs text-muted-foreground ml-2 shrink-0">{completedSteps}/{totalSteps}</span>
+                            <span className="text-xs text-muted-foreground ml-2 shrink-0">{completedCount}/{totalSteps}</span>
                           </div>
                           <Progress value={progressPercent} className="h-1.5" />
                           <p className="text-xs text-muted-foreground mt-1.5">

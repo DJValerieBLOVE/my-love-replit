@@ -1,10 +1,11 @@
 import {
   ArrowLeft, CheckCircle, PlayCircle, Clock, BookOpen, Zap,
   MessageCircle, Send, FlaskConical, Lightbulb, Circle, Check,
-  ChevronDown, ChevronUp, MoveRight, Trophy, Lock, User as UserIcon
+  ChevronDown, ChevronUp, MoveRight, Trophy, Lock, User as UserIcon,
+  HelpCircle, PartyPopper
 } from "lucide-react";
 import { Link, useRoute } from "wouter";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { FeedPost } from "@/components/feed-post";
 import confetti from 'canvas-confetti';
 import {
@@ -20,11 +21,11 @@ import { Button } from "@/components/ui/button";
 import { useNostr } from "@/contexts/nostr-context";
 import { ShareConfirmationDialog } from "@/components/share-confirmation-dialog";
 import { Share2 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { getExperiment } from "@/lib/api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getExperiment, enrollInExperiment, getExperimentEnrollment, completeStep, saveQuizResult } from "@/lib/api";
 import { ELEVEN_DIMENSIONS } from "@/lib/mock-data";
 import { EditorPreview, richTextEditorStyles } from "@/components/rich-text-editor";
-import type { Experiment, ExperimentModule, ExperimentStep } from "@shared/schema";
+import type { Experiment, ExperimentModule, ExperimentStep, UserExperiment, StepQuizResult, QuizQuestion } from "@shared/schema";
 
 function YouTubeEmbed({ url }: { url: string }) {
   const getEmbedUrl = (rawUrl: string) => {
@@ -64,15 +65,138 @@ function YouTubeEmbed({ url }: { url: string }) {
   );
 }
 
+function StepQuiz({
+  questions,
+  stepId,
+  enrollmentId,
+  existingResult,
+  onComplete,
+}: {
+  questions: QuizQuestion[];
+  stepId: string;
+  enrollmentId: string;
+  existingResult?: StepQuizResult;
+  onComplete: (score: number, total: number) => void;
+}) {
+  const [currentQ, setCurrentQ] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [answered, setAnswered] = useState(false);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(!!existingResult);
+  const queryClient = useQueryClient();
+
+  const quizResultMutation = useMutation({
+    mutationFn: ({ s, t }: { s: number; t: number }) => saveQuizResult(enrollmentId, stepId, s, t),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["enrollment"] }),
+  });
+
+  if (finished && existingResult) {
+    return (
+      <div className="bg-green-50 border border-green-200 rounded-xs p-4 mt-6" data-testid="quiz-result-summary">
+        <div className="flex items-center gap-2 text-green-700 mb-1">
+          <CheckCircle className="w-4 h-4" />
+          <span className="text-sm font-medium">Quiz Completed</span>
+        </div>
+        <p className="text-sm text-green-600">
+          You scored {existingResult.score}/{existingResult.total}
+        </p>
+      </div>
+    );
+  }
+
+  if (finished) return null;
+
+  const q = questions[currentQ];
+  if (!q) return null;
+
+  const handleSelect = (optIdx: number) => {
+    if (answered) return;
+    setSelectedAnswer(optIdx);
+    setAnswered(true);
+    const isCorrect = optIdx === q.correctIndex;
+    if (isCorrect) {
+      setScore((s) => s + 1);
+      confetti({ particleCount: 40, spread: 60, origin: { y: 0.7 } });
+    }
+  };
+
+  const handleNext = () => {
+    if (currentQ < questions.length - 1) {
+      setCurrentQ((c) => c + 1);
+      setSelectedAnswer(null);
+      setAnswered(false);
+    } else {
+      const lastCorrect = selectedAnswer === q.correctIndex ? 1 : 0;
+      const finalScore = score;
+      setFinished(true);
+      quizResultMutation.mutate({ s: finalScore, t: questions.length });
+      onComplete(finalScore, questions.length);
+      if (finalScore === questions.length) {
+        confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+      }
+    }
+  };
+
+  return (
+    <div className="mt-6 border rounded-xs p-5 space-y-4 bg-card" data-testid="step-quiz">
+      <div className="flex items-center justify-between">
+        <h4 className="text-sm font-medium flex items-center gap-1.5 text-muted-foreground">
+          <HelpCircle className="w-4 h-4" /> Quiz
+        </h4>
+        <span className="text-xs text-muted-foreground">{currentQ + 1} / {questions.length}</span>
+      </div>
+      <p className="text-base" data-testid="quiz-question-text">{q.question}</p>
+      <div className="space-y-2">
+        {q.options.map((opt, optIdx) => {
+          let className = "w-full text-left p-3 rounded-xs border text-sm transition-all ";
+          if (answered) {
+            if (optIdx === q.correctIndex) {
+              className += "border-green-500 bg-green-50 text-green-800";
+            } else if (optIdx === selectedAnswer) {
+              className += "border-red-400 bg-red-50 text-red-700";
+            } else {
+              className += "border-gray-200 text-muted-foreground opacity-50";
+            }
+          } else {
+            className += "border-gray-200 hover:border-primary/40 hover:bg-primary/5 cursor-pointer";
+          }
+          return (
+            <button
+              key={optIdx}
+              onClick={() => handleSelect(optIdx)}
+              className={className}
+              disabled={answered}
+              data-testid={`quiz-option-${optIdx}`}
+            >
+              {opt}
+            </button>
+          );
+        })}
+      </div>
+      {answered && (
+        <div className="flex items-center justify-between">
+          <p className={`text-sm ${selectedAnswer === q.correctIndex ? 'text-green-600' : 'text-red-600'}`}>
+            {selectedAnswer === q.correctIndex ? 'Correct!' : `Incorrect. The answer is: ${q.options[q.correctIndex]}`}
+          </p>
+          <Button size="sm" onClick={handleNext} data-testid="button-quiz-next">
+            {currentQ < questions.length - 1 ? 'Next' : 'Finish Quiz'}
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function ExperimentDetail() {
   const [, params] = useRoute("/experiments/:id");
   const { profile, isConnected } = useNostr();
+  const queryClient = useQueryClient();
   const [activeModuleIndex, setActiveModuleIndex] = useState(0);
   const [activeStepIndex, setActiveStepIndex] = useState(0);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
-  const [showZapModal, setShowZapModal] = useState(false);
+  const [showModuleCompleteModal, setShowModuleCompleteModal] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
-  const [zapAmount, setZapAmount] = useState(210);
+  const [shareContent, setShareContent] = useState({ title: "", preview: "" });
   const [newComment, setNewComment] = useState("");
   const [isAboutOpen, setIsAboutOpen] = useState(true);
 
@@ -82,12 +206,54 @@ export default function ExperimentDetail() {
     enabled: !!params?.id,
   });
 
+  const { data: enrollment, refetch: refetchEnrollment } = useQuery({
+    queryKey: ["enrollment", params?.id],
+    queryFn: () => getExperimentEnrollment(params!.id),
+    enabled: !!params?.id && isConnected,
+  });
+
+  const enrollMutation = useMutation({
+    mutationFn: () => enrollInExperiment(params!.id),
+    onSuccess: () => {
+      refetchEnrollment();
+      toast.success("Enrolled successfully!");
+    },
+  });
+
+  const completeStepMutation = useMutation({
+    mutationFn: ({ stepId, totalSteps }: { stepId: string; totalSteps: number }) =>
+      completeStep(enrollment!.id, stepId, totalSteps),
+    onSuccess: (data) => {
+      queryClient.setQueryData(["enrollment", params?.id], data);
+      refetchEnrollment();
+    },
+  });
+
   const modules: ExperimentModule[] = (experiment?.modules as ExperimentModule[]) || [];
   const activeModule = modules[activeModuleIndex];
   const activeStep = activeModule?.steps?.[activeStepIndex];
   const dimensionData = ELEVEN_DIMENSIONS.find((d) => d.id === experiment?.dimension);
 
-  const totalSteps = modules.reduce((sum, mod) => sum + (mod.steps?.length || 0), 0);
+  const totalSteps = useMemo(
+    () => modules.reduce((sum, mod) => sum + (mod.steps?.length || 0), 0),
+    [modules]
+  );
+
+  const allStepIds = useMemo(() => {
+    const ids: string[] = [];
+    modules.forEach((mod) => mod.steps?.forEach((s) => { if (s.id) ids.push(s.id); }));
+    return ids;
+  }, [modules]);
+
+  const completedSteps: string[] = (enrollment?.completedSteps as string[]) || [];
+  const quizResults: StepQuizResult[] = (enrollment?.quizResults as StepQuizResult[]) || [];
+
+  const isStepCompleted = useCallback((stepId: string) => completedSteps.includes(stepId), [completedSteps]);
+
+  const getQuizResult = useCallback(
+    (stepId: string) => quizResults.find((r) => r.stepId === stepId),
+    [quizResults]
+  );
 
   const [comments, setComments] = useState([
     {
@@ -130,6 +296,38 @@ export default function ExperimentDetail() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleMarkComplete = () => {
+    if (!enrollment || !activeStep?.id) return;
+    completeStepMutation.mutate(
+      { stepId: activeStep.id, totalSteps },
+      {
+        onSuccess: (data) => {
+          confetti({ particleCount: 60, spread: 70, origin: { y: 0.7 } });
+          toast.success("Step completed!");
+
+          const moduleStepIds = activeModule?.steps?.map((s) => s.id).filter(Boolean) as string[];
+          const updatedCompleted = (data.completedSteps as string[]) || [];
+          const allModuleStepsDone = moduleStepIds.every((id) => updatedCompleted.includes(id));
+
+          if (data.progress >= 100) {
+            setTimeout(() => {
+              confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
+              setShowCompletionModal(true);
+            }, 600);
+          } else if (allModuleStepsDone && activeModuleIndex < modules.length - 1) {
+            setTimeout(() => setShowModuleCompleteModal(true), 500);
+          } else {
+            if (activeModule && activeStepIndex < (activeModule.steps?.length || 0) - 1) {
+              setTimeout(() => navigateToStep(activeModuleIndex, activeStepIndex + 1), 800);
+            } else if (activeModuleIndex < modules.length - 1) {
+              setTimeout(() => navigateToStep(activeModuleIndex + 1, 0), 800);
+            }
+          }
+        },
+      }
+    );
+  };
+
   if (isLoading) {
     return (
       <Layout>
@@ -152,6 +350,9 @@ export default function ExperimentDetail() {
   }
 
   const showFullContent = isConnected;
+  const isEnrolled = !!enrollment;
+  const progressPercent = enrollment?.progress || 0;
+  const currentStepCompleted = activeStep?.id ? isStepCompleted(activeStep.id) : false;
 
   return (
     <Layout>
@@ -175,8 +376,23 @@ export default function ExperimentDetail() {
                   {dimensionData.name}
                 </span>
               )}
+              {isEnrolled && (
+                <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-0.5 rounded-md border border-green-200 bg-green-50 text-green-700" data-testid="badge-enrolled">
+                  <CheckCircle className="w-3 h-3" /> Enrolled
+                </span>
+              )}
             </div>
             <h1 className="text-3xl md:text-4xl font-serif font-normal text-muted-foreground mb-4" data-testid="text-experiment-title">{experiment.title}</h1>
+
+            {isEnrolled && (
+              <div className="mb-4" data-testid="progress-bar-container">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-xs text-muted-foreground">{completedSteps.length} of {totalSteps} steps completed</span>
+                  <span className="text-xs font-medium text-primary">{progressPercent}%</span>
+                </div>
+                <Progress value={progressPercent} className="h-2" />
+              </div>
+            )}
 
             <div className="border-l-2 border-primary/20 pl-4 py-1 cursor-pointer hover:border-primary transition-colors" onClick={() => setIsAboutOpen(!isAboutOpen)}>
               <div className="flex items-center gap-2 text-sm font-normal text-muted-foreground hover:text-foreground">
@@ -207,7 +423,25 @@ export default function ExperimentDetail() {
             </div>
           </div>
 
-          {showFullContent && activeStep ? (
+          {showFullContent && !isEnrolled ? (
+            <div className="mb-8">
+              <Card className="p-8 text-center border-dashed" data-testid="enrollment-card">
+                <FlaskConical className="w-12 h-12 mx-auto mb-4 text-primary" />
+                <h3 className="text-lg font-serif mb-2">Ready to Begin?</h3>
+                <p className="text-muted-foreground mb-4">
+                  Enroll to track your progress, take quizzes, and earn completion badges.
+                </p>
+                <Button
+                  className="gap-2"
+                  onClick={() => enrollMutation.mutate()}
+                  disabled={enrollMutation.isPending}
+                  data-testid="button-enroll"
+                >
+                  {enrollMutation.isPending ? "Enrolling..." : "Start Experiment"}
+                </Button>
+              </Card>
+            </div>
+          ) : showFullContent && activeStep ? (
             <div className="mb-8">
               <div className="mb-4">
                 <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1">
@@ -224,6 +458,22 @@ export default function ExperimentDetail() {
                 <div className="mb-6" data-testid="step-content">
                   <EditorPreview html={activeStep.content} />
                 </div>
+              )}
+
+              {activeStep.quizQuestions && activeStep.quizQuestions.length > 0 && isEnrolled && activeStep.id && (
+                <StepQuiz
+                  questions={activeStep.quizQuestions}
+                  stepId={activeStep.id}
+                  enrollmentId={enrollment!.id}
+                  existingResult={getQuizResult(activeStep.id)}
+                  onComplete={(score, total) => {
+                    if (score === total) {
+                      toast.success(`Perfect score! ${score}/${total}`);
+                    } else {
+                      toast(`Quiz complete: ${score}/${total}`);
+                    }
+                  }}
+                />
               )}
 
               <div className="flex items-center gap-3 mt-8">
@@ -249,6 +499,26 @@ export default function ExperimentDetail() {
                   </Button>
                 )}
                 <div className="flex-1" />
+
+                {isEnrolled && !currentStepCompleted && (
+                  <Button
+                    variant="outline"
+                    className="gap-2 text-green-700 border-green-300 hover:bg-green-50"
+                    onClick={handleMarkComplete}
+                    disabled={completeStepMutation.isPending}
+                    data-testid="button-mark-complete"
+                  >
+                    <Check className="w-4 h-4" />
+                    {completeStepMutation.isPending ? "Saving..." : "Mark Complete"}
+                  </Button>
+                )}
+
+                {currentStepCompleted && (
+                  <span className="flex items-center gap-1.5 text-sm text-green-600" data-testid="text-step-done">
+                    <CheckCircle className="w-4 h-4" /> Completed
+                  </span>
+                )}
+
                 {activeModule && activeStepIndex < (activeModule.steps?.length || 0) - 1 ? (
                   <Button onClick={() => navigateToStep(activeModuleIndex, activeStepIndex + 1)} className="gap-2" data-testid="button-next-step">
                     Next Step <MoveRight className="w-4 h-4" />
@@ -257,11 +527,11 @@ export default function ExperimentDetail() {
                   <Button onClick={() => navigateToStep(activeModuleIndex + 1, 0)} className="gap-2" data-testid="button-next-module">
                     Next Module <MoveRight className="w-4 h-4" />
                   </Button>
-                ) : (
+                ) : isEnrolled && progressPercent >= 100 ? (
                   <Button onClick={() => setShowCompletionModal(true)} className="gap-2" data-testid="button-complete">
-                    <Trophy className="w-4 h-4" /> Complete Experiment
+                    <Trophy className="w-4 h-4" /> View Completion
                   </Button>
-                )}
+                ) : null}
               </div>
             </div>
           ) : !showFullContent ? (
@@ -348,46 +618,90 @@ export default function ExperimentDetail() {
               </div>
             </div>
 
+            {isEnrolled && (
+              <div className="pb-4 border-b border-border/50" data-testid="sidebar-progress">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs uppercase tracking-wider text-muted-foreground">Your Progress</span>
+                  <span className="text-xs font-medium text-primary">{progressPercent}%</span>
+                </div>
+                <Progress value={progressPercent} className="h-1.5 mb-2" />
+                <p className="text-xs text-muted-foreground">
+                  {completedSteps.length}/{totalSteps} steps · {quizResults.length} quizzes taken
+                </p>
+              </div>
+            )}
+
             <div>
               <h3 className="font-serif font-normal text-lg mb-4 text-muted-foreground">Curriculum</h3>
               <div className="space-y-3">
-                {modules.map((mod, modIdx) => (
-                  <div key={mod.id || modIdx} className="space-y-1">
-                    <p className="text-xs uppercase tracking-wider text-muted-foreground font-normal px-1">
-                      Module {modIdx + 1}: {mod.title || "Untitled"}
-                    </p>
-                    <div className="space-y-0.5">
-                      {mod.steps?.map((step, stepIdx) => {
-                        const isActive = modIdx === activeModuleIndex && stepIdx === activeStepIndex;
-                        return (
-                          <button
-                            key={step.id || stepIdx}
-                            onClick={() => showFullContent && navigateToStep(modIdx, stepIdx)}
-                            className={`
-                              w-full text-left flex items-start gap-2 p-2 rounded-lg transition-all text-sm
-                              ${isActive ? 'bg-primary/5 border border-primary/20' : 'hover:bg-muted/50 border border-transparent'}
-                              ${!showFullContent ? 'cursor-default' : 'cursor-pointer'}
-                            `}
-                            data-testid={`step-nav-${modIdx}-${stepIdx}`}
-                          >
-                            <div className="mt-0.5">
-                              {isActive ? (
-                                <Circle className="w-4 h-4 text-primary" />
-                              ) : (
-                                <Circle className="w-4 h-4 text-muted-foreground/30" />
-                              )}
-                            </div>
-                            <span className={`${isActive ? 'text-foreground' : 'text-muted-foreground'}`}>
-                              {step.title || `Step ${stepIdx + 1}`}
-                            </span>
-                          </button>
-                        );
-                      })}
+                {modules.map((mod, modIdx) => {
+                  const moduleStepIds = (mod.steps || []).map((s) => s.id).filter(Boolean) as string[];
+                  const moduleComplete = moduleStepIds.length > 0 && moduleStepIds.every((id) => completedSteps.includes(id));
+
+                  return (
+                    <div key={mod.id || modIdx} className="space-y-1">
+                      <p className={`text-xs uppercase tracking-wider font-normal px-1 flex items-center gap-1.5 ${moduleComplete ? 'text-green-600' : 'text-muted-foreground'}`}>
+                        {moduleComplete && <CheckCircle className="w-3 h-3" />}
+                        Module {modIdx + 1}: {mod.title || "Untitled"}
+                      </p>
+                      <div className="space-y-0.5">
+                        {mod.steps?.map((step, stepIdx) => {
+                          const isActive = modIdx === activeModuleIndex && stepIdx === activeStepIndex;
+                          const completed = step.id ? isStepCompleted(step.id) : false;
+                          return (
+                            <button
+                              key={step.id || stepIdx}
+                              onClick={() => showFullContent && isEnrolled && navigateToStep(modIdx, stepIdx)}
+                              className={`
+                                w-full text-left flex items-start gap-2 p-2 rounded-lg transition-all text-sm
+                                ${isActive ? 'bg-primary/5 border border-primary/20' : 'hover:bg-muted/50 border border-transparent'}
+                                ${!showFullContent || !isEnrolled ? 'cursor-default' : 'cursor-pointer'}
+                              `}
+                              data-testid={`step-nav-${modIdx}-${stepIdx}`}
+                            >
+                              <div className="mt-0.5">
+                                {completed ? (
+                                  <CheckCircle className="w-4 h-4 text-green-500" />
+                                ) : isActive ? (
+                                  <Circle className="w-4 h-4 text-primary" />
+                                ) : (
+                                  <Circle className="w-4 h-4 text-muted-foreground/30" />
+                                )}
+                              </div>
+                              <span className={`${completed ? 'text-green-700' : isActive ? 'text-foreground' : 'text-muted-foreground'}`}>
+                                {step.title || `Step ${stepIdx + 1}`}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
+
+            {!isConnected && (
+              <div className="pt-4 border-t border-border/50">
+                <Button className="w-full gap-2" size="sm" data-testid="button-sidebar-login">
+                  <Lock className="w-3.5 h-3.5" /> Sign in to Start
+                </Button>
+              </div>
+            )}
+
+            {isConnected && !isEnrolled && (
+              <div className="pt-4 border-t border-border/50">
+                <Button
+                  className="w-full gap-2"
+                  size="sm"
+                  onClick={() => enrollMutation.mutate()}
+                  disabled={enrollMutation.isPending}
+                  data-testid="button-sidebar-enroll"
+                >
+                  <PlayCircle className="w-3.5 h-3.5" /> {enrollMutation.isPending ? "Enrolling..." : "Enroll Now"}
+                </Button>
+              </div>
+            )}
 
             {experiment.tags && (experiment.tags as string[]).length > 0 && (
               <div className="pt-4 border-t border-border/50">
@@ -403,6 +717,51 @@ export default function ExperimentDetail() {
           </div>
         </div>
       </div>
+
+      <Dialog open={showModuleCompleteModal} onOpenChange={setShowModuleCompleteModal}>
+        <DialogContent className="sm:max-w-md text-center border-primary/20">
+          <DialogHeader>
+            <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-4">
+              <PartyPopper className="w-10 h-10 text-green-600" />
+            </div>
+            <DialogTitle className="text-2xl font-serif font-normal text-center text-muted-foreground">
+              Module Complete!
+            </DialogTitle>
+            <DialogDescription className="text-center text-base mt-2">
+              You finished "{activeModule?.title}"! Ready for the next module?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex-col sm:flex-col gap-3">
+            <Button
+              className="w-full h-11 gap-2"
+              onClick={() => {
+                setShowModuleCompleteModal(false);
+                setShareContent({
+                  title: `I completed module "${activeModule?.title}"!`,
+                  preview: `Just finished the "${activeModule?.title}" module in "${experiment.title}" on 11x LOVE LaB!`,
+                });
+                setTimeout(() => setShowShareDialog(true), 300);
+              }}
+              data-testid="button-share-module-win"
+            >
+              <Share2 className="w-4 h-4" /> Share Your Progress
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full gap-2"
+              onClick={() => {
+                setShowModuleCompleteModal(false);
+                if (activeModuleIndex < modules.length - 1) {
+                  navigateToStep(activeModuleIndex + 1, 0);
+                }
+              }}
+              data-testid="button-next-module-modal"
+            >
+              Continue to Next Module <MoveRight className="w-4 h-4" />
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={showCompletionModal} onOpenChange={setShowCompletionModal}>
         <DialogContent className="sm:max-w-md text-center border-primary/20">
@@ -423,6 +782,15 @@ export default function ExperimentDetail() {
               </div>
             </div>
 
+            {quizResults.length > 0 && (
+              <div className="bg-muted/50 rounded-xs p-3">
+                <p className="text-sm text-muted-foreground mb-1">Quiz Performance</p>
+                <p className="text-lg font-medium">
+                  {quizResults.reduce((s, r) => s + r.score, 0)}/{quizResults.reduce((s, r) => s + r.total, 0)} correct
+                </p>
+              </div>
+            )}
+
             <p className="text-muted-foreground italic">
               "The only way to discover the limits of the possible is to go beyond them into the impossible."
             </p>
@@ -434,6 +802,10 @@ export default function ExperimentDetail() {
               size="lg"
               onClick={() => {
                 setShowCompletionModal(false);
+                setShareContent({
+                  title: `I completed "${experiment.title}"!`,
+                  preview: `I just finished the "${experiment.title}" experiment on 11x LOVE LaB! ${experiment.description || ""}`,
+                });
                 setTimeout(() => setShowShareDialog(true), 300);
               }}
               data-testid="button-share-win"
@@ -457,8 +829,8 @@ export default function ExperimentDetail() {
         open={showShareDialog}
         onOpenChange={setShowShareDialog}
         contentType="experiment"
-        contentTitle={`I completed "${experiment.title}"!`}
-        contentPreview={`I just finished the "${experiment.title}" experiment on 11x LOVE LaB! ${experiment.description || ""}`}
+        contentTitle={shareContent.title}
+        contentPreview={shareContent.preview}
       />
     </Layout>
   );

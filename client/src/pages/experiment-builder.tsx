@@ -8,7 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import {
   Plus, GripVertical, Trash2, Save, ArrowLeft, FlaskConical, Loader2,
-  ChevronUp, ChevronDown, ChevronRight, Video, User as UserIcon, Upload, Image as ImageIcon
+  ChevronUp, ChevronDown, ChevronRight, Video, User as UserIcon, Upload, Image as ImageIcon,
+  HelpCircle, X
 } from "lucide-react";
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useLocation, useRoute } from "wouter";
@@ -121,6 +122,127 @@ function StepEditor({
           <div>
             <style>{richTextEditorStyles}</style>
             {editor && <RichTextEditorContent editor={editor} className="min-h-[250px] border rounded-xs p-3" />}
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-xs text-muted-foreground flex items-center gap-1">
+              <HelpCircle className="w-3 h-3" /> Quiz Questions <span className="text-muted-foreground/60">(optional)</span>
+            </Label>
+            {(step.quizQuestions || []).map((q, qIdx) => (
+              <div key={qIdx} className="border rounded-xs p-3 space-y-2 bg-[#F5F5F5]" data-testid={`quiz-question-${moduleIndex}-${stepIndex}-${qIdx}`}>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">Question {qIdx + 1}</span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 text-destructive hover:text-destructive"
+                    onClick={() => {
+                      const updated = [...(step.quizQuestions || [])];
+                      updated.splice(qIdx, 1);
+                      onUpdate({ quizQuestions: updated });
+                    }}
+                    data-testid={`button-remove-quiz-${moduleIndex}-${stepIndex}-${qIdx}`}
+                  >
+                    <X className="w-3 h-3" />
+                  </Button>
+                </div>
+                <Input
+                  value={q.question}
+                  onChange={(e) => {
+                    const updated = [...(step.quizQuestions || [])];
+                    updated[qIdx] = { ...updated[qIdx], question: e.target.value };
+                    onUpdate({ quizQuestions: updated });
+                  }}
+                  placeholder="Enter your question..."
+                  data-testid={`input-quiz-question-${moduleIndex}-${stepIndex}-${qIdx}`}
+                />
+                <div className="space-y-1.5">
+                  {q.options.map((opt, optIdx) => (
+                    <div key={optIdx} className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = [...(step.quizQuestions || [])];
+                          updated[qIdx] = { ...updated[qIdx], correctIndex: optIdx };
+                          onUpdate({ quizQuestions: updated });
+                        }}
+                        className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors ${
+                          q.correctIndex === optIdx
+                            ? 'border-primary bg-primary'
+                            : 'border-gray-300 hover:border-gray-400'
+                        }`}
+                        data-testid={`button-correct-${moduleIndex}-${stepIndex}-${qIdx}-${optIdx}`}
+                      >
+                        {q.correctIndex === optIdx && (
+                          <div className="w-2 h-2 rounded-full bg-white" />
+                        )}
+                      </button>
+                      <Input
+                        value={opt}
+                        onChange={(e) => {
+                          const updated = [...(step.quizQuestions || [])];
+                          const newOptions = [...updated[qIdx].options];
+                          newOptions[optIdx] = e.target.value;
+                          updated[qIdx] = { ...updated[qIdx], options: newOptions };
+                          onUpdate({ quizQuestions: updated });
+                        }}
+                        placeholder={`Option ${optIdx + 1}`}
+                        className="flex-1"
+                        data-testid={`input-quiz-option-${moduleIndex}-${stepIndex}-${qIdx}-${optIdx}`}
+                      />
+                      {q.options.length > 2 && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 text-muted-foreground"
+                          onClick={() => {
+                            const updated = [...(step.quizQuestions || [])];
+                            const newOptions = [...updated[qIdx].options];
+                            newOptions.splice(optIdx, 1);
+                            let newCorrect = updated[qIdx].correctIndex;
+                            if (optIdx < newCorrect) newCorrect--;
+                            else if (optIdx === newCorrect) newCorrect = 0;
+                            updated[qIdx] = { ...updated[qIdx], options: newOptions, correctIndex: newCorrect };
+                            onUpdate({ quizQuestions: updated });
+                          }}
+                          data-testid={`button-remove-option-${moduleIndex}-${stepIndex}-${qIdx}-${optIdx}`}
+                        >
+                          <X className="w-3 h-3" />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                  {q.options.length < 6 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="gap-1 text-xs text-muted-foreground"
+                      onClick={() => {
+                        const updated = [...(step.quizQuestions || [])];
+                        updated[qIdx] = { ...updated[qIdx], options: [...updated[qIdx].options, ""] };
+                        onUpdate({ quizQuestions: updated });
+                      }}
+                      data-testid={`button-add-option-${moduleIndex}-${stepIndex}-${qIdx}`}
+                    >
+                      <Plus className="w-3 h-3" /> Add Option
+                    </Button>
+                  )}
+                </div>
+                <p className="text-[10px] text-muted-foreground">Click the circle to mark the correct answer</p>
+              </div>
+            ))}
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5 text-xs"
+              onClick={() => {
+                const newQuestion = { question: "", options: ["", ""], correctIndex: 0 };
+                onUpdate({ quizQuestions: [...(step.quizQuestions || []), newQuestion] });
+              }}
+              data-testid={`button-add-quiz-${moduleIndex}-${stepIndex}`}
+            >
+              <HelpCircle className="w-3 h-3" /> Add Quiz Question
+            </Button>
           </div>
         </div>
       )}

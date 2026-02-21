@@ -227,6 +227,14 @@ export const insertExperimentSchema = createInsertSchema(experiments).omit({
 export type InsertExperiment = z.infer<typeof insertExperimentSchema>;
 export type Experiment = typeof experiments.$inferSelect;
 
+// Quiz result per step
+export interface StepQuizResult {
+  stepId: string;
+  score: number;
+  total: number;
+  completedAt: string;
+}
+
 // User Experiment Progress
 export const userExperiments = pgTable("user_experiments", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -234,11 +242,17 @@ export const userExperiments = pgTable("user_experiments", {
   experimentId: varchar("experiment_id").notNull().references(() => experiments.id, { onDelete: "cascade" }),
   completedDiscoveries: integer("completed_discoveries").default(0).notNull(),
   progress: integer("progress").default(0).notNull(), // 0-100
+  completedSteps: text("completed_steps").array().default(sql`ARRAY[]::text[]`).notNull(),
+  quizResults: jsonb("quiz_results").$type<StepQuizResult[]>().default([]),
+  completedAt: timestamp("completed_at"),
   enrolledAt: timestamp("enrolled_at").defaultNow().notNull(),
 });
 
 export const insertUserExperimentSchema = createInsertSchema(userExperiments).omit({
   id: true,
+  completedSteps: true,
+  quizResults: true,
+  completedAt: true,
   enrolledAt: true,
 });
 

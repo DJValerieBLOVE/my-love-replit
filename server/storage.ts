@@ -87,8 +87,9 @@ export interface IStorage {
 
   // User Experiments
   getUserExperiments(userId: string): Promise<(UserExperiment & { experiment: Experiment })[]>;
+  getUserExperimentByExperimentId(userId: string, experimentId: string): Promise<UserExperiment | undefined>;
   enrollUserInExperiment(userExperiment: InsertUserExperiment): Promise<UserExperiment>;
-  updateUserExperimentProgress(id: string, updates: Partial<Pick<UserExperiment, 'completedDiscoveries' | 'progress'>>): Promise<UserExperiment | undefined>;
+  updateUserExperimentProgress(id: string, updates: Partial<Pick<UserExperiment, 'completedDiscoveries' | 'progress' | 'completedSteps' | 'quizResults' | 'completedAt'>>): Promise<UserExperiment | undefined>;
 
   // Experiment Notes
   getExperimentNotes(userId: string, experimentId: string): Promise<ExperimentNote[]>;
@@ -573,12 +574,18 @@ export class DatabaseStorage implements IStorage {
     }));
   }
 
+  async getUserExperimentByExperimentId(userId: string, experimentId: string): Promise<UserExperiment | undefined> {
+    const [result] = await db.select().from(userExperiments)
+      .where(and(eq(userExperiments.userId, userId), eq(userExperiments.experimentId, experimentId)));
+    return result || undefined;
+  }
+
   async enrollUserInExperiment(userExperiment: InsertUserExperiment): Promise<UserExperiment> {
     const [created] = await db.insert(userExperiments).values(userExperiment).returning();
     return created;
   }
 
-  async updateUserExperimentProgress(id: string, updates: Partial<Pick<UserExperiment, 'completedDiscoveries' | 'progress'>>): Promise<UserExperiment | undefined> {
+  async updateUserExperimentProgress(id: string, updates: Partial<Pick<UserExperiment, 'completedDiscoveries' | 'progress' | 'completedSteps' | 'quizResults' | 'completedAt'>>): Promise<UserExperiment | undefined> {
     const [updated] = await db.update(userExperiments)
       .set(updates)
       .where(eq(userExperiments.id, id))

@@ -230,9 +230,33 @@ export async function getUserExperiments() {
 export async function enrollInExperiment(experimentId: string) {
   const response = await authFetch("/api/user-experiments", {
     method: "POST",
-    body: JSON.stringify({ experimentId, completedDiscoveries: 0, progress: 0 }),
+    body: JSON.stringify({ experimentId }),
   });
   if (!response.ok) throw new Error("Failed to enroll in experiment");
+  return response.json();
+}
+
+export async function getExperimentEnrollment(experimentId: string) {
+  const response = await authFetch(`/api/user-experiments/experiment/${experimentId}`);
+  if (!response.ok) throw new Error("Failed to fetch enrollment");
+  return response.json();
+}
+
+export async function completeStep(enrollmentId: string, stepId: string, totalSteps: number) {
+  const response = await authFetch(`/api/user-experiments/${enrollmentId}/complete-step`, {
+    method: "POST",
+    body: JSON.stringify({ stepId, totalSteps }),
+  });
+  if (!response.ok) throw new Error("Failed to complete step");
+  return response.json();
+}
+
+export async function saveQuizResult(enrollmentId: string, stepId: string, score: number, total: number) {
+  const response = await authFetch(`/api/user-experiments/${enrollmentId}/quiz-result`, {
+    method: "POST",
+    body: JSON.stringify({ stepId, score, total }),
+  });
+  if (!response.ok) throw new Error("Failed to save quiz result");
   return response.json();
 }
 

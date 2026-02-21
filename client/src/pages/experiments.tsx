@@ -8,10 +8,11 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ShareConfirmationDialog } from "@/components/share-confirmation-dialog";
 import { useNostr } from "@/contexts/nostr-context";
+import { Progress } from "@/components/ui/progress";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getAllExperiments, getCreatorExperiments, deleteExperiment } from "@/lib/api";
+import { getAllExperiments, getCreatorExperiments, deleteExperiment, getUserExperiments } from "@/lib/api";
 import { ELEVEN_DIMENSIONS, EXPERIMENT_TAGS } from "@/lib/mock-data";
-import type { Experiment } from "@shared/schema";
+import type { Experiment, UserExperiment } from "@shared/schema";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 
@@ -50,6 +51,16 @@ export default function Grow() {
     enabled: isConnected && activeTab === "my-experiments",
   });
 
+  const { data: userExperiments = [] } = useQuery({
+    queryKey: ["userExperiments"],
+    queryFn: getUserExperiments,
+    enabled: isConnected,
+  });
+
+  const getEnrollment = (experimentId: string) => {
+    return (userExperiments as any[]).find((ue: any) => ue.experiment?.id === experimentId || ue.experimentId === experimentId);
+  };
+
   const deleteMutation = useMutation({
     mutationFn: deleteExperiment,
     onSuccess: () => {
@@ -81,9 +92,11 @@ export default function Grow() {
       if (!expTags || !expTags.includes(selectedTag)) return false;
     }
 
+    const enrollment = isConnected ? getEnrollment(exp.id) : null;
+
     switch (activeTab) {
       case "in-progress":
-        return false;
+        return enrollment && (enrollment.progress || 0) > 0 && (enrollment.progress || 0) < 100;
       case "new":
         const oneWeekAgo = new Date();
         oneWeekAgo.setDate(oneWeekAgo.getDate() - 14);
@@ -91,7 +104,7 @@ export default function Grow() {
       case "suggested":
         return true;
       case "complete":
-        return false;
+        return enrollment && (enrollment.progress || 0) >= 100;
       case "all":
       default:
         return true;
@@ -118,6 +131,7 @@ export default function Grow() {
   const renderExperimentCard = (experiment: Experiment, showActions: boolean = false) => {
     const dimData = getDimensionData(experiment.dimension);
     const stepCount = getTotalStepCount(experiment);
+    const enrollment = isConnected ? getEnrollment(experiment.id) : null;
     return (
       <div key={experiment.id} className="relative">
         <Link href={showActions ? `/experiments/edit/${experiment.id}` : `/experiments/${experiment.id}`}>
@@ -163,6 +177,14 @@ export default function Grow() {
               </h3>
               {experiment.description && (
                 <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{experiment.description}</p>
+              )}
+              {enrollment && !showActions && (
+                <div className="mb-3" data-testid={`progress-${experiment.id}`}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs text-muted-foreground">{enrollment.progress || 0}% complete</span>
+                  </div>
+                  <Progress value={enrollment.progress || 0} className="h-1.5" />
+                </div>
               )}
               {showActions ? (
                 <div className="mt-auto flex gap-2">
