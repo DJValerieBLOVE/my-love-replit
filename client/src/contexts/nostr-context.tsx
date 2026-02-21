@@ -5,6 +5,7 @@ import { SimplePool } from "nostr-tools/pool";
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
 import { loginWithNostr, getProfileStatus, getCurrentUser, registerWithEmail as apiRegister, loginWithEmail as apiLogin } from "@/lib/api";
 import { getOrCreateKeyPair, hasStoredKeys, loadKeyPairFromStorage, getSecretKeyBytes } from "@/lib/nostr-keygen";
+import { createLocalSigner, storeNsec, readStoredNsec, clearStoredNsec, getPublicKeyFromNsec } from "@/lib/local-signer";
 
 interface UserStats {
   sats: number;
@@ -41,6 +42,7 @@ interface NostrContextType {
   error: string | null;
   connectWithExtension: () => Promise<boolean>;
   connectWithBunker: (bunkerUrl: string) => Promise<boolean>;
+  connectWithNsec: (nsec: string) => Promise<boolean>;
   connectWithEmail: (email: string, password: string, twoFactorCode?: string) => Promise<{ success: boolean; requires2FA?: boolean }>;
   registerWithEmail: (email: string, password: string, name: string) => Promise<boolean>;
   disconnect: () => void;
@@ -84,6 +86,7 @@ export function NostrProvider({ children }: { children: ReactNode }) {
   const [emailKeyPair, setEmailKeyPair] = useState<{ pubkey: string; nsec: string; npub: string } | null>(null);
   
   const bunkerSignerRef = useRef<BunkerSigner | null>(null);
+  const localSignerRef = useRef<ReturnType<typeof createLocalSigner> | null>(null);
   const poolRef = useRef<SimplePool | null>(null);
 
   const PUBLIC_RELAYS = [
@@ -287,10 +290,59 @@ export function NostrProvider({ children }: { children: ReactNode }) {
     return false;
   }, [refreshUserStats]);
 
+  const checkNsecSession = useCallback(async () => {
+    const savedMethod = localStorage.getItem("nostr_login_method");
+    const savedPubkey = localStorage.getItem("nostr_pubkey");
+    const storedNsec = readStoredNsec();
+
+    if (savedMethod === "ncryptsec" && savedPubkey && storedNsec) {
+      try {
+        const pubkey = getPublicKeyFromNsec(storedNsec);
+        if (pubkey === savedPubkey) {
+          const signer = createLocalSigner(storedNsec);
+          localSignerRef.current = signer;
+
+          const npub = nip19.npubEncode(pubkey);
+          setProfile({
+            npub,
+            pubkey,
+            name: localStorage.getItem("nostr_name") || undefined,
+            picture: localStorage.getItem("nostr_picture") || undefined,
+          });
+          setIsConnected(true);
+          setLoginMethod("ncryptsec");
+
+          fetchNostrMetadata(pubkey);
+
+          try {
+            const status = await getProfileStatus();
+            setNeedsProfileCompletion(!status.profileComplete);
+          } catch {
+            setNeedsProfileCompletion(false);
+          }
+
+          await refreshUserStats();
+          return true;
+        }
+      } catch (e) {
+        console.error("Failed to restore nsec session:", e);
+        clearStoredNsec();
+        localStorage.removeItem("nostr_pubkey");
+        localStorage.removeItem("nostr_login_method");
+      }
+    }
+    return false;
+  }, [refreshUserStats, fetchNostrMetadata]);
+
   useEffect(() => {
     const initSession = async () => {
       const emailRestored = await checkEmailSession();
       if (emailRestored) {
+        setIsLoading(false);
+        return;
+      }
+      const nsecRestored = await checkNsecSession();
+      if (nsecRestored) {
         setIsLoading(false);
         return;
       }
@@ -303,7 +355,7 @@ export function NostrProvider({ children }: { children: ReactNode }) {
     };
     const timer = setTimeout(initSession, 100);
     return () => clearTimeout(timer);
-  }, [checkEmailSession, checkBunkerSession, checkExtension]);
+  }, [checkEmailSession, checkNsecSession, checkBunkerSession, checkExtension]);
 
   useEffect(() => {
     if (loginMethod === "email" && isConnected) {
@@ -452,6 +504,66 @@ export function NostrProvider({ children }: { children: ReactNode }) {
     }
   }, [refreshUserStats]);
 
+  const connectWithNsec = useCallback(async (nsec: string): Promise<boolean> => {
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      if (!nsec.startsWith("nsec1")) {
+        setError("Invalid nsec. It should start with 'nsec1'.");
+        setIsLoading(false);
+        return false;
+      }
+
+      const pubkey = getPublicKeyFromNsec(nsec);
+      const npub = nip19.npubEncode(pubkey);
+
+      const signer = createLocalSigner(nsec);
+      localSignerRef.current = signer;
+
+      storeNsec(nsec);
+
+      const user = await loginWithNostr(pubkey, {
+        name: localStorage.getItem("nostr_name") || undefined,
+        picture: localStorage.getItem("nostr_picture") || undefined,
+      });
+
+      localStorage.setItem("nostr_pubkey", pubkey);
+      localStorage.setItem("nostr_login_method", "ncryptsec");
+      localStorage.setItem("nostr_user_id", user.id);
+      if (user.name) localStorage.setItem("nostr_name", user.name);
+      if (user.avatar) localStorage.setItem("nostr_picture", user.avatar);
+
+      setProfile({
+        npub,
+        pubkey,
+        userId: user.id,
+        name: user.name,
+        picture: user.avatar,
+      });
+      setIsConnected(true);
+      setLoginMethod("ncryptsec");
+
+      fetchNostrMetadata(pubkey);
+
+      try {
+        const status = await getProfileStatus();
+        setNeedsProfileCompletion(!status.profileComplete);
+      } catch {
+        setNeedsProfileCompletion(!user.email);
+      }
+
+      await refreshUserStats();
+
+      setIsLoading(false);
+      return true;
+    } catch (e: any) {
+      setError(e.message || "Failed to connect with nsec");
+      setIsLoading(false);
+      return false;
+    }
+  }, [refreshUserStats, fetchNostrMetadata]);
+
   const connectWithEmail = useCallback(async (email: string, password: string, twoFactorCode?: string): Promise<{ success: boolean; requires2FA?: boolean }> => {
     setError(null);
     setIsLoading(true);
@@ -530,11 +642,15 @@ export function NostrProvider({ children }: { children: ReactNode }) {
       bunkerSignerRef.current.close();
       bunkerSignerRef.current = null;
     }
+    if (localSignerRef.current) {
+      localSignerRef.current = null;
+    }
     if (poolRef.current) {
       poolRef.current.close([]);
       poolRef.current = null;
     }
     
+    clearStoredNsec();
     localStorage.removeItem("nostr_pubkey");
     localStorage.removeItem("nostr_login_method");
     localStorage.removeItem("nostr_name");
@@ -550,6 +666,9 @@ export function NostrProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signEvent = useCallback(async (event: any) => {
+    if (localSignerRef.current) {
+      return localSignerRef.current.signEvent(event);
+    }
     if (bunkerSignerRef.current) {
       return bunkerSignerRef.current.signEvent(event);
     }
@@ -576,6 +695,7 @@ export function NostrProvider({ children }: { children: ReactNode }) {
         error,
         connectWithExtension,
         connectWithBunker,
+        connectWithNsec,
         connectWithEmail,
         registerWithEmail,
         disconnect,

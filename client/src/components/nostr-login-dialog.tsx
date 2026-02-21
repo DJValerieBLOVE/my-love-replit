@@ -19,10 +19,12 @@ interface NostrLoginDialogProps {
 }
 
 export function NostrLoginDialog({ open, onOpenChange }: NostrLoginDialogProps) {
-  const { connectWithExtension, connectWithBunker, connectWithEmail, registerWithEmail, error, isLoading } = useNostr();
+  const { connectWithExtension, connectWithBunker, connectWithNsec, connectWithEmail, registerWithEmail, error, isLoading } = useNostr();
   const [hasExtension, setHasExtension] = useState<boolean | null>(null);
   const [connectSuccess, setConnectSuccess] = useState(false);
   const [showBunkerInput, setShowBunkerInput] = useState(false);
+  const [showNsecInput, setShowNsecInput] = useState(false);
+  const [nsecValue, setNsecValue] = useState("");
   const [bunkerUrl, setBunkerUrl] = useState("");
   const [activeTab, setActiveTab] = useState("email");
   const [emailMode, setEmailMode] = useState<"login" | "register">("login");
@@ -107,10 +109,18 @@ export function NostrLoginDialog({ open, onOpenChange }: NostrLoginDialogProps) 
     if (success) handleSuccess();
   };
 
+  const handleNsecLogin = async () => {
+    if (!nsecValue.trim()) return;
+    const success = await connectWithNsec(nsecValue.trim());
+    if (success) handleSuccess();
+  };
+
   const handleDialogClose = (open: boolean) => {
     if (!open) {
       setShowBunkerInput(false);
+      setShowNsecInput(false);
       setBunkerUrl("");
+      setNsecValue("");
       resetForm();
     }
     onOpenChange(open);
@@ -395,6 +405,63 @@ export function NostrLoginDialog({ open, onOpenChange }: NostrLoginDialogProps) 
                       Connect
                     </Button>
                   </div>
+                ) : showNsecInput ? (
+                  <div className="flex flex-col gap-4">
+                    <Button
+                      variant="ghost"
+                      onClick={() => { setShowNsecInput(false); setNsecValue(""); }}
+                      className="w-fit -ml-2"
+                      data-testid="button-back-from-nsec"
+                    >
+                      <ArrowLeft className="w-4 h-4 mr-2" />
+                      Back
+                    </Button>
+
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-700">
+                      Your key stays in your browser and is never sent to our server. For better security, use a browser extension instead.
+                    </div>
+
+                    <div className="space-y-3">
+                      <div>
+                        <Label className="mb-2 block">Your Private Key (nsec)</Label>
+                        <div className="relative">
+                          <Input
+                            type={showPassword ? "text" : "password"}
+                            placeholder="nsec1..."
+                            value={nsecValue}
+                            onChange={(e) => setNsecValue(e.target.value)}
+                            className="h-12 pr-10 font-mono text-sm"
+                            onKeyDown={(e) => e.key === "Enter" && handleNsecLogin()}
+                            data-testid="input-nsec"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                            data-testid="button-toggle-nsec-visibility"
+                          >
+                            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {displayError && (
+                      <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
+                        {displayError}
+                      </div>
+                    )}
+
+                    <Button
+                      onClick={handleNsecLogin}
+                      disabled={isLoading || !nsecValue.trim()}
+                      className="w-full h-12 bg-gradient-to-r from-[#6600ff] to-[#9900ff] hover:from-[#5500dd] hover:to-[#8800dd] text-white"
+                      data-testid="button-connect-nsec"
+                    >
+                      {isLoading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Key className="w-5 h-5 mr-2" />}
+                      Login with nsec
+                    </Button>
+                  </div>
                 ) : (
                   <div className="flex flex-col gap-4">
                     <Button
@@ -439,6 +506,16 @@ export function NostrLoginDialog({ open, onOpenChange }: NostrLoginDialogProps) 
                         <span className="bg-background px-2 text-muted-foreground">Or</span>
                       </div>
                     </div>
+
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowNsecInput(true)}
+                      className="w-full h-12"
+                      data-testid="button-login-nsec"
+                    >
+                      <Key className="w-4 h-4 mr-2" />
+                      Login with Private Key (nsec)
+                    </Button>
 
                     <Button
                       variant="outline"
