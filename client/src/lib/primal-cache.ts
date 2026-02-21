@@ -44,8 +44,25 @@ type ZapReceipt = {
   eventId: string;
 };
 
+type PrimalArticle = {
+  id: string;
+  pubkey: string;
+  created_at: number;
+  kind: 30023;
+  tags: string[][];
+  content: string;
+  sig: string;
+  title: string;
+  summary: string;
+  image: string;
+  publishedAt: number;
+  identifier: string;
+  hashtags: string[];
+};
+
 type PrimalFeedResult = {
   events: PrimalEvent[];
+  articles: PrimalArticle[];
   profiles: Map<string, PrimalProfile>;
   stats: Map<string, PrimalEventStats>;
   zapReceipts: Map<string, ZapReceipt[]>;
@@ -101,8 +118,32 @@ function extractBolt11Amount(bolt11: string): number {
   }
 }
 
+function parseArticleFromEvent(eventData: any): PrimalArticle {
+  const tags = eventData.tags || [];
+  const getTag = (name: string) => tags.find((t: string[]) => t[0] === name)?.[1] || "";
+  const hashtags = tags.filter((t: string[]) => t[0] === "t").map((t: string[]) => t[1]);
+  const publishedAt = parseInt(getTag("published_at") || "0", 10) || eventData.created_at;
+
+  return {
+    id: eventData.id,
+    pubkey: eventData.pubkey,
+    created_at: eventData.created_at,
+    kind: 30023,
+    tags,
+    content: eventData.content,
+    sig: eventData.sig || "",
+    title: getTag("title"),
+    summary: getTag("summary"),
+    image: getTag("image"),
+    publishedAt,
+    identifier: getTag("d"),
+    hashtags,
+  };
+}
+
 function parsePrimalResponse(messages: any[]): PrimalFeedResult {
   const events: PrimalEvent[] = [];
+  const articles: PrimalArticle[] = [];
   const profiles = new Map<string, PrimalProfile>();
   const stats = new Map<string, PrimalEventStats>();
   const zapReceipts = new Map<string, ZapReceipt[]>();
@@ -127,6 +168,15 @@ function parsePrimalResponse(messages: any[]): PrimalFeedResult {
         } catch {}
       } else if (eventData.kind === 1) {
         events.push(eventData);
+      } else if (eventData.kind === 30023) {
+        articles.push(parseArticleFromEvent(eventData));
+      } else if (eventData.kind === 10030023) {
+        try {
+          const shellData = JSON.parse(eventData.content);
+          if (shellData && shellData.event) {
+            articles.push(parseArticleFromEvent(shellData.event));
+          }
+        } catch {}
       } else if (eventData.kind === 9735) {
         try {
           const eTags = eventData.tags?.filter((t: string[]) => t[0] === "e");
@@ -196,7 +246,15 @@ function parsePrimalResponse(messages: any[]): PrimalFeedResult {
   }
 
   events.sort((a, b) => b.created_at - a.created_at);
-  return { events, profiles, stats, zapReceipts };
+  const seenArticleIds = new Set<string>();
+  const dedupedArticles = articles.filter(a => {
+    const key = a.identifier ? `${a.pubkey}:${a.identifier}` : a.id;
+    if (seenArticleIds.has(key)) return false;
+    seenArticleIds.add(key);
+    return true;
+  });
+  dedupedArticles.sort((a, b) => (b.publishedAt || b.created_at) - (a.publishedAt || a.created_at));
+  return { events, articles: dedupedArticles, profiles, stats, zapReceipts };
 }
 
 class PrimalCacheConnection {
@@ -472,7 +530,7 @@ export async function fetchPrimalFeed(
       console.log("[PrimalCache] Returning stale cache for", cacheKey);
       return stale;
     }
-    return { events: [], profiles: new Map(), stats: new Map(), zapReceipts: new Map() };
+    return { events: [], articles: [], profiles: new Map(), stats: new Map(), zapReceipts: new Map() };
   }
 }
 
@@ -510,7 +568,7 @@ export async function fetchPrimalUserFeed(
       console.log("[PrimalCache] Returning stale cache for userfeed:", pubkey.slice(0, 8));
       return stale;
     }
-    return { events: [], profiles: new Map(), stats: new Map(), zapReceipts: new Map() };
+    return { events: [], articles: [], profiles: new Map(), stats: new Map(), zapReceipts: new Map() };
   }
 }
 
@@ -795,4 +853,4 @@ export function getPrimalCacheStatus() {
   return primalCache.getStatus();
 }
 
-export type { PrimalEvent, PrimalProfile, PrimalEventStats, PrimalFeedResult, ExploreMode, ZapReceipt };
+export type { PrimalEvent, PrimalProfile, PrimalEventStats, PrimalFeedResult, PrimalArticle, ExploreMode, ZapReceipt };

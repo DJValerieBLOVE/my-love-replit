@@ -83,6 +83,20 @@ My Masterpiece is a spiritual personal growth application designed to help users
 - **Priority NIPs to Implement Next**: NIP-17 (Private DMs), NIP-29 (Relay-Based Groups), NIP-42 (Relay Authentication), NIP-51 (Lists), NIP-09 (Event Deletion), NIP-32 (Labeling), NIP-56 (Reporting), NIP-72 (Public Communities), NIP-94 (File Metadata), NIP-98 (HTTP Auth).
 - **Relay Architecture**: Private LaB Relay for all private/encrypted data. Public Relays for public content. Events with private tags NEVER go to public relays.
 
+### Feed Features (Primal-Style)
+- **Text Truncation**: Primal-style "see more" truncation on long posts. Uses 1400 char / 200 word limits (matching Primal's `shortNoteChars = 200 * 7` and `shortNoteWords = 200`). Truncation avoids cutting inside URLs or nostr: entities. Purple "see more" link expands content inline. Applied to both PostCard (feed.tsx) and FeedPost (feed-post.tsx).
+- **Long-form Articles (NIP-23)**: Kind 30023 long-form content displayed as collapsed article cards in the feed. Parses title, summary, image, hashtags, and published_at from NIP-23 tags. Also handles Primal's kind 10030023 shell events for article previews. Articles are deduplicated and sorted by publishedAt, interleaved every 5 posts in the explore feed. ArticleCard opens on Primal.net via naddr encoding. Styled per design system: Marcellus font, muted FileText icon, purple top accent, gray hashtag badges.
+- **Profile Enhancements**: Primal-style tabbed follow dialog (Following/Followers tabs with counts). Context menu on "..." button (Add user feed, Copy user link, Copy public key). 3:1 banner aspect ratio with no rounded corners. Avatar overlaps banner bottom edge. QR code button copies public key. Follower counts from kind 10000108/10000133 events.
+
+## Recent Changes (February 2026)
+- Added Primal-style text truncation with "see more" to feed posts (1400 char / 200 word limit)
+- Added NIP-23 kind 30023 long-form article support with collapsed ArticleCard components in feed
+- Added kind 10030023 Primal shell event parsing for article previews
+- Article deduplication and sorting by publishedAt in primal-cache.ts
+- Truncation safety: avoids cutting inside URLs and nostr: entities
+- Added PrimalArticle type to primal-cache.ts exports
+- Profile page: tabbed follow dialog, context menu, 3:1 banner, avatar overlap, QR copy, follower counts
+
 ## External Dependencies
 - **PostgreSQL**: Primary database (Neon serverless).
 - **Nostr Relays**: Private Railway Relay, public relays (e.g., `relay.primal.net`).

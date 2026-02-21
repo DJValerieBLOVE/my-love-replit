@@ -84,11 +84,49 @@ interface FeedPostProps {
   };
 }
 
+const SHORT_NOTE_CHARS = 1400;
+const SHORT_NOTE_WORDS = 200;
+
+function shouldTruncateContent(text: string): boolean {
+  if (text.length > SHORT_NOTE_CHARS) return true;
+  const wordCount = text.split(/\s+/).filter(w => w.length > 0).length;
+  return wordCount > SHORT_NOTE_WORDS;
+}
+
+function truncateText(text: string): string {
+  let cutoff: number;
+  if (text.length > SHORT_NOTE_CHARS) {
+    const nextBreak = text.slice(SHORT_NOTE_CHARS).search(/\s|\n|\r/);
+    cutoff = nextBreak >= 0 ? SHORT_NOTE_CHARS + nextBreak : SHORT_NOTE_CHARS;
+  } else {
+    const words = text.split(/(\s+)/);
+    let wordCount = 0;
+    let charIndex = 0;
+    for (const part of words) {
+      if (part.trim().length > 0) wordCount++;
+      charIndex += part.length;
+      if (wordCount >= SHORT_NOTE_WORDS) break;
+    }
+    cutoff = charIndex;
+  }
+  const TOKEN_PATTERN = /(?:https?:\/\/\S+|nostr:[a-z0-9]+)/gi;
+  let m;
+  while ((m = TOKEN_PATTERN.exec(text)) !== null) {
+    const tokenEnd = m.index + m[0].length;
+    if (m.index < cutoff && tokenEnd > cutoff) {
+      cutoff = m.index;
+      break;
+    }
+  }
+  return text.slice(0, cutoff);
+}
+
 export function FeedPost({ post }: FeedPostProps) {
   const { isConnected, profile } = useNostr();
   const { publishSmart, ndk } = useNDK();
   const [zaps, setZaps] = useState(post.zaps);
   const [isZapped, setIsZapped] = useState(false);
+  const [isContentExpanded, setIsContentExpanded] = useState(false);
   const [zapAmount, setZapAmount] = useState(21);
   const [zapInputValue, setZapInputValue] = useState("21");
   const [zapComment, setZapComment] = useState("");
@@ -421,10 +459,24 @@ export function FeedPost({ post }: FeedPostProps) {
             
             {(() => {
               const parsed = parseNostrContent(post.content);
+              const needsTruncation = !isContentExpanded && shouldTruncateContent(parsed.text);
+              const displayText = needsTruncation ? truncateText(parsed.text) : parsed.text;
               return (
                 <>
                   <p className="mt-2 text-base leading-relaxed text-foreground/90 whitespace-pre-wrap">
-                    {parsed.text}
+                    {displayText}
+                    {needsTruncation && (
+                      <>
+                        {"... "}
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setIsContentExpanded(true); }}
+                          className="text-[#6600ff] hover:underline text-base inline"
+                          data-testid="button-see-more"
+                        >
+                          see more
+                        </button>
+                      </>
+                    )}
                   </p>
                   {parsed.images.length > 0 && (
                     <div className={`mt-3 gap-2 ${parsed.images.length === 1 ? '' : 'grid grid-cols-2'}`}>

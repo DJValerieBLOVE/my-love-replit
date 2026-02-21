@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Zap, Share2, MoreHorizontal, Radio, Calendar, UserPlus, Repeat2, Bookmark, Quote, Users, Image as ImageIcon, Film, Smile, X, Link2, Copy, ExternalLink, Loader2, Lock, Globe, ChevronDown, TrendingUp, Flame, Camera, Clock, RefreshCw, ArrowUp, Plus } from "lucide-react";
+import { Heart, MessageCircle, Zap, Share2, MoreHorizontal, Radio, Calendar, UserPlus, Repeat2, Bookmark, Quote, Users, Image as ImageIcon, Film, Smile, X, Link2, Copy, ExternalLink, Loader2, Lock, Globe, ChevronDown, TrendingUp, Flame, Camera, Clock, RefreshCw, ArrowUp, Plus, FileText } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import {
   DropdownMenu,
@@ -30,7 +30,8 @@ import { LAB_RELAY_URL, PUBLIC_RELAYS } from "@/lib/relays";
 import { NDKEvent } from "@nostr-dev-kit/ndk";
 import { Skeleton } from "@/components/ui/skeleton";
 import { parseNostrContent, truncateNpub, resolveContentMentions, type NostrEntity, type ParsedContent } from "@/lib/nostr-content";
-import { fetchPrimalFeed, fetchPrimalUserFeed, fetchPrimalEvent, type ExploreMode, type PrimalEvent, type PrimalProfile, type PrimalEventStats, type ZapReceipt } from "@/lib/primal-cache";
+import { nip19 as nip19Utils } from "nostr-tools";
+import { fetchPrimalFeed, fetchPrimalUserFeed, fetchPrimalEvent, type ExploreMode, type PrimalEvent, type PrimalProfile, type PrimalEventStats, type PrimalArticle, type ZapReceipt } from "@/lib/primal-cache";
 import { GifPicker } from "@/components/gif-picker";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -133,6 +134,7 @@ export function useNostrFeed(tab: FeedTab, exploreMode: ExploreMode) {
   const { fetchEvents, isConnected: ndkConnected } = useNDK();
   const { profile } = useNostr();
   const [posts, setPosts] = useState<FeedPost[]>([]);
+  const [articles, setArticles] = useState<PrimalArticle[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [newPostCount, setNewPostCount] = useState(0);
@@ -285,9 +287,11 @@ export function useNostrFeed(tab: FeedTab, exploreMode: ExploreMode) {
             primalEventToFeedPost(e, result.profiles, profile?.pubkey, "public", result.stats, result.zapReceipts)
           );
           setPosts(feedPosts);
+          setArticles(result.articles || []);
         } catch (err) {
           console.error("[Feed] Primal cache error for explore:", err);
           setPosts([]);
+          setArticles([]);
         }
       }
     } catch (err) {
@@ -358,7 +362,7 @@ export function useNostrFeed(tab: FeedTab, exploreMode: ExploreMode) {
     await fetchFeed();
   }, [fetchFeed]);
 
-  return { posts, isLoading, isRefreshing, refetch: manualRefresh, ndkConnected, newPostCount, showNewPosts, pendingPosts, primalProfiles: primalProfilesRef.current };
+  return { posts, articles, isLoading, isRefreshing, refetch: manualRefresh, ndkConnected, newPostCount, showNewPosts, pendingPosts, primalProfiles: primalProfilesRef.current };
 }
 
 type MediaItem = {
@@ -937,14 +941,56 @@ function EmbeddedNoteCard({ eventId, bech32 }: { eventId: string; bech32: string
   );
 }
 
+const SHORT_NOTE_CHARS = 1400;
+const SHORT_NOTE_WORDS = 200;
+
+function shouldTruncateContent(text: string): boolean {
+  if (text.length > SHORT_NOTE_CHARS) return true;
+  const wordCount = text.split(/\s+/).filter(w => w.length > 0).length;
+  return wordCount > SHORT_NOTE_WORDS;
+}
+
+function truncateText(text: string): string {
+  let cutoff: number;
+  if (text.length > SHORT_NOTE_CHARS) {
+    const nextBreak = text.slice(SHORT_NOTE_CHARS).search(/\s|\n|\r/);
+    cutoff = nextBreak >= 0 ? SHORT_NOTE_CHARS + nextBreak : SHORT_NOTE_CHARS;
+  } else {
+    const words = text.split(/(\s+)/);
+    let wordCount = 0;
+    let charIndex = 0;
+    for (const part of words) {
+      if (part.trim().length > 0) wordCount++;
+      charIndex += part.length;
+      if (wordCount >= SHORT_NOTE_WORDS) break;
+    }
+    cutoff = charIndex;
+  }
+  const TOKEN_PATTERN = /(?:https?:\/\/\S+|nostr:[a-z0-9]+)/gi;
+  let m;
+  while ((m = TOKEN_PATTERN.exec(text)) !== null) {
+    const tokenEnd = m.index + m[0].length;
+    if (m.index < cutoff && tokenEnd > cutoff) {
+      cutoff = m.index;
+      break;
+    }
+  }
+  return text.slice(0, cutoff);
+}
+
 export type RichTextContentProps = {
   text: string;
   entities: NostrEntity[];
   links: string[];
   primalProfiles?: Map<string, PrimalProfile>;
+  shorten?: boolean;
+  onToggleExpand?: () => void;
+  isExpanded?: boolean;
 };
 
-export function RichTextContent({ text, entities, links, primalProfiles }: RichTextContentProps) {
+export function RichTextContent({ text, entities, links, primalProfiles, shorten = true, onToggleExpand, isExpanded }: RichTextContentProps) {
+  const needsTruncation = shorten && !isExpanded && shouldTruncateContent(text);
+  const displayText = needsTruncation ? truncateText(text) : text;
   const URL_PATTERN = /https?:\/\/\S+/g;
   const NOSTR_PATTERN = /nostr:(npub1[a-z0-9]+|nprofile1[a-z0-9]+|nevent1[a-z0-9]+|note1[a-z0-9]+|naddr1[a-z0-9]+)/g;
   const HASHTAG_PATTERN = /#(\w+)/g;
@@ -965,9 +1011,9 @@ export function RichTextContent({ text, entities, links, primalProfiles }: RichT
   const regex = new RegExp(COMBINED_PATTERN.source, 'gi');
   let key = 0;
 
-  while ((match = regex.exec(text)) !== null) {
+  while ((match = regex.exec(displayText)) !== null) {
     if (match.index > lastIndex) {
-      parts.push(text.slice(lastIndex, match.index));
+      parts.push(displayText.slice(lastIndex, match.index));
     }
 
     const matched = match[0];
@@ -1047,8 +1093,8 @@ export function RichTextContent({ text, entities, links, primalProfiles }: RichT
     lastIndex = match.index + matched.length;
   }
 
-  if (lastIndex < text.length) {
-    parts.push(text.slice(lastIndex));
+  if (lastIndex < displayText.length) {
+    parts.push(displayText.slice(lastIndex));
   }
 
   const previewLinks = links.filter(l => {
@@ -1060,6 +1106,18 @@ export function RichTextContent({ text, entities, links, primalProfiles }: RichT
     <>
       <p className="text-sm mt-1 leading-relaxed whitespace-pre-wrap" data-testid="post-content-text">
         {parts}
+        {needsTruncation && (
+          <>
+            {"... "}
+            <button
+              onClick={(e) => { e.stopPropagation(); onToggleExpand?.(); }}
+              className="text-[#6600ff] hover:underline text-sm inline"
+              data-testid="button-see-more"
+            >
+              see more
+            </button>
+          </>
+        )}
       </p>
       {previewLinks.length > 0 && (
         <div className="space-y-2">
@@ -1072,11 +1130,76 @@ export function RichTextContent({ text, entities, links, primalProfiles }: RichT
   );
 }
 
+export function ArticleCard({ article, profile }: { article: PrimalArticle; profile?: PrimalProfile }) {
+  const authorName = profile?.display_name || profile?.name || truncateNpub(article.pubkey);
+  const authorPicture = profile?.picture || "";
+  const timeAgo = formatTimestamp(article.publishedAt || article.created_at);
+  const naddrId = (() => {
+    try {
+      return nip19Utils.naddrEncode({ identifier: article.identifier, pubkey: article.pubkey, kind: 30023 });
+    } catch { return article.id; }
+  })();
+
+  return (
+    <Card
+      className="border-none shadow-sm bg-card rounded-xs hover:shadow-md transition-shadow cursor-pointer overflow-hidden"
+      onClick={() => window.open(`https://primal.net/e/${naddrId}`, "_blank")}
+      data-testid={`card-article-${article.id}`}
+    >
+      <div className="border-t-2 border-[#6600ff]" />
+      {article.image && (
+        <div className="aspect-video overflow-hidden">
+          <img
+            src={article.image}
+            alt={article.title}
+            className="w-full h-full object-cover"
+            loading="lazy"
+            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+          />
+        </div>
+      )}
+      <div className="p-4">
+        <div className="flex items-center gap-2 mb-2">
+          <FileText className="w-3.5 h-3.5 text-muted-foreground" strokeWidth={1.5} />
+          <span className="text-xs text-muted-foreground font-[Marcellus]">Long-form Article</span>
+        </div>
+        <h3 className="text-base font-[Marcellus] font-normal text-foreground leading-snug line-clamp-2" data-testid={`text-article-title-${article.id}`}>
+          {article.title || "Untitled Article"}
+        </h3>
+        {article.summary && (
+          <p className="text-sm text-muted-foreground mt-1 line-clamp-2 leading-relaxed" data-testid={`text-article-summary-${article.id}`}>
+            {article.summary}
+          </p>
+        )}
+        <div className="flex items-center gap-2 mt-3">
+          <Avatar className="w-5 h-5">
+            <AvatarImage src={authorPicture} alt={authorName} />
+            <AvatarFallback className="text-[8px]">{authorName.slice(0, 2).toUpperCase()}</AvatarFallback>
+          </Avatar>
+          <span className="text-xs text-muted-foreground" data-testid={`text-article-author-${article.id}`}>{authorName}</span>
+          <span className="text-xs text-muted-foreground">·</span>
+          <span className="text-xs text-muted-foreground" data-testid={`text-article-time-${article.id}`}>{timeAgo}</span>
+        </div>
+        {article.hashtags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mt-2">
+            {article.hashtags.slice(0, 4).map(tag => (
+              <span key={tag} className="bg-white border border-gray-200 text-muted-foreground text-xs px-2.5 py-0.5 rounded-md">
+                #{tag}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+    </Card>
+  );
+}
+
 export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfiles?: Map<string, PrimalProfile> }) {
   const [isLiked, setIsLiked] = useState(false);
   const [likes, setLikes] = useState(post.likes);
   const [isReposted, setIsReposted] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isContentExpanded, setIsContentExpanded] = useState(false);
   const [quoteRepostOpen, setQuoteRepostOpen] = useState(false);
   const [quoteText, setQuoteText] = useState("");
   const [replyOpen, setReplyOpen] = useState(false);
@@ -1350,6 +1473,9 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
                   entities={parsed.entities}
                   links={parsed.links}
                   primalProfiles={primalProfiles}
+                  shorten={true}
+                  isExpanded={isContentExpanded}
+                  onToggleExpand={() => setIsContentExpanded(true)}
                 />
                 {parsed.images.length > 0 && (
                   <div className={`mt-3 gap-2 ${parsed.images.length === 1 ? '' : 'grid grid-cols-2'}`}>
@@ -1860,7 +1986,7 @@ export const EXPLORE_OPTIONS: { value: ExploreMode; label: string; icon: typeof 
 export default function Feed() {
   const [activeTab, setActiveTab] = useState<FeedTab>("following");
   const [exploreMode, setExploreMode] = useState<ExploreMode>("trending");
-  const { posts, isLoading, isRefreshing, refetch, ndkConnected, newPostCount, showNewPosts, pendingPosts, primalProfiles } = useNostrFeed(activeTab, exploreMode);
+  const { posts, articles, isLoading, isRefreshing, refetch, ndkConnected, newPostCount, showNewPosts, pendingPosts, primalProfiles } = useNostrFeed(activeTab, exploreMode);
 
   const currentExploreOption = EXPLORE_OPTIONS.find(o => o.value === exploreMode) || EXPLORE_OPTIONS[0];
 
@@ -2043,8 +2169,16 @@ export default function Feed() {
             {isLoading ? (
               <FeedLoadingSkeleton />
             ) : posts.length > 0 ? (
-              posts.map((post) => (
-                <PostCard key={post.id} post={post} primalProfiles={primalProfiles} />
+              posts.map((post, index) => (
+                <div key={post.id}>
+                  <PostCard post={post} primalProfiles={primalProfiles} />
+                  {articles.length > 0 && (index + 1) % 5 === 0 && articles[Math.floor(index / 5)] && (
+                    <ArticleCard
+                      article={articles[Math.floor(index / 5)]}
+                      profile={primalProfiles.get(articles[Math.floor(index / 5)].pubkey)}
+                    />
+                  )}
+                </div>
               ))
             ) : (
               <div className="text-center py-12 text-muted-foreground">
