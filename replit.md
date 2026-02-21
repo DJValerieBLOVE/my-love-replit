@@ -18,6 +18,10 @@ My Masterpiece is a spiritual personal growth application designed to help users
 - Streak grid tracks Daily LOVE Practice completions: #EEEEEE (none), #D9C2FF (morning only), #A366FF (evening only), #6600FF (complete day)
 - NO gamification on Profile page (no XP, levels, badges, rewards)
 - "Experiments" is the ONLY term for learning content (not "courses") - buttons say "Start Experiment" / "View Experiment"
+- 11 Dimensions (from the 11x LOVE Code) replace "categories" everywhere — always show colored dots next to dimension names in dropdowns/filters
+- "Guide" is always the logged-in user — auto-fill from Nostr profile, no manual text input
+- Videos in experiments: YouTube/Vimeo embed URLs ONLY — no native video upload (too resource intensive)
+- Experiment thumbnails use 16:9 aspect ratio
 
 ## System Architecture
 
@@ -50,7 +54,7 @@ My Masterpiece is a spiritual personal growth application designed to help users
 - **Home** (`/`): Prosperity Pyramid with flip card animations.
 - **Big Dreams** (`/big-dreams`): Daily hub with Daily LOVE Practice CTA, streak grid, experiment progress, upcoming events, and 11 Big Dreams editor.
 - **Daily LOVE Practice** (`/daily-practice`): Full-page wizard accessible from Big Dreams.
-- **Experiments** (`/experiments`): 6 tabs for learning content with creation and detail pages. Current experiment-builder.tsx uses basic form inputs (title, guide, description, image, category, steps). NEXT: Upgrade to use the same TipTap rich text editor from article-editor.tsx so experiment content is Nostr-publishable (kind 30023) with full formatting. Magic Mentor AI will assist users with formatting experiment content. Lightning zaps enabled on experiments.
+- **Experiments** (`/experiments`): Full curriculum platform with 11 Dimensions filter (colored dots), experiment cards with dimension accent colors. Experiment builder (`/experiments/create`) supports Module > Step hierarchy (modules contain steps/lessons), rich text content via shared TipTap editor, YouTube video embeds, quiz questions per step, "Who Could Benefit" and "Outcomes" fields. Guide auto-filled from user's Nostr profile. Thumbnails 16:9. Tiered privacy: catalog is public (PostgreSQL), lesson content behind auth. Completion posts can be shared to public Nostr as kind 1 notes with preview card linking back to app. Magic Mentor AI assists with content creation. Lightning zaps on step/module/experiment completion. See EXPERIMENT_BUILDER_PLAN.md for full implementation details.
 - **Events** (`/events`): 4 tabs with calendar and event cards, with creation page.
 - **People** (`/people`): Unified social hub with dropdown pill bubbles for navigation, right sidebar with gamification placeholders, and 4-tier privacy selector on all post composers.
 - **Vault** (`/vault`): 6 tabs for personal content.
@@ -61,12 +65,13 @@ My Masterpiece is a spiritual personal growth application designed to help users
 - **Wallet** (`/wallet`): Lightning wallet with NWC integration.
 - **Security**: Dual auth middleware (JWT, Nostr pubkey), NIP-07/NIP-46, ownership checks, Nostr query filtering, AI prompt injection protection, atomic transactions for AI usage.
 
-### Shared Rich Text Editor Architecture
-- The Article Editor (article-editor.tsx) TipTap rich text editor is the foundation for ALL content creation.
-- **Experiments** will reuse the same TipTap editor, toolbar, preview mode, and HTML-to-Markdown conversion so experiment content can be published to Nostr as kind 30023 long-form articles.
-- **Magic Mentor AI** will help users format and structure their experiment content within the editor.
+### Shared Rich Text Editor Architecture (DONE - Prompt 1 Complete)
+- Shared components extracted and working:
+  - `client/src/components/rich-text-editor.tsx` — useRichTextEditor hook (with content/onUpdate/placeholder options), RichTextEditorContent, EditorPreview, EditorModeToggle, richTextEditorStyles
+  - `client/src/components/editor-toolbar.tsx` — ToolbarButton, ToolbarSelect, EditorToolbar (full formatting toolbar)
+- Article editor (`article-editor.tsx`) refactored to use shared components — tested and working.
+- Experiment builder will use these same shared components for step content editing.
 - Shared utilities: `html-to-markdown.ts` converter, `ImageUpload` component, slug generation.
-- Goal: Extract common editor components into reusable pieces that both articles and experiments use.
 
 ### Value-for-Value Architecture
 - Experiments are public, value-for-value content: creators receive Lightning zaps from users.
@@ -83,6 +88,12 @@ My Masterpiece is a spiritual personal growth application designed to help users
 - Four-tier privacy system on all post composers: Public (Nostr), Tribe Only, Buddy Only, Secret (vault only).
 - Dual-relay architecture: private Railway Relay for LaB data, public relays for general Nostr data.
 - Private-by-default journals/AI conversations, shareable completions/feed posts.
+
+### Experiment Tiered Privacy (Value-for-Value Strategy)
+- **Goal**: Use Nostr for discovery/marketing, keep curriculum behind login to build community and drive paid memberships.
+- **PUBLIC** (PostgreSQL + public Nostr relays): Experiment catalog (titles, descriptions, thumbnails, dimensions), module/step titles (table of contents only), completion celebration posts (kind 1, user-controlled with reflection + preview card + link back to app), "I'm starting [Experiment]!" posts (optional).
+- **PRIVATE** (Railway relay + behind auth): Full step/lesson content (the actual curriculum), user journals/reflections, progress data (streaks, scores, quiz results), tribe discussions about experiments, comments on specific steps, quiz answers and results.
+- Completion posts are authentic Nostr kind 1 posts that live on the user's feed, get zapped, get replies — not walled-garden ads. They include the user's personal insight and a beautiful card preview linking back to the app.
 
 ### Nostr NIPs Implementation
 - **Currently Implemented**: NIP-01, NIP-05, NIP-07, NIP-10, NIP-19, NIP-25, NIP-44, NIP-46, NIP-57, NIP-65.
