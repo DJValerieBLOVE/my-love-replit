@@ -83,6 +83,16 @@ My Masterpiece is a spiritual personal growth application designed to help users
 - **Priority NIPs to Implement Next**: NIP-17, NIP-29, NIP-42, NIP-51, NIP-09, NIP-32, NIP-56, NIP-72, NIP-94, NIP-98.
 - **Relay Architecture**: Private LaB Relay for all private/encrypted data. Public Relays for public content. Events with private tags NEVER go to public relays.
 
+### Article Editor (Primal-Style)
+- **Route**: `/articles/edit` for new articles, `/articles/edit/:naddr` for editing existing.
+- **My Articles**: `/articles` page lists published articles and drafts with edit/delete actions.
+- **Rich Text Editor**: TipTap (ProseMirror-based) with toolbar: block type selector, bold, italic, underline, strikethrough, bullet/ordered lists, table, image, blockquote, link, code block, horizontal rule.
+- **NIP-23 Compliant**: Articles published as kind 30023 events with Markdown content. Tags include: d (identifier), title, summary, image, published_at, t (hashtags), client.
+- **Drafts**: Kind 30024 events saved privately (no published_at tag). Drafts only go to LAB relay.
+- **Preview Mode**: Toggle between edit and preview in right sidebar.
+- **Options**: Show/hide article metadata, enable/disable hero image.
+- **HTML-to-Markdown**: Custom converter ensures NIP-23 content interoperability.
+
 ### Feed Features (Primal-Style)
 - **Text Truncation**: Primal-style "see more" truncation on long posts (1400 char / 200 word limits). Purple "see more" link expands content inline.
 - **Long-form Articles (NIP-23)**: Kind 30023 long-form content displayed as collapsed article cards in the feed. Parses title, summary, image, hashtags, and published_at from NIP-23 tags. Also handles Primal's kind 10030023 shell events for article previews. Articles are deduplicated and sorted, interleaved every 5 posts in the explore feed.

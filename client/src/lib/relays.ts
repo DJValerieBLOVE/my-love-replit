@@ -101,8 +101,10 @@ function getPublishRelays(
 ): string[] {
   const relays: string[] = [LAB_RELAY_URL];
 
-  if (userWantsPublic && shouldPublishToPublic(kind, tags)) {
-    relays.push(...PUBLIC_RELAYS);
+  if (userWantsPublic && canEverBeShared(kind, tags)) {
+    if (shouldPublishToPublic(kind, tags) || kind === 30023) {
+      relays.push(...PUBLIC_RELAYS);
+    }
   }
 
   return relays;

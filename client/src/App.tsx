@@ -36,6 +36,8 @@ import HowToUse from "@/pages/how-to-use";
 import SettingsPage from "@/pages/settings";
 import RelaysPage from "@/pages/relays";
 import NotePage from "@/pages/note";
+import ArticleEditor from "@/pages/article-editor";
+import MyArticles from "@/pages/my-articles";
 
 function Router() {
   return (
@@ -69,6 +71,9 @@ function Router() {
       <Route path="/settings" component={SettingsPage} />
       <Route path="/relays" component={RelaysPage} />
       <Route path="/note/:id" component={NotePage} />
+      <Route path="/articles" component={MyArticles} />
+      <Route path="/articles/edit" component={ArticleEditor} />
+      <Route path="/articles/edit/:id" component={ArticleEditor} />
       <Route path="/admin/onboarding" component={AdminOnboarding} />
       <Route path="/admin/mentor" component={MentorStudio} />
       <Route component={NotFound} />
