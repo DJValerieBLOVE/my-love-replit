@@ -390,7 +390,7 @@ export default function ExperimentBuilder() {
                     )}
                   </SelectValue>
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent position="popper" side="bottom" className="max-h-[220px]">
                   {ELEVEN_DIMENSIONS.map((dim) => (
                     <SelectItem key={dim.id} value={dim.id}>
                       <span className="flex items-center gap-2">
