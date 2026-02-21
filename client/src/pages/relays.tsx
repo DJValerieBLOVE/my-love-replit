@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Radio, Shield, Link2, Database, Info } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
-import { useNDK } from "@/contexts/ndk-context";
+import { useNDK, addUserRelay, removeUserRelay } from "@/contexts/ndk-context";
 import { LAB_RELAY_URL, PUBLIC_RELAYS } from "@/lib/relays";
 import { reconnectPrimalCache } from "@/lib/primal-cache";
 
@@ -89,6 +89,7 @@ export default function RelaysPage() {
       if (relay) {
         await relay.connect();
       }
+      addUserRelay(newRelay);
       setNewRelay("");
       setTimeout(buildRelayList, 1000);
     } catch (err) {
@@ -104,6 +105,7 @@ export default function RelaysPage() {
         relay.disconnect();
         ndk.pool.relays.delete(url);
       }
+      removeUserRelay(url);
       setTimeout(buildRelayList, 500);
     } catch (err) {
       console.error("[Relays] Failed to remove relay:", err);

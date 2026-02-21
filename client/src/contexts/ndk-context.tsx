@@ -1,9 +1,45 @@
 import { createContext, useContext, useEffect, useState, useCallback, ReactNode, useRef } from "react";
-import NDK, { NDKEvent, NDKFilter, NDKRelay, NDKRelaySet, NDKSubscription, NDKPrivateKeySigner } from "@nostr-dev-kit/ndk";
+import NDK, { NDKEvent, NDKFilter, NDKRelay, NDKRelaySet, NDKSubscription, NDKPrivateKeySigner, NDKNip07Signer } from "@nostr-dev-kit/ndk";
 import { LAB_RELAY_URL, PUBLIC_RELAYS, getPublishRelays, NEVER_SHAREABLE_KINDS, canEverBeShared } from "@/lib/relays";
 import { useNostr } from "@/contexts/nostr-context";
 import { getSecretKeyBytes } from "@/lib/nostr-keygen";
 import { bytesToHex } from "@noble/hashes/utils";
+
+const USER_RELAYS_KEY = "lab-user-relays";
+
+export function getUserRelays(): string[] {
+  try {
+    if (typeof window === "undefined") return [];
+    const stored = localStorage.getItem(USER_RELAYS_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveUserRelays(relays: string[]) {
+  try {
+    localStorage.setItem(USER_RELAYS_KEY, JSON.stringify(relays));
+  } catch {}
+}
+
+export function addUserRelay(url: string) {
+  const current = getUserRelays();
+  const normalized = url.endsWith('/') ? url.slice(0, -1) : url;
+  if (!current.includes(normalized) && !current.includes(normalized + '/')) {
+    current.push(normalized);
+    saveUserRelays(current);
+  }
+}
+
+export function removeUserRelay(url: string) {
+  const normalized = url.endsWith('/') ? url.slice(0, -1) : url;
+  const current = getUserRelays().filter(r => {
+    const n = r.endsWith('/') ? r.slice(0, -1) : r;
+    return n !== normalized;
+  });
+  saveUserRelays(current);
+}
 
 interface NDKContextType {
   ndk: NDK | null;
@@ -25,10 +61,12 @@ export function NDKProvider({ children }: { children: ReactNode }) {
   const ndkRef = useRef<NDK | null>(null);
 
   useEffect(() => {
-    const allRelays = [LAB_RELAY_URL, ...PUBLIC_RELAYS];
-    console.log("[NDK] Initializing with relays:", allRelays);
+    const userRelays = getUserRelays();
+    const allRelays = [LAB_RELAY_URL, ...PUBLIC_RELAYS, ...userRelays];
+    const uniqueRelays = Array.from(new Set(allRelays));
+    console.log("[NDK] Initializing with relays:", uniqueRelays);
 
-    let signer: NDKPrivateKeySigner | undefined;
+    let signer: NDKPrivateKeySigner | NDKNip07Signer | undefined;
     if (loginMethod === "email" && emailKeyPair?.nsec) {
       try {
         const skBytes = getSecretKeyBytes(emailKeyPair.nsec);
@@ -38,10 +76,17 @@ export function NDKProvider({ children }: { children: ReactNode }) {
       } catch (err) {
         console.error("[NDK] Failed to create signer from email keypair:", err);
       }
+    } else if (loginMethod === "extension" && typeof window !== "undefined" && (window as any).nostr) {
+      try {
+        signer = new NDKNip07Signer();
+        console.log("[NDK] Created NIP-07 signer for Nostr extension user");
+      } catch (err) {
+        console.error("[NDK] Failed to create NIP-07 signer:", err);
+      }
     }
 
     const ndkInstance = new NDK({
-      explicitRelayUrls: allRelays,
+      explicitRelayUrls: uniqueRelays,
       signer,
     });
 
