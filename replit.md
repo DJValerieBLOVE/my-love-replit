@@ -36,7 +36,7 @@ My Masterpiece is a spiritual personal growth application designed to help users
 
 ### Design System (Style Guide)
 - **Typography**: Marcellus font, weight 400 ONLY everywhere.
-- **Color Palette**: Background `#FAFAFA`, Foreground `#2a2430`, Primary Brand `#6600ff`, GOD/LOVE Dimension `#eb00a8`. All colors are solid hex values.
+- **Color Palette**: Background `#FAFAFA`, Foreground `#2a2430`, Primary Brand `#6600ff`, GOD/LOVE Dimension `#eb00a8`, Muted/Subtle Gray `#F5F5F5` (used for hover states, loading skeletons, link preview backgrounds, focus states — all via `--muted` CSS variable). All colors are solid hex values. NO purple tints for neutral UI elements.
 - **Buttons**: Default/Primary `bg-foreground text-background`. Ghost Button Hover `hover:bg-[#F0E6FF]`. Never use blue.
 - **Tabs / Pill Bubbles**: `rounded-full` shape with active (`bg-foreground text-background`) and inactive states. People page uses dropdown pill bubbles.
 - **Search Inputs**: Always `bg-white` with `Search` icon at `left-3` and `pl-10`.
@@ -96,6 +96,11 @@ My Masterpiece is a spiritual personal growth application designed to help users
 - Truncation safety: avoids cutting inside URLs and nostr: entities
 - Added PrimalArticle type to primal-cache.ts exports
 - Profile page: tabbed follow dialog, context menu, 3:1 banner, avatar overlap, QR copy, follower counts
+- Unified light gray color: changed --muted from #F5F3FF (purple tint) to #F5F5F5 (neutral gray) globally
+- Skeleton loading states now use bg-muted instead of bg-primary/10 (no more purple pulse)
+- Input/textarea focus rings changed from purple to neutral gray
+- All dropdown/context/select menu hover states unified to bg-muted (removed hardcoded #EBEBEB)
+- Link preview cards redesigned to horizontal layout (thumbnail left, info right) with bg-muted background
 
 ## External Dependencies
 - **PostgreSQL**: Primary database (Neon serverless).
