@@ -118,7 +118,7 @@
   --secondary: #FF9900;
   --secondary-foreground: #FFFFFF;
 
-  --muted: #F5F3FF;
+  --muted: #F5F5F5;
   --muted-foreground: #2a2430; /* Dark Purple-Black */
 
   --accent: #E0F7FA;
@@ -135,7 +135,7 @@
   --sidebar-foreground: #2a2430;
   --sidebar-primary: #6600ff;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #F5F3FF;
+  --sidebar-accent: #F5F5F5;
   --sidebar-accent-foreground: #6600ff;
   --sidebar-border: #E5E5E5;
   --sidebar-ring: #6600ff;

@@ -839,29 +839,31 @@ function LinkPreviewCard({ url }: { url: string }) {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="mt-2 block rounded-xs border border-border overflow-hidden hover:border-[#6600ff] transition-colors group"
+      className="mt-2 block rounded-lg border border-border overflow-hidden hover:border-foreground/20 transition-colors group bg-muted"
       data-testid="link-preview-card"
     >
-      {preview?.image && (
-        <div className="w-full h-40 overflow-hidden bg-muted">
-          <img
-            src={preview.image}
-            alt={preview.title || ""}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-          />
+      <div className="flex">
+        {preview?.image && (
+          <div className="w-[120px] min-w-[120px] h-[90px] overflow-hidden shrink-0">
+            <img
+              src={preview.image}
+              alt={preview.title || ""}
+              className="w-full h-full object-cover"
+              onError={(e) => { (e.target as HTMLImageElement).parentElement!.style.display = 'none'; }}
+            />
+          </div>
+        )}
+        <div className="flex-1 min-w-0 p-3 flex flex-col justify-center">
+          {preview?.title && (
+            <p className="text-sm font-normal line-clamp-2 leading-snug">{preview.title}</p>
+          )}
+          {preview?.description && (
+            <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5 leading-snug">{preview.description}</p>
+          )}
+          {preview?.siteName && (
+            <p className="text-[10px] text-muted-foreground mt-1">{preview.siteName}</p>
+          )}
         </div>
-      )}
-      <div className="p-3">
-        {preview?.siteName && (
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">{preview.siteName}</p>
-        )}
-        {preview?.title && (
-          <p className="text-sm font-normal line-clamp-2 group-hover:text-[#6600ff] transition-colors">{preview.title}</p>
-        )}
-        {preview?.description && (
-          <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{preview.description}</p>
-        )}
       </div>
     </a>
   );
