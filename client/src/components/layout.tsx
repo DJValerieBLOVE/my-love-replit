@@ -26,18 +26,10 @@ import { Button } from "@/components/ui/button";
 import BitcoinIcon from "../assets/bitcoin_icon.png";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeCustomizer } from "@/components/theme-customizer";
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { AiBuddy } from "@/components/ai-buddy";
 import { useNostr } from "@/contexts/nostr-context";
 import { NostrLoginDialog } from "@/components/nostr-login-dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Sheet,
   SheetContent,
@@ -56,7 +48,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const profileMenuTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { isConnected, profile, userStats, disconnect, isAdmin, isLoading, needsProfileCompletion, markProfileComplete } = useNostr();
+
+  const openProfileMenu = useCallback(() => {
+    if (profileMenuTimeout.current) clearTimeout(profileMenuTimeout.current);
+    setProfileMenuOpen(true);
+  }, []);
+
+  const closeProfileMenu = useCallback(() => {
+    profileMenuTimeout.current = setTimeout(() => setProfileMenuOpen(false), 200);
+  }, []);
 
   const desktopNavLinks = [
     { icon: Home, label: "Home", href: "/" },
@@ -159,63 +162,76 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             {isLoading ? (
               <div className="h-8 w-8 md:h-9 md:w-9 rounded-full bg-muted animate-pulse" />
             ) : isConnected ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Avatar className="h-8 w-8 md:h-9 md:w-9 shrink-0 cursor-pointer ring-2 ring-[#D9CCE6] transition-all hover:ring-[#6600ff]" data-testid="avatar-user">
-                    <AvatarImage src={profile?.picture} />
-                    <AvatarFallback>{profile?.name?.[0] || profile?.npub?.slice(-2).toUpperCase() || "?"}</AvatarFallback>
-                  </Avatar>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel className="flex flex-col">
-                    <span>{profile?.name || "Nostr User"}</span>
-                    <span className="text-xs font-normal text-muted-foreground truncate">
-                      {profile?.npub?.slice(0, 12)}...{profile?.npub?.slice(-4)}
-                    </span>
-                    {isAdmin && (
-                      <span className="text-xs text-love-family font-normal mt-1">Admin</span>
-                    )}
-                    <MembershipBadge />
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <Link href="/profile">
-                    <DropdownMenuItem className="cursor-pointer" data-testid="menu-item-profile">
-                      <User className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} />
-                      Profile
-                    </DropdownMenuItem>
-                  </Link>
-                  <Link href="/wallet">
-                    <DropdownMenuItem className="cursor-pointer" data-testid="menu-item-wallet">
-                      <Zap className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} />
-                      Wallet
-                    </DropdownMenuItem>
-                  </Link>
-                  <DropdownMenuSeparator />
-                  <Link href="/settings">
-                    <DropdownMenuItem className="cursor-pointer" data-testid="menu-item-settings">
-                      <Settings className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} />
-                      Settings
-                    </DropdownMenuItem>
-                  </Link>
-                  <Link href="/relays">
-                    <DropdownMenuItem className="cursor-pointer" data-testid="menu-item-relays">
-                      <Radio className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} />
-                      Relays
-                    </DropdownMenuItem>
-                  </Link>
-                  <Link href="/how-to-use">
-                    <DropdownMenuItem className="cursor-pointer" data-testid="menu-item-how-to-use">
-                      <HelpCircle className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} />
-                      How to Use
-                    </DropdownMenuItem>
-                  </Link>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={disconnect} className="text-red-600 focus:text-red-600 cursor-pointer" data-testid="menu-item-disconnect">
-                    <LogOut className="w-4 h-4 mr-2" strokeWidth={1.5} />
-                    Disconnect
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <div
+                className="relative"
+                onMouseEnter={openProfileMenu}
+                onMouseLeave={closeProfileMenu}
+                data-testid="profile-menu-container"
+              >
+                <Avatar
+                  className="h-8 w-8 md:h-9 md:w-9 shrink-0 cursor-pointer ring-2 ring-[#D9CCE6] transition-all hover:ring-[#6600ff]"
+                  onClick={() => setProfileMenuOpen(prev => !prev)}
+                  data-testid="avatar-user"
+                >
+                  <AvatarImage src={profile?.picture} />
+                  <AvatarFallback>{profile?.name?.[0] || profile?.npub?.slice(-2).toUpperCase() || "?"}</AvatarFallback>
+                </Avatar>
+                {profileMenuOpen && (
+                  <div className="absolute right-0 top-full mt-1 w-56 z-50 rounded-md border bg-popover p-1 text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95">
+                    <div className="flex flex-col px-2 py-1.5">
+                      <span className="text-sm font-medium">{profile?.name || "Nostr User"}</span>
+                      <span className="text-xs font-normal text-muted-foreground truncate">
+                        {profile?.npub?.slice(0, 12)}...{profile?.npub?.slice(-4)}
+                      </span>
+                      {isAdmin && (
+                        <span className="text-xs text-love-family font-normal mt-1">Admin</span>
+                      )}
+                      <MembershipBadge />
+                    </div>
+                    <div className="h-px bg-border my-1" />
+                    <Link href="/profile" onClick={() => setProfileMenuOpen(false)}>
+                      <div className="flex items-center px-2 py-1.5 text-sm rounded-sm cursor-pointer hover:bg-accent" data-testid="menu-item-profile">
+                        <User className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} />
+                        Profile
+                      </div>
+                    </Link>
+                    <Link href="/wallet" onClick={() => setProfileMenuOpen(false)}>
+                      <div className="flex items-center px-2 py-1.5 text-sm rounded-sm cursor-pointer hover:bg-accent" data-testid="menu-item-wallet">
+                        <Zap className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} />
+                        Wallet
+                      </div>
+                    </Link>
+                    <div className="h-px bg-border my-1" />
+                    <Link href="/settings" onClick={() => setProfileMenuOpen(false)}>
+                      <div className="flex items-center px-2 py-1.5 text-sm rounded-sm cursor-pointer hover:bg-accent" data-testid="menu-item-settings">
+                        <Settings className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} />
+                        Settings
+                      </div>
+                    </Link>
+                    <Link href="/relays" onClick={() => setProfileMenuOpen(false)}>
+                      <div className="flex items-center px-2 py-1.5 text-sm rounded-sm cursor-pointer hover:bg-accent" data-testid="menu-item-relays">
+                        <Radio className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} />
+                        Relays
+                      </div>
+                    </Link>
+                    <Link href="/how-to-use" onClick={() => setProfileMenuOpen(false)}>
+                      <div className="flex items-center px-2 py-1.5 text-sm rounded-sm cursor-pointer hover:bg-accent" data-testid="menu-item-how-to-use">
+                        <HelpCircle className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} />
+                        How to Use
+                      </div>
+                    </Link>
+                    <div className="h-px bg-border my-1" />
+                    <div
+                      onClick={() => { setProfileMenuOpen(false); disconnect(); }}
+                      className="flex items-center px-2 py-1.5 text-sm rounded-sm cursor-pointer text-red-600 hover:bg-accent"
+                      data-testid="menu-item-disconnect"
+                    >
+                      <LogOut className="w-4 h-4 mr-2" strokeWidth={1.5} />
+                      Disconnect
+                    </div>
+                  </div>
+                )}
+              </div>
             ) : (
               <Button
                 onClick={() => setLoginDialogOpen(true)}

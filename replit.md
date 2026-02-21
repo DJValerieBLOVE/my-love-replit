@@ -71,7 +71,7 @@ My Masterpiece is a spiritual personal growth application aiming to help users c
 - **Experiment Tiered Privacy**: Public catalog and completion posts (Nostr), private full content (behind auth).
 - **Nostr NIPs Implementation**: NIP-01, NIP-05, NIP-07, NIP-10, NIP-19, NIP-25, NIP-44, NIP-46, NIP-57, NIP-65 currently implemented.
 - **Article Editor**: Primal-style NIP-23 compliant article editor with drafts.
-- **Feed Features**: Primal-style text truncation, NIP-23 long-form article display, profile enhancements (tabbed follow dialog, context menu, banner, QR code).
+- **Feed Features**: Primal-style text truncation, NIP-23 long-form article display, profile enhancements (tabbed follow dialog, context menu, banner, QR code). Primal-style image lightbox on feed posts (click to expand fullscreen with keyboard nav).
 
 ### Nsec Login & Local Signer (Primal-Style)
 - **Local Signer** (`client/src/lib/local-signer.ts`): `createLocalSigner()` returns `signEvent`, `nip04.encrypt/decrypt`, `nip44.encrypt/decrypt`, `getPublicKey()`. Keys derived from nsec via `@noble/hashes` and `nostr-tools`. Helpers: `storeNsec`, `readStoredNsec`, `clearStoredNsec` (localStorage).

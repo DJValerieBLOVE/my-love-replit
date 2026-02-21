@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { Link, useLocation } from "wouter";
 import { 
   Clock, 
@@ -60,6 +60,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { GifPicker } from "@/components/gif-picker";
+import { ImageLightbox } from "@/components/image-lightbox";
 
 interface FeedPostProps {
   post: {
@@ -112,12 +113,27 @@ export function FeedPost({ post }: FeedPostProps) {
   const [replyImage, setReplyImage] = useState<string | null>(null);
   const [showReplyGifPicker, setShowReplyGifPicker] = useState(false);
   const [isReplying, setIsReplying] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
   const replyFileRef = useRef<HTMLInputElement>(null);
   const quoteFileRef = useRef<HTMLInputElement>(null);
 
   const isGroupPost = isGroupContent(post);
   const canRepostPublic = canSharePublicly(post);
   const groupName = getGroupName(post);
+
+  const allPostImages = useMemo(() => {
+    const parsed = parseNostrContent(post.content);
+    const imgs = [...parsed.images];
+    if (post.image && !imgs.includes(post.image)) imgs.push(post.image);
+    return imgs;
+  }, [post.content, post.image]);
+
+  const openLightbox = (imageUrl: string) => {
+    const idx = allPostImages.indexOf(imageUrl);
+    setLightboxIndex(idx >= 0 ? idx : 0);
+    setLightboxOpen(true);
+  };
 
   const handleImageUpload = async (file: File, setter: (url: string | null) => void) => {
     try {
@@ -473,11 +489,15 @@ export function FeedPost({ post }: FeedPostProps) {
                   {parsed.images.length > 0 && (
                     <div className={`mt-3 gap-2 ${parsed.images.length === 1 ? '' : 'grid grid-cols-2'}`}>
                       {parsed.images.map((img, i) => (
-                        <div key={i} className="rounded-xs overflow-hidden border border-[#E5E5E5]">
+                        <div
+                          key={i}
+                          className="rounded-xs overflow-hidden border border-[#E5E5E5] cursor-pointer"
+                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); openLightbox(img); }}
+                        >
                           <img
                             src={img}
                             alt="Post media"
-                            className="w-full h-auto object-cover max-h-[400px]"
+                            className="w-full h-auto object-cover max-h-[400px] hover:opacity-90 transition-opacity"
                             loading="lazy"
                             onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                             data-testid={`img-post-media-${post.id}-${i}`}
@@ -498,8 +518,11 @@ export function FeedPost({ post }: FeedPostProps) {
             })()}
             
             {post.image && !parseNostrContent(post.content).images.includes(post.image) && (
-              <div className="mt-3 rounded-xs overflow-hidden border border-[#E5E5E5]">
-                <img src={post.image} alt="Post content" className="w-full h-auto object-cover max-h-[400px]" />
+              <div
+                className="mt-3 rounded-xs overflow-hidden border border-[#E5E5E5] cursor-pointer"
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); openLightbox(post.image!); }}
+              >
+                <img src={post.image} alt="Post content" className="w-full h-auto object-cover max-h-[400px] hover:opacity-90 transition-opacity" />
               </div>
             )}
 
@@ -960,6 +983,13 @@ export function FeedPost({ post }: FeedPostProps) {
           </div>
         </div>
       </CardContent>
+
+      <ImageLightbox
+        images={allPostImages}
+        initialIndex={lightboxIndex}
+        open={lightboxOpen}
+        onClose={() => setLightboxOpen(false)}
+      />
     </Card>
   );
 }
