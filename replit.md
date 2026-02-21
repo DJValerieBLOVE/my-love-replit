@@ -88,7 +88,7 @@ My Masterpiece is a spiritual personal growth application designed to help users
 - **Nostr Relays**: Private Railway Relay, public relays (e.g., `relay.primal.net`).
 - **Anthropic API**: Magic Mentor AI (Claude Haiku 4.5).
 - **OpenRouter API**: Alternative AI provider.
-- **Primal Cache API**: WebSocket service for fast public Nostr feeds.
+- **Primal Cache API**: WebSocket service (`wss://cache2.primal.net/v1`) for fast public Nostr feeds. Persistent connection with auto-reconnect, in-memory cache with 60s TTL, and Enhanced Privacy proxy option.
 - **Alby / nos2x**: NIP-07 Nostr login.
 - **nsec.app**: NIP-46 Bunker Login.
 - **Tailwind CSS v4**: Styling framework.

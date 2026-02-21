@@ -30,7 +30,7 @@ import { LAB_RELAY_URL, PUBLIC_RELAYS } from "@/lib/relays";
 import { NDKEvent } from "@nostr-dev-kit/ndk";
 import { Skeleton } from "@/components/ui/skeleton";
 import { parseNostrContent, truncateNpub, resolveContentMentions, type NostrEntity, type ParsedContent } from "@/lib/nostr-content";
-import { fetchPrimalFeed, fetchPrimalUserFeed, type ExploreMode, type PrimalEvent, type PrimalProfile, type PrimalEventStats, type ZapReceipt } from "@/lib/primal-cache";
+import { fetchPrimalFeed, fetchPrimalUserFeed, fetchPrimalEvent, type ExploreMode, type PrimalEvent, type PrimalProfile, type PrimalEventStats, type ZapReceipt } from "@/lib/primal-cache";
 
 export type FeedPost = {
   id: string;
@@ -776,56 +776,23 @@ function EmbeddedNoteCard({ eventId, bech32 }: { eventId: string; bech32: string
   useEffect(() => {
     if (!eventId) { setLoading(false); return; }
     let cancelled = false;
-    let ws: WebSocket | null = null;
-    let timer: ReturnType<typeof setTimeout> | null = null;
     const fetchNote = async () => {
       try {
-        ws = new WebSocket("wss://cache2.primal.net/v1");
-        const requestId = `embed_${eventId.slice(0, 8)}`;
-        ws.onopen = () => {
-          ws?.send(JSON.stringify(["REQ", requestId, { cache: ["events", { event_ids: [eventId] }] }]));
-        };
-        const events: any[] = [];
-        const profiles = new Map<string, any>();
-        ws.onmessage = (msg) => {
-          try {
-            const data = JSON.parse(msg.data);
-            if (data[0] === "EVENT" && data[1] === requestId) {
-              const evt = data[2];
-              if (evt.kind === 0) {
-                try { profiles.set(evt.pubkey, JSON.parse(evt.content)); } catch {}
-              } else if (evt.kind === 1) {
-                events.push(evt);
-              }
-            } else if (data[0] === "EOSE" && data[1] === requestId) {
-              try { ws?.close(); } catch {}
-              if (!cancelled && events.length > 0) {
-                const evt = events[0];
-                const prof = profiles.get(evt.pubkey);
-                setNote({
-                  content: evt.content,
-                  author: prof?.display_name || prof?.name || evt.pubkey.slice(0, 8) + "...",
-                  avatar: prof?.picture || "",
-                  handle: `@${prof?.nip05 || prof?.name || evt.pubkey.slice(0, 8)}`,
-                  timestamp: evt.created_at,
-                });
-              }
-              if (!cancelled) setLoading(false);
-            }
-          } catch {}
-        };
-        ws.onerror = () => { if (!cancelled) setLoading(false); };
-        timer = setTimeout(() => { try { ws?.close(); } catch {} if (!cancelled) setLoading(false); }, 5000);
-      } catch {
-        if (!cancelled) setLoading(false);
-      }
+        const { event, profile } = await fetchPrimalEvent(eventId);
+        if (!cancelled && event) {
+          setNote({
+            content: event.content,
+            author: profile?.display_name || profile?.name || event.pubkey.slice(0, 8) + "...",
+            avatar: profile?.picture || "",
+            handle: `@${profile?.nip05 || profile?.name || event.pubkey.slice(0, 8)}`,
+            timestamp: event.created_at,
+          });
+        }
+      } catch {}
+      if (!cancelled) setLoading(false);
     };
     fetchNote();
-    return () => {
-      cancelled = true;
-      if (timer) clearTimeout(timer);
-      try { ws?.close(); } catch {}
-    };
+    return () => { cancelled = true; };
   }, [eventId]);
 
   if (loading) {

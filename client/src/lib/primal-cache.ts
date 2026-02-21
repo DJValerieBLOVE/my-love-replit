@@ -1,7 +1,13 @@
-const PRIMAL_CACHE_URL = "wss://cache2.primal.net/v1";
+const DEFAULT_CACHE_URL = "wss://cache2.primal.net/v1";
 
 const DAY_MS = 86400000;
 const HOUR_MS = 3600000;
+const CACHE_TTL_MS = 60000;
+const STALE_TTL_MS = 300000;
+const CONNECTION_TIMEOUT_MS = 10000;
+const REQUEST_TIMEOUT_MS = 10000;
+const RECONNECT_DELAY_MS = 2000;
+const MAX_RECONNECT_ATTEMPTS = 5;
 
 type PrimalEvent = {
   id: string;
@@ -46,8 +52,37 @@ type PrimalFeedResult = {
 
 type ExploreMode = "trending" | "most_zapped" | "media" | "latest";
 
+type PendingRequest = {
+  subId: string;
+  messages: any[];
+  resolve: (messages: any[]) => void;
+  reject: (error: Error) => void;
+  timeout: ReturnType<typeof setTimeout>;
+};
+
+type CacheEntry = {
+  result: PrimalFeedResult;
+  timestamp: number;
+};
+
 function generateSubId(): string {
   return Math.random().toString(36).substring(2, 14);
+}
+
+function getCacheUrl(): string {
+  try {
+    return localStorage.getItem("lab-cache-service") || DEFAULT_CACHE_URL;
+  } catch {
+    return DEFAULT_CACHE_URL;
+  }
+}
+
+function isEnhancedPrivacyEnabled(): boolean {
+  try {
+    return localStorage.getItem("lab-enhanced-privacy") === "true";
+  } catch {
+    return false;
+  }
 }
 
 function extractBolt11Amount(bolt11: string): number {
@@ -163,57 +198,241 @@ function parsePrimalResponse(messages: any[]): PrimalFeedResult {
   return { events, profiles, stats, zapReceipts };
 }
 
-function buildPrimalWebSocket(): Promise<{ ws: WebSocket; messages: any[]; waitForEose: () => Promise<any[]> }> {
-  return new Promise((resolve, reject) => {
-    const ws = new WebSocket(PRIMAL_CACHE_URL);
-    const messages: any[] = [];
-    let eoseResolve: ((msgs: any[]) => void) | null = null;
+class PrimalCacheConnection {
+  private ws: WebSocket | null = null;
+  private pendingRequests = new Map<string, PendingRequest>();
+  private connectPromise: Promise<void> | null = null;
+  private reconnectAttempts = 0;
+  private isDestroyed = false;
+  private feedCache = new Map<string, CacheEntry>();
+  private currentUrl: string = "";
+  private consecutiveTimeouts = 0;
 
-    const timeout = setTimeout(() => {
-      ws.close();
-      reject(new Error("Primal connection timeout"));
-    }, 10000);
+  async ensureConnected(): Promise<void> {
+    const targetUrl = getCacheUrl();
 
-    ws.onopen = () => {
-      clearTimeout(timeout);
-      resolve({
-        ws,
-        messages,
-        waitForEose: () =>
-          new Promise((res) => {
-            eoseResolve = res;
-          }),
-      });
-    };
+    if (this.ws && this.ws.readyState === WebSocket.OPEN && this.currentUrl === targetUrl) {
+      return;
+    }
 
-    ws.onmessage = (event) => {
+    if (this.currentUrl !== targetUrl && this.ws) {
+      console.log("[PrimalCache] Cache URL changed, reconnecting...");
+      this.ws.close();
+      this.ws = null;
+      this.connectPromise = null;
+    }
+
+    if (this.connectPromise) {
+      return this.connectPromise;
+    }
+
+    this.connectPromise = this.connect(targetUrl);
+    try {
+      await this.connectPromise;
+    } finally {
+      this.connectPromise = null;
+    }
+  }
+
+  private connect(url: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (this.isDestroyed) {
+        reject(new Error("Connection destroyed"));
+        return;
+      }
+
       try {
-        const data = JSON.parse(event.data as string);
-        messages.push(data);
-        if (data[0] === "EOSE" && eoseResolve) {
-          eoseResolve(messages);
-          eoseResolve = null;
-        }
-      } catch {}
-    };
+        this.ws = new WebSocket(url);
+        this.currentUrl = url;
+      } catch (err) {
+        reject(new Error("Failed to create WebSocket"));
+        return;
+      }
 
-    ws.onerror = () => {
-      clearTimeout(timeout);
-      reject(new Error("Primal WebSocket error"));
+      const timeout = setTimeout(() => {
+        this.ws?.close();
+        reject(new Error("Primal connection timeout"));
+      }, CONNECTION_TIMEOUT_MS);
+
+      this.ws.onopen = () => {
+        clearTimeout(timeout);
+        this.reconnectAttempts = 0;
+        this.consecutiveTimeouts = 0;
+        console.log("[PrimalCache] Connected to", url);
+        resolve();
+      };
+
+      this.ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data as string);
+          if (!Array.isArray(data) || data.length < 2) return;
+
+          const [msgType, subId] = data;
+          const pending = this.pendingRequests.get(subId);
+          if (!pending) return;
+
+          if (msgType === "EVENT") {
+            pending.messages.push(data);
+          } else if (msgType === "EOSE") {
+            clearTimeout(pending.timeout);
+            this.pendingRequests.delete(subId);
+            this.consecutiveTimeouts = 0;
+            pending.resolve(pending.messages);
+          }
+        } catch {}
+      };
+
+      this.ws.onclose = () => {
+        clearTimeout(timeout);
+        console.log("[PrimalCache] Connection closed");
+        this.rejectAllPending("Connection closed");
+        this.scheduleReconnect();
+      };
+
+      this.ws.onerror = () => {
+        clearTimeout(timeout);
+        this.rejectAllPending("WebSocket error");
+        reject(new Error("Primal WebSocket error"));
+      };
+    });
+  }
+
+  private rejectAllPending(reason: string) {
+    this.pendingRequests.forEach((pending) => {
+      clearTimeout(pending.timeout);
+      pending.reject(new Error(reason));
+    });
+    this.pendingRequests.clear();
+  }
+
+  private scheduleReconnect() {
+    if (this.isDestroyed || this.reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+      return;
+    }
+    this.reconnectAttempts++;
+    const delay = RECONNECT_DELAY_MS * Math.pow(1.5, this.reconnectAttempts - 1);
+    console.log(`[PrimalCache] Reconnecting in ${Math.round(delay)}ms (attempt ${this.reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`);
+    setTimeout(() => {
+      if (!this.isDestroyed) {
+        this.ensureConnected().catch(() => {});
+      }
+    }, delay);
+  }
+
+  async sendRequest(payload: any): Promise<any[]> {
+    await this.ensureConnected();
+
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+      throw new Error("WebSocket not connected");
+    }
+
+    const subId = generateSubId();
+
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        this.pendingRequests.delete(subId);
+        this.consecutiveTimeouts++;
+
+        if (this.consecutiveTimeouts >= 3) {
+          console.log("[PrimalCache] Too many timeouts, forcing reconnect");
+          this.consecutiveTimeouts = 0;
+          this.ws?.close();
+          this.ws = null;
+        }
+
+        reject(new Error("Request timeout"));
+      }, REQUEST_TIMEOUT_MS);
+
+      this.pendingRequests.set(subId, {
+        subId,
+        messages: [],
+        resolve,
+        reject,
+        timeout,
+      });
+
+      this.ws!.send(JSON.stringify(["REQ", subId, payload]));
+    });
+  }
+
+  getCached(key: string, allowStale: boolean = false): PrimalFeedResult | null {
+    const entry = this.feedCache.get(key);
+    if (!entry) return null;
+    const age = Date.now() - entry.timestamp;
+    if (age <= CACHE_TTL_MS) {
+      return entry.result;
+    }
+    if (allowStale && age <= STALE_TTL_MS) {
+      return entry.result;
+    }
+    if (age > STALE_TTL_MS) {
+      this.feedCache.delete(key);
+    }
+    return null;
+  }
+
+  setCache(key: string, result: PrimalFeedResult) {
+    this.feedCache.set(key, { result, timestamp: Date.now() });
+  }
+
+  invalidateCache(keyPrefix?: string) {
+    if (!keyPrefix) {
+      this.feedCache.clear();
+      return;
+    }
+    const keysToDelete: string[] = [];
+    this.feedCache.forEach((_, key) => {
+      if (key.startsWith(keyPrefix)) {
+        keysToDelete.push(key);
+      }
+    });
+    keysToDelete.forEach(key => this.feedCache.delete(key));
+  }
+
+  reconnect() {
+    this.ws?.close();
+    this.ws = null;
+    this.connectPromise = null;
+    this.reconnectAttempts = 0;
+    this.ensureConnected().catch(() => {});
+  }
+
+  destroy() {
+    this.isDestroyed = true;
+    this.rejectAllPending("Connection destroyed");
+    this.feedCache.clear();
+    this.ws?.close();
+    this.ws = null;
+  }
+
+  getStatus(): { url: string; connected: boolean; enhancedPrivacy: boolean } {
+    return {
+      url: this.currentUrl || getCacheUrl(),
+      connected: this.ws?.readyState === WebSocket.OPEN,
+      enhancedPrivacy: isEnhancedPrivacyEnabled(),
     };
-  });
+  }
 }
+
+const primalCache = new PrimalCacheConnection();
 
 export async function fetchPrimalFeed(
   mode: ExploreMode,
-  options: { limit?: number; userPubkey?: string } = {}
+  options: { limit?: number; userPubkey?: string; skipCache?: boolean } = {}
 ): Promise<PrimalFeedResult> {
-  const { limit = 30, userPubkey } = options;
+  const { limit = 30, userPubkey, skipCache = false } = options;
+
+  const cacheKey = `explore:${mode}:${limit}:${userPubkey || "anon"}`;
+
+  if (!skipCache) {
+    const cached = primalCache.getCached(cacheKey);
+    if (cached) {
+      console.log(`[PrimalCache] Cache hit for ${cacheKey}`);
+      return cached;
+    }
+  }
 
   try {
-    const { ws, waitForEose } = await buildPrimalWebSocket();
-    const subId = generateSubId();
-
     const payload: any = { scope: "global", limit };
 
     switch (mode) {
@@ -240,51 +459,83 @@ export async function fetchPrimalFeed(
       payload.user_pubkey = userPubkey;
     }
 
-    ws.send(JSON.stringify(["REQ", subId, { cache: ["explore", payload] }]));
+    const messages = await primalCache.sendRequest({ cache: ["explore", payload] });
+    const result = parsePrimalResponse(messages);
 
-    const eoseTimeout = new Promise<any[]>((resolve) =>
-      setTimeout(() => resolve([]), 10000)
-    );
-
-    const messages = await Promise.race([waitForEose(), eoseTimeout]);
-    ws.close();
-
-    return parsePrimalResponse(messages);
+    primalCache.setCache(cacheKey, result);
+    return result;
   } catch (err) {
     console.error("[PrimalCache] Error:", err);
+    const stale = primalCache.getCached(cacheKey, true);
+    if (stale) {
+      console.log("[PrimalCache] Returning stale cache for", cacheKey);
+      return stale;
+    }
     return { events: [], profiles: new Map(), stats: new Map(), zapReceipts: new Map() };
   }
 }
 
 export async function fetchPrimalUserFeed(
   pubkey: string,
-  options: { limit?: number; userPubkey?: string; until?: number } = {}
+  options: { limit?: number; userPubkey?: string; until?: number; skipCache?: boolean } = {}
 ): Promise<PrimalFeedResult> {
-  const { limit = 30, userPubkey, until } = options;
+  const { limit = 30, userPubkey, until, skipCache = false } = options;
+
+  const cacheKey = `userfeed:${pubkey}:${limit}:${userPubkey || "anon"}:${until || "latest"}`;
+
+  if (!skipCache) {
+    const cached = primalCache.getCached(cacheKey);
+    if (cached) {
+      console.log(`[PrimalCache] Cache hit for userfeed:${pubkey.slice(0, 8)}`);
+      return cached;
+    }
+  }
 
   try {
-    const { ws, waitForEose } = await buildPrimalWebSocket();
-    const subId = generateSubId();
-
     const payload: any = { pubkey, limit };
     if (userPubkey) payload.user_pubkey = userPubkey;
     if (until && until > 0) payload.until = until;
     else payload.until = Math.ceil(Date.now() / 1000);
 
-    ws.send(JSON.stringify(["REQ", subId, { cache: ["feed", payload] }]));
+    const messages = await primalCache.sendRequest({ cache: ["feed", payload] });
+    const result = parsePrimalResponse(messages);
 
-    const eoseTimeout = new Promise<any[]>((resolve) =>
-      setTimeout(() => resolve([]), 10000)
-    );
-
-    const messages = await Promise.race([waitForEose(), eoseTimeout]);
-    ws.close();
-
-    return parsePrimalResponse(messages);
+    primalCache.setCache(cacheKey, result);
+    return result;
   } catch (err) {
     console.error("[PrimalCache] User feed error:", err);
+    const stale = primalCache.getCached(cacheKey, true);
+    if (stale) {
+      console.log("[PrimalCache] Returning stale cache for userfeed:", pubkey.slice(0, 8));
+      return stale;
+    }
     return { events: [], profiles: new Map(), stats: new Map(), zapReceipts: new Map() };
   }
+}
+
+export async function fetchPrimalEvent(eventId: string): Promise<{ event: PrimalEvent | null; profile: PrimalProfile | null }> {
+  try {
+    const messages = await primalCache.sendRequest({ cache: ["events", { event_ids: [eventId] }] });
+    const result = parsePrimalResponse(messages);
+    const event = result.events[0] || null;
+    const profile = event ? result.profiles.get(event.pubkey) || null : null;
+    return { event, profile };
+  } catch (err) {
+    console.error("[PrimalCache] Event fetch error:", err);
+    return { event: null, profile: null };
+  }
+}
+
+export function invalidatePrimalCache(keyPrefix?: string) {
+  primalCache.invalidateCache(keyPrefix);
+}
+
+export function reconnectPrimalCache() {
+  primalCache.reconnect();
+}
+
+export function getPrimalCacheStatus() {
+  return primalCache.getStatus();
 }
 
 export type { PrimalEvent, PrimalProfile, PrimalEventStats, PrimalFeedResult, ExploreMode, ZapReceipt };
