@@ -68,7 +68,7 @@ const LAB_INTEREST_OPTIONS = [
   "Spiritual Growth",
 ];
 
-type ProfileTab = "notes" | "replies" | "reads";
+type ProfileTab = "notes" | "replies" | "articles";
 
 interface PublicProfile {
   id: string;
@@ -543,7 +543,7 @@ export default function Profile() {
     if (!targetPubkey) return;
     setNotesLoading(true);
     try {
-      if (activeTab === "reads") {
+      if (activeTab === "articles") {
         const result = await fetchPrimalUserFeed(targetPubkey, { limit: 20, skipCache: true });
         setUserArticles(result.articles || []);
         setNotesProfiles(result.profiles);
@@ -757,7 +757,7 @@ export default function Profile() {
   const statTabs: { key: ProfileTab; value: number; label: string }[] = [
     { key: "notes", value: nostrProfile?.note_count || 0, label: "notes" },
     { key: "replies", value: nostrProfile?.reply_count || 0, label: "replies" },
-    { key: "reads", value: nostrProfile?.long_form_note_count || 0, label: "reads" },
+    { key: "articles", value: nostrProfile?.long_form_note_count || 0, label: "articles" },
   ];
 
   return (
@@ -1066,7 +1066,7 @@ export default function Profile() {
             </div>
           )}
 
-          {activeTab === "reads" && (
+          {activeTab === "articles" && (
             <div>
               {notesLoading ? (
                 <div className="space-y-4">
