@@ -1,5 +1,5 @@
 import Layout from "@/components/layout";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { useNostr } from "@/contexts/nostr-context";
 import { useNostrProfile } from "@/hooks/use-nostr-profile";
+import { useNDK } from "@/contexts/ndk-context";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams, Link, useLocation } from "wouter";
 import { getPublicProfile, getCreatorExperiments, getCreatorCourses, getCreatorCommunities, updateProfile } from "@/lib/api";
@@ -36,13 +37,20 @@ import {
   Copy,
   Check,
   Heart,
+  UserPlus,
+  UserMinus,
+  Search,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import type { Experiment, Course, Community } from "@shared/schema";
-import { fetchPrimalUserFeed } from "@/lib/primal-cache";
+import { fetchPrimalUserFeed, fetchPrimalUserContacts, fetchPrimalUserFollowers, fetchPrimalUserStats } from "@/lib/primal-cache";
 import type { PrimalProfile } from "@/lib/primal-cache";
 import { PostCard, primalEventToFeedPost, type FeedPost } from "@/pages/feed";
+import { NDKEvent } from "@nostr-dev-kit/ndk";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
+import { PUBLIC_RELAYS } from "@/lib/relays";
 
 const LAB_INTEREST_OPTIONS = [
   "Meditation & Mindfulness",
@@ -134,11 +142,293 @@ function formatJoinedDate(timestamp: number): string {
   return `Joined Nostr on ${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
 }
 
+function useFollowActions(myPubkey: string | undefined) {
+  const { ndk, publishSmart, fetchEvents } = useNDK();
+  const [myFollowing, setMyFollowing] = useState<Set<string>>(new Set());
+  const [isLoading, setIsLoading] = useState(false);
+  const [actionInProgress, setActionInProgress] = useState<string | null>(null);
+  const contactListRef = useRef<{ tags: string[][]; created_at: number } | null>(null);
+
+  const loadMyContacts = useCallback(async () => {
+    if (!myPubkey) return;
+    setIsLoading(true);
+    try {
+      const result = await fetchPrimalUserContacts(myPubkey);
+      const pubkeys = new Set(result.following.map(p => p.pubkey));
+      setMyFollowing(pubkeys);
+
+      const events = await fetchEvents({ kinds: [3], authors: [myPubkey] });
+      if (events.length > 0) {
+        const latest = events.reduce((a, b) => ((a.created_at ?? 0) > (b.created_at ?? 0) ? a : b));
+        contactListRef.current = {
+          tags: latest.tags,
+          created_at: latest.created_at ?? 0,
+        };
+        const localPubkeys = latest.tags.filter(t => t[0] === "p").map(t => t[1]);
+        localPubkeys.forEach(pk => pubkeys.add(pk));
+        setMyFollowing(new Set(pubkeys));
+      }
+    } catch (err) {
+      console.error("[Follow] Error loading contacts:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [myPubkey, fetchEvents]);
+
+  useEffect(() => {
+    if (myPubkey) loadMyContacts();
+  }, [myPubkey, loadMyContacts]);
+
+  const isFollowing = useCallback((pubkey: string) => myFollowing.has(pubkey), [myFollowing]);
+
+  const toggleFollow = useCallback(async (targetPubkey: string) => {
+    if (!myPubkey || !ndk) {
+      toast.error("Please connect your Nostr account first");
+      return;
+    }
+
+    setActionInProgress(targetPubkey);
+    try {
+      const currentlyFollowing = myFollowing.has(targetPubkey);
+      let tags: string[][] = [];
+
+      if (contactListRef.current) {
+        tags = [...contactListRef.current.tags];
+      } else {
+        const events = await fetchEvents({ kinds: [3], authors: [myPubkey] });
+        if (events.length > 0) {
+          const latest = events.reduce((a, b) => ((a.created_at ?? 0) > (b.created_at ?? 0) ? a : b));
+          tags = [...latest.tags];
+        }
+      }
+
+      if (currentlyFollowing) {
+        tags = tags.filter(t => !(t[0] === "p" && t[1] === targetPubkey));
+      } else {
+        if (!tags.some(t => t[0] === "p" && t[1] === targetPubkey)) {
+          tags.push(["p", targetPubkey]);
+        }
+      }
+
+      const event = new NDKEvent(ndk);
+      event.kind = 3;
+      event.tags = tags;
+      event.content = "";
+      event.created_at = Math.floor(Date.now() / 1000);
+      event.pubkey = myPubkey;
+
+      await publishSmart(event, true);
+
+      contactListRef.current = { tags, created_at: event.created_at };
+
+      const updated = new Set(myFollowing);
+      if (currentlyFollowing) {
+        updated.delete(targetPubkey);
+        toast.success("Unfollowed");
+      } else {
+        updated.add(targetPubkey);
+        toast.success("Followed!");
+      }
+      setMyFollowing(updated);
+    } catch (err: any) {
+      console.error("[Follow] Error:", err);
+      toast.error("Failed to update follow status", { description: err.message });
+    } finally {
+      setActionInProgress(null);
+    }
+  }, [myPubkey, ndk, myFollowing, fetchEvents, publishSmart]);
+
+  return { myFollowing, isFollowing, toggleFollow, actionInProgress, isLoading, loadMyContacts };
+}
+
+function UserListItem({
+  user,
+  isFollowing,
+  isOwnPubkey,
+  onToggleFollow,
+  isActionInProgress,
+}: {
+  user: PrimalProfile;
+  isFollowing: boolean;
+  isOwnPubkey: boolean;
+  onToggleFollow: ((pubkey: string) => void) | null;
+  isActionInProgress: boolean;
+}) {
+  const [, setLocation] = useLocation();
+  const displayName = user.display_name || user.name || user.pubkey.substring(0, 8);
+
+  return (
+    <div className="flex items-center gap-3 py-3 px-1" data-testid={`user-list-item-${user.pubkey.substring(0, 8)}`}>
+      <button
+        onClick={() => setLocation(`/profile/${user.pubkey}`)}
+        className="shrink-0"
+        data-testid={`avatar-link-${user.pubkey.substring(0, 8)}`}
+      >
+        <Avatar className="w-10 h-10">
+          {user.picture ? <AvatarImage src={user.picture} alt={displayName} /> : null}
+          <AvatarFallback className="bg-muted text-muted-foreground text-xs">
+            {displayName.charAt(0).toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
+      </button>
+      <button
+        onClick={() => setLocation(`/profile/${user.pubkey}`)}
+        className="flex-1 min-w-0 text-left"
+      >
+        <div className="flex items-center gap-1.5">
+          <span className="text-sm font-normal text-foreground truncate">{displayName}</span>
+          {user.nip05 && <BadgeCheck className="w-3.5 h-3.5 text-[#6600ff] shrink-0" />}
+        </div>
+        {user.nip05 && (
+          <p className="text-xs text-muted-foreground truncate">{user.nip05}</p>
+        )}
+        {!user.nip05 && user.name && (
+          <p className="text-xs text-muted-foreground truncate">@{user.name}</p>
+        )}
+      </button>
+      {!isOwnPubkey && onToggleFollow && (
+        <button
+          onClick={() => onToggleFollow(user.pubkey)}
+          disabled={isActionInProgress}
+          className={cn(
+            "px-3 py-1.5 rounded-full text-xs font-normal transition-colors border shrink-0",
+            isFollowing
+              ? "bg-white text-foreground border-gray-200 hover:border-red-300 hover:text-red-500"
+              : "bg-foreground text-background border-foreground hover:bg-foreground/90"
+          )}
+          data-testid={`button-follow-${user.pubkey.substring(0, 8)}`}
+        >
+          {isActionInProgress ? (
+            <Loader2 className="w-3 h-3 animate-spin" />
+          ) : isFollowing ? (
+            "Following"
+          ) : (
+            "Follow"
+          )}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function FollowListDialog({
+  open,
+  onOpenChange,
+  title,
+  pubkey,
+  mode,
+  myPubkey,
+  isFollowing,
+  onToggleFollow,
+  actionInProgress,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  title: string;
+  pubkey: string;
+  mode: "following" | "followers";
+  myPubkey: string | undefined;
+  isFollowing: (pubkey: string) => boolean;
+  onToggleFollow: ((pubkey: string) => void) | null;
+  actionInProgress: string | null;
+}) {
+  const [users, setUsers] = useState<PrimalProfile[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    if (open && pubkey) {
+      setLoading(true);
+      setSearchQuery("");
+      const fetchData = mode === "following"
+        ? fetchPrimalUserContacts(pubkey).then(r => r.following)
+        : fetchPrimalUserFollowers(pubkey).then(r => r.followers);
+
+      fetchData.then(profiles => {
+        setUsers(profiles);
+      }).catch(err => {
+        console.error(`[FollowList] Error loading ${mode}:`, err);
+      }).finally(() => {
+        setLoading(false);
+      });
+    }
+  }, [open, pubkey, mode]);
+
+  const filteredUsers = searchQuery.trim()
+    ? users.filter(u =>
+        (u.display_name || u.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (u.nip05 || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (u.name || "").toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : users;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md max-h-[80vh] flex flex-col p-0">
+        <DialogHeader className="px-5 pt-5 pb-0">
+          <DialogTitle className="text-lg font-normal">{title}</DialogTitle>
+          <DialogDescription className="sr-only">
+            {mode === "following" ? "People this user follows" : "People following this user"}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="px-5 pt-3 pb-2">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+            <Input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search"
+              className="pl-10 bg-white"
+              data-testid="input-search-follow-list"
+            />
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-5 pb-5 min-h-0">
+          {loading ? (
+            <div className="space-y-3 py-2">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-3">
+                  <Skeleton className="w-10 h-10 rounded-full" />
+                  <div className="flex-1 space-y-1.5">
+                    <Skeleton className="h-3.5 w-32" />
+                    <Skeleton className="h-3 w-24" />
+                  </div>
+                  <Skeleton className="h-7 w-20 rounded-full" />
+                </div>
+              ))}
+            </div>
+          ) : filteredUsers.length > 0 ? (
+            <div className="divide-y divide-border">
+              {filteredUsers.map((user) => (
+                <UserListItem
+                  key={user.pubkey}
+                  user={user}
+                  isFollowing={isFollowing(user.pubkey)}
+                  isOwnPubkey={user.pubkey === myPubkey}
+                  onToggleFollow={onToggleFollow}
+                  isActionInProgress={actionInProgress === user.pubkey}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-sm text-muted-foreground">
+                {searchQuery ? "No users found matching your search" : `No ${mode} yet`}
+              </p>
+            </div>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export default function Profile() {
   const params = useParams<{ userId?: string }>();
   const [, setLocation] = useLocation();
   const { profile, userStats } = useNostr();
-  const { nostrProfile } = useNostrProfile(profile?.pubkey);
   const queryClient = useQueryClient();
   const [editOpen, setEditOpen] = useState(false);
   const [editName, setEditName] = useState("");
@@ -150,6 +440,23 @@ export default function Profile() {
   const [userNotes, setUserNotes] = useState<FeedPost[]>([]);
   const [notesLoading, setNotesLoading] = useState(false);
   const [notesProfiles, setNotesProfiles] = useState<Map<string, PrimalProfile>>(new Map());
+  const [followingOpen, setFollowingOpen] = useState(false);
+  const [followersOpen, setFollowersOpen] = useState(false);
+
+  const currentUserId = profile?.userId;
+  const viewingPubkey = params.userId || undefined;
+  const isOwnProfile = !viewingPubkey || viewingPubkey === currentUserId || viewingPubkey === profile?.pubkey;
+  const targetUserId = isOwnProfile ? currentUserId : viewingPubkey;
+
+  const targetPubkey = isOwnProfile ? profile?.pubkey : viewingPubkey;
+
+  const { nostrProfile: ownNostrProfile } = useNostrProfile(isOwnProfile ? profile?.pubkey : undefined);
+  const { nostrProfile: otherNostrProfile } = useNostrProfile(!isOwnProfile ? targetPubkey : undefined);
+  const nostrProfile = isOwnProfile ? ownNostrProfile : otherNostrProfile;
+
+  const { isFollowing, toggleFollow, actionInProgress } = useFollowActions(profile?.pubkey);
+
+  const isPaidMember = userStats?.tier && userStats.tier !== "free";
 
   const profileMutation = useMutation({
     mutationFn: updateProfile,
@@ -163,28 +470,28 @@ export default function Profile() {
     },
   });
 
-  const currentUserId = profile?.userId;
-  const isOwnProfile = !params.userId || params.userId === currentUserId;
-  const targetUserId = params.userId || currentUserId;
-  const isPaidMember = userStats?.tier && userStats.tier !== "free";
-
   useEffect(() => {
-    if (profile?.pubkey && (activeTab === "notes" || activeTab === "replies")) {
+    if (targetPubkey && (activeTab === "notes" || activeTab === "replies")) {
       loadUserNotes();
     }
-  }, [profile?.pubkey, activeTab]);
+  }, [targetPubkey, activeTab]);
+
+  useEffect(() => {
+    setActiveTab("notes");
+    setUserNotes([]);
+  }, [targetPubkey]);
 
   const loadUserNotes = async () => {
-    if (!profile?.pubkey) return;
+    if (!targetPubkey) return;
     setNotesLoading(true);
     try {
-      const result = await fetchPrimalUserFeed(profile.pubkey, { limit: 20, skipCache: true });
+      const result = await fetchPrimalUserFeed(targetPubkey, { limit: 20, skipCache: true });
       const posts = result.events
         .filter(e => {
           if (activeTab === "replies") return e.tags?.some((t: string[]) => t[0] === "e");
           return !e.tags?.some((t: string[]) => t[0] === "e" && t[3] === "reply");
         })
-        .map(e => primalEventToFeedPost(e, result.profiles, profile.pubkey, "public", result.stats, result.zapReceipts));
+        .map(e => primalEventToFeedPost(e, result.profiles, targetPubkey, "public", result.stats, result.zapReceipts));
       setUserNotes(posts);
       setNotesProfiles(result.profiles);
     } catch (err) {
@@ -218,8 +525,9 @@ export default function Profile() {
   };
 
   const copyNpub = () => {
-    if (profile?.npub) {
-      navigator.clipboard.writeText(profile.npub);
+    const npubToCopy = isOwnProfile ? profile?.npub : targetPubkey;
+    if (npubToCopy) {
+      navigator.clipboard.writeText(npubToCopy);
       setCopiedNpub(true);
       toast.success("Public key copied!");
       setTimeout(() => setCopiedNpub(false), 2000);
@@ -250,8 +558,12 @@ export default function Profile() {
     enabled: isOwnProfile && !!currentUserId,
   });
 
-  const displayName = nostrProfile?.display_name || nostrProfile?.name || profile?.name || "Guest";
-  const displayPicture = nostrProfile?.picture || profile?.picture || "";
+  const displayName = isOwnProfile
+    ? (nostrProfile?.display_name || nostrProfile?.name || profile?.name || "Guest")
+    : (nostrProfile?.display_name || nostrProfile?.name || publicProfile?.name || targetPubkey?.substring(0, 12) || "Unknown");
+  const displayPicture = isOwnProfile
+    ? (nostrProfile?.picture || profile?.picture || "")
+    : (nostrProfile?.picture || publicProfile?.avatar || "");
   const aboutText = nostrProfile?.about || "";
   const bannerImage = nostrProfile?.banner || "";
 
@@ -260,11 +572,11 @@ export default function Profile() {
     name: displayName,
     handle: nostrProfile?.name || displayName.toLowerCase().replace(/\s+/g, '-'),
     avatar: displayPicture,
-  } : publicProfile ? {
-    id: publicProfile.id,
-    name: publicProfile.name,
-    handle: publicProfile.handle,
-    avatar: publicProfile.avatar || "",
+  } : (nostrProfile || publicProfile) ? {
+    id: targetPubkey || "unknown",
+    name: displayName,
+    handle: nostrProfile?.name || publicProfile?.handle || displayName.toLowerCase().replace(/\s+/g, '-'),
+    avatar: displayPicture,
   } : null;
 
   const ownExperimentsList = (ownExperiments as Experiment[]).filter((e: Experiment) => e.isPublished);
@@ -283,7 +595,9 @@ export default function Profile() {
     communitiesCount: ownCommunitiesList.length,
   } : publicProfile?.stats || { experimentsCount: 0, coursesCount: 0, communitiesCount: 0 };
 
-  if (!isOwnProfile && profileLoading) {
+  const isLoadingProfile = !isOwnProfile && !nostrProfile && profileLoading;
+
+  if (isLoadingProfile) {
     return (
       <Layout>
         <div className="flex justify-center items-center py-20">
@@ -293,7 +607,7 @@ export default function Profile() {
     );
   }
 
-  if (!isOwnProfile && !user) {
+  if (!isOwnProfile && !user && !nostrProfile) {
     return (
       <Layout>
         <div className="max-w-2xl mx-auto p-4 lg:p-8">
@@ -397,7 +711,7 @@ export default function Profile() {
             >
               <Mail className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
             </button>
-            {isOwnProfile && (
+            {isOwnProfile ? (
               <button
                 onClick={openEditDialog}
                 className="h-9 px-4 rounded-md text-sm font-normal bg-foreground text-background hover:bg-foreground/90 transition-colors"
@@ -405,7 +719,33 @@ export default function Profile() {
               >
                 edit profile
               </button>
-            )}
+            ) : targetPubkey && profile?.pubkey ? (
+              <button
+                onClick={() => toggleFollow(targetPubkey)}
+                disabled={actionInProgress === targetPubkey}
+                className={cn(
+                  "h-9 px-4 rounded-md text-sm font-normal transition-colors flex items-center gap-1.5",
+                  isFollowing(targetPubkey)
+                    ? "bg-white text-foreground border border-gray-200 hover:border-red-300 hover:text-red-500"
+                    : "bg-foreground text-background hover:bg-foreground/90"
+                )}
+                data-testid="button-follow-profile"
+              >
+                {actionInProgress === targetPubkey ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : isFollowing(targetPubkey) ? (
+                  <>
+                    <UserMinus className="w-3.5 h-3.5" strokeWidth={1.5} />
+                    Following
+                  </>
+                ) : (
+                  <>
+                    <UserPlus className="w-3.5 h-3.5" strokeWidth={1.5} />
+                    Follow
+                  </>
+                )}
+              </button>
+            ) : null}
           </div>
 
           <div className="px-5 pt-1" data-testid="profile-card">
@@ -469,11 +809,19 @@ export default function Profile() {
 
               <div className="flex flex-col items-end gap-1.5 shrink-0 pt-1">
                 <div className="flex items-center gap-2" data-testid="profile-follow-stats">
-                  <button className="flex items-center gap-1 hover:opacity-70 transition-opacity" data-testid="text-following-count">
+                  <button
+                    onClick={() => targetPubkey && setFollowingOpen(true)}
+                    className="flex items-center gap-1 hover:opacity-70 transition-opacity"
+                    data-testid="text-following-count"
+                  >
                     <span className="text-sm font-semibold text-foreground">{formatNumber(nostrProfile?.following_count || 0)}</span>
                     <span className="text-sm text-muted-foreground">following</span>
                   </button>
-                  <button className="flex items-center gap-1 hover:opacity-70 transition-opacity" data-testid="text-followers-count">
+                  <button
+                    onClick={() => targetPubkey && setFollowersOpen(true)}
+                    className="flex items-center gap-1 hover:opacity-70 transition-opacity"
+                    data-testid="text-followers-count"
+                  >
                     <span className="text-sm font-semibold text-foreground">{formatNumber(nostrProfile?.followers_count || 0)}</span>
                     <span className="text-sm text-muted-foreground">followers</span>
                   </button>
@@ -485,14 +833,18 @@ export default function Profile() {
                   </span>
                 ) : null}
 
-                {profile?.npub && (
+                {(isOwnProfile ? profile?.npub : targetPubkey) && (
                   <button
                     onClick={copyNpub}
                     className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
                     data-testid="button-copy-npub"
                   >
                     <span className="truncate max-w-[160px] text-xs font-mono">
-                      {profile.npub.substring(0, 12)}...{profile.npub.substring(profile.npub.length - 8)}
+                      {(() => {
+                        const key = isOwnProfile ? profile?.npub : targetPubkey;
+                        if (!key) return '';
+                        return `${key.substring(0, 12)}...${key.substring(key.length - 8)}`;
+                      })()}
                     </span>
                     {copiedNpub ? (
                       <Check className="w-3.5 h-3.5 text-green-500" />
@@ -752,6 +1104,33 @@ export default function Profile() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {targetPubkey && (
+          <>
+            <FollowListDialog
+              open={followingOpen}
+              onOpenChange={setFollowingOpen}
+              title={`${isOwnProfile ? "You are" : displayName + " is"} following`}
+              pubkey={targetPubkey}
+              mode="following"
+              myPubkey={profile?.pubkey}
+              isFollowing={isFollowing}
+              onToggleFollow={profile?.pubkey ? toggleFollow : null}
+              actionInProgress={actionInProgress}
+            />
+            <FollowListDialog
+              open={followersOpen}
+              onOpenChange={setFollowersOpen}
+              title={`${isOwnProfile ? "Your" : displayName + "'s"} followers`}
+              pubkey={targetPubkey}
+              mode="followers"
+              myPubkey={profile?.pubkey}
+              isFollowing={isFollowing}
+              onToggleFollow={profile?.pubkey ? toggleFollow : null}
+              actionInProgress={actionInProgress}
+            />
+          </>
+        )}
       </div>
     </Layout>
   );

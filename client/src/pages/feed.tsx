@@ -1300,13 +1300,26 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
   return (
     <Card className="p-4 border border-gray-100 shadow-none hover:border-gray-200 transition-colors" data-testid={`post-${post.id}`}>
       <div className="flex gap-3">
-        <Avatar className="w-10 h-10">
-          <AvatarImage src={post.author.avatar} />
-          <AvatarFallback className="bg-gray-100 text-muted-foreground text-xs">{post.author.name.slice(0, 2).toUpperCase()}</AvatarFallback>
-        </Avatar>
+        {post.author.pubkey ? (
+          <Link href={`/profile/${post.author.pubkey}`} className="shrink-0">
+            <Avatar className="w-10 h-10 cursor-pointer hover:opacity-80 transition-opacity">
+              <AvatarImage src={post.author.avatar} />
+              <AvatarFallback className="bg-gray-100 text-muted-foreground text-xs">{post.author.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+            </Avatar>
+          </Link>
+        ) : (
+          <Avatar className="w-10 h-10">
+            <AvatarImage src={post.author.avatar} />
+            <AvatarFallback className="bg-gray-100 text-muted-foreground text-xs">{post.author.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+          </Avatar>
+        )}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 min-w-0">
-            <span className="text-sm truncate max-w-[140px]" style={{ fontFamily: 'Marcellus, serif' }}>{post.author.name}</span>
+            {post.author.pubkey ? (
+              <Link href={`/profile/${post.author.pubkey}`} className="text-sm truncate max-w-[140px] hover:underline cursor-pointer" style={{ fontFamily: 'Marcellus, serif' }}>{post.author.name}</Link>
+            ) : (
+              <span className="text-sm truncate max-w-[140px]" style={{ fontFamily: 'Marcellus, serif' }}>{post.author.name}</span>
+            )}
             <span className="text-muted-foreground text-xs truncate max-w-[120px]">{truncateNpub(post.author.handle)}</span>
             <span className="text-muted-foreground text-[11px] flex items-center gap-1 shrink-0">
               · {post.timestamp}
