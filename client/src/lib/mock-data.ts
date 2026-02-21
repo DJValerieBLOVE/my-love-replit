@@ -33,20 +33,6 @@ export const CURRENT_USER = {
 // GOD/LOVE: #eb00a8 | Romance: #e60023 | Family: #ff6600 | Community: #ffdf00
 // Mission: #a2f005 | Money: #00d81c | Time: #00ccff | Environment: #0033ff
 // Body: #6600ff | Mind: #9900ff | Soul: #cc00ff
-export const EXPERIMENT_CATEGORIES = [
-  { id: "all", label: "All Categories" },
-  { id: "god-love", label: "GOD/LOVE" },
-  { id: "romance", label: "Romance" },
-  { id: "family", label: "Family" },
-  { id: "community", label: "Community" },
-  { id: "mission", label: "Mission" },
-  { id: "money", label: "Money" },
-  { id: "time", label: "Time" },
-  { id: "environment", label: "Environment" },
-  { id: "body", label: "Body" },
-  { id: "mind", label: "Mind" },
-  { id: "soul", label: "Soul" },
-];
 
 export const EXPERIMENT_TAGS = [
   "Self-Paced",
@@ -71,7 +57,7 @@ export const EXPERIMENT_TAGS = [
   "Focus",
 ];
 
-export const LOVE_CODE_AREAS = [
+export const ELEVEN_DIMENSIONS = [
   { id: "god-love", name: "GOD/LOVE", color: "bg-[#eb00a8]", hex: "#eb00a8", progress: 85, dream: "To feel universally connected and lead with unconditional love in every interaction.", value: "Daily Prayer", villain: "Ego", victory: "Peace" },
   { id: "romance", name: "Romance", color: "bg-[#e60023]", hex: "#e60023", progress: 60, dream: "To build a partnership based on deep trust, wild passion, and shared growth.", value: "Date Night", villain: "Busyness", victory: "Connection" },
   { id: "family", name: "Family", color: "bg-[#ff6600]", hex: "#ff6600", progress: 75, dream: "To create a legacy of laughter, support, and freedom for my children.", value: "Dinner Together", villain: "Screens", victory: "Laughter" },
@@ -84,6 +70,8 @@ export const LOVE_CODE_AREAS = [
   { id: "mind", name: "Mind", color: "bg-[#9900ff]", hex: "#9900ff", progress: 80, dream: "To cultivate a mind that is sharp, curious, and peaceful amidst chaos.", value: "Meditation", villain: "Anxiety", victory: "Clarity" },
   { id: "soul", name: "Soul", color: "bg-[#cc00ff]", hex: "#cc00ff", progress: 95, dream: "To live in complete alignment with my highest truth and soul's purpose.", value: "Silence", villain: "Noise", victory: "Alignment" },
 ];
+
+export const LOVE_CODE_AREAS = ELEVEN_DIMENSIONS;
 
 export const CLUBS = [
   {
@@ -176,32 +164,29 @@ export const EXPERIMENTS = [
   {
     id: "exp-1",
     title: "Mindful Leadership",
-    guide: "Dr. Maya Angelou",
     progress: 75,
     totalDiscoveries: 12,
     completedDiscoveries: 9,
     image: Course1,
-    category: "Wellness",
+    dimension: "mind",
   },
   {
     id: "exp-2",
     title: "Bitcoin for Beginners",
-    guide: "Satoshi University",
     progress: 30,
     totalDiscoveries: 20,
     completedDiscoveries: 6,
     image: Course2,
-    category: "Money",
+    dimension: "money",
   },
   {
     id: "exp-3",
     title: "Community Building 101",
-    guide: "Lumina Team",
     progress: 0,
     totalDiscoveries: 8,
     completedDiscoveries: 0,
     image: HeroBg,
-    category: "Business",
+    dimension: "community",
   },
 ];
 

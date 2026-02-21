@@ -1,264 +1,109 @@
-import { 
-  ArrowLeft, 
-  CheckCircle, 
-  PlayCircle, 
-  Award, 
-  Clock, 
-  BookOpen, 
-  Zap, 
-  MessageCircle, 
-  Send, 
-  Video, 
-  FlaskConical, 
-  Lightbulb,
-  Circle,
-  Check,
-  ChevronDown,
-  ChevronUp,
-  MoveRight,
-  Trophy
+import {
+  ArrowLeft, CheckCircle, PlayCircle, Clock, BookOpen, Zap,
+  MessageCircle, Send, FlaskConical, Lightbulb, Circle, Check,
+  ChevronDown, ChevronUp, MoveRight, Trophy, Lock, User as UserIcon
 } from "lucide-react";
 import { Link, useRoute } from "wouter";
-import { useState, useEffect, useMemo } from "react";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { useState, useEffect } from "react";
 import { FeedPost } from "@/components/feed-post";
 import confetti from 'canvas-confetti';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogClose
+  Dialog, DialogContent, DialogDescription, DialogHeader,
+  DialogTitle, DialogFooter
 } from "@/components/ui/dialog";
 import { EqVisualizer } from "@/components/eq-visualizer";
 import { toast } from "sonner";
 import Layout from "@/components/layout";
-import { EXPERIMENTS } from "@/lib/mock-data";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useNostr } from "@/contexts/nostr-context";
-
-import { Quiz, Question } from "@/components/quiz";
-import { SurprisePortal } from "@/components/surprise-portal";
 import { ShareConfirmationDialog } from "@/components/share-confirmation-dialog";
 import { Share2 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { getExperiment } from "@/lib/api";
+import { ELEVEN_DIMENSIONS } from "@/lib/mock-data";
+import { EditorPreview, richTextEditorStyles } from "@/components/rich-text-editor";
+import type { Experiment, ExperimentModule, ExperimentStep } from "@shared/schema";
+
+function YouTubeEmbed({ url }: { url: string }) {
+  const getEmbedUrl = (rawUrl: string) => {
+    try {
+      if (rawUrl.includes("youtube.com/watch")) {
+        const videoId = new URL(rawUrl).searchParams.get("v");
+        return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+      }
+      if (rawUrl.includes("youtu.be/")) {
+        const videoId = rawUrl.split("youtu.be/")[1]?.split("?")[0];
+        return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+      }
+      if (rawUrl.includes("youtube.com/embed/")) return rawUrl;
+      if (rawUrl.includes("vimeo.com/")) {
+        const videoId = rawUrl.split("vimeo.com/")[1]?.split("?")[0];
+        return videoId ? `https://player.vimeo.com/video/${videoId}` : null;
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  };
+
+  const embedUrl = getEmbedUrl(url);
+  if (!embedUrl) return null;
+
+  return (
+    <div className="relative aspect-video rounded-xs overflow-hidden mb-4" data-testid="video-embed">
+      <iframe
+        src={embedUrl}
+        className="w-full h-full"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        title="Video"
+      />
+    </div>
+  );
+}
 
 export default function ExperimentDetail() {
   const [, params] = useRoute("/experiments/:id");
-  const experiment = EXPERIMENTS.find(m => m.id === params?.id);
-  const { profile, userStats } = useNostr();
-  const [newComment, setNewComment] = useState("");
-  const [localWalletBalance, setLocalWalletBalance] = useState(0);
-  const [showPortal, setShowPortal] = useState(false);
-  const [showQuiz, setShowQuiz] = useState(false);
-
-  // Sync localWalletBalance when userStats loads asynchronously
-  useEffect(() => {
-    if (userStats?.walletBalance !== undefined) {
-      setLocalWalletBalance(userStats.walletBalance);
-    }
-  }, [userStats?.walletBalance]);
-
-  // Sample Quiz Data (Mock)
-  const SAMPLE_QUIZ: Question[] = [
-    {
-      id: 'q1',
-      type: 'multiple-choice',
-      question: 'What is the first step in the 11x LOVE method?',
-      options: ['Hypothesis Formulation', 'Data Collection', 'Blind Guessing', 'Panic'],
-      correctAnswer: 'Hypothesis Formulation',
-      explanation: 'Every great experiment starts with a clear hypothesis.'
-    },
-    {
-      id: 'q2',
-      type: 'fill-blank',
-      question: 'Complete the phrase: "Life is a ______."',
-      correctAnswer: ['game', 'experiment'],
-      explanation: 'We view life as a game or an experiment to be played!'
-    }
-  ];
-  
-  // Local state for discoveries to handle unlocking/completing
-  const [discoveries, setDiscoveries] = useState([
-    { num: 1, title: "Hypothesis Formulation", duration: "Day 1", locked: false, completed: true },
-    { num: 2, title: "Method Setup & Prep", duration: "Day 2", locked: false, completed: true },
-    { num: 3, title: "First Findings", duration: "Day 3", locked: false, completed: false },
-    { num: 4, title: "Deep Dive Analysis", duration: "Day 4", locked: true, completed: false },
-    { num: 5, title: "Conclusion & Results", duration: "Day 5", locked: true, completed: false },
-  ]);
-  
-  // Unlock logic based on completion
-  useEffect(() => {
-     const completedCount = discoveries.filter(d => d.completed).length;
-     if (completedCount >= 2) { // Start with 2 completed
-        const updated = [...discoveries];
-        // Unlock logic: if previous is completed, unlock next
-        for (let i = 1; i < updated.length; i++) {
-           if (updated[i-1].completed) {
-              updated[i].locked = false;
-           }
-        }
-        // Avoid infinite loop if nothing changed, but here we are just setting initial state logic or reactive
-        // Actually, simpler to do this in the handleComplete
-     }
-  }, []);
-
+  const { profile, isConnected } = useNostr();
+  const [activeModuleIndex, setActiveModuleIndex] = useState(0);
+  const [activeStepIndex, setActiveStepIndex] = useState(0);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [showZapModal, setShowZapModal] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [zapAmount, setZapAmount] = useState(210);
-  const [lastCompletedDiscovery, setLastCompletedDiscovery] = useState<number | null>(null);
-  
-  // Transformed comments to match FeedPost structure
+  const [newComment, setNewComment] = useState("");
+  const [isAboutOpen, setIsAboutOpen] = useState(true);
+
+  const { data: experiment, isLoading } = useQuery({
+    queryKey: ["experiment", params?.id],
+    queryFn: () => getExperiment(params!.id),
+    enabled: !!params?.id,
+  });
+
+  const modules: ExperimentModule[] = (experiment?.modules as ExperimentModule[]) || [];
+  const activeModule = modules[activeModuleIndex];
+  const activeStep = activeModule?.steps?.[activeStepIndex];
+  const dimensionData = ELEVEN_DIMENSIONS.find((d) => d.id === experiment?.dimension);
+
+  const totalSteps = modules.reduce((sum, mod) => sum + (mod.steps?.length || 0), 0);
+
   const [comments, setComments] = useState([
-    { 
-      id: "1", 
+    {
+      id: "1",
       author: {
         name: "Alex Chen",
         handle: "@alexc",
         avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop"
       },
-      content: "This discovery really shifted my perspective! 🙌", 
-      timestamp: "2h ago", 
+      content: "This lesson really shifted my perspective!",
+      timestamp: "2h ago",
       likes: 12,
       comments: 3,
       zaps: 210
     },
-    { 
-      id: "2", 
-      author: {
-        name: "Sarah M.",
-        handle: "@sarahm",
-        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop"
-      },
-      content: "Anyone else testing this hypothesis?", 
-      timestamp: "1h ago", 
-      likes: 5,
-      comments: 1,
-      zaps: 50
-    },
   ]);
-  
-  const [isAboutOpen, setIsAboutOpen] = useState(true);
-
-  if (!experiment) {
-    return (
-      <Layout>
-        <div className="max-w-4xl mx-auto p-4 lg:p-8">
-          <p className="text-muted-foreground">Experiment not found</p>
-        </div>
-      </Layout>
-    );
-  }
-
-  // Dynamic calculations
-  const completedCount = discoveries.filter(d => d.completed).length;
-  const totalCount = discoveries.length;
-  const currentProgress = Math.round((completedCount / totalCount) * 100);
-  const DISCOVERY_REWARD = 500;
-  const GRAND_REWARD = 2500; // 500 * 5 + bonus
-  
-  const handleCompleteDiscovery = (num: number) => {
-     // If it's the current discovery (Lesson 3), show quiz first instead of completing immediately
-     if (num === 3 && !showQuiz) {
-        setShowQuiz(true);
-        return;
-     }
-
-     const newDiscoveries = [...discoveries];
-     const index = newDiscoveries.findIndex(d => d.num === num);
-     
-     if (index !== -1 && !newDiscoveries[index].completed) {
-        // 1. Mark Complete
-        newDiscoveries[index].completed = true;
-        setShowQuiz(false); // Hide quiz if it was open
-        
-        // 2. Unlock Next if exists
-        if (index + 1 < newDiscoveries.length) {
-           newDiscoveries[index + 1].locked = false;
-        }
-        
-        setDiscoveries(newDiscoveries);
-        
-        // 3. Add Reward
-        const newBalance = localWalletBalance + DISCOVERY_REWARD;
-        setLocalWalletBalance(newBalance);
-        
-        setLastCompletedDiscovery(num);
-        
-        toast(`Discovery Complete!`, {
-           icon: '⚡',
-           description: `You finished "${newDiscoveries[index].title}"`
-        });
-        
-        setTimeout(() => {
-          setShowZapModal(true);
-        }, 600);
-
-        // 5. Trigger EQ Visualizer Animation (Top Global)
-        window.dispatchEvent(new CustomEvent('eq-update', { 
-           detail: { 
-              category: experiment.category,
-              progress: Math.min(100, currentProgress + 20) // Simulate jump
-           } 
-        }));
-        
-        // 5.5 Check for Surprise Portal (Random Chance)
-        // Using 30% chance for demo purposes (normally might be lower)
-        if (Math.random() > 0.7) {
-           setTimeout(() => {
-              setShowPortal(true);
-           }, 1500); // Delay slightly so user sees the checkmark first
-        }
-
-        // 6. Check for Full Completion
-        const allComplete = newDiscoveries.every(d => d.completed);
-        if (allComplete) {
-           setTimeout(() => {
-              handleExperimentComplete(newBalance);
-           }, 800); // Slight delay for effect
-        }
-     }
-  };
-
-  const handleExperimentComplete = (currentBalance: number) => {
-     // Grand Reward
-     const finalBalance = currentBalance + 2500; // Bonus
-     setLocalWalletBalance(finalBalance);
-     setShowCompletionModal(true);
-     
-     // Confetti
-     const duration = 3000;
-     const animationEnd = Date.now() + duration;
-     const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
-
-     const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
-
-     const interval: any = setInterval(function() {
-       const timeLeft = animationEnd - Date.now();
-
-       if (timeLeft <= 0) {
-         return clearInterval(interval);
-       }
-
-       const particleCount = 50 * (timeLeft / duration);
-       confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
-       confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
-     }, 250);
-  };
-
-  const handlePortalClaim = (amount: number) => {
-     const newBalance = localWalletBalance + amount;
-     setLocalWalletBalance(newBalance);
-     toast(`+${amount} Sats!`, {
-        icon: '🌌',
-        description: 'Portal Reward Claimed'
-     });
-  };
 
   const handleAddComment = () => {
     if (newComment.trim()) {
@@ -279,12 +124,40 @@ export default function ExperimentDetail() {
     }
   };
 
+  const navigateToStep = (modIndex: number, stepIndex: number) => {
+    setActiveModuleIndex(modIndex);
+    setActiveStepIndex(stepIndex);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="max-w-4xl mx-auto p-4 lg:p-8 text-center">
+          <FlaskConical className="w-12 h-12 mx-auto mb-4 text-muted-foreground animate-pulse" />
+          <p className="text-muted-foreground">Loading experiment...</p>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (!experiment) {
+    return (
+      <Layout>
+        <div className="max-w-4xl mx-auto p-4 lg:p-8">
+          <p className="text-muted-foreground">Experiment not found</p>
+        </div>
+      </Layout>
+    );
+  }
+
+  const showFullContent = isConnected;
+
   return (
     <Layout>
+      <style>{richTextEditorStyles}</style>
       <div className="flex flex-col lg:flex-row h-full min-h-[calc(100vh-100px)]">
-        {/* Left Column: Main Content */}
         <div className="flex-1 p-4 lg:p-8 lg:pr-12 overflow-y-auto">
-          {/* Breadcrumb / Back */}
           <div className="mb-6">
             <Link href="/experiments">
               <Button variant="ghost" className="gap-2 pl-0 text-muted-foreground hover:text-foreground" data-testid="button-back">
@@ -294,367 +167,299 @@ export default function ExperimentDetail() {
             </Link>
           </div>
 
-          {/* Header Info */}
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-2">
-               <Badge className="bg-white text-black hover:bg-white/90 font-normal border shadow-sm text-sm px-3 py-0.5">
-                  {experiment.category}
-               </Badge>
-               <span className="text-sm text-muted-foreground">Guided by {experiment.guide}</span>
+              {dimensionData && (
+                <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-0.5 rounded-md border border-gray-200 bg-white text-muted-foreground" data-testid="badge-dimension">
+                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: dimensionData.hex }} />
+                  {dimensionData.name}
+                </span>
+              )}
             </div>
-            <h1 className="text-3xl md:text-4xl font-serif font-normal text-muted-foreground mb-4">{experiment.title}</h1>
-            
-            {/* About Toggle */}
+            <h1 className="text-3xl md:text-4xl font-serif font-normal text-muted-foreground mb-4" data-testid="text-experiment-title">{experiment.title}</h1>
+
             <div className="border-l-2 border-primary/20 pl-4 py-1 cursor-pointer hover:border-primary transition-colors" onClick={() => setIsAboutOpen(!isAboutOpen)}>
               <div className="flex items-center gap-2 text-sm font-normal text-muted-foreground hover:text-foreground">
-                 <BookOpen className="w-4 h-4" /> About this Experiment
-                 {isAboutOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                <BookOpen className="w-4 h-4" /> About this Experiment
+                {isAboutOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
               </div>
               {isAboutOpen && (
-                <p className="mt-2 text-[17px] leading-relaxed text-muted-foreground max-w-2xl animate-in fade-in slide-in-from-top-2 duration-300">
-                  This experiment invites you to explore {experiment.category.toLowerCase()} principles in your daily life. 
-                  You'll test hypotheses, gather data on yourself, and record your findings to gain insights into your "Human Operating System".
-                </p>
+                <div className="mt-2 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                  {experiment.description && (
+                    <p className="text-[17px] leading-relaxed text-muted-foreground max-w-2xl" data-testid="text-description">
+                      {experiment.description}
+                    </p>
+                  )}
+                  {experiment.benefitsFor && (
+                    <div>
+                      <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1">Who Could Benefit</p>
+                      <p className="text-sm text-muted-foreground" data-testid="text-benefits">{experiment.benefitsFor}</p>
+                    </div>
+                  )}
+                  {experiment.outcomes && (
+                    <div>
+                      <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1">Outcomes & Goals</p>
+                      <p className="text-sm text-muted-foreground" data-testid="text-outcomes">{experiment.outcomes}</p>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           </div>
 
-          {/* Video Player / Hero */}
-          <div className="relative rounded-xs overflow-hidden aspect-video bg-black mb-8 shadow-lg ring-1 ring-border/50 group">
-             <img 
-              src={experiment.image} 
-              alt={experiment.title}
-              className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity duration-500"
-            />
-            <div className="absolute inset-0 flex items-center justify-center">
-               <div className="w-20 h-20 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 shadow-2xl cursor-pointer group-hover:scale-110 transition-transform duration-300">
-                  <PlayCircle className="w-10 h-10 text-white fill-white/20" />
-               </div>
-            </div>
-            <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
-               <h3 className="text-white font-normal text-lg">Lesson 3: First Findings</h3>
-               <p className="text-white/70 text-sm">Duration: 12:45</p>
-            </div>
-          </div>
+          {showFullContent && activeStep ? (
+            <div className="mb-8">
+              <div className="mb-4">
+                <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1">
+                  Module {activeModuleIndex + 1}: {activeModule?.title || "Untitled Module"}
+                </p>
+                <h2 className="text-2xl font-serif font-normal text-muted-foreground" data-testid="text-active-step-title">
+                  {activeStep.title || `Step ${activeStepIndex + 1}`}
+                </h2>
+              </div>
 
-          {/* Current Discovery Action Area */}
-          {(() => {
-             const currentDiscovery = discoveries.find(d => !d.completed && !d.locked);
-             if (currentDiscovery) {
-                return (
-                   <div className="mb-12 p-6 bg-card border border-border rounded-xs shadow-sm transition-all">
-                      {!showQuiz ? (
-                         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                            <div>
-                               <h3 className="text-lg font-normal text-muted-foreground">Ready to move on?</h3>
-                               <p className="text-muted-foreground text-sm">Complete "{currentDiscovery.title}" to unlock the next step.</p>
-                            </div>
-                            <Button 
-                               onClick={() => handleCompleteDiscovery(currentDiscovery.num)}
-                               className="gap-2 rounded-full px-8 text-base"
-                            >
-                               Next Discovery <MoveRight className="w-5 h-5" />
-                            </Button>
-                         </div>
-                      ) : (
-                         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <div className="flex items-center justify-between mb-6 border-b border-border pb-4">
-                               <h3 className="text-xl font-serif font-normal text-muted-foreground flex items-center gap-2">
-                                  <Lightbulb className="w-5 h-5 text-yellow-500" />
-                                  Knowledge Check
-                               </h3>
-                               <Button variant="ghost" size="sm" onClick={() => setShowQuiz(false)}>Cancel</Button>
-                            </div>
-                            <Quiz 
-                               questions={SAMPLE_QUIZ} 
-                               onComplete={(score) => handleCompleteDiscovery(currentDiscovery.num)} 
-                               rewardAmount={DISCOVERY_REWARD}
-                            />
-                         </div>
-                      )}
-                   </div>
-                );
-             }
-             return null;
-          })()}
+              {activeStep.videoUrl && <YouTubeEmbed url={activeStep.videoUrl} />}
 
-          {/* Discussion Section */}
-          <div className="mt-12 max-w-3xl">
-            <h2 className="text-2xl font-normal font-serif mb-6 flex items-center gap-2 text-muted-foreground">
-              <MessageCircle className="w-6 h-6 text-primary" />
-              Lab Partners Discussion
-            </h2>
-            
-            {/* Comment Input */}
-            <div className="flex gap-4 mb-8">
-              <img 
-                src={profile?.picture || ""} 
-                alt="Your avatar"
-                className="w-10 h-10 rounded-full border border-border"
-              />
-              <div className="flex-1">
-                <textarea 
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  placeholder="Share your findings, questions, or ahas..."
-                  className="w-full p-3 rounded-lg bg-card text-muted-foreground placeholder-muted-foreground border border-border focus:outline-none focus:ring-1 focus:ring-primary resize-none transition-all text-[17px]"
-                  rows={2}
-                  data-testid="textarea-discussion"
-                />
-                <div className="mt-2 flex justify-end">
-                  <Button 
-                    onClick={handleAddComment}
-                    className="gap-2 rounded-full px-8 text-base"
-                    data-testid="button-post-comment"
+              {activeStep.content && (
+                <div className="mb-6" data-testid="step-content">
+                  <EditorPreview html={activeStep.content} />
+                </div>
+              )}
+
+              <div className="flex items-center gap-3 mt-8">
+                {activeStepIndex > 0 && (
+                  <Button
+                    variant="outline"
+                    onClick={() => navigateToStep(activeModuleIndex, activeStepIndex - 1)}
+                    data-testid="button-prev-step"
                   >
-                    <Send className="w-3 h-3" /> Post
+                    Previous Step
                   </Button>
+                )}
+                {activeStepIndex === 0 && activeModuleIndex > 0 && (
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      const prevMod = modules[activeModuleIndex - 1];
+                      navigateToStep(activeModuleIndex - 1, (prevMod?.steps?.length || 1) - 1);
+                    }}
+                    data-testid="button-prev-module"
+                  >
+                    Previous Module
+                  </Button>
+                )}
+                <div className="flex-1" />
+                {activeModule && activeStepIndex < (activeModule.steps?.length || 0) - 1 ? (
+                  <Button onClick={() => navigateToStep(activeModuleIndex, activeStepIndex + 1)} className="gap-2" data-testid="button-next-step">
+                    Next Step <MoveRight className="w-4 h-4" />
+                  </Button>
+                ) : activeModuleIndex < modules.length - 1 ? (
+                  <Button onClick={() => navigateToStep(activeModuleIndex + 1, 0)} className="gap-2" data-testid="button-next-module">
+                    Next Module <MoveRight className="w-4 h-4" />
+                  </Button>
+                ) : (
+                  <Button onClick={() => setShowCompletionModal(true)} className="gap-2" data-testid="button-complete">
+                    <Trophy className="w-4 h-4" /> Complete Experiment
+                  </Button>
+                )}
+              </div>
+            </div>
+          ) : !showFullContent ? (
+            <div className="mb-8">
+              <Card className="p-8 text-center border-dashed">
+                <Lock className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                <h3 className="text-lg font-serif mb-2">Login to Start This Experiment</h3>
+                <p className="text-muted-foreground mb-4">
+                  Sign in to access the full curriculum, track your progress, and join the discussion.
+                </p>
+                <Button className="gap-2" data-testid="button-login-cta">
+                  Start Experiment
+                </Button>
+              </Card>
+            </div>
+          ) : (
+            <div className="mb-8">
+              {experiment.image && (
+                <div className="relative rounded-xs overflow-hidden aspect-video bg-black mb-8 shadow-lg ring-1 ring-border/50 group">
+                  <img
+                    src={experiment.image}
+                    alt={experiment.title}
+                    className="w-full h-full object-cover opacity-80"
+                  />
+                </div>
+              )}
+              <p className="text-muted-foreground text-center py-4">Select a step from the sidebar to begin.</p>
+            </div>
+          )}
+
+          {showFullContent && (
+            <div className="mt-12 max-w-3xl">
+              <h2 className="text-2xl font-normal font-serif mb-6 flex items-center gap-2 text-muted-foreground">
+                <MessageCircle className="w-6 h-6 text-muted-foreground" />
+                Discussion
+              </h2>
+              <div className="flex gap-4 mb-8">
+                <img
+                  src={profile?.picture || ""}
+                  alt="Your avatar"
+                  className="w-10 h-10 rounded-full border border-border"
+                />
+                <div className="flex-1">
+                  <textarea
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    placeholder="Share your findings, questions, or insights..."
+                    className="w-full p-3 rounded-lg bg-card text-muted-foreground placeholder-muted-foreground border border-border focus:outline-none focus:ring-1 focus:ring-primary resize-none transition-all text-[17px]"
+                    rows={2}
+                    data-testid="textarea-discussion"
+                  />
+                  <div className="mt-2 flex justify-end">
+                    <Button onClick={handleAddComment} className="gap-2 rounded-full px-8 text-base" data-testid="button-post-comment">
+                      <Send className="w-3 h-3" /> Post
+                    </Button>
+                  </div>
                 </div>
               </div>
+              <div className="space-y-6">
+                {comments.map((comment) => (
+                  <FeedPost key={comment.id} post={comment} />
+                ))}
+              </div>
             </div>
-
-            {/* Comments List (Using FeedPost) */}
-            <div className="space-y-6">
-              {comments.map((comment) => (
-                <FeedPost key={comment.id} post={comment} />
-              ))}
-            </div>
-          </div>
+          )}
         </div>
 
-        {/* Right Column: Syllabus / Sidebar */}
         <div className="w-full lg:w-[320px] border-l bg-card/30 flex-shrink-0 sticky top-0 h-fit lg:h-auto lg:min-h-[calc(100vh-64px)]">
-           <div className="p-6 space-y-8">
-              
-              {/* Stats (Minimalist) */}
-              <div className="grid grid-cols-2 gap-4 pb-6 border-b border-border/50">
-                 <div>
-                    <div className="flex items-center gap-1.5 mb-1 text-muted-foreground">
-                       <Clock className="w-3.5 h-3.5" />
-                       <span className="text-xs font-normal uppercase tracking-wider">Time</span>
-                    </div>
-                    <p className="font-normal text-sm">5 Days</p>
-                 </div>
-                 <div>
-                    <div className="flex items-center gap-1.5 mb-1 text-muted-foreground">
-                       <Zap className="w-3.5 h-3.5" strokeWidth={1.5} />
-                       <span className="text-xs font-normal uppercase tracking-wider">Award</span>
-                    </div>
-                    <p className="font-normal text-sm text-orange-500">{localWalletBalance.toLocaleString()} Sats</p>
-                 </div>
-              </div>
-
-              {/* Progress Block */}
-              <div className="space-y-4">
-                 <div className="flex items-center justify-between text-sm">
-                    <span className="font-normal text-muted-foreground">Your Progress</span>
-                    <span className="font-normal text-primary">{currentProgress}%</span>
-                 </div>
-                 <Progress value={currentProgress} className="h-1.5" />
-              </div>
-
-              {/* Syllabus List */}
+          <div className="p-6 space-y-8">
+            <div className="grid grid-cols-2 gap-4 pb-6 border-b border-border/50">
               <div>
-                 <h3 className="font-serif font-normal text-lg mb-4 text-muted-foreground">Discoveries</h3>
-                 <div className="space-y-2">
-                    {discoveries.map((discovery, idx) => {
-                       const isCurrent = !discovery.completed && !discovery.locked;
-                       
-                       return (
-                       <div 
-                          key={discovery.num}
-                          className={`
-                            group relative flex flex-col p-3 rounded-lg transition-all
-                            ${isCurrent ? 'bg-primary/5 border border-primary/20 shadow-sm' : 'hover:bg-muted/50 border border-transparent'}
-                            ${discovery.completed ? 'opacity-70 hover:opacity-100' : ''}
-                          `}
-                       >
-                          <div className="flex items-start gap-3">
-                             {/* Icon / Checkbox */}
-                             <div className="mt-0.5 text-muted-foreground transition-colors">
-                                {discovery.completed ? (
-                                   <div className="bg-green-500 rounded-full p-0.5">
-                                     <Check className="w-4 h-4 text-white" strokeWidth={3} />
-                                   </div>
-                                ) : discovery.locked ? (
-                                   <Circle className="w-5 h-5 opacity-30" />
-                                ) : (
-                                   <Circle className="w-5 h-5 text-primary animate-pulse" />
-                                )}
-                             </div>
-                             
-                             {/* Content */}
-                             <div className="flex-1">
-                                <p className={`text-base font-normal leading-tight mb-1 ${discovery.locked ? 'text-muted-foreground' : 'text-foreground'}`}>
-                                   {discovery.title}
-                                </p>
-                                <div className="flex items-center gap-2">
-                                   <span className="text-[10px] text-muted-foreground uppercase font-normal tracking-wider">{discovery.duration}</span>
-                                </div>
-                             </div>
-                          </div>
-
-                          {/* Action Button for Current Step - REMOVED */}
-                       </div>
-                    )})}
-                 </div>
+                <div className="flex items-center gap-1.5 mb-1 text-muted-foreground">
+                  <BookOpen className="w-3.5 h-3.5" />
+                  <span className="text-xs font-normal uppercase tracking-wider">Modules</span>
+                </div>
+                <p className="font-normal text-sm">{modules.length}</p>
               </div>
-              
-           </div>
+              <div>
+                <div className="flex items-center gap-1.5 mb-1 text-muted-foreground">
+                  <Clock className="w-3.5 h-3.5" />
+                  <span className="text-xs font-normal uppercase tracking-wider">Steps</span>
+                </div>
+                <p className="font-normal text-sm">{totalSteps}</p>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="font-serif font-normal text-lg mb-4 text-muted-foreground">Curriculum</h3>
+              <div className="space-y-3">
+                {modules.map((mod, modIdx) => (
+                  <div key={mod.id || modIdx} className="space-y-1">
+                    <p className="text-xs uppercase tracking-wider text-muted-foreground font-normal px-1">
+                      Module {modIdx + 1}: {mod.title || "Untitled"}
+                    </p>
+                    <div className="space-y-0.5">
+                      {mod.steps?.map((step, stepIdx) => {
+                        const isActive = modIdx === activeModuleIndex && stepIdx === activeStepIndex;
+                        return (
+                          <button
+                            key={step.id || stepIdx}
+                            onClick={() => showFullContent && navigateToStep(modIdx, stepIdx)}
+                            className={`
+                              w-full text-left flex items-start gap-2 p-2 rounded-lg transition-all text-sm
+                              ${isActive ? 'bg-primary/5 border border-primary/20' : 'hover:bg-muted/50 border border-transparent'}
+                              ${!showFullContent ? 'cursor-default' : 'cursor-pointer'}
+                            `}
+                            data-testid={`step-nav-${modIdx}-${stepIdx}`}
+                          >
+                            <div className="mt-0.5">
+                              {isActive ? (
+                                <Circle className="w-4 h-4 text-primary" />
+                              ) : (
+                                <Circle className="w-4 h-4 text-muted-foreground/30" />
+                              )}
+                            </div>
+                            <span className={`${isActive ? 'text-foreground' : 'text-muted-foreground'}`}>
+                              {step.title || `Step ${stepIdx + 1}`}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {experiment.tags && (experiment.tags as string[]).length > 0 && (
+              <div className="pt-4 border-t border-border/50">
+                <div className="flex flex-wrap gap-1.5">
+                  {(experiment.tags as string[]).map((tag) => (
+                    <span key={tag} className="text-xs px-2.5 py-0.5 rounded-md border border-gray-200 bg-white text-muted-foreground">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Completion Modal */}
       <Dialog open={showCompletionModal} onOpenChange={setShowCompletionModal}>
         <DialogContent className="sm:max-w-md text-center border-primary/20">
           <DialogHeader>
-             <div className="mx-auto w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-4 animate-bounce">
-                <Trophy className="w-12 h-12 text-primary" />
-             </div>
+            <div className="mx-auto w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-4 animate-bounce">
+              <Trophy className="w-12 h-12 text-primary" />
+            </div>
             <DialogTitle className="text-3xl font-serif font-normal text-center text-muted-foreground">Experiment Complete!</DialogTitle>
             <DialogDescription className="text-center text-lg mt-2">
-               You've unlocked the secrets of {experiment.category}!
+              You've completed "{experiment.title}"!
             </DialogDescription>
           </DialogHeader>
-          
-          <div className="py-6 space-y-6">
-             <div className="p-4 bg-yellow-500/10 rounded-xs border border-yellow-500/20">
-                <p className="text-sm text-muted-foreground uppercase font-normal tracking-widest mb-1">Total Earned</p>
-                <p className="text-4xl font-normal text-yellow-600 dark:text-yellow-400 flex items-center justify-center gap-2">
-                   <Zap className="w-8 h-8 fill-current" />
-                   {GRAND_REWARD + (totalCount * DISCOVERY_REWARD)} Sats
-                </p>
-             </div>
 
-             <div className="flex justify-center">
-                 <div className="scale-75 origin-center">
-                    <EqVisualizer size={160} isLogo={true} />
-                 </div>
-             </div>
-             
-             <p className="text-muted-foreground italic">
-                "The only way to discover the limits of the possible is to go beyond them into the impossible."
-             </p>
+          <div className="py-6 space-y-6">
+            <div className="flex justify-center">
+              <div className="scale-75 origin-center">
+                <EqVisualizer size={160} isLogo={true} />
+              </div>
+            </div>
+
+            <p className="text-muted-foreground italic">
+              "The only way to discover the limits of the possible is to go beyond them into the impossible."
+            </p>
           </div>
 
           <DialogFooter className="flex-col sm:flex-col gap-3">
-            <Button 
-              className="w-full h-12 text-lg font-normal gap-2"
-              size="lg"
-              onClick={() => {
-                setShowCompletionModal(false);
-                setTimeout(() => setShowZapModal(true), 300);
-              }}
-              data-testid="button-zap-creator-completion"
-            >
-              <Zap className="w-5 h-5" />
-              Zap {experiment.guide}
-            </Button>
-            <Button 
-              variant="outline" 
+            <Button
               className="w-full h-12 text-lg font-normal gap-2"
               size="lg"
               onClick={() => {
                 setShowCompletionModal(false);
                 setTimeout(() => setShowShareDialog(true), 300);
               }}
-              data-testid="button-share-completion"
+              data-testid="button-share-win"
             >
               <Share2 className="w-5 h-5" />
               Share Your Win
             </Button>
-            <Link href="/experiments">
-               <Button variant="ghost" className="w-full font-normal" size="lg">
-                  Back to Experiments
-               </Button>
-            </Link>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      
-      {/* Zap Creator Modal */}
-      <Dialog open={showZapModal} onOpenChange={setShowZapModal}>
-        <DialogContent className="sm:max-w-sm text-center border-primary/20">
-          <DialogHeader>
-            <div className="mx-auto w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-2">
-              <Zap className="w-8 h-8 text-orange-500" />
-            </div>
-            <DialogTitle className="text-xl font-serif font-normal text-center text-muted-foreground">
-              Zap the Creator
-            </DialogTitle>
-            <DialogDescription className="text-center mt-1">
-              {lastCompletedDiscovery
-                ? `You completed a lesson! Send some sats to ${experiment.guide} as a thank you.`
-                : `Show appreciation to ${experiment.guide} for this experiment.`
-              }
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="py-4 space-y-4">
-            <div className="flex justify-center gap-2">
-              {[21, 100, 210, 500, 1000].map((amount) => (
-                <button
-                  key={amount}
-                  onClick={() => setZapAmount(amount)}
-                  className={`px-3 py-2 rounded-lg text-sm font-normal transition-colors ${
-                    zapAmount === amount
-                      ? "bg-foreground text-background"
-                      : "bg-white border border-gray-200 text-muted-foreground hover:border-gray-400"
-                  }`}
-                  data-testid={`button-zap-${amount}`}
-                >
-                  {amount} sats
-                </button>
-              ))}
-            </div>
-
-            <div className="text-center">
-              <p className="text-xs text-muted-foreground">
-                Zaps go directly to the creator via Lightning
-              </p>
-            </div>
-          </div>
-
-          <DialogFooter className="flex-col sm:flex-col gap-2">
             <Button
-              className="w-full gap-2"
-              onClick={() => {
-                toast(`Zapped ${zapAmount} sats to ${experiment.guide}!`, {
-                  icon: '⚡',
-                  description: 'Lightning payment sent'
-                });
-                setShowZapModal(false);
-              }}
-              data-testid="button-send-zap"
+              variant="ghost"
+              className="w-full"
+              onClick={() => setShowCompletionModal(false)}
+              data-testid="button-close-completion"
             >
-              <Zap className="w-4 h-4" />
-              Send {zapAmount} Sats
+              Close
             </Button>
-            <DialogClose asChild>
-              <Button variant="ghost" className="w-full text-muted-foreground">
-                Maybe Later
-              </Button>
-            </DialogClose>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Share Dialog */}
       <ShareConfirmationDialog
         open={showShareDialog}
         onOpenChange={setShowShareDialog}
         contentType="experiment"
         contentTitle={`I completed "${experiment.title}"!`}
-        contentPreview={`Just finished the ${experiment.title} experiment by ${experiment.guide} on My Masterpiece. Come check it out and start your own journey! #11xLOVE #MyMasterpiece`}
+        contentPreview={`I just finished the "${experiment.title}" experiment on 11x LOVE LaB! ${experiment.description || ""}`}
       />
-
-      {/* Surprise Portal */}
-      <SurprisePortal 
-         isOpen={showPortal} 
-         onClose={() => setShowPortal(false)} 
-         onClaim={handlePortalClaim}
-      />
-
     </Layout>
   );
 }

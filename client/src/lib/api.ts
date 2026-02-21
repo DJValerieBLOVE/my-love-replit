@@ -238,12 +238,13 @@ export async function enrollInExperiment(experimentId: string) {
 
 export async function createExperiment(data: {
   title: string;
-  guide: string;
   description?: string;
   image?: string;
-  category: string;
-  loveCodeArea?: string;
-  steps?: { order: number; title: string; prompt: string; }[];
+  dimension: string;
+  benefitsFor?: string;
+  outcomes?: string;
+  modules?: any[];
+  tags?: string[];
   accessType?: string;
   communityId?: string;
   price?: number;

@@ -30,7 +30,7 @@ import { getAllCommunities, getMyCommunities, getPrayerRequests, createPrayerReq
 import { useNostr } from "@/contexts/nostr-context";
 import { useNDK } from "@/contexts/ndk-context";
 import { toast } from "sonner";
-import { EXPERIMENT_CATEGORIES, EXPERIMENT_TAGS } from "@/lib/mock-data";
+import { ELEVEN_DIMENSIONS, EXPERIMENT_TAGS } from "@/lib/mock-data";
 import CommunityCover from "@assets/generated_images/community_cover.png";
 import {
   CompactPostBar,
@@ -710,8 +710,9 @@ function DiscoverTabContent({ subOption }: { subOption: DiscoverSubOption }) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {EXPERIMENT_CATEGORIES.map((cat) => (
-                  <SelectItem key={cat.id} value={cat.id}>{cat.label}</SelectItem>
+                <SelectItem value="all">All Dimensions</SelectItem>
+                {ELEVEN_DIMENSIONS.map((cat) => (
+                  <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -775,7 +776,7 @@ function DiscoverTabContent({ subOption }: { subOption: DiscoverSubOption }) {
                           <div className="flex items-center gap-1.5 mb-3 flex-wrap">
                             {community.category && (
                               <span className="text-xs px-2.5 py-0.5 rounded-md border border-gray-200 bg-white text-muted-foreground">
-                                {EXPERIMENT_CATEGORIES.find(c => c.id === community.category)?.label || community.category}
+                                {ELEVEN_DIMENSIONS.find(c => c.id === community.category)?.name || community.category}
                               </span>
                             )}
                             {community.tags?.slice(0, 2).map((tag: string) => (

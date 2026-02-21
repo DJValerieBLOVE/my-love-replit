@@ -3,7 +3,7 @@ import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Target, Share2, Heart, Plus, Calendar, FlaskConical, ArrowRight, ChevronRight } from "lucide-react";
 import { useState } from "react";
-import { LOVE_CODE_AREAS, EVENTS } from "@/lib/mock-data";
+import { LOVE_CODE_AREAS, ELEVEN_DIMENSIONS, EVENTS } from "@/lib/mock-data";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
@@ -208,7 +208,8 @@ export default function BigDreams() {
                 </div>
                 <div className="space-y-2">
                   {recentExperiments.map((exp) => {
-                    const totalSteps = exp.steps?.length || 0;
+                    const mods = exp.modules as any[] | null;
+                    const totalSteps = mods ? mods.reduce((sum: number, m: any) => sum + (m.steps?.length || 0), 0) : 0;
                     const completedSteps = 0;
                     const progressPercent = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
 
@@ -221,7 +222,7 @@ export default function BigDreams() {
                           </div>
                           <Progress value={progressPercent} className="h-1.5" />
                           <p className="text-xs text-muted-foreground mt-1.5">
-                            {exp.guide}
+                            {exp.dimension ? ELEVEN_DIMENSIONS.find(d => d.id === exp.dimension)?.name : ""}
                           </p>
                         </Card>
                       </Link>

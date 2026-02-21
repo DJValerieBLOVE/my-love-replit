@@ -172,18 +172,42 @@ export const insertAreaProgressSchema = createInsertSchema(areaProgress).omit({
 export type InsertAreaProgress = z.infer<typeof insertAreaProgressSchema>;
 export type AreaProgress = typeof areaProgress.$inferSelect;
 
+// Module > Step hierarchy types for experiments
+export interface QuizQuestion {
+  question: string;
+  options: string[];
+  correctIndex: number;
+}
+
+export interface ExperimentStep {
+  id: string;
+  order: number;
+  title: string;
+  content: string;
+  videoUrl?: string;
+  quizQuestions?: QuizQuestion[];
+}
+
+export interface ExperimentModule {
+  id: string;
+  order: number;
+  title: string;
+  description: string;
+  steps: ExperimentStep[];
+}
+
 // Experiments (can be user-created or system)
 export const experiments = pgTable("experiments", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   creatorId: varchar("creator_id").references(() => users.id, { onDelete: "set null" }),
   title: text("title").notNull(),
-  guide: text("guide").notNull(),
   description: text("description"),
   image: text("image"),
-  category: text("category").notNull(),
-  loveCodeArea: text("love_code_area"),
+  dimension: text("dimension").notNull(),
+  benefitsFor: text("benefits_for"),
+  outcomes: text("outcomes"),
   tags: text("tags").array().default([]),
-  steps: jsonb("steps").$type<{ order: number; title: string; prompt: string; }[]>().default([]),
+  modules: jsonb("modules").$type<ExperimentModule[]>().default([]),
   totalDiscoveries: integer("total_discoveries").default(0).notNull(),
   isPublished: boolean("is_published").default(false).notNull(),
   accessType: text("access_type").default("public").notNull(),

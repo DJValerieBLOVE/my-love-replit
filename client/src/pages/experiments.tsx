@@ -1,8 +1,7 @@
 import Layout from "@/components/layout";
 import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { Search, Plus, FlaskConical, Loader2, Share2, X } from "lucide-react";
+import { Search, Plus, FlaskConical, Loader2, X } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
@@ -11,7 +10,7 @@ import { ShareConfirmationDialog } from "@/components/share-confirmation-dialog"
 import { useNostr } from "@/contexts/nostr-context";
 import { useQuery } from "@tanstack/react-query";
 import { getAllExperiments } from "@/lib/api";
-import { EXPERIMENT_CATEGORIES, EXPERIMENT_TAGS } from "@/lib/mock-data";
+import { ELEVEN_DIMENSIONS, EXPERIMENT_TAGS } from "@/lib/mock-data";
 import type { Experiment } from "@shared/schema";
 import { cn } from "@/lib/utils";
 
@@ -28,7 +27,7 @@ export default function Grow() {
   const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedDimension, setSelectedDimension] = useState("all");
   const [selectedTag, setSelectedTag] = useState("all");
   const [shareDialog, setShareDialog] = useState<{
     open: boolean;
@@ -49,12 +48,8 @@ export default function Grow() {
 
     if (!matchesSearch) return false;
 
-    if (selectedCategory !== "all") {
-      const catLabel = EXPERIMENT_CATEGORIES.find(c => c.id === selectedCategory)?.label || "";
-      const matchesCategory = exp.category?.toLowerCase() === selectedCategory.toLowerCase() ||
-        exp.category?.toLowerCase() === catLabel.toLowerCase() ||
-        exp.loveCodeArea === selectedCategory;
-      if (!matchesCategory) return false;
+    if (selectedDimension !== "all") {
+      if (exp.dimension !== selectedDimension) return false;
     }
 
     if (selectedTag !== "all") {
@@ -81,7 +76,19 @@ export default function Grow() {
     }
   });
 
-  const hasActiveFilters = selectedCategory !== "all" || selectedTag !== "all";
+  const hasActiveFilters = selectedDimension !== "all" || selectedTag !== "all";
+  const selectedDimensionData = ELEVEN_DIMENSIONS.find((d) => d.id === selectedDimension);
+
+  const getDimensionData = (dimensionId: string | null | undefined) => {
+    if (!dimensionId) return null;
+    return ELEVEN_DIMENSIONS.find((d) => d.id === dimensionId);
+  };
+
+  const getTotalStepCount = (exp: Experiment) => {
+    const mods = exp.modules as any[] | null;
+    if (!mods || !Array.isArray(mods)) return 0;
+    return mods.reduce((sum: number, mod: any) => sum + (mod.steps?.length || 0), 0);
+  };
 
   return (
     <Layout>
@@ -102,13 +109,30 @@ export default function Grow() {
               data-testid="input-search"
             />
           </div>
-          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-            <SelectTrigger className="w-[160px] h-10" data-testid="select-category">
-              <SelectValue />
+          <Select value={selectedDimension} onValueChange={setSelectedDimension}>
+            <SelectTrigger className="w-[180px] h-10" data-testid="select-dimension">
+              <SelectValue>
+                {selectedDimension === "all" ? (
+                  "All Dimensions"
+                ) : selectedDimensionData ? (
+                  <span className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: selectedDimensionData.hex }} />
+                    {selectedDimensionData.name}
+                  </span>
+                ) : (
+                  "All Dimensions"
+                )}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
-              {EXPERIMENT_CATEGORIES.map((cat) => (
-                <SelectItem key={cat.id} value={cat.id}>{cat.label}</SelectItem>
+              <SelectItem value="all">All Dimensions</SelectItem>
+              {ELEVEN_DIMENSIONS.map((dim) => (
+                <SelectItem key={dim.id} value={dim.id}>
+                  <span className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: dim.hex }} />
+                    {dim.name}
+                  </span>
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -127,10 +151,11 @@ export default function Grow() {
 
         {hasActiveFilters && (
           <div className="flex items-center gap-2 flex-wrap">
-            {selectedCategory !== "all" && (
-              <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md border border-gray-200 bg-white text-muted-foreground">
-                {EXPERIMENT_CATEGORIES.find(c => c.id === selectedCategory)?.label}
-                <button onClick={() => setSelectedCategory("all")} className="hover:text-foreground" data-testid="clear-category">
+            {selectedDimension !== "all" && selectedDimensionData && (
+              <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-md border border-gray-200 bg-white text-muted-foreground">
+                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: selectedDimensionData.hex }} />
+                {selectedDimensionData.name}
+                <button onClick={() => setSelectedDimension("all")} className="hover:text-foreground" data-testid="clear-dimension">
                   <X className="w-3 h-3" />
                 </button>
               </span>
@@ -144,7 +169,7 @@ export default function Grow() {
               </span>
             )}
             <button
-              onClick={() => { setSelectedCategory("all"); setSelectedTag("all"); }}
+              onClick={() => { setSelectedDimension("all"); setSelectedTag("all"); }}
               className="text-xs text-muted-foreground hover:text-foreground underline"
               data-testid="clear-all-filters"
             >
@@ -205,53 +230,60 @@ export default function Grow() {
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredExperiments.map((experiment) => (
-              <Link key={experiment.id} href={`/experiments/${experiment.id}`}>
-                <Card className="overflow-hidden hover:shadow-md transition-all duration-300 group border-none shadow-sm bg-card cursor-pointer flex flex-col h-full rounded-xs" data-testid={`card-experiment-${experiment.id}`}>
-                  <div className="h-[2px] w-full bg-primary" />
-                  <div className="relative aspect-video overflow-hidden">
-                    {experiment.image ? (
-                      <img
-                        src={experiment.image}
-                        alt={experiment.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-[#F0E6FF] flex items-center justify-center">
-                        <FlaskConical className="w-16 h-16 text-muted-foreground" />
-                      </div>
-                    )}
-                  </div>
-                  <CardContent className="p-5 flex-1 flex flex-col">
-                    <div className="flex items-center gap-2 mb-2 flex-wrap">
-                      <span className="text-xs px-2.5 py-0.5 rounded-md border border-gray-200 bg-white text-muted-foreground" data-testid={`badge-category-${experiment.id}`}>
-                        {experiment.category}
-                      </span>
-                      {((experiment as any).tags as string[] | null)?.slice(0, 2).map((tag: string) => (
-                        <span key={tag} className="text-xs px-2.5 py-0.5 rounded-md border border-gray-200 bg-white text-muted-foreground" data-testid={`badge-tag-${experiment.id}`}>
-                          {tag}
+            {filteredExperiments.map((experiment) => {
+              const dimData = getDimensionData(experiment.dimension);
+              const stepCount = getTotalStepCount(experiment);
+              return (
+                <Link key={experiment.id} href={`/experiments/${experiment.id}`}>
+                  <Card className="overflow-hidden hover:shadow-md transition-all duration-300 group border-none shadow-sm bg-card cursor-pointer flex flex-col h-full rounded-xs" data-testid={`card-experiment-${experiment.id}`}>
+                    <div className="h-[2px] w-full" style={{ backgroundColor: dimData?.hex || '#6600ff' }} />
+                    <div className="relative aspect-video overflow-hidden">
+                      {experiment.image ? (
+                        <img
+                          src={experiment.image}
+                          alt={experiment.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-[#F0E6FF] flex items-center justify-center">
+                          <FlaskConical className="w-16 h-16 text-muted-foreground" />
+                        </div>
+                      )}
+                    </div>
+                    <CardContent className="p-5 flex-1 flex flex-col">
+                      <div className="flex items-center gap-2 mb-2 flex-wrap">
+                        {dimData && (
+                          <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-0.5 rounded-md border border-gray-200 bg-white text-muted-foreground" data-testid={`badge-dimension-${experiment.id}`}>
+                            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: dimData.hex }} />
+                            {dimData.name}
+                          </span>
+                        )}
+                        {((experiment as any).tags as string[] | null)?.slice(0, 2).map((tag: string) => (
+                          <span key={tag} className="text-xs px-2.5 py-0.5 rounded-md border border-gray-200 bg-white text-muted-foreground" data-testid={`badge-tag-${experiment.id}`}>
+                            {tag}
+                          </span>
+                        ))}
+                        <span className="text-xs text-muted-foreground">
+                          {stepCount} step{stepCount !== 1 ? "s" : ""}
                         </span>
-                      ))}
-                      <span className="text-xs text-muted-foreground">
-                        {experiment.steps?.length || 0} step{(experiment.steps?.length || 0) !== 1 ? "s" : ""}
-                      </span>
-                    </div>
-                    <h3 className="text-lg leading-tight mb-1 text-muted-foreground group-hover:text-primary transition-colors" data-testid={`text-experiment-${experiment.id}`}>
-                      {experiment.title}
-                    </h3>
-                    <p className="text-base text-muted-foreground mb-4" data-testid={`text-guide-${experiment.id}`}>
-                      with {experiment.guide}
-                    </p>
+                      </div>
+                      <h3 className="text-lg leading-tight mb-1 text-muted-foreground group-hover:text-primary transition-colors" data-testid={`text-experiment-${experiment.id}`}>
+                        {experiment.title}
+                      </h3>
+                      {experiment.description && (
+                        <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{experiment.description}</p>
+                      )}
 
-                    <div className="mt-auto">
-                      <Button className="w-full gap-2" data-testid={`button-experiment-${experiment.id}`}>
-                        <FlaskConical className="w-4 h-4" /> View Experiment
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
+                      <div className="mt-auto">
+                        <Button className="w-full gap-2" data-testid={`button-experiment-${experiment.id}`}>
+                          <FlaskConical className="w-4 h-4" /> View Experiment
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>
@@ -262,7 +294,7 @@ export default function Grow() {
           onOpenChange={(open) => setShareDialog(prev => ({ ...prev, open }))}
           contentType="experiment"
           contentTitle={`Completed: ${shareDialog.experiment.title}`}
-          contentPreview={`I just completed the ${shareDialog.experiment.title} experiment with ${shareDialog.experiment.guide}! 🎉`}
+          contentPreview={`I just completed the ${shareDialog.experiment.title} experiment! 🎉`}
         />
       )}
     </Layout>

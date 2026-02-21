@@ -6,42 +6,148 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Plus, GripVertical, Trash2, Save, ArrowLeft, FlaskConical, ChevronUp, ChevronDown, Zap } from "lucide-react";
+import {
+  Plus, GripVertical, Trash2, Save, ArrowLeft, FlaskConical,
+  ChevronUp, ChevronDown, ChevronRight, Video, User as UserIcon
+} from "lucide-react";
 import { ImageUpload } from "@/components/image-upload";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useLocation } from "wouter";
 import { useNostr } from "@/contexts/nostr-context";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createExperiment, getAllCommunities } from "@/lib/api";
 import { MembershipGate } from "@/components/membership-gate";
-import { EXPERIMENT_CATEGORIES, EXPERIMENT_TAGS, LOVE_CODE_AREAS } from "@/lib/mock-data";
+import { ELEVEN_DIMENSIONS, EXPERIMENT_TAGS } from "@/lib/mock-data";
+import { useRichTextEditor, RichTextEditorContent, richTextEditorStyles } from "@/components/rich-text-editor";
+import type { ExperimentModule, ExperimentStep } from "@shared/schema";
 
-interface ExperimentStep {
-  id: string;
-  order: number;
-  title: string;
-  prompt: string;
+function isValidVideoUrl(url: string): boolean {
+  return /^https?:\/\/(www\.)?(youtube\.com|youtu\.be|vimeo\.com)\/.+/.test(url);
+}
+
+interface ModuleState extends ExperimentModule {}
+
+function StepEditor({
+  step,
+  stepIndex,
+  moduleIndex,
+  onUpdate,
+  onRemove,
+  onMoveUp,
+  onMoveDown,
+  isFirst,
+  isLast,
+}: {
+  step: ExperimentStep;
+  stepIndex: number;
+  moduleIndex: number;
+  onUpdate: (updates: Partial<ExperimentStep>) => void;
+  onRemove: () => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
+  isFirst: boolean;
+  isLast: boolean;
+}) {
+  const [isExpanded, setIsExpanded] = useState(true);
+
+  const editor = useRichTextEditor({
+    content: step.content || "",
+    placeholder: "Write the lesson content here...",
+    onUpdate: (html) => onUpdate({ content: html }),
+  });
+
+  return (
+    <div className="border rounded-xs p-3 space-y-3 bg-white" data-testid={`step-${moduleIndex}-${stepIndex}`}>
+      <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-0.5">
+          <Button variant="ghost" size="icon" className="h-5 w-5" onClick={onMoveUp} disabled={isFirst} data-testid={`button-move-step-up-${moduleIndex}-${stepIndex}`}>
+            <ChevronUp className="w-4 h-4" />
+          </Button>
+          <Button variant="ghost" size="icon" className="h-5 w-5" onClick={onMoveDown} disabled={isLast} data-testid={`button-move-step-down-${moduleIndex}-${stepIndex}`}>
+            <ChevronDown className="w-4 h-4" />
+          </Button>
+        </div>
+        <GripVertical className="w-4 h-4 text-muted-foreground" />
+        <span className="text-sm text-muted-foreground">Step {stepIndex + 1}</span>
+        <button
+          type="button"
+          className="ml-auto mr-2 text-muted-foreground hover:text-foreground"
+          onClick={() => setIsExpanded(!isExpanded)}
+          data-testid={`button-toggle-step-${moduleIndex}-${stepIndex}`}
+        >
+          <ChevronRight className={`w-4 h-4 transition-transform ${isExpanded ? "rotate-90" : ""}`} />
+        </button>
+        <Button
+          variant="ghost" size="icon"
+          className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+          onClick={onRemove}
+          data-testid={`button-remove-step-${moduleIndex}-${stepIndex}`}
+        >
+          <Trash2 className="w-4 h-4" />
+        </Button>
+      </div>
+
+      {isExpanded && (
+        <div className="space-y-3 pl-10">
+          <Input
+            value={step.title}
+            onChange={(e) => onUpdate({ title: e.target.value })}
+            placeholder="Step title (e.g., Day 1: Morning Reflection)"
+            data-testid={`input-step-title-${moduleIndex}-${stepIndex}`}
+          />
+
+          <div className="border rounded-xs overflow-hidden">
+            <style>{richTextEditorStyles}</style>
+            {editor && <RichTextEditorContent editor={editor} className="min-h-[200px]" />}
+          </div>
+
+          <div className="space-y-1">
+            <Label className="text-xs text-muted-foreground flex items-center gap-1">
+              <Video className="w-3 h-3" /> YouTube / Vimeo URL (optional)
+            </Label>
+            <Input
+              value={step.videoUrl || ""}
+              onChange={(e) => {
+                const url = e.target.value;
+                onUpdate({ videoUrl: url });
+              }}
+              onBlur={(e) => {
+                const url = e.target.value.trim();
+                if (url && !isValidVideoUrl(url)) {
+                  onUpdate({ videoUrl: "" });
+                  alert("Please enter a valid YouTube or Vimeo URL.");
+                }
+              }}
+              placeholder="https://www.youtube.com/watch?v=..."
+              data-testid={`input-step-video-${moduleIndex}-${stepIndex}`}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function ExperimentBuilder() {
   const [, setLocation] = useLocation();
-  const { isConnected } = useNostr();
+  const { isConnected, profile } = useNostr();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const [title, setTitle] = useState("");
-  const [guide, setGuide] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState("");
-  const [category, setCategory] = useState("");
-  const [loveCodeArea, setLoveCodeArea] = useState<string>("");
+  const [dimension, setDimension] = useState<string>("");
+  const [benefitsFor, setBenefitsFor] = useState("");
+  const [outcomes, setOutcomes] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [accessType, setAccessType] = useState("public");
   const [communityId, setCommunityId] = useState<string>("");
   const [price, setPrice] = useState(0);
   const [isPublished, setIsPublished] = useState(false);
-  const [steps, setSteps] = useState<ExperimentStep[]>([]);
+  const [modules, setModules] = useState<ModuleState[]>([]);
+  const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
 
   const { data: communities = [] } = useQuery({
     queryKey: ["communities"],
@@ -69,88 +175,121 @@ export default function ExperimentBuilder() {
     },
   });
 
-  const addStep = () => {
+  const toggleModule = useCallback((moduleId: string) => {
+    setExpandedModules((prev) => {
+      const next = new Set(prev);
+      if (next.has(moduleId)) next.delete(moduleId);
+      else next.add(moduleId);
+      return next;
+    });
+  }, []);
+
+  const addModule = () => {
+    const newModule: ModuleState = {
+      id: crypto.randomUUID(),
+      order: modules.length,
+      title: "",
+      description: "",
+      steps: [],
+    };
+    setModules([...modules, newModule]);
+    setExpandedModules((prev) => new Set(prev).add(newModule.id));
+  };
+
+  const updateModule = (id: string, updates: Partial<ModuleState>) => {
+    setModules(modules.map((m) => (m.id === id ? { ...m, ...updates } : m)));
+  };
+
+  const removeModule = (id: string) => {
+    setModules(modules.filter((m) => m.id !== id).map((m, i) => ({ ...m, order: i })));
+    setExpandedModules((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+  };
+
+  const moveModule = (index: number, direction: "up" | "down") => {
+    if (direction === "up" && index === 0) return;
+    if (direction === "down" && index === modules.length - 1) return;
+    const newModules = [...modules];
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    [newModules[index], newModules[targetIndex]] = [newModules[targetIndex], newModules[index]];
+    setModules(newModules.map((m, i) => ({ ...m, order: i })));
+  };
+
+  const addStep = (moduleId: string) => {
+    const mod = modules.find((m) => m.id === moduleId);
+    if (!mod) return;
     const newStep: ExperimentStep = {
       id: crypto.randomUUID(),
-      order: steps.length,
+      order: mod.steps.length,
       title: "",
-      prompt: "",
+      content: "",
+      videoUrl: "",
+      quizQuestions: [],
     };
-    setSteps([...steps, newStep]);
+    updateModule(moduleId, { steps: [...mod.steps, newStep] });
   };
 
-  const updateStep = (id: string, updates: Partial<ExperimentStep>) => {
-    setSteps(steps.map(s => s.id === id ? { ...s, ...updates } : s));
+  const updateStep = (moduleId: string, stepId: string, updates: Partial<ExperimentStep>) => {
+    const mod = modules.find((m) => m.id === moduleId);
+    if (!mod) return;
+    updateModule(moduleId, {
+      steps: mod.steps.map((s) => (s.id === stepId ? { ...s, ...updates } : s)),
+    });
   };
 
-  const removeStep = (id: string) => {
-    setSteps(steps.filter(s => s.id !== id).map((s, i) => ({ ...s, order: i })));
+  const removeStep = (moduleId: string, stepId: string) => {
+    const mod = modules.find((m) => m.id === moduleId);
+    if (!mod) return;
+    updateModule(moduleId, {
+      steps: mod.steps.filter((s) => s.id !== stepId).map((s, i) => ({ ...s, order: i })),
+    });
   };
 
-  const moveStep = (index: number, direction: "up" | "down") => {
+  const moveStep = (moduleId: string, index: number, direction: "up" | "down") => {
+    const mod = modules.find((m) => m.id === moduleId);
+    if (!mod) return;
     if (direction === "up" && index === 0) return;
-    if (direction === "down" && index === steps.length - 1) return;
-    const newSteps = [...steps];
+    if (direction === "down" && index === mod.steps.length - 1) return;
+    const newSteps = [...mod.steps];
     const targetIndex = direction === "up" ? index - 1 : index + 1;
     [newSteps[index], newSteps[targetIndex]] = [newSteps[targetIndex], newSteps[index]];
-    setSteps(newSteps.map((s, i) => ({ ...s, order: i })));
+    updateModule(moduleId, { steps: newSteps.map((s, i) => ({ ...s, order: i })) });
   };
 
   const handleSubmit = () => {
     if (!title.trim()) {
-      toast({
-        title: "Missing Title",
-        description: "Please enter an experiment title.",
-        variant: "destructive",
-      });
+      toast({ title: "Missing Title", description: "Please enter an experiment title.", variant: "destructive" });
       return;
     }
-    if (!guide.trim()) {
-      toast({
-        title: "Missing Guide",
-        description: "Please enter the guide/creator name.",
-        variant: "destructive",
-      });
+    if (!dimension) {
+      toast({ title: "Missing Dimension", description: "Please select a dimension.", variant: "destructive" });
       return;
     }
-    if (!category) {
-      toast({
-        title: "Missing Category",
-        description: "Please select a category.",
-        variant: "destructive",
-      });
+    if (modules.length === 0) {
+      toast({ title: "No Modules", description: "Please add at least one module to your experiment.", variant: "destructive" });
       return;
     }
-    if (steps.length === 0) {
-      toast({
-        title: "No Steps",
-        description: "Please add at least one step to your experiment.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const formattedSteps = steps.map((s, i) => ({
-      order: i,
-      title: s.title,
-      prompt: s.prompt,
-    }));
 
     createExperimentMutation.mutate({
       title,
-      guide,
       description: description || undefined,
       image: image || undefined,
-      category,
-      loveCodeArea: loveCodeArea || undefined,
+      dimension,
+      benefitsFor: benefitsFor || undefined,
+      outcomes: outcomes || undefined,
       tags: selectedTags,
-      steps: formattedSteps,
+      modules,
       accessType,
       communityId: accessType === "community" ? communityId : undefined,
       price: accessType === "paid" ? price : 0,
       isPublished,
     });
   };
+
+  const selectedDimension = ELEVEN_DIMENSIONS.find((d) => d.id === dimension);
 
   if (!isConnected) {
     return (
@@ -179,12 +318,7 @@ export default function ExperimentBuilder() {
       }>
       <div className="max-w-4xl mx-auto p-4 lg:p-8 space-y-6">
         <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setLocation("/experiments")}
-            data-testid="button-back"
-          >
+          <Button variant="ghost" size="icon" onClick={() => setLocation("/experiments")} data-testid="button-back">
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>
@@ -201,27 +335,29 @@ export default function ExperimentBuilder() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="title">Title</Label>
-                <Input
-                  id="title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g., 7-Day Gratitude Challenge"
-                  data-testid="input-title"
-                />
+            <div className="flex items-center gap-3 p-3 bg-[#F5F5F5] rounded-xs">
+              <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center overflow-hidden">
+                {profile?.picture ? (
+                  <img src={profile.picture} alt={profile.name || "Guide"} className="w-full h-full object-cover" />
+                ) : (
+                  <UserIcon className="w-5 h-5 text-muted-foreground" />
+                )}
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="guide">Guide / Creator</Label>
-                <Input
-                  id="guide"
-                  value={guide}
-                  onChange={(e) => setGuide(e.target.value)}
-                  placeholder="e.g., Dr. Maya Angelou"
-                  data-testid="input-guide"
-                />
+              <div>
+                <p className="text-xs text-muted-foreground">Guide</p>
+                <p className="text-sm font-serif" data-testid="text-guide-name">{profile?.name || "Your Name"}</p>
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="title">Title</Label>
+              <Input
+                id="title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="e.g., 7-Day Gratitude Challenge"
+                data-testid="input-title"
+              />
             </div>
 
             <div className="space-y-2">
@@ -237,46 +373,58 @@ export default function ExperimentBuilder() {
             </div>
 
             <div className="space-y-2">
-              <Label>Thumbnail Image</Label>
-              <ImageUpload
-                value={image}
-                onChange={setImage}
+              <Label>Thumbnail Image <span className="text-xs text-muted-foreground ml-1">(16:9 aspect ratio recommended)</span></Label>
+              <ImageUpload value={image} onChange={setImage} aspectRatio="video" />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="dimension">11 Dimensions <span className="text-destructive">*</span></Label>
+              <Select value={dimension} onValueChange={setDimension} data-testid="select-dimension">
+                <SelectTrigger id="dimension">
+                  <SelectValue placeholder="Select dimension">
+                    {selectedDimension && (
+                      <span className="flex items-center gap-2">
+                        <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: selectedDimension.hex }} />
+                        {selectedDimension.name}
+                      </span>
+                    )}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {ELEVEN_DIMENSIONS.map((dim) => (
+                    <SelectItem key={dim.id} value={dim.id}>
+                      <span className="flex items-center gap-2">
+                        <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: dim.hex }} />
+                        {dim.name}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="benefitsFor">Who Could Benefit</Label>
+              <Textarea
+                id="benefitsFor"
+                value={benefitsFor}
+                onChange={(e) => setBenefitsFor(e.target.value)}
+                placeholder="Describe who this experiment is designed for..."
+                rows={2}
+                data-testid="input-benefits"
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="category">Category</Label>
-                <Select value={category} onValueChange={setCategory} data-testid="select-category">
-                  <SelectTrigger id="category">
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {EXPERIMENT_CATEGORIES.filter(c => c.id !== "all").map((cat) => (
-                      <SelectItem key={cat.id} value={cat.id}>{cat.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="loveCodeArea">LOVE Code Area (optional)</Label>
-                <Select value={loveCodeArea} onValueChange={setLoveCodeArea}>
-                  <SelectTrigger id="loveCodeArea">
-                    <SelectValue placeholder="Select area" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {LOVE_CODE_AREAS.map((area) => (
-                      <SelectItem key={area.id} value={area.id}>
-                        <span className="flex items-center gap-2">
-                          <span className="w-3 h-3 rounded-full" style={{ backgroundColor: area.hex }} />
-                          {area.name}
-                        </span>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="outcomes">Outcomes & Goals</Label>
+              <Textarea
+                id="outcomes"
+                value={outcomes}
+                onChange={(e) => setOutcomes(e.target.value)}
+                placeholder="What outcomes could participants hope to achieve..."
+                rows={2}
+                data-testid="input-outcomes"
+              />
             </div>
 
             <div className="space-y-2">
@@ -290,7 +438,7 @@ export default function ExperimentBuilder() {
                       type="button"
                       onClick={() => {
                         if (isSelected) {
-                          setSelectedTags(selectedTags.filter(t => t !== tag));
+                          setSelectedTags(selectedTags.filter((t) => t !== tag));
                         } else if (selectedTags.length < 5) {
                           setSelectedTags([...selectedTags, tag]);
                         }
@@ -312,81 +460,99 @@ export default function ExperimentBuilder() {
 
         <Card className="rounded-xs">
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-muted-foreground">Experiment Steps</CardTitle>
-            <Button onClick={addStep} size="sm" className="gap-1" data-testid="button-add-step">
+            <CardTitle className="text-muted-foreground">Modules & Steps</CardTitle>
+            <Button onClick={addModule} size="sm" className="gap-1" data-testid="button-add-module">
               <Plus className="w-4 h-4" />
-              Add Step
+              Add Module
             </Button>
           </CardHeader>
           <CardContent className="space-y-4">
-            {steps.length === 0 ? (
+            {modules.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground border border-dashed rounded-xs">
                 <FlaskConical className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                <p>No steps yet. Add steps to define the experiment journey.</p>
+                <p>No modules yet. Add modules to build your experiment curriculum.</p>
+                <p className="text-xs mt-1">Each module contains one or more steps/lessons.</p>
               </div>
             ) : (
-              steps.map((step, index) => (
-                <div
-                  key={step.id}
-                  className="border rounded-xs p-4 space-y-3 bg-muted/30"
-                  data-testid={`step-${index}`}
-                >
-                  <div className="flex items-center gap-2">
-                    <div className="flex flex-col gap-0.5">
+              modules.map((mod, modIndex) => {
+                const isExpanded = expandedModules.has(mod.id);
+                return (
+                  <div key={mod.id} className="border rounded-xs overflow-hidden bg-muted/30" data-testid={`module-${modIndex}`}>
+                    <div className="flex items-center gap-2 p-3 bg-muted/50 border-b">
+                      <div className="flex flex-col gap-0.5">
+                        <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => moveModule(modIndex, "up")} disabled={modIndex === 0} data-testid={`button-move-module-up-${modIndex}`}>
+                          <ChevronUp className="w-4 h-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => moveModule(modIndex, "down")} disabled={modIndex === modules.length - 1} data-testid={`button-move-module-down-${modIndex}`}>
+                          <ChevronDown className="w-4 h-4" />
+                        </Button>
+                      </div>
+                      <GripVertical className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground font-serif">Module {modIndex + 1}</span>
+                      <div className="flex-1 mx-2">
+                        <Input
+                          value={mod.title}
+                          onChange={(e) => updateModule(mod.id, { title: e.target.value })}
+                          placeholder="Module title"
+                          className="h-8 text-sm bg-white"
+                          data-testid={`input-module-title-${modIndex}`}
+                        />
+                      </div>
+                      <span className="text-xs text-muted-foreground">{mod.steps.length} step{mod.steps.length !== 1 ? "s" : ""}</span>
+                      <button type="button" className="text-muted-foreground hover:text-foreground" onClick={() => toggleModule(mod.id)} data-testid={`button-toggle-module-${modIndex}`}>
+                        <ChevronRight className={`w-5 h-5 transition-transform ${isExpanded ? "rotate-90" : ""}`} />
+                      </button>
                       <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-5 w-5"
-                        onClick={() => moveStep(index, "up")}
-                        disabled={index === 0}
-                        data-testid={`button-move-up-${index}`}
+                        variant="ghost" size="icon"
+                        className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                        onClick={() => removeModule(mod.id)}
+                        data-testid={`button-remove-module-${modIndex}`}
                       >
-                        <ChevronUp className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-5 w-5"
-                        onClick={() => moveStep(index, "down")}
-                        disabled={index === steps.length - 1}
-                        data-testid={`button-move-down-${index}`}
-                      >
-                        <ChevronDown className="w-4 h-4" />
+                        <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
-                    <GripVertical className="w-4 h-4 text-muted-foreground" />
-                    <span className="font-normal text-sm text-muted-foreground">
-                      Step {index + 1}
-                    </span>
-                    <div className="flex-1" />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                      onClick={() => removeStep(step.id)}
-                      data-testid={`button-remove-step-${index}`}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
 
-                  <div className="space-y-2 pl-10">
-                    <Input
-                      value={step.title}
-                      onChange={(e) => updateStep(step.id, { title: e.target.value })}
-                      placeholder="Step title (e.g., Day 1: Morning Reflection)"
-                      data-testid={`input-step-title-${index}`}
-                    />
-                    <Textarea
-                      value={step.prompt}
-                      onChange={(e) => updateStep(step.id, { prompt: e.target.value })}
-                      placeholder="Prompt or instructions for this step..."
-                      rows={2}
-                      data-testid={`input-step-prompt-${index}`}
-                    />
+                    {isExpanded && (
+                      <div className="p-3 space-y-3">
+                        <Textarea
+                          value={mod.description}
+                          onChange={(e) => updateModule(mod.id, { description: e.target.value })}
+                          placeholder="Module description (optional)"
+                          rows={1}
+                          className="text-sm"
+                          data-testid={`input-module-description-${modIndex}`}
+                        />
+
+                        {mod.steps.map((step, stepIndex) => (
+                          <StepEditor
+                            key={step.id}
+                            step={step}
+                            stepIndex={stepIndex}
+                            moduleIndex={modIndex}
+                            onUpdate={(updates) => updateStep(mod.id, step.id, updates)}
+                            onRemove={() => removeStep(mod.id, step.id)}
+                            onMoveUp={() => moveStep(mod.id, stepIndex, "up")}
+                            onMoveDown={() => moveStep(mod.id, stepIndex, "down")}
+                            isFirst={stepIndex === 0}
+                            isLast={stepIndex === mod.steps.length - 1}
+                          />
+                        ))}
+
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="gap-1 w-full border-dashed"
+                          onClick={() => addStep(mod.id)}
+                          data-testid={`button-add-step-${modIndex}`}
+                        >
+                          <Plus className="w-4 h-4" />
+                          Add Step
+                        </Button>
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </CardContent>
         </Card>
@@ -445,34 +611,18 @@ export default function ExperimentBuilder() {
             <div className="flex items-center justify-between pt-4 border-t">
               <div>
                 <Label htmlFor="published">Publish Immediately</Label>
-                <p className="text-sm text-muted-foreground">
-                  Make this experiment visible to others
-                </p>
+                <p className="text-sm text-muted-foreground">Make this experiment visible to others</p>
               </div>
-              <Switch
-                id="published"
-                checked={isPublished}
-                onCheckedChange={setIsPublished}
-                data-testid="switch-published"
-              />
+              <Switch id="published" checked={isPublished} onCheckedChange={setIsPublished} data-testid="switch-published" />
             </div>
           </CardContent>
         </Card>
 
         <div className="flex justify-end gap-3">
-          <Button
-            variant="outline"
-            onClick={() => setLocation("/experiments")}
-            data-testid="button-cancel"
-          >
+          <Button variant="outline" onClick={() => setLocation("/experiments")} data-testid="button-cancel">
             Cancel
           </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={createExperimentMutation.isPending}
-            className="gap-2"
-            data-testid="button-create"
-          >
+          <Button onClick={handleSubmit} disabled={createExperimentMutation.isPending} className="gap-2" data-testid="button-create">
             <Save className="w-4 h-4" />
             {createExperimentMutation.isPending ? "Creating..." : "Create Experiment"}
           </Button>
