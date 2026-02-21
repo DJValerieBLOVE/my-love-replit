@@ -35,6 +35,7 @@ import CommunityCover from "@assets/generated_images/community_cover.png";
 import {
   CompactPostBar,
   PostCard,
+  ArticleCard,
   FeedLoadingSkeleton,
   useNostrFeed,
   EXPLORE_OPTIONS,
@@ -77,7 +78,7 @@ function FeedTabContent({ subOption, autoCompose }: { subOption: FeedSubOption; 
   };
   const feedTab: FeedTab = subOption === "following" ? "following" : "explore";
   const exploreMode = exploreMap[subOption];
-  const { posts, isLoading, isRefreshing, refetch, newPostCount, showNewPosts, pendingPosts, primalProfiles } = useNostrFeed(feedTab, exploreMode);
+  const { posts, articles, isLoading, isRefreshing, refetch, newPostCount, showNewPosts, pendingPosts, primalProfiles } = useNostrFeed(feedTab, exploreMode);
 
   return (
     <div>
@@ -99,7 +100,17 @@ function FeedTabContent({ subOption, autoCompose }: { subOption: FeedSubOption; 
         {isLoading ? (
           <FeedLoadingSkeleton />
         ) : posts.length > 0 ? (
-          posts.map((post) => <PostCard key={post.id} post={post} primalProfiles={primalProfiles} />)
+          posts.map((post, index) => (
+            <div key={post.id}>
+              <PostCard post={post} primalProfiles={primalProfiles} />
+              {articles.length > 0 && (index + 1) % 5 === 0 && articles[Math.floor(index / 5)] && (
+                <ArticleCard
+                  article={articles[Math.floor(index / 5)]}
+                  profile={primalProfiles.get(articles[Math.floor(index / 5)].pubkey)}
+                />
+              )}
+            </div>
+          ))
         ) : (
           <div className="text-center py-12 text-muted-foreground">
             <p className="text-lg">No posts yet</p>

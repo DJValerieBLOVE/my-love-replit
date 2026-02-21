@@ -48,7 +48,8 @@ import { toast } from "sonner";
 import type { Experiment, Course, Community } from "@shared/schema";
 import { fetchPrimalUserFeed, fetchPrimalUserContacts, fetchPrimalUserFollowers, fetchPrimalUserStats } from "@/lib/primal-cache";
 import type { PrimalProfile } from "@/lib/primal-cache";
-import { PostCard, primalEventToFeedPost, type FeedPost } from "@/pages/feed";
+import { PostCard, ArticleCard, primalEventToFeedPost, type FeedPost } from "@/pages/feed";
+import type { PrimalArticle } from "@/lib/primal-cache";
 import { NDKEvent } from "@nostr-dev-kit/ndk";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -492,6 +493,7 @@ export default function Profile() {
   const [copiedNpub, setCopiedNpub] = useState(false);
   const [activeTab, setActiveTab] = useState<ProfileTab>("notes");
   const [userNotes, setUserNotes] = useState<FeedPost[]>([]);
+  const [userArticles, setUserArticles] = useState<PrimalArticle[]>([]);
   const [notesLoading, setNotesLoading] = useState(false);
   const [notesProfiles, setNotesProfiles] = useState<Map<string, PrimalProfile>>(new Map());
   const [followDialogOpen, setFollowDialogOpen] = useState(false);
@@ -534,18 +536,25 @@ export default function Profile() {
   useEffect(() => {
     setActiveTab("notes");
     setUserNotes([]);
+    setUserArticles([]);
   }, [targetPubkey]);
 
   const loadUserNotes = async () => {
     if (!targetPubkey) return;
     setNotesLoading(true);
     try {
-      const notesType = activeTab === "replies" ? "replies" : "authored";
-      const result = await fetchPrimalUserFeed(targetPubkey, { limit: 20, skipCache: true, notes: notesType as 'authored' | 'replies' });
-      const posts = result.events
-        .map(e => primalEventToFeedPost(e, result.profiles, targetPubkey, "public", result.stats, result.zapReceipts));
-      setUserNotes(posts);
-      setNotesProfiles(result.profiles);
+      if (activeTab === "reads") {
+        const result = await fetchPrimalUserFeed(targetPubkey, { limit: 20, skipCache: true });
+        setUserArticles(result.articles || []);
+        setNotesProfiles(result.profiles);
+      } else {
+        const notesType = activeTab === "replies" ? "replies" : "authored";
+        const result = await fetchPrimalUserFeed(targetPubkey, { limit: 20, skipCache: true, notes: notesType as 'authored' | 'replies' });
+        const posts = result.events
+          .map(e => primalEventToFeedPost(e, result.profiles, targetPubkey, "public", result.stats, result.zapReceipts));
+        setUserNotes(posts);
+        setNotesProfiles(result.profiles);
+      }
     } catch (err) {
       console.error("[Profile] Error loading notes:", err);
     } finally {
@@ -1058,9 +1067,37 @@ export default function Profile() {
           )}
 
           {activeTab === "reads" && (
-            <div className="text-center py-12">
-              <BookOpen className="w-8 h-8 text-muted-foreground mx-auto mb-3" strokeWidth={1.5} />
-              <p className="text-sm text-muted-foreground">Long-form articles will appear here</p>
+            <div>
+              {notesLoading ? (
+                <div className="space-y-4">
+                  {[1, 2].map(i => (
+                    <Card key={i} className="border-none shadow-sm bg-card rounded-xs overflow-hidden animate-pulse">
+                      <div className="h-[2px] w-full bg-gray-100" />
+                      <div className="aspect-video bg-gray-100" />
+                      <div className="p-4 space-y-3">
+                        <div className="h-4 bg-gray-100 rounded w-3/4" />
+                        <div className="h-3 bg-gray-100 rounded w-full" />
+                        <div className="h-3 bg-gray-100 rounded w-1/2" />
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              ) : userArticles.length > 0 ? (
+                <div className="space-y-4">
+                  {userArticles.map(article => (
+                    <ArticleCard
+                      key={article.id}
+                      article={article}
+                      profile={notesProfiles.get(article.pubkey)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <BookOpen className="w-8 h-8 text-muted-foreground mx-auto mb-3" strokeWidth={1.5} />
+                  <p className="text-sm text-muted-foreground">No long-form articles yet</p>
+                </div>
+              )}
             </div>
           )}
 
