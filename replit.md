@@ -3,19 +3,6 @@
 ## Overview
 My Masterpiece is a spiritual personal growth application designed to help users curate their personal growth journey. It offers a personalized dashboard, integrated consumption of courses/podcasts/music, collaboration tools, private journaling, and an AI coach with persistent memory. The app leverages a hybrid Nostr and PostgreSQL architecture, integrating Lightning payments for peer-to-peer interactions. The platform aims to combine features from various popular platforms into a singular, cohesive experience focused on personal transformation, hosting the "11x LOVE LaB" community.
 
-## CRITICAL AGENT RULES
-- **LISTEN TO THE USER FIRST.** When the user says to use a specific implementation (e.g., Primal, Blossom, etc.), DO NOT invent your own approach. Go directly to that project's source code (e.g., github.com/PrimalHQ/primal-web-app) and copy their exact patterns.
-- **Reference Primal's open-source code** for all Nostr UI/UX patterns, feed behavior, media uploads, profile layouts, and social interactions. Primal is the reference implementation for this app.
-- **Do NOT guess or improvise** Nostr protocol implementations. Look up the actual code from established clients (Primal, Damus, Amethyst) before writing anything.
-- **Stop wasting credits** on trial-and-error. Research first, implement once.
-- **Media Uploads**: Use Blossom protocol (BUD-01/BUD-02) via `@nostr-dev-kit/ndk-blossom` with `blossom.primal.net` as primary server. This is what Primal and all major Nostr clients use. Kind 24242 auth events, SHA-256 hash addressing, PUT /upload.
-- **When the user corrects you, FIX IT IMMEDIATELY.** Do not argue, justify, or explain why your approach was "also valid." The user knows their product. Just do what they asked.
-- **Never invent your own protocol or API approach** when an established library or standard exists. Check npm, GitHub, and NIP specs BEFORE writing custom code.
-- **Read existing code BEFORE editing.** Understand what's already built, what patterns are used, what libraries are imported. Do not introduce duplicate logic or conflicting approaches.
-- **One implementation, done right.** Do not create something, then rewrite it, then rewrite it again. Research thoroughly upfront, implement once.
-- **Check the Nostr ecosystem first.** For any Nostr feature, check: (1) What NIP covers it, (2) How Primal implements it, (3) What NDK packages exist for it. In that order.
-- **Design System is LAW.** Follow the style guide in this file exactly. Marcellus font, #6600ff primary, muted-foreground icons, no colored icons, no blue buttons, no purple tints on neutral elements. Do not deviate.
-
 ## User Preferences
 - Preferred communication style: Simple, everyday language
 - Daily LOVE Practice is the MOST IMPORTANT feature (LOVE always capitalized)
@@ -49,7 +36,7 @@ My Masterpiece is a spiritual personal growth application designed to help users
 
 ### Design System (Style Guide)
 - **Typography**: Marcellus font, weight 400 ONLY everywhere.
-- **Color Palette**: Background `#FAFAFA`, Foreground `#2a2430`, Primary Brand `#6600ff`, GOD/LOVE Dimension `#eb00a8`, Muted/Subtle Gray `#F5F5F5` (used for hover states, loading skeletons, link preview backgrounds, focus states — all via `--muted` CSS variable). All colors are solid hex values. NO purple tints for neutral UI elements.
+- **Color Palette**: Background `#FAFAFA`, Foreground `#2a2430`, Primary Brand `#6600ff`, GOD/LOVE Dimension `#eb00a8`, Muted/Subtle Gray `#F5F5F5`. All colors are solid hex values; no purple tints for neutral UI elements.
 - **Buttons**: Default/Primary `bg-foreground text-background`. Ghost Button Hover `hover:bg-[#F0E6FF]`. Never use blue.
 - **Tabs / Pill Bubbles**: `rounded-full` shape with active (`bg-foreground text-background`) and inactive states. People page uses dropdown pill bubbles.
 - **Search Inputs**: Always `bg-white` with `Search` icon at `left-3` and `pl-10`.
@@ -69,7 +56,7 @@ My Masterpiece is a spiritual personal growth application designed to help users
 - **Vault** (`/vault`): 6 tabs for personal content.
 - **Tribe/Community** (`/community`): Listing, creation, and management of tribes.
 - **Love Board** (`/leaderboard`): Rankings (planned marketplace).
-- **Profile** (`/profile/:id`): Clean Primal-style profile with no gamification, showing Nostr synced data. Banner uses 3:1 aspect ratio (Primal standard, no rounded corners). Follow/unfollow system with Kind 3 contact list management via NDK. Clickable following/followers counts open full user list dialogs with search and follow buttons. Supports viewing other users' profiles via `/profile/:pubkey` with Primal cache data loading. Feed post avatars/names link to user profiles.
+- **Profile** (`/profile/:id`): Clean Primal-style profile with no gamification, showing Nostr synced data. Banner uses 3:1 aspect ratio. Follow/unfollow system with Kind 3 contact list management via NDK. Clickable following/followers counts open full user list dialogs with search and follow buttons. Supports viewing other users' profiles via `/profile/:pubkey` with Primal cache data loading. Feed post avatars/names link to user profiles.
 - **Creator Dashboard** (`/creator`): Analytics for content creators.
 - **Wallet** (`/wallet`): Lightning wallet with NWC integration.
 - **Security**: Dual auth middleware (JWT, Nostr pubkey), NIP-07/NIP-46, ownership checks, Nostr query filtering, AI prompt injection protection, atomic transactions for AI usage.
@@ -91,39 +78,22 @@ My Masterpiece is a spiritual personal growth application designed to help users
 - Private-by-default journals/AI conversations, shareable completions/feed posts.
 
 ### Nostr NIPs Implementation
-- **Currently Implemented**: NIP-01 (Basic Protocol), NIP-05 (DNS Verification), NIP-07 (Browser Signer), NIP-10 (Reply Threading), NIP-19 (Bech32 Encoding), NIP-25 (Reactions), NIP-44 (Encrypted Payloads), NIP-46 (Nostr Connect), NIP-57 (Lightning Zaps), NIP-65 (Relay List Metadata).
-- **Key Event Kinds Used**: 0 (metadata), 1 (notes), 3 (contacts), 6 (reposts), 7 (reactions), 9 (group chat), 11 (group thread notes), 12 (group thread replies), 1059 (gift-wrapped), 1060 (sealed), 10002 (relay list), 30023 (long-form content), 30078 (app-specific data).
-- **Priority NIPs to Implement Next**: NIP-17 (Private DMs), NIP-29 (Relay-Based Groups), NIP-42 (Relay Authentication), NIP-51 (Lists), NIP-09 (Event Deletion), NIP-32 (Labeling), NIP-56 (Reporting), NIP-72 (Public Communities), NIP-94 (File Metadata), NIP-98 (HTTP Auth).
+- **Currently Implemented**: NIP-01, NIP-05, NIP-07, NIP-10, NIP-19, NIP-25, NIP-44, NIP-46, NIP-57, NIP-65.
+- **Key Event Kinds Used**: 0, 1, 3, 6, 7, 9, 11, 12, 1059, 1060, 10002, 30023, 30078.
+- **Priority NIPs to Implement Next**: NIP-17, NIP-29, NIP-42, NIP-51, NIP-09, NIP-32, NIP-56, NIP-72, NIP-94, NIP-98.
 - **Relay Architecture**: Private LaB Relay for all private/encrypted data. Public Relays for public content. Events with private tags NEVER go to public relays.
 
 ### Feed Features (Primal-Style)
-- **Text Truncation**: Primal-style "see more" truncation on long posts. Uses 1400 char / 200 word limits (matching Primal's `shortNoteChars = 200 * 7` and `shortNoteWords = 200`). Truncation avoids cutting inside URLs or nostr: entities. Purple "see more" link expands content inline. Applied to both PostCard (feed.tsx) and FeedPost (feed-post.tsx).
-- **Long-form Articles (NIP-23)**: Kind 30023 long-form content displayed as collapsed article cards in the feed. Parses title, summary, image, hashtags, and published_at from NIP-23 tags. Also handles Primal's kind 10030023 shell events for article previews. Articles are deduplicated and sorted by publishedAt, interleaved every 5 posts in the explore feed. ArticleCard opens on Primal.net via naddr encoding. Styled per design system: Marcellus font, muted FileText icon, purple top accent, gray hashtag badges.
+- **Text Truncation**: Primal-style "see more" truncation on long posts (1400 char / 200 word limits). Purple "see more" link expands content inline.
+- **Long-form Articles (NIP-23)**: Kind 30023 long-form content displayed as collapsed article cards in the feed. Parses title, summary, image, hashtags, and published_at from NIP-23 tags. Also handles Primal's kind 10030023 shell events for article previews. Articles are deduplicated and sorted, interleaved every 5 posts in the explore feed.
 - **Profile Enhancements**: Primal-style tabbed follow dialog (Following/Followers tabs with counts). Context menu on "..." button (Add user feed, Copy user link, Copy public key). 3:1 banner aspect ratio with no rounded corners. Avatar overlaps banner bottom edge. QR code button copies public key. Follower counts from kind 10000108/10000133 events.
-
-## Recent Changes (February 2026)
-- Added Primal-style text truncation with "see more" to feed posts (1400 char / 200 word limit)
-- Added NIP-23 kind 30023 long-form article support with collapsed ArticleCard components in feed
-- Added kind 10030023 Primal shell event parsing for article previews
-- Article deduplication and sorting by publishedAt in primal-cache.ts
-- Truncation safety: avoids cutting inside URLs and nostr: entities
-- Added PrimalArticle type to primal-cache.ts exports
-- Profile page: tabbed follow dialog, context menu, 3:1 banner, avatar overlap, QR copy, follower counts
-- Unified light gray color: changed --muted from #F5F3FF (purple tint) to #F5F5F5 (neutral gray) globally
-- Skeleton loading states now use bg-muted instead of bg-primary/10 (no more purple pulse)
-- Input/textarea focus rings changed from purple to neutral gray
-- All dropdown/context/select menu hover states unified to bg-muted (removed hardcoded #EBEBEB)
-- Link preview cards redesigned to horizontal layout (thumbnail left, info right) with bg-muted background
-- NIP-57 zap compliance: zapViaLightning now creates kind 9734 zap request events with proper tags (relays, amount, p, e, lnurl) and includes them in LNURL callback so zap receipts show on Primal
-- FeedPost component: added click-to-navigate on content area (goes to /note/:eventId), avatar/name link to profile
-- Action button colors: icon-only color changes when active (heart pink #eb00a8, zap/repost/bookmark purple #6600ff), count text always stays muted
 
 ## External Dependencies
 - **PostgreSQL**: Primary database (Neon serverless).
 - **Nostr Relays**: Private Railway Relay, public relays (e.g., `relay.primal.net`).
 - **Anthropic API**: Magic Mentor AI (Claude Haiku 4.5).
 - **OpenRouter API**: Alternative AI provider.
-- **Primal Cache API**: WebSocket service (`wss://cache2.primal.net/v1`) for fast public Nostr feeds. Persistent connection with auto-reconnect, in-memory cache with 60s TTL, and Enhanced Privacy proxy option.
+- **Primal Cache API**: WebSocket service (`wss://cache2.primal.net/v1`) for fast public Nostr feeds.
 - **Alby / nos2x**: NIP-07 Nostr login.
 - **nsec.app**: NIP-46 Bunker Login.
 - **Tailwind CSS v4**: Styling framework.

@@ -1,0 +1,51 @@
+📋 THE NOSTR MASTER REFERENCE GUIDE (For AI Agents)
+CRITICAL DIRECTIVE FOR AI: Do not invent custom protocol code, WebSocket handling, or cryptographic functions. You MUST check the repositories, NPM libraries, and NIP specifications below before writing any Nostr-related implementation.
+
+1. Reference Repositories (Read these first for implementation examples)
+Primal Web App: The primary reference for UI, caching, and user experience. Check how Primal handles feeds, zaps, and media.
+
+Nostr Development Kit (NDK): The absolute standard for building modern Nostr applications in JS/TS/Svelte/React.
+
+NIPs Official Repo: The source of truth for all Nostr Implementation Possibilities.
+
+2. Core NPM Libraries (Do not reinvent these)
+@nostr-dev-kit/ndk: Use this as the foundational framework. It handles relay connections, subscriptions, signing, and caching. Crucial: Enable aiGuardrails: true in the NDK constructor to catch protocol mistakes automatically.   
+
+nostr-tools: Use this for low-level cryptographic operations (generating keys, signing events, decoding bech32 like npub and note).
+
+@nostr-dev-kit/blossom: Mandatory for Media. Use this extension for NDK to support the Blossom protocol (handling image/video uploads, mirroring, and fallback URLs).   
+
+nostr-fetch: Use this utility if you need to effortlessly and reliably fetch historical past events from multiple relays without dealing with raw WebSocket limits.   
+
+3. Media & File Uploads (Blossom Protocol)
+Do not write custom HTTP endpoints for media. Nostr has moved to the Blossom Protocol (BUDs) for media servers.
+
+BUD-01 & BUD-02: Server requirements and Blob upload/management.
+
+BUD-03: Fetching user server lists (Kind 10063).
+
+Implementation: Rely entirely on the @nostr-dev-kit/blossom library for uploading. It automatically handles calculating SHA-256 hashes, selecting the right Blossom servers, and injecting the correct metadata tags.
+
+4. Essential NIPs (Protocol Specifications)
+When structuring events, refer to these rules strictly:
+
+NIP-01: Basic Protocol Flow (The foundation: events, kinds, tags, signatures).   
+
+NIP-05: DNS-based Verification (Handling user@domain.com identities).
+
+NIP-19: Bech32 Encoding (Handling npub, nsec, note, nevent, and nprofile). Never put a raw hex key in a user-facing UI.
+
+NIP-57: Zaps (Lightning Network tips). Handle Kind 9734 (Zap Request) and Kind 9735 (Zap Receipt).   
+
+NIP-94: File Metadata. Use this for standardizing how files are linked in notes.
+
+NIP-07: Browser Extensions (Handling window.nostr for secure login via extensions like Alby or nos2x).
+
+How to enforce this with your Agent
+Since you are using Replit Agent, I highly recommend saving the text block above directly into a file named NOSTR_GUIDELINES.md in the root of your project.
+
+Then, add this single line to your replit.md or your prompt:
+
+"Before writing any Nostr functionality, you MUST read NOSTR_GUIDELINES.md and use the specified libraries (like NDK and Blossom) instead of writing raw WebSocket or HTTP upload functions."
+
+Would you like me to write a custom system prompt that combines these libraries with the 6 rules you just added to your Replit session notes?
