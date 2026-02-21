@@ -369,45 +369,57 @@ type MediaItem = {
 
 export function PostComposer({ onPostPublished }: { onPostPublished?: () => void }) {
   const [content, setContent] = useState("");
-  const [media, setMedia] = useState<MediaItem[]>([]);
+  const [mediaItems, setMediaItems] = useState<{ type: "image" | "gif"; url: string; file?: File }[]>([]);
   const [isPosting, setIsPosting] = useState(false);
+  const [showGifPicker, setShowGifPicker] = useState(false);
+  const composerFileRef = useRef<HTMLInputElement>(null);
   const { publishSmart, ndk, isConnected: ndkConnected } = useNDK();
   const { profile } = useNostr();
 
-  const handleFileSelect = (type: "image" | "video") => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = type === "image" ? "image/*" : "video/*";
-    input.multiple = type === "image";
-    input.onchange = (e) => {
-      const files = (e.target as HTMLInputElement).files;
-      if (files) {
-        Array.from(files).forEach((file) => {
-          const url = URL.createObjectURL(file);
-          setMedia((prev) => [...prev, { type, url, file }]);
-        });
-      }
-    };
-    input.click();
+  const handleImageSelect = () => {
+    composerFileRef.current?.click();
   };
 
-  const handleGifSelect = () => {
-    toast("GIF picker coming soon!");
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    for (const file of Array.from(files)) {
+      const formData = new FormData();
+      formData.append("image", file);
+      try {
+        const response = await fetch("/api/upload", { method: "POST", body: formData });
+        if (response.ok) {
+          const data = await response.json();
+          setMediaItems(prev => [...prev, { type: "image", url: data.url, file }]);
+        } else {
+          toast.error("Failed to upload image");
+        }
+      } catch {
+        const localUrl = URL.createObjectURL(file);
+        setMediaItems(prev => [...prev, { type: "image", url: localUrl, file }]);
+      }
+    }
+    if (composerFileRef.current) composerFileRef.current.value = "";
+  };
+
+  const handleGifSelect = (gifUrl: string) => {
+    setMediaItems(prev => [...prev, { type: "gif", url: gifUrl }]);
+    setShowGifPicker(false);
   };
 
   const removeMedia = (index: number) => {
-    setMedia((prev) => {
-      const newMedia = [...prev];
-      if (newMedia[index].url.startsWith("blob:")) {
-        URL.revokeObjectURL(newMedia[index].url);
+    setMediaItems(prev => {
+      const newItems = [...prev];
+      if (newItems[index].url.startsWith("blob:")) {
+        URL.revokeObjectURL(newItems[index].url);
       }
-      newMedia.splice(index, 1);
-      return newMedia;
+      newItems.splice(index, 1);
+      return newItems;
     });
   };
 
   const handlePost = async () => {
-    if (!content.trim() && media.length === 0) return;
+    if (!content.trim() && mediaItems.length === 0) return;
 
     if (!ndkConnected || !ndk) {
       toast.error("NDK not connected", { description: "Please wait for relay connection" });
@@ -418,7 +430,13 @@ export function PostComposer({ onPostPublished }: { onPostPublished?: () => void
     try {
       const event = new NDKEvent(ndk);
       event.kind = 1;
-      event.content = content.trim();
+      let postContent = content.trim();
+      mediaItems.forEach(item => {
+        if (item.url) {
+          postContent += (postContent ? "\n" : "") + item.url;
+        }
+      });
+      event.content = postContent;
       event.created_at = Math.floor(Date.now() / 1000);
 
       if (profile?.pubkey) {
@@ -429,7 +447,8 @@ export function PostComposer({ onPostPublished }: { onPostPublished?: () => void
 
       toast.success("Posted to Nostr!");
       setContent("");
-      setMedia([]);
+      setMediaItems([]);
+      setShowGifPicker(false);
       onPostPublished?.();
     } catch (err: any) {
       console.error("[PostComposer] Publish error:", err);
@@ -441,6 +460,14 @@ export function PostComposer({ onPostPublished }: { onPostPublished?: () => void
 
   return (
     <Card className="p-4 mb-6 border border-gray-100 shadow-none">
+      <input
+        ref={composerFileRef}
+        type="file"
+        accept="image/*,image/gif"
+        multiple
+        className="hidden"
+        onChange={handleFileChange}
+      />
       <div className="flex gap-3">
         <Avatar className="w-10 h-10">
           {profile?.picture ? (
@@ -457,61 +484,53 @@ export function PostComposer({ onPostPublished }: { onPostPublished?: () => void
             data-testid="textarea-post-content"
           />
           
-          {media.length > 0 && (
+          {mediaItems.length > 0 && (
             <div className="mt-3 grid grid-cols-2 gap-2">
-              {media.map((item, index) => (
+              {mediaItems.map((item, index) => (
                 <div key={index} className="relative rounded-lg overflow-hidden bg-muted">
-                  {item.type === "video" ? (
-                    <video src={item.url} className="w-full h-32 object-cover" controls />
-                  ) : (
-                    <img src={item.url} alt="" className="w-full h-32 object-cover" />
-                  )}
+                  <img src={item.url} alt="" className="w-full h-28 object-cover" />
                   <button
                     onClick={() => removeMedia(index)}
-                    className="absolute top-2 right-2 p-1 bg-[#555555] rounded-full text-white hover:bg-[#333333]"
+                    className="absolute top-1.5 right-1.5 p-0.5 bg-foreground/70 rounded-full text-background hover:bg-foreground"
                     data-testid={`button-remove-media-${index}`}
                   >
-                    <X className="w-4 h-4" />
+                    <X className="w-3.5 h-3.5" />
                   </button>
                 </div>
               ))}
             </div>
           )}
 
+          {showGifPicker && (
+            <div className="mt-3">
+              <GifPicker
+                onSelect={handleGifSelect}
+                onClose={() => setShowGifPicker(false)}
+              />
+            </div>
+          )}
+
           <div className="flex items-center justify-between mt-3 pt-3 border-t">
             <div className="flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleFileSelect("image")}
-                className="text-muted-foreground hover:bg-[#F0E6FF] hover:text-foreground"
+              <button
+                onClick={handleImageSelect}
+                className="h-8 w-8 flex items-center justify-center rounded-md text-muted-foreground hover:bg-[#F0E6FF] hover:text-foreground transition-colors"
                 data-testid="button-add-image"
               >
-                <ImageIcon className="w-5 h-5" strokeWidth={1.5} />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleGifSelect}
-                className="text-muted-foreground hover:bg-[#F0E6FF] hover:text-foreground"
+                <ImageIcon className="w-4.5 h-4.5" strokeWidth={1.5} />
+              </button>
+              <button
+                onClick={() => setShowGifPicker(!showGifPicker)}
+                className={`h-8 w-8 flex items-center justify-center rounded-md transition-colors ${showGifPicker ? 'text-[#6600ff] bg-[#F0E6FF]' : 'text-muted-foreground hover:bg-[#F0E6FF] hover:text-foreground'}`}
                 data-testid="button-add-gif"
               >
-                <Smile className="w-5 h-5" strokeWidth={1.5} />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleFileSelect("video")}
-                className="text-muted-foreground hover:bg-[#F0E6FF] hover:text-foreground"
-                data-testid="button-add-video"
-              >
-                <Film className="w-5 h-5" strokeWidth={1.5} />
-              </Button>
+                <Smile className="w-4.5 h-4.5" strokeWidth={1.5} />
+              </button>
             </div>
             <Button
               onClick={handlePost}
-              disabled={isPosting || (!content.trim() && media.length === 0)}
-              className="px-6"
+              disabled={isPosting || (!content.trim() && mediaItems.length === 0)}
+              className="px-6 bg-foreground text-background hover:bg-foreground/90"
               data-testid="button-post"
             >
               {isPosting ? "Posting..." : "Post"}
@@ -541,13 +560,57 @@ export function CompactPostBar({ onPostPublished, autoOpen }: { onPostPublished?
     return () => window.removeEventListener("open-compose", handler);
   }, []);
   const [content, setContent] = useState("");
-  const [privacy, setPrivacy] = useState<PostPrivacy>("public");
   const [isPosting, setIsPosting] = useState(false);
+  const [mediaItems, setMediaItems] = useState<{ type: "image" | "gif"; url: string; file?: File }[]>([]);
+  const [showGifPicker, setShowGifPicker] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { publishSmart, ndk, isConnected: ndkConnected } = useNDK();
   const { profile } = useNostr();
 
+  const handleImageSelect = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    for (const file of Array.from(files)) {
+      const formData = new FormData();
+      formData.append("image", file);
+      try {
+        const response = await fetch("/api/upload", { method: "POST", body: formData });
+        if (response.ok) {
+          const data = await response.json();
+          setMediaItems(prev => [...prev, { type: "image", url: data.url, file }]);
+        } else {
+          toast.error("Failed to upload image");
+        }
+      } catch {
+        const localUrl = URL.createObjectURL(file);
+        setMediaItems(prev => [...prev, { type: "image", url: localUrl, file }]);
+      }
+    }
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleGifSelect = (gifUrl: string) => {
+    setMediaItems(prev => [...prev, { type: "gif", url: gifUrl }]);
+    setShowGifPicker(false);
+  };
+
+  const removeMedia = (index: number) => {
+    setMediaItems(prev => {
+      const newItems = [...prev];
+      if (newItems[index].url.startsWith("blob:")) {
+        URL.revokeObjectURL(newItems[index].url);
+      }
+      newItems.splice(index, 1);
+      return newItems;
+    });
+  };
+
   const handlePost = async () => {
-    if (!content.trim()) return;
+    if (!content.trim() && mediaItems.length === 0) return;
     if (!ndkConnected || !ndk) {
       toast.error("NDK not connected", { description: "Please wait for relay connection" });
       return;
@@ -556,16 +619,22 @@ export function CompactPostBar({ onPostPublished, autoOpen }: { onPostPublished?
     try {
       const event = new NDKEvent(ndk);
       event.kind = 1;
-      event.content = content.trim();
+      let postContent = content.trim();
+      mediaItems.forEach(item => {
+        if (item.url) {
+          postContent += (postContent ? "\n" : "") + item.url;
+        }
+      });
+      event.content = postContent;
       event.created_at = Math.floor(Date.now() / 1000);
       if (profile?.pubkey) {
         event.pubkey = profile.pubkey;
       }
-      const isPublic = privacy === "public";
-      await publishSmart(event, isPublic);
-      toast.success(isPublic ? "Posted to Nostr!" : "Posted privately!");
+      await publishSmart(event, true);
+      toast.success("Posted to Nostr!");
       setContent("");
-      setPrivacy("public");
+      setMediaItems([]);
+      setShowGifPicker(false);
       setModalOpen(false);
       onPostPublished?.();
     } catch (err: any) {
@@ -576,10 +645,16 @@ export function CompactPostBar({ onPostPublished, autoOpen }: { onPostPublished?
     }
   };
 
-  const currentPrivacy = PRIVACY_OPTIONS.find(o => o.id === privacy) || PRIVACY_OPTIONS[0];
-
   return (
     <>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*,image/gif"
+        multiple
+        className="hidden"
+        onChange={handleFileChange}
+      />
       <div
         className="flex items-center gap-3 mb-4 px-4 py-3 bg-white border border-gray-200 rounded-xl cursor-pointer hover:border-gray-300 transition-colors"
         onClick={() => setModalOpen(true)}
@@ -593,10 +668,13 @@ export function CompactPostBar({ onPostPublished, autoOpen }: { onPostPublished?
         <Plus className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
       </div>
 
-      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+      <Dialog open={modalOpen} onOpenChange={(open) => {
+        setModalOpen(open);
+        if (!open) setShowGifPicker(false);
+      }}>
         <DialogContent className="sm:max-w-[560px] p-0">
           <DialogHeader className="px-5 pt-5 pb-0">
-            <DialogTitle className="text-lg font-serif">Create post</DialogTitle>
+            <DialogTitle className="text-lg">Create post</DialogTitle>
           </DialogHeader>
           <div className="px-5 py-4">
             <div className="flex gap-3">
@@ -605,7 +683,7 @@ export function CompactPostBar({ onPostPublished, autoOpen }: { onPostPublished?
                 <AvatarFallback className="bg-gray-100 text-muted-foreground text-xs">ME</AvatarFallback>
               </Avatar>
               <div className="flex-1">
-                <p className="text-sm font-medium mb-2">{profile?.name || "Anonymous"}</p>
+                <p className="text-sm font-normal mb-2">{profile?.name || "Anonymous"}</p>
                 <Textarea
                   placeholder="Write something..."
                   value={content}
@@ -614,54 +692,65 @@ export function CompactPostBar({ onPostPublished, autoOpen }: { onPostPublished?
                   autoFocus
                   data-testid="textarea-modal-post-content"
                 />
+                {mediaItems.length > 0 && (
+                  <div className="mt-3 grid grid-cols-2 gap-2">
+                    {mediaItems.map((item, index) => (
+                      <div key={index} className="relative rounded-lg overflow-hidden bg-muted">
+                        <img src={item.url} alt="" className="w-full h-28 object-cover" />
+                        <button
+                          onClick={() => removeMedia(index)}
+                          className="absolute top-1.5 right-1.5 p-0.5 bg-foreground/70 rounded-full text-background hover:bg-foreground"
+                          data-testid={`button-remove-media-${index}`}
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {showGifPicker && (
+                  <div className="mt-3">
+                    <GifPicker
+                      onSelect={handleGifSelect}
+                      onClose={() => setShowGifPicker(false)}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </div>
           <div className="flex items-center justify-between px-5 py-3 border-t">
-            <div className="flex items-center gap-2">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs border border-gray-200 bg-white text-muted-foreground hover:border-gray-400 transition-colors"
-                    data-testid="button-modal-privacy"
-                  >
-                    <currentPrivacy.icon className="w-3.5 h-3.5" strokeWidth={1.5} />
-                    {currentPrivacy.label}
-                    <ChevronDown className="w-3 h-3" strokeWidth={1.5} />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-52">
-                  {PRIVACY_OPTIONS.map((option) => (
-                    <DropdownMenuItem
-                      key={option.id}
-                      onClick={() => setPrivacy(option.id)}
-                      className={`cursor-pointer ${privacy === option.id ? "bg-gray-50" : ""}`}
-                      data-testid={`modal-privacy-${option.id}`}
-                    >
-                      <option.icon className="w-4 h-4 mr-2 text-muted-foreground" strokeWidth={1.5} />
-                      <div>
-                        <p className="text-sm">{option.label}</p>
-                        <p className="text-xs text-muted-foreground">{option.description}</p>
-                      </div>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:bg-[#F0E6FF] h-8 w-8 p-0" data-testid="button-modal-add-image">
+            <div className="flex items-center gap-1">
+              <button
+                onClick={handleImageSelect}
+                className="h-8 w-8 flex items-center justify-center rounded-md text-muted-foreground hover:bg-[#F0E6FF] hover:text-foreground transition-colors"
+                data-testid="button-modal-add-image"
+                title="Add image"
+              >
                 <ImageIcon className="w-4 h-4" strokeWidth={1.5} />
-              </Button>
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:bg-[#F0E6FF] h-8 w-8 p-0" data-testid="button-modal-add-gif">
+              </button>
+              <button
+                onClick={() => setShowGifPicker(!showGifPicker)}
+                className={`h-8 w-8 flex items-center justify-center rounded-md transition-colors ${showGifPicker ? 'text-[#6600ff] bg-[#F0E6FF]' : 'text-muted-foreground hover:bg-[#F0E6FF] hover:text-foreground'}`}
+                data-testid="button-modal-add-gif"
+                title="Add GIF"
+              >
                 <Smile className="w-4 h-4" strokeWidth={1.5} />
+              </button>
+            </div>
+            <div className="flex items-center gap-2">
+              <DialogClose asChild>
+                <Button variant="ghost" className="hover:bg-[#F0E6FF]">Cancel</Button>
+              </DialogClose>
+              <Button
+                onClick={handlePost}
+                disabled={isPosting || (!content.trim() && mediaItems.length === 0)}
+                className="px-6 bg-foreground text-background hover:bg-foreground/90"
+                data-testid="button-modal-publish"
+              >
+                {isPosting ? "Posting..." : "Post"}
               </Button>
             </div>
-            <Button
-              onClick={handlePost}
-              disabled={isPosting || !content.trim()}
-              className="px-6"
-              data-testid="button-modal-publish"
-            >
-              {isPosting ? "Posting..." : "Publish"}
-            </Button>
           </div>
         </DialogContent>
       </Dialog>
