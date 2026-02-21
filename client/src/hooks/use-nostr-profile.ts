@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { NDKEvent } from "@nostr-dev-kit/ndk";
 import { useNDK } from "@/contexts/ndk-context";
+import { fetchPrimalUserStats } from "@/lib/primal-cache";
 
 export interface NostrMetadata {
   name?: string;
@@ -11,6 +12,9 @@ export interface NostrMetadata {
   lud16?: string;
   banner?: string;
   website?: string;
+  location?: string;
+  following_count?: number;
+  followers_count?: number;
 }
 
 export function useNostrProfile(pubkey: string | undefined) {
@@ -29,13 +33,15 @@ export function useNostrProfile(pubkey: string | undefined) {
         authors: [pubkey],
       });
 
+      let metadata: NostrMetadata = {};
+
       if (events.length > 0) {
         const mostRecent = events.reduce((latest, event) =>
           (event.created_at ?? 0) > (latest.created_at ?? 0) ? event : latest
         );
 
         const parsed = JSON.parse(mostRecent.content);
-        const metadata: NostrMetadata = {
+        metadata = {
           name: parsed.name,
           display_name: parsed.display_name,
           picture: parsed.picture,
@@ -44,8 +50,21 @@ export function useNostrProfile(pubkey: string | undefined) {
           lud16: parsed.lud16,
           banner: parsed.banner,
           website: parsed.website,
+          location: parsed.location,
         };
-        setNostrProfile(metadata);
+      }
+
+      setNostrProfile(metadata);
+
+      try {
+        const stats = await fetchPrimalUserStats(pubkey);
+        setNostrProfile(prev => ({
+          ...prev,
+          following_count: stats.following_count,
+          followers_count: stats.followers_count,
+        }));
+      } catch (err) {
+        console.error("[useNostrProfile] Error fetching social counts:", err);
       }
     } catch (err) {
       console.error("[useNostrProfile] Error fetching profile:", err);

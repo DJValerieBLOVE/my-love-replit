@@ -598,9 +598,46 @@ export async function fetchPrimalThread(eventId: string, options: { userPubkey?:
   }
 }
 
+export async function fetchPrimalUserStats(pubkey: string): Promise<{ followers_count: number; following_count: number }> {
+  try {
+    const messages = await primalCache.sendRequest({ cache: ["user_profile", { pubkey }] });
+    let followers_count = 0;
+    let following_count = 0;
+
+    for (const msg of messages) {
+      if (!Array.isArray(msg)) continue;
+      const [type, , eventData] = msg;
+      if (type === "EVENT" && eventData) {
+        const k = eventData.kind;
+        if (k >= 10000100 && k <= 10000200) {
+          try {
+            const stats = JSON.parse(eventData.content);
+            if (typeof stats === "object" && stats !== null) {
+              if (stats.followers_count !== undefined) followers_count = Number(stats.followers_count);
+              if (stats.follows_count !== undefined) following_count = Number(stats.follows_count);
+              if (stats.following_count !== undefined) following_count = Number(stats.following_count);
+            }
+          } catch {}
+        }
+        if (k === 3) {
+          const pTags = (eventData.tags || []).filter((t: string[]) => t[0] === "p");
+          if (pTags.length > 0 && following_count === 0) {
+            following_count = pTags.length;
+          }
+        }
+      }
+    }
+
+    return { followers_count, following_count };
+  } catch (err) {
+    console.error("[PrimalCache] User stats error:", err);
+    return { followers_count: 0, following_count: 0 };
+  }
+}
+
 export async function fetchPrimalUserContacts(pubkey: string): Promise<{ following: PrimalProfile[]; followingCount: number }> {
   try {
-    const messages = await primalCache.sendRequest({ cache: ["contact_list", { pubkey }] });
+    const messages = await primalCache.sendRequest({ cache: ["contact_list", { pubkey, extended_response: true }] });
     const profiles: PrimalProfile[] = [];
     let followingPubkeys: string[] = [];
 
