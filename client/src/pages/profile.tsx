@@ -35,8 +35,6 @@ import {
   LinkIcon,
   Copy,
   Check,
-  Flame,
-  Trophy,
   Heart,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -59,7 +57,7 @@ const LAB_INTEREST_OPTIONS = [
   "Spiritual Growth",
 ];
 
-type ProfileTab = "notes" | "replies" | "reads" | "media" | "zaps" | "relays" | "lab";
+type ProfileTab = "notes" | "replies" | "reads" | "media" | "zaps" | "relays";
 
 interface PublicProfile {
   id: string;
@@ -457,6 +455,16 @@ export default function Profile() {
                     <span className="truncate">{nostrProfile.lud16}</span>
                   </div>
                 )}
+
+                {isPaidMember && buddyInterests.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mt-2.5" data-testid="profile-lab-interests">
+                    {buddyInterests.map((interest: string) => (
+                      <span key={interest} className="text-xs px-2.5 py-0.5 rounded-md border border-gray-200 bg-white text-muted-foreground">
+                        {interest}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="flex flex-col items-end gap-1.5 shrink-0 pt-1">
@@ -525,6 +533,20 @@ export default function Profile() {
           </div>
         </div>
 
+        {isPaidMember && lookingForBuddy && (
+          <div className="mx-5 mt-2 mb-0">
+            <Card className="rounded-xs border-none shadow-sm" data-testid="card-buddy">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <Heart className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+                  <span className="text-sm font-normal text-foreground">Looking for an accountability buddy</span>
+                </div>
+                {buddyDesc && <p className="text-sm text-muted-foreground">{buddyDesc}</p>}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
         <div className="px-5 pb-8 mt-2">
           {(activeTab === "notes" || activeTab === "replies") && (
             <div className="space-y-0" data-testid="profile-notes-feed">
@@ -576,103 +598,67 @@ export default function Profile() {
             </div>
           )}
 
-          {activeTab === "lab" && (
-            <div className="space-y-6 mt-2">
-              {lookingForBuddy && (
-                <Card className="rounded-xs border-none shadow-sm" data-testid="card-buddy">
-                  <CardContent className="p-5">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Heart className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-                      <span className="text-sm font-normal text-foreground">Looking for an accountability buddy</span>
-                    </div>
-                    {buddyDesc && <p className="text-sm text-muted-foreground">{buddyDesc}</p>}
-                    {buddyInterests.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 mt-3">
-                        {buddyInterests.map((interest: string) => (
-                          <span key={interest} className="text-xs px-2.5 py-0.5 rounded-md border border-gray-200 bg-white text-muted-foreground">
-                            {interest}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              )}
-
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-base font-normal text-foreground">Published Content</h2>
-                  {isOwnProfile && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setLocation("/creator")}
-                      className="text-muted-foreground hover:bg-[#F0E6FF]"
-                      data-testid="button-go-creator"
-                    >
-                      Creator Dashboard
-                    </Button>
-                  )}
-                </div>
-
-                {content.experiments.length > 0 && (
-                  <div className="space-y-2">
-                    <h3 className="font-normal text-sm text-muted-foreground flex items-center gap-2">
-                      <FlaskConical className="w-4 h-4" strokeWidth={1.5} /> Experiments ({stats.experimentsCount})
-                    </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {content.experiments.map((exp: Experiment) => (
-                        <ContentCard key={exp.id} title={exp.title} description={exp.description} type="experiment" href={`/experiments/${exp.id}`} />
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {content.courses.length > 0 && (
-                  <div className="space-y-2">
-                    <h3 className="font-normal text-sm text-muted-foreground flex items-center gap-2">
-                      <BookOpen className="w-4 h-4" strokeWidth={1.5} /> Courses ({stats.coursesCount})
-                    </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {content.courses.map((course: Course) => (
-                        <ContentCard key={course.id} title={course.title} description={course.description} type="course" href={`/experiments/course/${course.id}`} />
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {content.communities.length > 0 && (
-                  <div className="space-y-2">
-                    <h3 className="font-normal text-sm text-muted-foreground flex items-center gap-2">
-                      <Users className="w-4 h-4" strokeWidth={1.5} /> Communities ({stats.communitiesCount})
-                    </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {content.communities.map((community: Community) => (
-                        <ContentCard key={community.id} title={community.name} description={community.description} type="community" href={`/community/${community.id}`} />
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {content.experiments.length === 0 && content.courses.length === 0 && content.communities.length === 0 && (
-                  <Card className="p-8 text-center border-dashed border-none shadow-sm">
-                    <p className="text-muted-foreground text-sm">{isOwnProfile ? "You haven't published any content yet." : "This user hasn't published any content yet."}</p>
-                  </Card>
+          {isPaidMember && (
+            <div className="mt-6 pt-4 border-t border-border space-y-4" data-testid="profile-published-content">
+              <div className="flex items-center justify-between">
+                <h2 className="text-base font-normal text-foreground">Published Content</h2>
+                {isOwnProfile && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setLocation("/creator")}
+                    className="text-muted-foreground hover:bg-[#F0E6FF]"
+                    data-testid="button-go-creator"
+                  >
+                    Creator Dashboard
+                  </Button>
                 )}
               </div>
-            </div>
-          )}
 
-          {activeTab !== "lab" && (
-            <div className="mt-6 pt-4 border-t border-border">
-              <button
-                onClick={() => setActiveTab("lab")}
-                className="flex items-center gap-2 text-sm text-[#6600ff] hover:underline"
-                data-testid="button-view-lab-profile"
-              >
-                <Flame className="w-4 h-4" strokeWidth={1.5} />
-                View 11x LOVE LaB Profile
-              </button>
+              {content.experiments.length > 0 && (
+                <div className="space-y-2">
+                  <h3 className="font-normal text-sm text-muted-foreground flex items-center gap-2">
+                    <FlaskConical className="w-4 h-4" strokeWidth={1.5} /> Experiments ({stats.experimentsCount})
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {content.experiments.map((exp: Experiment) => (
+                      <ContentCard key={exp.id} title={exp.title} description={exp.description} type="experiment" href={`/experiments/${exp.id}`} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {content.courses.length > 0 && (
+                <div className="space-y-2">
+                  <h3 className="font-normal text-sm text-muted-foreground flex items-center gap-2">
+                    <BookOpen className="w-4 h-4" strokeWidth={1.5} /> Courses ({stats.coursesCount})
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {content.courses.map((course: Course) => (
+                      <ContentCard key={course.id} title={course.title} description={course.description} type="course" href={`/experiments/course/${course.id}`} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {content.communities.length > 0 && (
+                <div className="space-y-2">
+                  <h3 className="font-normal text-sm text-muted-foreground flex items-center gap-2">
+                    <Users className="w-4 h-4" strokeWidth={1.5} /> Communities ({stats.communitiesCount})
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {content.communities.map((community: Community) => (
+                      <ContentCard key={community.id} title={community.name} description={community.description} type="community" href={`/community/${community.id}`} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {content.experiments.length === 0 && content.courses.length === 0 && content.communities.length === 0 && (
+                <Card className="p-8 text-center border-dashed border-none shadow-sm">
+                  <p className="text-muted-foreground text-sm">{isOwnProfile ? "You haven't published any content yet." : "This user hasn't published any content yet."}</p>
+                </Card>
+              )}
             </div>
           )}
         </div>
