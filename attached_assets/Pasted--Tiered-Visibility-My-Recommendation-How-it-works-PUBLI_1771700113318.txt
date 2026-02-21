@@ -1,0 +1,51 @@
+## **Tiered Visibility (My Recommendation) ⭐**
+
+**How it works:**
+
+`PUBLIC (Regular Nostr relays):
+├── Experiment catalog (titles, descriptions, previews)
+├── Completion celebration posts (user chooses)
+├── Public testimonials/reviews
+└── "I'm starting [Experiment]!" posts (optional)
+
+PRIVATE (Railway relay only):
+├── Detailed lesson content (the actual curriculum)
+├── User journals and reflections
+├── Progress data (streaks, scores)
+├── Tribe discussions about experiments
+└── Comments on specific lessons`
+
+**The magic:** When someone shares a completion post publicly, it includes:
+
+- The experiment name and a teaser description
+- Their personal reflection (they write it, they control it)
+- A beautiful card preview
+- A link to see more / start the experiment
+
+**Example public post:**
+
+> *🎉 Just completed "Raise Your Vibe" in the 11x LOVE LaB!
+Key insight: I realized my morning routine was draining my energy instead of building it. Small shift, huge difference.
+[Beautiful card with experiment image]
+Start your journey: 11xlove.shakespeare.wtf/experiments/raise-your-vibe*
+> 
+
+## **Why this is Best**
+
+1. **Privacy where it matters** - No one sees your journal entries, your struggles, your daily check-ins unless you choose to share
+2. **Discoverability** - People can browse experiments, see what's possible, get curious
+3. **Authentic social proof** - Completion posts aren't just links, they include the person's actual insight (which they write and control)
+4. **Nostr-native** - The completion post IS a real Nostr post (kind 1) that lives on their feed, gets zapped, gets replies. It's not a walled-garden ad.
+5. **Value for Value alignment** - The curriculum itself (the valuable content) stays behind the login. The celebration is free marketing.
+
+1. when I click on image on post it showd expand like primal nostr:nevent1qvzqqqqqqypzqt6jkx07zsy0d8hqayy7mr72cyuvtumscpw7yncdsdc2mfuh2gerqqsqavm7564tfwucg86gaxzu2jan25zzuprvnelkzylqhwz7gmln94shfggdq
+2. 11 Categories should be 11 Dimensions per the 11x LOVE Code - also the colors should be on search on main experiment page drop downs on the experiment buildrer “Love code” area should be renamed 11 Dimensions”  - it is not optional - Then category on the buildre page is deleted  
+3. the “guide” is always the user so use their nostr profile id/name get rid of the word creator
+4. thumbnail image is 16:9 - please note that on the upload area
+5. add 2 areas that say who this experiment could benefit. and why someone would want to do this experiment and what outcomes they could hope to achieve
+6. the “guide” should have the ability for user to make “modules” and “steps” modules are larger containers for smaller steps/lessons- if you see the 11x LOVE Code curriculum - we have 6 modules and 18 steps - 
+7. we need to have a feature where the guides can upload all of their content and downloads and have it all be manual AND where the AI Magic Mentor can help make an experiment based on user goals. 
+8. with the builder for videos - they need to be embed links from youtube or other existing video hosting - NOT blossom or native nostr - its too resource intensive. static images are fine to upload and treat the way we do other images. 
+9. add quiz feature in the builder after each ‘step” then use completes and there is anomation to celebrate completion and loading next step. 
+10. progress tracking in each experiment and that links to progress cards and the Big Dreams tracker - this needs to get well thought out how to track and visualize. 
+11. also remember that any comments on each experiment are private to our private relay but can have zaps so other uses can zap someones progress on steps and completing the whole experiment - when modules and the whole experiment is complete - can we make an auto share notes for users to post publicly on nostr?
