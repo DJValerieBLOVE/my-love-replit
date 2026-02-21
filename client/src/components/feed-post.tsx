@@ -692,7 +692,7 @@ export function FeedPost({ post }: FeedPostProps) {
                         onClose={() => setShowQuoteGifPicker(false)}
                       />
                     )}
-                    <Card className="p-3 bg-muted/50 overflow-hidden">
+                    <Card className="p-3 bg-muted overflow-hidden">
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Avatar className="w-6 h-6 shrink-0">
                           <AvatarImage src={post.author.avatar} />

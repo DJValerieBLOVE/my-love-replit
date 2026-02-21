@@ -1107,6 +1107,7 @@ export default function People() {
   const [discoverSub, setDiscoverSub] = useState<DiscoverSubOption>("tribes");
   const [buddySub, setBuddySub] = useState<BuddySubOption>("find");
   const [selectedTribeId, setSelectedTribeId] = useState<string>("all");
+  const [feedRefreshKey, setFeedRefreshKey] = useState(0);
 
   const searchParams = new URLSearchParams(window.location.search);
   const [autoCompose, setAutoCompose] = useState(searchParams.get("compose") === "true");
@@ -1221,6 +1222,7 @@ export default function People() {
 
             {activeTab === "feed" && (
               <button
+                onClick={() => setFeedRefreshKey(k => k + 1)}
                 className="ml-auto flex items-center justify-center w-8 h-8 rounded-full text-muted-foreground hover:text-foreground hover:bg-[#F0E6FF] transition-colors shrink-0"
                 data-testid="button-refresh-feed"
                 title="Refresh feed"
@@ -1233,7 +1235,7 @@ export default function People() {
 
         <div className="flex gap-4 mt-4 max-w-[940px] mx-auto">
           <div className="flex-1 min-w-0">
-            {activeTab === "feed" && <FeedTabContent subOption={feedSub} autoCompose={autoCompose} />}
+            {activeTab === "feed" && <FeedTabContent key={feedRefreshKey} subOption={feedSub} autoCompose={autoCompose} />}
             {activeTab === "tribes" && <TribesTabContent selectedTribeId={selectedTribeId} />}
             {activeTab === "buddies" && <BuddiesTabContent />}
             {activeTab === "victories" && <VictoriesTabContent />}

@@ -437,7 +437,11 @@ export function PostComposer({ onPostPublished }: { onPostPublished?: () => void
       let postContent = content.trim();
       mediaItems.forEach(item => {
         if (item.url) {
-          postContent += (postContent ? "\n" : "") + item.url;
+          let mediaUrl = item.url;
+          if (mediaUrl.startsWith('/uploads/')) {
+            mediaUrl = window.location.origin + mediaUrl;
+          }
+          postContent += (postContent ? "\n" : "") + mediaUrl;
         }
       });
       event.content = postContent;
@@ -447,6 +451,7 @@ export function PostComposer({ onPostPublished }: { onPostPublished?: () => void
         event.pubkey = profile.pubkey;
       }
 
+      console.log("[PostComposer] Publishing event:", { content: event.content, kind: event.kind, pubkey: event.pubkey });
       await publishSmart(event, true);
 
       toast.success("Posted to Nostr!");
@@ -455,7 +460,7 @@ export function PostComposer({ onPostPublished }: { onPostPublished?: () => void
       setShowGifPicker(false);
       onPostPublished?.();
     } catch (err: any) {
-      console.error("[PostComposer] Publish error:", err);
+      console.error("[PostComposer] Publish error:", err, { content: content.trim(), mediaCount: mediaItems.length });
       toast.error("Failed to post", { description: err.message || "Please try again" });
     } finally {
       setIsPosting(false);
@@ -626,7 +631,11 @@ export function CompactPostBar({ onPostPublished, autoOpen }: { onPostPublished?
       let postContent = content.trim();
       mediaItems.forEach(item => {
         if (item.url) {
-          postContent += (postContent ? "\n" : "") + item.url;
+          let mediaUrl = item.url;
+          if (mediaUrl.startsWith('/uploads/')) {
+            mediaUrl = window.location.origin + mediaUrl;
+          }
+          postContent += (postContent ? "\n" : "") + mediaUrl;
         }
       });
       event.content = postContent;
@@ -634,6 +643,7 @@ export function CompactPostBar({ onPostPublished, autoOpen }: { onPostPublished?
       if (profile?.pubkey) {
         event.pubkey = profile.pubkey;
       }
+      console.log("[CompactPostBar] Publishing event:", { content: event.content, kind: event.kind, pubkey: event.pubkey });
       await publishSmart(event, true);
       toast.success("Posted to Nostr!");
       setContent("");
@@ -642,7 +652,7 @@ export function CompactPostBar({ onPostPublished, autoOpen }: { onPostPublished?
       setModalOpen(false);
       onPostPublished?.();
     } catch (err: any) {
-      console.error("[CompactPostBar] Publish error:", err);
+      console.error("[CompactPostBar] Publish error:", err, { content: content.trim(), mediaCount: mediaItems.length });
       toast.error("Failed to post", { description: err.message || "Please try again" });
     } finally {
       setIsPosting(false);
@@ -718,6 +728,19 @@ export function CompactPostBar({ onPostPublished, autoOpen }: { onPostPublished?
                       onSelect={handleGifSelect}
                       onClose={() => setShowGifPicker(false)}
                     />
+                  </div>
+                )}
+                {(content.trim() || mediaItems.length > 0) && (
+                  <div className="mt-4 border-t pt-3">
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">Note Preview</p>
+                    <div className="text-sm whitespace-pre-wrap break-words">{content}</div>
+                    {mediaItems.length > 0 && (
+                      <div className="mt-2">
+                        {mediaItems.map((item, i) => (
+                          <img key={i} src={item.url} alt="" className="max-h-[200px] rounded-sm mt-1" />
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -1679,7 +1702,7 @@ export function PostCard({ post, primalProfiles }: { post: FeedPost; primalProfi
                       onClose={() => setShowQuoteGifPicker(false)}
                     />
                   )}
-                  <Card className="p-3 bg-[#F4F4F5] overflow-hidden">
+                  <Card className="p-3 bg-muted overflow-hidden">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Avatar className="w-6 h-6 shrink-0">
                         <AvatarImage src={post.author.avatar} />
