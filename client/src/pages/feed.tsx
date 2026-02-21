@@ -839,12 +839,12 @@ function LinkPreviewCard({ url }: { url: string }) {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="mt-2 block rounded-lg border border-border overflow-hidden hover:border-foreground/20 transition-colors group bg-muted"
+      className="mt-2 block rounded-sm border border-border overflow-hidden hover:border-foreground/20 transition-colors group bg-muted"
       data-testid="link-preview-card"
     >
-      <div className="flex">
+      <div className="flex items-stretch">
         {preview?.image && (
-          <div className="w-[120px] min-w-[120px] h-[90px] overflow-hidden shrink-0">
+          <div className="w-[120px] min-w-[120px] overflow-hidden shrink-0">
             <img
               src={preview.image}
               alt={preview.title || ""}
