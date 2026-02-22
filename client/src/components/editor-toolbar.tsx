@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import {
   Bold,
   Italic,
@@ -126,6 +126,10 @@ interface EditorToolbarProps {
 function LinkDialog({ open, onClose, onSubmit, initialUrl }: { open: boolean; onClose: () => void; onSubmit: (url: string) => void; initialUrl: string }) {
   const [url, setUrl] = useState(initialUrl);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (open) setUrl(initialUrl);
+  }, [open, initialUrl]);
 
   if (!open) return null;
 

@@ -39,6 +39,7 @@ function StepEditor({
   onMoveDown,
   isFirst,
   isLast,
+  onSave,
 }: {
   step: ExperimentStep;
   stepIndex: number;
@@ -49,8 +50,9 @@ function StepEditor({
   onMoveDown: () => void;
   isFirst: boolean;
   isLast: boolean;
+  onSave: () => void;
 }) {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(!step.title);
 
   const editor = useRichTextEditor({
     content: step.content || "",
@@ -58,10 +60,15 @@ function StepEditor({
     onUpdate: (html) => onUpdate({ content: html }),
   });
 
+  const hasContent = step.title?.trim();
+
   return (
-    <div className="border rounded-xs p-3 space-y-3 bg-white" data-testid={`step-${moduleIndex}-${stepIndex}`}>
-      <div className="flex items-center gap-2">
-        <div className="flex flex-col gap-0.5">
+    <div className="border rounded-xs bg-white" data-testid={`step-${moduleIndex}-${stepIndex}`}>
+      <div
+        className="flex items-center gap-2 p-3 cursor-pointer hover:bg-[#FAFAFA] transition-colors"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        <div className="flex flex-col gap-0.5" onClick={(e) => e.stopPropagation()}>
           <Button variant="ghost" size="icon" className="h-5 w-5" onClick={onMoveUp} disabled={isFirst} data-testid={`button-move-step-up-${moduleIndex}-${stepIndex}`}>
             <ChevronUp className="w-4 h-4" />
           </Button>
@@ -70,27 +77,27 @@ function StepEditor({
           </Button>
         </div>
         <GripVertical className="w-4 h-4 text-muted-foreground" />
-        <span className="text-sm text-muted-foreground">Step {stepIndex + 1}</span>
-        <button
-          type="button"
-          className="ml-auto mr-2 text-muted-foreground hover:text-foreground"
-          onClick={() => setIsExpanded(!isExpanded)}
-          data-testid={`button-toggle-step-${moduleIndex}-${stepIndex}`}
-        >
-          <ChevronRight className={`w-4 h-4 transition-transform ${isExpanded ? "rotate-90" : ""}`} />
-        </button>
+        <ChevronRight className={`w-4 h-4 text-muted-foreground transition-transform ${isExpanded ? "rotate-90" : ""}`} />
+        <span className="text-sm font-medium text-foreground flex-1">
+          {step.title || <span className="text-muted-foreground italic">Step {stepIndex + 1} (untitled)</span>}
+        </span>
+        {hasContent && !isExpanded && (
+          <span className="text-[10px] text-muted-foreground bg-[#F5F5F5] px-2 py-0.5 rounded">
+            {step.quizQuestions?.length || 0} quiz · {step.resources?.length || 0} files
+          </span>
+        )}
         <Button
           variant="ghost" size="icon"
-          className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-          onClick={onRemove}
+          className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+          onClick={(e) => { e.stopPropagation(); onRemove(); }}
           data-testid={`button-remove-step-${moduleIndex}-${stepIndex}`}
         >
-          <Trash2 className="w-4 h-4" />
+          <Trash2 className="w-3.5 h-3.5" />
         </Button>
       </div>
 
       {isExpanded && (
-        <div className="space-y-3 pl-10">
+        <div className="space-y-3 p-3 pt-0 pl-12 border-t border-gray-100">
           <Input
             value={step.title}
             onChange={(e) => onUpdate({ title: e.target.value })}
@@ -282,6 +289,21 @@ function StepEditor({
               }}
               testIdPrefix={`${moduleIndex}-${stepIndex}`}
             />
+          </div>
+
+          <div className="pt-3 border-t border-gray-100">
+            <Button
+              size="sm"
+              className="gap-1.5 w-full"
+              onClick={() => {
+                setIsExpanded(false);
+                onSave();
+              }}
+              data-testid={`button-save-step-${moduleIndex}-${stepIndex}`}
+            >
+              <Save className="w-3.5 h-3.5" />
+              Save Step
+            </Button>
           </div>
         </div>
       )}
@@ -954,19 +976,44 @@ export default function ExperimentBuilder() {
                             onMoveDown={() => moveStep(mod.id, stepIndex, "down")}
                             isFirst={stepIndex === 0}
                             isLast={stepIndex === mod.steps.length - 1}
+                            onSave={() => {}}
                           />
                         ))}
 
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="gap-1 w-full border-dashed"
-                          onClick={() => addStep(mod.id)}
-                          data-testid={`button-add-step-${modIndex}`}
-                        >
-                          <Plus className="w-4 h-4" />
-                          Add Step
-                        </Button>
+                        <div className="space-y-2">
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="gap-1 flex-1 border-dashed"
+                              onClick={() => addStep(mod.id)}
+                              data-testid={`button-add-step-${modIndex}`}
+                            >
+                              <Plus className="w-4 h-4" />
+                              Add Step
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="gap-1"
+                              onClick={() => toggleModule(mod.id)}
+                              data-testid={`button-save-module-${modIndex}`}
+                            >
+                              <Save className="w-3.5 h-3.5" />
+                              Save Module
+                            </Button>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="gap-1 w-full text-muted-foreground"
+                            onClick={addModule}
+                            data-testid={`button-add-new-module-${modIndex}`}
+                          >
+                            <Plus className="w-3.5 h-3.5" />
+                            Add New Module
+                          </Button>
+                        </div>
                       </div>
                     )}
                   </div>

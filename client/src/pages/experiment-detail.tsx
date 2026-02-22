@@ -220,7 +220,7 @@ function DiscussionPanel({ profile, experimentTitle }: { profile: any; experimen
         id: String(Date.now()),
         author: {
           name: profile?.name || "You",
-          handle: profile?.npub ? `@${profile.npub.slice(0, 8)}` : "@user",
+          handle: profile?.npub ? `@${profile.npub.slice(0, 8)}...` : "@anon",
           avatar: profile?.picture || ""
         },
         content: newComment,
@@ -233,70 +233,84 @@ function DiscussionPanel({ profile, experimentTitle }: { profile: any; experimen
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div>
-        <h3 className="font-serif font-normal text-lg flex items-center gap-2">
-          <MessageCircle className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-          Lesson Discussion
-        </h3>
-        <p className="text-xs text-muted-foreground mt-0.5">Share insights with the Tribe</p>
+        <h3 className="font-serif font-normal text-lg">Lesson Discussion</h3>
+        <p className="text-sm text-muted-foreground mt-1">Share insights with the Tribe</p>
       </div>
 
-      <Textarea
-        value={newComment}
-        onChange={(e) => setNewComment(e.target.value)}
-        placeholder="Share your thoughts..."
-        rows={2}
-        className="text-sm resize-none"
-        data-testid="textarea-discussion"
-      />
-      <Button
-        className="w-full"
-        onClick={handleAddComment}
-        disabled={!newComment.trim()}
-        data-testid="button-post-comment"
-      >
-        Post Comment
-      </Button>
+      <div className="space-y-3">
+        <div className="flex items-start gap-3">
+          {profile?.picture ? (
+            <img src={profile.picture} alt="" className="w-10 h-10 rounded-full flex-shrink-0 object-cover" />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-[#F5F5F5] flex items-center justify-center flex-shrink-0">
+              <UserIcon className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
+            </div>
+          )}
+          <Textarea
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="Share your thoughts..."
+            rows={3}
+            className="text-sm resize-none flex-1"
+            data-testid="textarea-discussion"
+          />
+        </div>
+        <div className="flex justify-end">
+          <Button
+            size="sm"
+            onClick={handleAddComment}
+            disabled={!newComment.trim()}
+            className="gap-1.5"
+            data-testid="button-post-comment"
+          >
+            <Send className="w-3.5 h-3.5" /> Post
+          </Button>
+        </div>
+      </div>
 
       {comments.length > 0 && (
-        <div className="space-y-3 pt-3 border-t border-gray-100">
+        <div className="space-y-0">
           {comments.map((comment) => (
-            <div key={comment.id} className="border-b border-gray-100 pb-3 last:border-0" data-testid={`discussion-note-${comment.id}`}>
-              <div className="flex items-center gap-2 mb-2">
+            <div key={comment.id} className="py-4 border-t border-gray-100" data-testid={`discussion-note-${comment.id}`}>
+              <div className="flex items-start gap-3">
                 {comment.author.avatar ? (
-                  <img src={comment.author.avatar} alt="" className="w-8 h-8 rounded-full" />
+                  <img src={comment.author.avatar} alt="" className="w-10 h-10 rounded-full flex-shrink-0 object-cover" />
                 ) : (
-                  <div className="w-8 h-8 rounded-full bg-[#F5F5F5] flex items-center justify-center">
-                    <UserIcon className="w-4 h-4 text-muted-foreground" />
+                  <div className="w-10 h-10 rounded-full bg-[#F5F5F5] flex items-center justify-center flex-shrink-0">
+                    <UserIcon className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <span className="text-sm font-medium">{comment.author.name}</span>
-                  <span className="text-xs text-muted-foreground ml-2">{comment.timestamp}</span>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-sm font-medium text-foreground">{comment.author.name}</span>
+                    <span className="text-xs text-muted-foreground">{comment.author.handle}</span>
+                    <span className="text-xs text-muted-foreground ml-auto">{comment.timestamp}</span>
+                  </div>
+                  <p className="text-sm leading-relaxed text-foreground mb-3">{comment.content}</p>
+                  <div className="flex items-center gap-5 text-muted-foreground">
+                    <button className="flex items-center gap-1.5 text-sm hover:text-foreground transition-colors" data-testid={`button-like-${comment.id}`}>
+                      <Heart className="w-4 h-4" strokeWidth={1.5} />
+                      {comment.likes > 0 && <span className="text-xs">{comment.likes}</span>}
+                    </button>
+                    <button className="flex items-center gap-1.5 text-sm hover:text-foreground transition-colors" data-testid={`button-zap-${comment.id}`}>
+                      <Zap className="w-4 h-4" strokeWidth={1.5} />
+                    </button>
+                    <button className="flex items-center gap-1.5 text-sm hover:text-foreground transition-colors" data-testid={`button-reply-${comment.id}`}>
+                      <MessageCircle className="w-4 h-4" strokeWidth={1.5} />
+                    </button>
+                    <button className="ml-auto flex items-center gap-1.5 text-sm hover:text-foreground transition-colors" data-testid={`button-bookmark-${comment.id}`}>
+                      <Bookmark className="w-4 h-4" strokeWidth={1.5} />
+                    </button>
+                  </div>
                 </div>
-              </div>
-              <p className="text-sm leading-relaxed mb-2">{comment.content}</p>
-              <div className="flex items-center gap-4 text-muted-foreground">
-                <button className="flex items-center gap-1 text-xs hover:text-foreground transition-colors">
-                  <Heart className="w-3.5 h-3.5" strokeWidth={1.5} />
-                  {comment.likes > 0 && <span>{comment.likes}</span>}
-                </button>
-                <button className="flex items-center gap-1 text-xs hover:text-foreground transition-colors">
-                  <Zap className="w-3.5 h-3.5" strokeWidth={1.5} />
-                </button>
-                <button className="flex items-center gap-1 text-xs hover:text-foreground transition-colors">
-                  <MessageCircle className="w-3.5 h-3.5" strokeWidth={1.5} />
-                </button>
-                <button className="ml-auto flex items-center gap-1 text-xs hover:text-foreground transition-colors">
-                  <Bookmark className="w-3.5 h-3.5" strokeWidth={1.5} />
-                </button>
               </div>
             </div>
           ))}
         </div>
       )}
-      <p className="text-[10px] text-muted-foreground text-center italic">Comments will load from Nostr relay</p>
+      <p className="text-xs text-muted-foreground text-center italic pt-2">Comments will load from Nostr relay</p>
     </div>
   );
 }
@@ -584,27 +598,27 @@ export default function ExperimentDetail() {
       <style>{richTextEditorStyles}</style>
       <div className="flex h-[calc(100vh-64px)]">
 
-        {/* LEFT COLUMN - Curriculum Sidebar (~20%) */}
-        <div className="w-[240px] flex-shrink-0 border-r bg-white overflow-y-auto hidden lg:block" data-testid="curriculum-sidebar">
-          <div className="p-4 space-y-4">
+        {/* LEFT COLUMN - Curriculum Sidebar (25%) */}
+        <div className="w-[25%] flex-shrink-0 border-r bg-white overflow-y-auto hidden lg:block" data-testid="curriculum-sidebar">
+          <div className="p-5 space-y-5">
             <div>
-              <h2 className="font-serif font-normal text-sm text-foreground leading-tight" data-testid="text-sidebar-title">
+              <h2 className="font-serif font-normal text-base text-foreground leading-tight" data-testid="text-sidebar-title">
                 {experiment.title}
               </h2>
-              <div className="mt-2">
-                <div className="flex items-center justify-between mb-1">
-                  <Progress value={progressPercent} className="h-1.5 flex-1" />
-                  <span className="text-[10px] text-muted-foreground ml-2">{progressPercent}%</span>
+              <div className="mt-3">
+                <div className="flex items-center justify-between mb-1.5">
+                  <Progress value={progressPercent} className="h-2 flex-1" />
+                  <span className="text-xs text-muted-foreground ml-2">{progressPercent}%</span>
                 </div>
-                <p className="text-[10px] text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   {completedSteps.length} of {totalSteps} lessons complete
                 </p>
               </div>
             </div>
 
             <Link href="/vault">
-              <Button variant="outline" className="w-full gap-2 text-xs h-8" data-testid="button-view-journal">
-                <NotebookPen className="w-3.5 h-3.5" strokeWidth={1.5} /> View My Journal
+              <Button variant="outline" className="w-full gap-2 text-sm h-9" data-testid="button-view-journal">
+                <NotebookPen className="w-4 h-4" strokeWidth={1.5} /> View My Journal
               </Button>
             </Link>
 
@@ -618,18 +632,18 @@ export default function ExperimentDetail() {
                   <div key={mod.id || modIdx}>
                     <button
                       onClick={() => toggleModuleCollapse(modIdx)}
-                      className="w-full flex items-center gap-1.5 py-1.5 text-left"
+                      className="w-full flex items-center gap-2 py-2 text-left"
                       data-testid={`module-toggle-${modIdx}`}
                     >
-                      <ChevronRight className={`w-3.5 h-3.5 text-muted-foreground transition-transform flex-shrink-0 ${!isCollapsed ? 'rotate-90' : ''}`} />
-                      <span className={`text-xs uppercase tracking-wider font-normal ${moduleComplete ? 'text-foreground' : 'text-muted-foreground'}`}>
+                      <ChevronRight className={`w-4 h-4 text-muted-foreground transition-transform flex-shrink-0 ${!isCollapsed ? 'rotate-90' : ''}`} />
+                      <span className={`text-sm uppercase tracking-wider font-normal ${moduleComplete ? 'text-foreground' : 'text-muted-foreground'}`}>
                         Module {modIdx + 1}
                       </span>
-                      {moduleComplete && <CheckCircle className="w-3 h-3 text-muted-foreground ml-auto" />}
+                      {moduleComplete && <CheckCircle className="w-3.5 h-3.5 text-muted-foreground ml-auto" />}
                     </button>
 
                     {!isCollapsed && (
-                      <div className="ml-2 space-y-0.5">
+                      <div className="ml-3 space-y-0.5">
                         {mod.steps?.map((step, stepIdx) => {
                           const isActive = modIdx === activeModuleIndex && stepIdx === activeStepIndex;
                           const completed = step.id ? isStepCompleted(step.id) : false;
@@ -638,17 +652,17 @@ export default function ExperimentDetail() {
                               key={step.id || stepIdx}
                               onClick={() => navigateToStep(modIdx, stepIdx)}
                               className={`
-                                w-full text-left flex items-center gap-2 py-1.5 px-2 rounded-xs transition-all text-xs
-                                ${isActive ? 'bg-foreground/5 font-medium text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-[#F5F5F5]'}
+                                w-full text-left flex items-center gap-2.5 py-2 px-2.5 rounded-xs transition-all text-sm
+                                ${isActive ? 'bg-[#F5F5F5] font-medium text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-[#F5F5F5]'}
                               `}
                               data-testid={`step-nav-${modIdx}-${stepIdx}`}
                             >
                               {completed ? (
-                                <CheckCircle className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+                                <CheckCircle className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                               ) : isActive ? (
-                                <PlayCircle className="w-3.5 h-3.5 text-foreground flex-shrink-0" />
+                                <PlayCircle className="w-4 h-4 text-foreground flex-shrink-0" />
                               ) : (
-                                <Circle className="w-3.5 h-3.5 text-muted-foreground/30 flex-shrink-0" />
+                                <Circle className="w-4 h-4 text-muted-foreground/30 flex-shrink-0" />
                               )}
                               <span className="truncate">{step.title || `Day ${stepIdx + 1}`}</span>
                             </button>
@@ -663,22 +677,22 @@ export default function ExperimentDetail() {
           </div>
         </div>
 
-        {/* MIDDLE COLUMN - Content (~55%) */}
-        <div className="flex-1 overflow-y-auto" data-testid="content-area">
-          <div className="max-w-3xl mx-auto p-4 lg:p-6">
+        {/* MIDDLE COLUMN - Content (50%) */}
+        <div className="w-[50%] flex-shrink-0 overflow-y-auto" data-testid="content-area">
+          <div className="max-w-none mx-auto p-6 lg:p-8">
             {/* Breadcrumb */}
-            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
               <span>{activeModule?.title || "Module"}</span>
-              <ChevronRight className="w-3 h-3" />
+              <ChevronRight className="w-3.5 h-3.5" />
               <span>{activeStep?.title || `Step ${activeStepIndex + 1}`}</span>
             </div>
 
-            <h1 className="text-2xl md:text-3xl font-serif font-normal text-foreground mb-3" data-testid="text-active-step-title">
+            <h1 className="text-3xl md:text-4xl font-serif font-normal text-foreground mb-4" data-testid="text-active-step-title">
               {activeStep?.title || `Step ${activeStepIndex + 1}`}
             </h1>
 
             {dimensionData && (
-              <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-md bg-foreground text-background mb-4" data-testid="badge-dimension">
+              <span className="inline-flex items-center gap-1.5 text-sm px-3 py-1 rounded-md bg-foreground text-background mb-5" data-testid="badge-dimension">
                 {dimensionData.name}
               </span>
             )}
@@ -830,9 +844,9 @@ export default function ExperimentDetail() {
           </div>
         </div>
 
-        {/* RIGHT COLUMN - Discussion (~25%) */}
-        <div className="w-[280px] flex-shrink-0 border-l bg-white overflow-y-auto hidden lg:block" data-testid="right-sidebar">
-          <div className="p-4">
+        {/* RIGHT COLUMN - Discussion (25%) */}
+        <div className="w-[25%] flex-shrink-0 border-l bg-white overflow-y-auto hidden lg:block" data-testid="right-sidebar">
+          <div className="p-5">
             <DiscussionPanel
               profile={profile}
               experimentTitle={experiment.title}
