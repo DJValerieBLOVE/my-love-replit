@@ -179,6 +179,13 @@ export interface QuizQuestion {
   correctIndex: number;
 }
 
+export interface StepResource {
+  id: string;
+  name: string;
+  url: string;
+  size?: string;
+}
+
 export interface ExperimentStep {
   id: string;
   order: number;
@@ -186,6 +193,7 @@ export interface ExperimentStep {
   content: string;
   videoUrl?: string;
   quizQuestions?: QuizQuestion[];
+  resources?: StepResource[];
 }
 
 export interface ExperimentModule {
