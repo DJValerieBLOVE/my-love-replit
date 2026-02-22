@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import {
   Bold,
   Italic,
@@ -30,7 +30,7 @@ export function ToolbarButton({ icon: Icon, active, onClick, tooltip }: ToolbarB
       title={tooltip}
       className={`p-1.5 rounded transition-colors ${
         active
-          ? "bg-[#F0E6FF] text-[#6600ff]"
+          ? "bg-foreground text-background"
           : "text-muted-foreground hover:bg-[#F5F5F5] hover:text-foreground"
       }`}
       data-testid={`toolbar-${tooltip.toLowerCase().replace(/\s+/g, "-")}`}
@@ -123,11 +123,29 @@ interface EditorToolbarProps {
 }
 
 export function EditorToolbar({ editor, className }: EditorToolbarProps) {
-  const addImage = useCallback(() => {
-    const url = window.prompt("Enter image URL:");
-    if (url && editor) {
-      editor.chain().focus().setImage({ src: url }).run();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const addImage = useCallback(async () => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleImageUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !editor) return;
+    if (!file.type.startsWith("image/")) return;
+    if (file.size > 5 * 1024 * 1024) return;
+
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      if (!res.ok) throw new Error("Upload failed");
+      const data = await res.json();
+      editor.chain().focus().setImage({ src: data.url }).run();
+    } catch {
+      console.error("Image upload failed");
     }
+    if (fileInputRef.current) fileInputRef.current.value = "";
   }, [editor]);
 
   const addLink = useCallback(() => {
@@ -153,6 +171,13 @@ export function EditorToolbar({ editor, className }: EditorToolbarProps) {
       id="editor_toolbar"
       data-testid="editor-toolbar"
     >
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/gif,image/webp"
+        className="hidden"
+        onChange={handleImageUpload}
+      />
       <ToolbarSelect editor={editor} />
       <div className="w-px h-6 bg-gray-200 mx-1" />
 

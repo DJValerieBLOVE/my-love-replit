@@ -89,7 +89,7 @@ interface EditorPreviewProps {
 export function EditorPreview({ html, className }: EditorPreviewProps) {
   return (
     <div
-      className={`prose prose-sm sm:prose lg:prose-lg max-w-none font-serif ${className || ""}`}
+      className={`prose prose-sm sm:prose lg:prose-lg max-w-none font-serif editor-preview ${className || ""}`}
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );
@@ -206,13 +206,28 @@ export const richTextEditorStyles = `
     border-radius: 8px;
     margin: 1em 0;
   }
-  .rich-text-editor-content .tiptap ul,
+  .rich-text-editor-content .tiptap ul {
+    padding-left: 1.5em;
+    margin: 0.5em 0;
+    list-style-type: disc;
+  }
   .rich-text-editor-content .tiptap ol {
     padding-left: 1.5em;
     margin: 0.5em 0;
+    list-style-type: decimal;
+  }
+  .rich-text-editor-content .tiptap ul ul {
+    list-style-type: circle;
+  }
+  .rich-text-editor-content .tiptap ul ul ul {
+    list-style-type: square;
   }
   .rich-text-editor-content .tiptap li {
     margin-bottom: 0.25em;
+    display: list-item;
+  }
+  .rich-text-editor-content .tiptap li p {
+    margin-bottom: 0;
   }
   .rich-text-editor-content .tiptap hr {
     border: none;
@@ -237,5 +252,20 @@ export const richTextEditorStyles = `
   .rich-text-editor-content .tiptap table th {
     background: #f5f5f5;
     font-weight: 400;
+  }
+  .editor-preview ul {
+    padding-left: 1.5em;
+    list-style-type: disc;
+  }
+  .editor-preview ol {
+    padding-left: 1.5em;
+    list-style-type: decimal;
+  }
+  .editor-preview li {
+    display: list-item;
+    margin-bottom: 0.25em;
+  }
+  .editor-preview li p {
+    margin-bottom: 0;
   }
 `;

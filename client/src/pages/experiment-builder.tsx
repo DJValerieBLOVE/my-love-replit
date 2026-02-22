@@ -126,8 +126,11 @@ function StepEditor({
 
           <div className="space-y-2">
             <Label className="text-xs text-muted-foreground flex items-center gap-1">
-              <HelpCircle className="w-3 h-3" /> Quiz Questions <span className="text-muted-foreground/60">(optional)</span>
+              <HelpCircle className="w-3 h-3" /> Quiz Questions <span className="text-destructive">*</span>
             </Label>
+            {(!step.quizQuestions || step.quizQuestions.length === 0) && (
+              <p className="text-xs text-destructive">At least 1 quiz question is required per step</p>
+            )}
             {(step.quizQuestions || []).map((q, qIdx) => (
               <div key={qIdx} className="border rounded-xs p-3 space-y-2 bg-[#F5F5F5]" data-testid={`quiz-question-${moduleIndex}-${stepIndex}-${qIdx}`}>
                 <div className="flex items-center justify-between">
@@ -312,9 +315,9 @@ export default function ExperimentBuilder() {
     benefitsFor: benefitsFor || undefined, outcomes: outcomes || undefined,
     tags: selectedTags, modules, accessType,
     communityId: accessType === "community" ? communityId : undefined,
-    price: accessType === "paid" ? price : 0,
+    price: 0,
     isPublished,
-  }), [title, description, image, dimension, benefitsFor, outcomes, selectedTags, modules, accessType, communityId, price, isPublished]);
+  }), [title, description, image, dimension, benefitsFor, outcomes, selectedTags, modules, accessType, communityId, isPublished]);
 
   useEffect(() => {
     if (hasLoadedDraft && isEditMode) {
@@ -347,7 +350,7 @@ export default function ExperimentBuilder() {
     return () => {
       if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
     };
-  }, [title, description, image, dimension, benefitsFor, outcomes, selectedTags, modules, accessType, communityId, price, isPublished, isEditMode, hasLoadedDraft, autoSave]);
+  }, [title, description, image, dimension, benefitsFor, outcomes, selectedTags, modules, accessType, communityId, isPublished, isEditMode, hasLoadedDraft, autoSave]);
 
   const handleThumbnailUpload = useCallback(async (file: File) => {
     if (!file.type.startsWith("image/")) return;
@@ -521,6 +524,19 @@ export default function ExperimentBuilder() {
       toast({ title: "No Modules", description: "Please add at least one module to your experiment.", variant: "destructive" });
       return;
     }
+    if (!asDraft && selectedTags.length < 2) {
+      toast({ title: "Missing Tags", description: "Please select at least 2 tags.", variant: "destructive" });
+      return;
+    }
+    if (!asDraft) {
+      const missingQuiz = modules.some((m) =>
+        m.steps.some((s) => !s.quizQuestions || s.quizQuestions.length === 0)
+      );
+      if (missingQuiz) {
+        toast({ title: "Missing Quiz", description: "Every step must have at least 1 quiz question.", variant: "destructive" });
+        return;
+      }
+    }
 
     const data = {
       title,
@@ -533,7 +549,7 @@ export default function ExperimentBuilder() {
       modules,
       accessType,
       communityId: accessType === "community" ? communityId : undefined,
-      price: accessType === "paid" ? price : 0,
+      price: 0,
       isPublished: asDraft ? false : isPublished,
     };
 
@@ -663,7 +679,7 @@ export default function ExperimentBuilder() {
             </div>
 
             <div className="space-y-2">
-              <Label>Tags <span className="text-xs text-muted-foreground ml-1">(select up to 5)</span></Label>
+              <Label>Tags <span className="text-destructive">*</span> <span className="text-xs text-muted-foreground ml-1">(minimum 2, up to 5)</span></Label>
               <div className="flex flex-wrap gap-2">
                 {EXPERIMENT_TAGS.map((tag) => {
                   const isSelected = selectedTags.includes(tag);
@@ -889,15 +905,14 @@ export default function ExperimentBuilder() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="public">Public - Anyone can join</SelectItem>
-                  <SelectItem value="community">Community - Members only</SelectItem>
-                  <SelectItem value="paid">Paid - Requires sats</SelectItem>
+                  <SelectItem value="community">Tribe - Members only</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {accessType === "community" && (
               <div className="space-y-2">
-                <Label htmlFor="communityId">Community</Label>
+                <Label htmlFor="communityId">Tribe</Label>
                 <Select value={communityId} onValueChange={setCommunityId}>
                   <SelectTrigger id="communityId">
                     <SelectValue placeholder="Select community" />
@@ -910,20 +925,6 @@ export default function ExperimentBuilder() {
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
-            )}
-
-            {accessType === "paid" && (
-              <div className="space-y-2">
-                <Label htmlFor="price">Price (sats)</Label>
-                <Input
-                  id="price"
-                  type="number"
-                  min={0}
-                  value={price}
-                  onChange={(e) => setPrice(parseInt(e.target.value) || 0)}
-                  data-testid="input-price"
-                />
               </div>
             )}
 

@@ -354,6 +354,36 @@ export async function getCourseEnrollees(courseId: string) {
   return response.json();
 }
 
+export async function getLabNotes(experimentId: string) {
+  const response = await authFetch(`/api/experiment-notes/${experimentId}`);
+  if (!response.ok) throw new Error("Failed to fetch lab notes");
+  return response.json();
+}
+
+export async function createLabNote(data: { experimentId: string; stepId?: string; title: string; content: string; isPrivate?: boolean }) {
+  const response = await authFetch("/api/experiment-notes", {
+    method: "POST",
+    body: JSON.stringify({ ...data, userId: "self", sharedClubs: [] }),
+  });
+  if (!response.ok) throw new Error("Failed to create lab note");
+  return response.json();
+}
+
+export async function updateLabNote(id: string, data: { title?: string; content?: string; isPrivate?: boolean }) {
+  const response = await authFetch(`/api/experiment-notes/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error("Failed to update lab note");
+  return response.json();
+}
+
+export async function deleteLabNote(id: string) {
+  const response = await authFetch(`/api/experiment-notes/${id}`, { method: "DELETE" });
+  if (!response.ok) throw new Error("Failed to delete lab note");
+  return response.json();
+}
+
 export async function getPublicProfile(userId: string) {
   const response = await fetch(`/api/users/${userId}/profile`);
   if (!response.ok) throw new Error("Failed to fetch profile");

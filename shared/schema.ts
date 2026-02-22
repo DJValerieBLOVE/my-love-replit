@@ -259,11 +259,12 @@ export const insertUserExperimentSchema = createInsertSchema(userExperiments).om
 export type InsertUserExperiment = z.infer<typeof insertUserExperimentSchema>;
 export type UserExperiment = typeof userExperiments.$inferSelect;
 
-// Experiment Notes (user's personal notes)
+// Lab Notes (user's personal notes per experiment step)
 export const experimentNotes = pgTable("experiment_notes", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   experimentId: varchar("experiment_id").notNull().references(() => experiments.id, { onDelete: "cascade" }),
+  stepId: text("step_id"),
   title: text("title").notNull(),
   content: text("content").notNull(),
   isPrivate: boolean("is_private").default(true).notNull(),
