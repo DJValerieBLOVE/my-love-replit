@@ -20,7 +20,8 @@ import { createExperiment, updateExperiment, getExperiment, getAllCommunities } 
 import { MembershipGate } from "@/components/membership-gate";
 import { ELEVEN_DIMENSIONS, EXPERIMENT_TAGS } from "@/lib/mock-data";
 import { useRichTextEditor, RichTextEditorContent, richTextEditorStyles } from "@/components/rich-text-editor";
-import type { ExperimentModule, ExperimentStep } from "@shared/schema";
+import { Download, FileText } from "lucide-react";
+import type { ExperimentModule, ExperimentStep, StepResource } from "@shared/schema";
 
 function isValidVideoUrl(url: string): boolean {
   return /^https?:\/\/(www\.)?(youtube\.com|youtu\.be|vimeo\.com)\/.+/.test(url);
@@ -247,9 +248,92 @@ function StepEditor({
               <HelpCircle className="w-3 h-3" /> Add Quiz Question
             </Button>
           </div>
+
+          <div className="space-y-2">
+            <Label className="text-xs text-muted-foreground flex items-center gap-1">
+              <Download className="w-3 h-3" /> Downloadable Resources <span className="text-muted-foreground/60">(optional)</span>
+            </Label>
+            <p className="text-[10px] text-muted-foreground">Upload PDFs, worksheets, or documents for students to download</p>
+            {(step.resources || []).map((resource, rIdx) => (
+              <div key={resource.id} className="flex items-center gap-2 bg-[#F5F5F5] rounded-xs p-2" data-testid={`resource-${moduleIndex}-${stepIndex}-${rIdx}`}>
+                <FileText className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm truncate">{resource.name}</p>
+                  {resource.size && <p className="text-[10px] text-muted-foreground">{resource.size}</p>}
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 text-muted-foreground hover:text-destructive"
+                  onClick={() => {
+                    const updated = [...(step.resources || [])];
+                    updated.splice(rIdx, 1);
+                    onUpdate({ resources: updated });
+                  }}
+                  data-testid={`button-remove-resource-${moduleIndex}-${stepIndex}-${rIdx}`}
+                >
+                  <X className="w-3 h-3" />
+                </Button>
+              </div>
+            ))}
+            <ResourceUploadButton
+              onUploaded={(resource) => {
+                onUpdate({ resources: [...(step.resources || []), resource] });
+              }}
+              testIdPrefix={`${moduleIndex}-${stepIndex}`}
+            />
+          </div>
         </div>
       )}
     </div>
+  );
+}
+
+function ResourceUploadButton({ onUploaded, testIdPrefix }: { onUploaded: (r: StepResource) => void; testIdPrefix: string }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (data.url) {
+        const sizeKB = Math.round(file.size / 1024);
+        const sizeStr = sizeKB >= 1024 ? `${(sizeKB / 1024).toFixed(1)} MB` : `${sizeKB} KB`;
+        onUploaded({
+          id: crypto.randomUUID(),
+          name: file.name,
+          url: data.url,
+          size: sizeStr,
+        });
+      }
+    } catch {
+    } finally {
+      setUploading(false);
+      if (inputRef.current) inputRef.current.value = "";
+    }
+  };
+
+  return (
+    <>
+      <input ref={inputRef} type="file" className="hidden" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip" onChange={handleUpload} />
+      <Button
+        variant="outline"
+        size="sm"
+        className="gap-1.5 text-xs"
+        onClick={() => inputRef.current?.click()}
+        disabled={uploading}
+        data-testid={`button-upload-resource-${testIdPrefix}`}
+      >
+        {uploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
+        {uploading ? "Uploading..." : "Upload File"}
+      </Button>
+    </>
   );
 }
 

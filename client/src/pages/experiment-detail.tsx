@@ -1,6 +1,6 @@
 import {
-  ArrowLeft, CheckCircle, PlayCircle, Clock, BookOpen, Zap,
-  MessageCircle, Send, FlaskConical, Lightbulb, Circle, Check,
+  ArrowLeft, CheckCircle, PlayCircle, Clock, BookOpen, Zap, Download, FileText,
+  MessageCircle, Send, FlaskConical, Lightbulb, Circle, Check, Heart, Bookmark,
   ChevronDown, ChevronUp, ChevronRight, MoveRight, Trophy, Lock, User as UserIcon,
   HelpCircle, PartyPopper, NotebookPen, Save, Trash2
 } from "lucide-react";
@@ -23,10 +23,10 @@ import { useNostr } from "@/contexts/nostr-context";
 import { ShareConfirmationDialog } from "@/components/share-confirmation-dialog";
 import { Share2 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getExperiment, enrollInExperiment, getExperimentEnrollment, completeStep, saveQuizResult, getLabNotes, createLabNote } from "@/lib/api";
+import { getExperiment, enrollInExperiment, getExperimentEnrollment, completeStep, saveQuizResult, createLabNote } from "@/lib/api";
 import { ELEVEN_DIMENSIONS } from "@/lib/mock-data";
 import { EditorPreview, richTextEditorStyles } from "@/components/rich-text-editor";
-import type { Experiment, ExperimentModule, ExperimentStep, UserExperiment, StepQuizResult, QuizQuestion, ExperimentNote } from "@shared/schema";
+import type { Experiment, ExperimentModule, ExperimentStep, UserExperiment, StepQuizResult, QuizQuestion, StepResource } from "@shared/schema";
 
 let _celebrationCtx: AudioContext | null = null;
 function playCelebrationSound() {
@@ -210,90 +210,6 @@ function StepQuiz({
   );
 }
 
-function LabNotesPanel({
-  experimentId,
-  stepId,
-  stepTitle,
-  isEnrolled,
-}: {
-  experimentId: string;
-  stepId?: string;
-  stepTitle: string;
-  isEnrolled: boolean;
-}) {
-  const [noteContent, setNoteContent] = useState("");
-  const queryClient = useQueryClient();
-
-  const { data: allNotes = [] } = useQuery({
-    queryKey: ["labNotes", experimentId],
-    queryFn: () => getLabNotes(experimentId),
-    enabled: isEnrolled,
-  });
-
-  const stepNotes = useMemo(() => {
-    if (!stepId) return allNotes;
-    return (allNotes as ExperimentNote[]).filter((n: any) => n.stepId === stepId);
-  }, [allNotes, stepId]);
-
-  const createNoteMutation = useMutation({
-    mutationFn: () => createLabNote({
-      experimentId,
-      stepId: stepId || undefined,
-      title: stepTitle || "Lab Note",
-      content: noteContent,
-      isPrivate: true,
-    }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["labNotes", experimentId] });
-      setNoteContent("");
-      toast.success("Lab note saved!");
-    },
-  });
-
-  if (!isEnrolled) return null;
-
-  return (
-    <div className="space-y-3">
-      <h3 className="font-serif font-normal text-base flex items-center gap-2 text-muted-foreground">
-        <NotebookPen className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-        Lab Notes
-      </h3>
-      <p className="text-xs text-muted-foreground">Private notes for this step. Saved to your Vault.</p>
-      <Textarea
-        value={noteContent}
-        onChange={(e) => setNoteContent(e.target.value)}
-        placeholder="Write your observations, insights, reflections..."
-        rows={3}
-        className="text-sm resize-none"
-        data-testid="textarea-lab-note"
-      />
-      <Button
-        size="sm"
-        className="w-full gap-1.5"
-        onClick={() => createNoteMutation.mutate()}
-        disabled={!noteContent.trim() || createNoteMutation.isPending}
-        data-testid="button-save-lab-note"
-      >
-        <Save className="w-3.5 h-3.5" />
-        {createNoteMutation.isPending ? "Saving..." : "Save Note"}
-      </Button>
-
-      {stepNotes.length > 0 && (
-        <div className="space-y-2 pt-2 border-t border-gray-100">
-          {(stepNotes as ExperimentNote[]).map((note) => (
-            <div key={note.id} className="bg-[#F5F5F5] rounded-xs p-3" data-testid={`lab-note-${note.id}`}>
-              <p className="text-sm text-foreground whitespace-pre-wrap">{note.content}</p>
-              <p className="text-[10px] text-muted-foreground mt-1.5">
-                {new Date(note.createdAt).toLocaleDateString()}
-              </p>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
 function DiscussionPanel({ profile, experimentTitle }: { profile: any; experimentTitle: string }) {
   const [newComment, setNewComment] = useState("");
   const [comments, setComments] = useState<any[]>([]);
@@ -308,9 +224,8 @@ function DiscussionPanel({ profile, experimentTitle }: { profile: any; experimen
           avatar: profile?.picture || ""
         },
         content: newComment,
-        timestamp: "1m",
+        timestamp: "just now",
         likes: 0,
-        comments: 0,
         zaps: 0
       }, ...comments]);
       setNewComment("");
@@ -318,12 +233,15 @@ function DiscussionPanel({ profile, experimentTitle }: { profile: any; experimen
   };
 
   return (
-    <div className="space-y-3">
-      <h3 className="font-serif font-normal text-base flex items-center gap-2 text-muted-foreground">
-        <MessageCircle className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
-        Lesson Discussion
-      </h3>
-      <p className="text-xs text-muted-foreground">Share insights with the Tribe</p>
+    <div className="space-y-4">
+      <div>
+        <h3 className="font-serif font-normal text-lg flex items-center gap-2">
+          <MessageCircle className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+          Lesson Discussion
+        </h3>
+        <p className="text-xs text-muted-foreground mt-0.5">Share insights with the Tribe</p>
+      </div>
+
       <Textarea
         value={newComment}
         onChange={(e) => setNewComment(e.target.value)}
@@ -334,7 +252,6 @@ function DiscussionPanel({ profile, experimentTitle }: { profile: any; experimen
       />
       <Button
         className="w-full"
-        size="sm"
         onClick={handleAddComment}
         disabled={!newComment.trim()}
         data-testid="button-post-comment"
@@ -343,21 +260,38 @@ function DiscussionPanel({ profile, experimentTitle }: { profile: any; experimen
       </Button>
 
       {comments.length > 0 && (
-        <div className="space-y-3 pt-2 border-t border-gray-100">
+        <div className="space-y-3 pt-3 border-t border-gray-100">
           {comments.map((comment) => (
-            <div key={comment.id} className="space-y-1">
-              <div className="flex items-center gap-2">
+            <div key={comment.id} className="border-b border-gray-100 pb-3 last:border-0" data-testid={`discussion-note-${comment.id}`}>
+              <div className="flex items-center gap-2 mb-2">
                 {comment.author.avatar ? (
-                  <img src={comment.author.avatar} alt="" className="w-6 h-6 rounded-full" />
+                  <img src={comment.author.avatar} alt="" className="w-8 h-8 rounded-full" />
                 ) : (
-                  <div className="w-6 h-6 rounded-full bg-[#F5F5F5] flex items-center justify-center">
-                    <UserIcon className="w-3 h-3 text-muted-foreground" />
+                  <div className="w-8 h-8 rounded-full bg-[#F5F5F5] flex items-center justify-center">
+                    <UserIcon className="w-4 h-4 text-muted-foreground" />
                   </div>
                 )}
-                <span className="text-xs font-medium">{comment.author.name}</span>
-                <span className="text-[10px] text-muted-foreground">{comment.timestamp}</span>
+                <div className="flex-1 min-w-0">
+                  <span className="text-sm font-medium">{comment.author.name}</span>
+                  <span className="text-xs text-muted-foreground ml-2">{comment.timestamp}</span>
+                </div>
               </div>
-              <p className="text-sm text-muted-foreground pl-8">{comment.content}</p>
+              <p className="text-sm leading-relaxed mb-2">{comment.content}</p>
+              <div className="flex items-center gap-4 text-muted-foreground">
+                <button className="flex items-center gap-1 text-xs hover:text-foreground transition-colors">
+                  <Heart className="w-3.5 h-3.5" strokeWidth={1.5} />
+                  {comment.likes > 0 && <span>{comment.likes}</span>}
+                </button>
+                <button className="flex items-center gap-1 text-xs hover:text-foreground transition-colors">
+                  <Zap className="w-3.5 h-3.5" strokeWidth={1.5} />
+                </button>
+                <button className="flex items-center gap-1 text-xs hover:text-foreground transition-colors">
+                  <MessageCircle className="w-3.5 h-3.5" strokeWidth={1.5} />
+                </button>
+                <button className="ml-auto flex items-center gap-1 text-xs hover:text-foreground transition-colors">
+                  <Bookmark className="w-3.5 h-3.5" strokeWidth={1.5} />
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -650,15 +584,9 @@ export default function ExperimentDetail() {
       <style>{richTextEditorStyles}</style>
       <div className="flex h-[calc(100vh-64px)]">
 
-        {/* LEFT COLUMN - Curriculum Sidebar (25%) */}
-        <div className="w-[280px] flex-shrink-0 border-r bg-white overflow-y-auto hidden lg:block" data-testid="curriculum-sidebar">
+        {/* LEFT COLUMN - Curriculum Sidebar (~20%) */}
+        <div className="w-[240px] flex-shrink-0 border-r bg-white overflow-y-auto hidden lg:block" data-testid="curriculum-sidebar">
           <div className="p-4 space-y-4">
-            <Link href="/experiments">
-              <Button variant="ghost" className="gap-2 pl-0 text-muted-foreground hover:text-foreground text-xs h-7" data-testid="button-back">
-                <ArrowLeft className="w-3.5 h-3.5" /> Back
-              </Button>
-            </Link>
-
             <div>
               <h2 className="font-serif font-normal text-sm text-foreground leading-tight" data-testid="text-sidebar-title">
                 {experiment.title}
@@ -673,6 +601,12 @@ export default function ExperimentDetail() {
                 </p>
               </div>
             </div>
+
+            <Link href="/vault">
+              <Button variant="outline" className="w-full gap-2 text-xs h-8" data-testid="button-view-journal">
+                <NotebookPen className="w-3.5 h-3.5" strokeWidth={1.5} /> View My Journal
+              </Button>
+            </Link>
 
             <div className="space-y-1">
               {modules.map((mod, modIdx) => {
@@ -729,28 +663,80 @@ export default function ExperimentDetail() {
           </div>
         </div>
 
-        {/* MIDDLE COLUMN - Content (50%) */}
+        {/* MIDDLE COLUMN - Content (~55%) */}
         <div className="flex-1 overflow-y-auto" data-testid="content-area">
           <div className="max-w-3xl mx-auto p-4 lg:p-6">
             {/* Breadcrumb */}
             <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
               <span>{activeModule?.title || "Module"}</span>
               <ChevronRight className="w-3 h-3" />
-              <span>{activeStep?.title ? `${(activeModule?.steps?.length || 0) > 0 ? '' : ''}` : ''}</span>
+              <span>{activeStep?.title || `Step ${activeStepIndex + 1}`}</span>
             </div>
 
-            <h1 className="text-2xl md:text-3xl font-serif font-normal text-foreground mb-4" data-testid="text-active-step-title">
+            <h1 className="text-2xl md:text-3xl font-serif font-normal text-foreground mb-3" data-testid="text-active-step-title">
               {activeStep?.title || `Step ${activeStepIndex + 1}`}
             </h1>
 
             {dimensionData && (
-              <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-0.5 rounded-md border border-gray-200 bg-white text-muted-foreground mb-4" data-testid="badge-dimension">
-                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: dimensionData.hex }} />
+              <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-md bg-foreground text-background mb-4" data-testid="badge-dimension">
                 {dimensionData.name}
               </span>
             )}
 
-            {activeStep?.videoUrl && <YouTubeEmbed url={activeStep.videoUrl} />}
+            {activeStep?.videoUrl && (
+              <div className="mb-4">
+                <YouTubeEmbed url={activeStep.videoUrl} />
+                <div className="flex justify-end -mt-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs text-muted-foreground gap-1"
+                    onClick={() => {
+                      setShareContent({
+                        title: `Check out "${activeStep?.title}" in "${experiment.title}"`,
+                        preview: activeStep?.content?.substring(0, 200) || "",
+                      });
+                      setShowShareDialog(true);
+                    }}
+                    data-testid="button-share-step"
+                  >
+                    <Share2 className="w-3 h-3" /> Share
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Downloadable Resources */}
+            {activeStep?.resources && activeStep.resources.length > 0 && (
+              <Card className="mb-6 border-none shadow-sm" data-testid="downloadable-resources">
+                <CardContent className="p-4">
+                  <h3 className="flex items-center gap-2 text-sm font-medium mb-3">
+                    <Download className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+                    Downloadable Resources
+                  </h3>
+                  <div className="divide-y divide-gray-100">
+                    {activeStep.resources.map((resource: StepResource, rIdx: number) => (
+                      <a
+                        key={resource.id || rIdx}
+                        href={resource.url}
+                        download={resource.name}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 py-2.5 hover:bg-[#F5F5F5] rounded-xs px-2 -mx-2 transition-colors group"
+                        data-testid={`resource-download-${rIdx}`}
+                      >
+                        <FileText className="w-4 h-4 text-muted-foreground flex-shrink-0" strokeWidth={1.5} />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm">{resource.name}</p>
+                          {resource.size && <p className="text-[10px] text-muted-foreground">{resource.size}</p>}
+                        </div>
+                        <Download className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" strokeWidth={1.5} />
+                      </a>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {activeStep?.content && (
               <div className="mb-6" data-testid="step-content">
@@ -758,6 +744,7 @@ export default function ExperimentDetail() {
               </div>
             )}
 
+            {/* Quiz section - styled like reference */}
             {activeStep?.quizQuestions && activeStep.quizQuestions.length > 0 && activeStep.id && (
               <StepQuiz
                 key={activeStep.id}
@@ -843,22 +830,13 @@ export default function ExperimentDetail() {
           </div>
         </div>
 
-        {/* RIGHT COLUMN - Lab Notes + Discussion (25%) */}
-        <div className="w-[300px] flex-shrink-0 border-l bg-white overflow-y-auto hidden lg:block" data-testid="right-sidebar">
-          <div className="p-4 space-y-6">
-            <LabNotesPanel
-              experimentId={experiment.id}
-              stepId={activeStep?.id}
-              stepTitle={activeStep?.title || ""}
-              isEnrolled={isEnrolled}
+        {/* RIGHT COLUMN - Discussion (~25%) */}
+        <div className="w-[280px] flex-shrink-0 border-l bg-white overflow-y-auto hidden lg:block" data-testid="right-sidebar">
+          <div className="p-4">
+            <DiscussionPanel
+              profile={profile}
+              experimentTitle={experiment.title}
             />
-
-            <div className="border-t pt-4">
-              <DiscussionPanel
-                profile={profile}
-                experimentTitle={experiment.title}
-              />
-            </div>
           </div>
         </div>
       </div>
