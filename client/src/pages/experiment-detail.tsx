@@ -2,7 +2,7 @@ import {
   ArrowLeft, CheckCircle, PlayCircle, Clock, BookOpen, Zap, Download, FileText,
   MessageCircle, Send, FlaskConical, Lightbulb, Circle, Check, Heart, Bookmark,
   ChevronDown, ChevronUp, ChevronRight, MoveRight, Trophy, Lock, User as UserIcon,
-  HelpCircle, PartyPopper, NotebookPen, Save, Trash2
+  HelpCircle, PartyPopper, NotebookPen, Save, Trash2, Sparkles, Star
 } from "lucide-react";
 import { Link, useRoute } from "wouter";
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -29,27 +29,94 @@ import { EditorPreview, richTextEditorStyles } from "@/components/rich-text-edit
 import type { Experiment, ExperimentModule, ExperimentStep, UserExperiment, StepQuizResult, QuizQuestion, StepResource } from "@shared/schema";
 
 let _celebrationCtx: AudioContext | null = null;
+function getAudioCtx() {
+  if (!_celebrationCtx) {
+    _celebrationCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+  }
+  return _celebrationCtx;
+}
+
+const CELEBRATION_MELODIES = [
+  { notes: [523.25, 659.25, 783.99, 1046.50], type: "sine" as OscillatorType, gap: 0.12 },
+  { notes: [440, 554.37, 659.25, 880], type: "triangle" as OscillatorType, gap: 0.1 },
+  { notes: [392, 493.88, 587.33, 783.99, 1046.50], type: "sine" as OscillatorType, gap: 0.09 },
+  { notes: [261.63, 329.63, 392, 523.25, 659.25, 783.99], type: "triangle" as OscillatorType, gap: 0.08 },
+];
+let _melodyIndex = 0;
+
 function playCelebrationSound() {
   try {
-    if (!_celebrationCtx) {
-      _celebrationCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-    }
-    const ctx = _celebrationCtx;
-    const notes = [523.25, 659.25, 783.99, 1046.50];
-    notes.forEach((freq, i) => {
+    const ctx = getAudioCtx();
+    const melody = CELEBRATION_MELODIES[_melodyIndex % CELEBRATION_MELODIES.length];
+    _melodyIndex++;
+    melody.notes.forEach((freq, i) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.frequency.value = freq;
-      osc.type = "sine";
-      gain.gain.setValueAtTime(0.15, ctx.currentTime + i * 0.12);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.12 + 0.4);
-      osc.start(ctx.currentTime + i * 0.12);
-      osc.stop(ctx.currentTime + i * 0.12 + 0.4);
+      osc.type = melody.type;
+      gain.gain.setValueAtTime(0.18, ctx.currentTime + i * melody.gap);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * melody.gap + 0.45);
+      osc.start(ctx.currentTime + i * melody.gap);
+      osc.stop(ctx.currentTime + i * melody.gap + 0.45);
     });
   } catch {}
 }
+
+function playBigCelebrationSound() {
+  try {
+    const ctx = getAudioCtx();
+    const chords = [
+      [261.63, 329.63, 392],
+      [293.66, 369.99, 440],
+      [329.63, 415.30, 523.25],
+      [392, 493.88, 587.33],
+      [523.25, 659.25, 783.99],
+    ];
+    chords.forEach((chord, ci) => {
+      chord.forEach((freq) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = freq;
+        osc.type = "sine";
+        gain.gain.setValueAtTime(0.12, ctx.currentTime + ci * 0.2);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + ci * 0.2 + 0.5);
+        osc.start(ctx.currentTime + ci * 0.2);
+        osc.stop(ctx.currentTime + ci * 0.2 + 0.5);
+      });
+    });
+  } catch {}
+}
+
+function fireCelebration(intensity: 'small' | 'medium' | 'big' = 'medium') {
+  if (intensity === 'small') {
+    confetti({ particleCount: 40, spread: 60, origin: { y: 0.7 } });
+    playCelebrationSound();
+  } else if (intensity === 'medium') {
+    confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
+    playCelebrationSound();
+    setTimeout(() => confetti({ particleCount: 50, spread: 100, origin: { x: 0.2, y: 0.6 } }), 200);
+    setTimeout(() => confetti({ particleCount: 50, spread: 100, origin: { x: 0.8, y: 0.6 } }), 400);
+  } else {
+    playBigCelebrationSound();
+    confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
+    setTimeout(() => confetti({ particleCount: 80, spread: 120, origin: { x: 0.1, y: 0.5 } }), 300);
+    setTimeout(() => confetti({ particleCount: 80, spread: 120, origin: { x: 0.9, y: 0.5 } }), 500);
+    setTimeout(() => confetti({ particleCount: 100, spread: 100, origin: { y: 0.4 } }), 700);
+  }
+}
+
+const CELEBRATION_ICONS = [PartyPopper, Trophy, Star, Heart, FlaskConical];
+const CELEBRATION_MESSAGES = [
+  "You crushed it!",
+  "Knowledge unlocked!",
+  "Brilliant work!",
+  "You're on fire!",
+  "Level up!",
+];
 
 function YouTubeEmbed({ url }: { url: string }) {
   const getEmbedUrl = (rawUrl: string) => {
@@ -211,6 +278,75 @@ function StepQuiz({
   );
 }
 
+function QuizSuccessModal({
+  open,
+  data,
+  celebrationIconIndex,
+  onContinue,
+}: {
+  open: boolean;
+  data: { score: number; total: number; stepsCompleted: number; totalSteps: number } | null;
+  celebrationIconIndex: number;
+  onContinue: () => void;
+}) {
+  useEffect(() => {
+    if (!open) return;
+    const timer = setTimeout(onContinue, 5000);
+    return () => clearTimeout(timer);
+  }, [open, onContinue]);
+
+  const CelebIcon = CELEBRATION_ICONS[celebrationIconIndex % CELEBRATION_ICONS.length];
+
+  return (
+    <Dialog open={open} onOpenChange={(o) => { if (!o) onContinue(); }}>
+      <DialogContent className="sm:max-w-md text-center">
+        <DialogHeader>
+          <div className="mx-auto w-20 h-20 bg-[#F5F5F5] rounded-full flex items-center justify-center mb-3 animate-bounce">
+            <CelebIcon className="w-10 h-10 text-muted-foreground" strokeWidth={1.5} />
+          </div>
+          <DialogTitle className="text-3xl font-serif font-normal text-center">
+            {data && data.score === data.total ? "Perfect!" : "Lesson Complete!"}
+          </DialogTitle>
+          <DialogDescription className="text-center text-base mt-1">
+            {CELEBRATION_MESSAGES[celebrationIconIndex % CELEBRATION_MESSAGES.length]}
+          </DialogDescription>
+        </DialogHeader>
+
+        {data && (
+          <div className="py-4 space-y-4">
+            <div className="text-center">
+              <p className="text-5xl font-serif font-normal text-foreground">
+                {Math.round((data.score / data.total) * 100)}%
+              </p>
+              <p className="text-sm text-muted-foreground mt-1">
+                {data.score} out of {data.total} correct
+              </p>
+            </div>
+
+            <div className="bg-[#F5F5F5] rounded-xs p-3">
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-xs text-muted-foreground">Experiment Progress</span>
+                <span className="text-xs font-medium">{data.stepsCompleted}/{data.totalSteps}</span>
+              </div>
+              <Progress value={(data.stepsCompleted / data.totalSteps) * 100} className="h-2" />
+            </div>
+          </div>
+        )}
+
+        <DialogFooter>
+          <Button
+            className="w-full h-11 gap-2"
+            onClick={onContinue}
+            data-testid="button-quiz-continue"
+          >
+            Continue
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function DiscussionPanel({ profile, experimentTitle }: { profile: any; experimentTitle: string }) {
   const [newComment, setNewComment] = useState("");
   const [comments, setComments] = useState<any[]>([]);
@@ -329,6 +465,9 @@ export default function ExperimentDetail() {
   const [collapsedModules, setCollapsedModules] = useState<Set<number>>(new Set());
   const [showLabNotePrompt, setShowLabNotePrompt] = useState(false);
   const [labNotePromptContent, setLabNotePromptContent] = useState("");
+  const [showQuizSuccessModal, setShowQuizSuccessModal] = useState(false);
+  const [quizSuccessData, setQuizSuccessData] = useState<{ score: number; total: number; stepsCompleted: number; totalSteps: number } | null>(null);
+  const [celebrationIconIndex] = useState(() => Math.floor(Math.random() * CELEBRATION_ICONS.length));
 
   const { data: experiment, isLoading } = useQuery({
     queryKey: ["experiment", params?.id],
@@ -409,9 +548,8 @@ export default function ExperimentDetail() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["labNotes", experiment?.id] });
-      setLabNotePromptContent("");
-      setShowLabNotePrompt(false);
       toast.success("Lab note saved to your Vault!");
+      handleLabNoteDone();
     },
     onError: () => {
       toast.error("Failed to save lab note");
@@ -420,41 +558,57 @@ export default function ExperimentDetail() {
 
   const handleQuizComplete = useCallback((score: number, total: number) => {
     if (!enrollment || !activeStep?.id) return;
-    if (score === total) {
-      toast.success(`Perfect score! ${score}/${total}`);
-    } else {
-      toast(`Quiz complete: ${score}/${total}`);
-    }
+
+    fireCelebration(score === total ? 'medium' : 'small');
+
     completeStepMutation.mutate(
       { stepId: activeStep.id, totalSteps },
       {
         onSuccess: (data) => {
-          confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
-          playCelebrationSound();
-          setTimeout(() => setShowLabNotePrompt(true), 800);
+          const completed = (data.completedSteps as string[]) || [];
+          setQuizSuccessData({
+            score,
+            total,
+            stepsCompleted: completed.length,
+            totalSteps,
+          });
+          setShowQuizSuccessModal(true);
+          fireCelebration('medium');
 
           const moduleStepIds = activeModule?.steps?.map((s) => s.id).filter(Boolean) as string[];
-          const updatedCompleted = (data.completedSteps as string[]) || [];
-          const allModuleStepsDone = moduleStepIds.every((id) => updatedCompleted.includes(id));
+          const allModuleStepsDone = moduleStepIds.every((id) => completed.includes(id));
 
           if (data.progress >= 100) {
             setTimeout(() => {
-              confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
+              fireCelebration('big');
+              setShowQuizSuccessModal(false);
               setShowCompletionModal(true);
-            }, 600);
+            }, 3000);
           } else if (allModuleStepsDone && activeModuleIndex < modules.length - 1) {
-            setTimeout(() => setShowModuleCompleteModal(true), 500);
-          } else {
-            if (activeModule && activeStepIndex < (activeModule.steps?.length || 0) - 1) {
-              setTimeout(() => navigateToStep(activeModuleIndex, activeStepIndex + 1), 1200);
-            } else if (activeModuleIndex < modules.length - 1) {
-              setTimeout(() => navigateToStep(activeModuleIndex + 1, 0), 1200);
-            }
+            setTimeout(() => {
+              setShowQuizSuccessModal(false);
+              setShowModuleCompleteModal(true);
+            }, 3000);
           }
         },
       }
     );
   }, [enrollment, activeStep, activeModule, activeModuleIndex, activeStepIndex, modules, totalSteps, completeStepMutation]);
+
+  const handleQuizSuccessContinue = useCallback(() => {
+    setShowQuizSuccessModal(false);
+    setShowLabNotePrompt(true);
+  }, []);
+
+  const handleLabNoteDone = useCallback(() => {
+    setShowLabNotePrompt(false);
+    setLabNotePromptContent("");
+    if (activeModule && activeStepIndex < (activeModule.steps?.length || 0) - 1) {
+      navigateToStep(activeModuleIndex, activeStepIndex + 1);
+    } else if (activeModuleIndex < modules.length - 1) {
+      navigateToStep(activeModuleIndex + 1, 0);
+    }
+  }, [activeModule, activeModuleIndex, activeStepIndex, modules]);
 
   if (isLoading) {
     return (
@@ -857,6 +1011,14 @@ export default function ExperimentDetail() {
         </div>
       </div>
 
+      {/* Quiz Success Modal */}
+      <QuizSuccessModal
+        open={showQuizSuccessModal}
+        data={quizSuccessData}
+        celebrationIconIndex={celebrationIconIndex}
+        onContinue={handleQuizSuccessContinue}
+      />
+
       {/* Module Complete Modal */}
       <Dialog open={showModuleCompleteModal} onOpenChange={setShowModuleCompleteModal}>
         <DialogContent className="sm:max-w-md text-center">
@@ -988,7 +1150,7 @@ export default function ExperimentDetail() {
           <DialogFooter className="flex-row gap-2">
             <Button
               variant="ghost"
-              onClick={() => { setShowLabNotePrompt(false); setLabNotePromptContent(""); }}
+              onClick={handleLabNoteDone}
               data-testid="button-skip-lab-note"
             >
               Skip
