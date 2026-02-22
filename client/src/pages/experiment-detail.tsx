@@ -2,7 +2,7 @@ import {
   ArrowLeft, CheckCircle, PlayCircle, Clock, BookOpen, Zap, Download, FileText,
   MessageCircle, Send, FlaskConical, Lightbulb, Circle, Check, Heart, Bookmark,
   ChevronDown, ChevronUp, ChevronRight, MoveRight, Trophy, Lock, User as UserIcon,
-  HelpCircle, PartyPopper, NotebookPen, Save, Trash2, Sparkles, Star
+  HelpCircle, PartyPopper, NotebookPen, Save, Trash2, Star
 } from "lucide-react";
 import { Link, useRoute } from "wouter";
 import { useState, useEffect, useMemo, useCallback } from "react";
