@@ -692,7 +692,8 @@ export default function ExperimentDetail() {
             </h1>
 
             {dimensionData && (
-              <span className="inline-flex items-center gap-1.5 text-sm px-3 py-1 rounded-md bg-foreground text-background mb-5" data-testid="badge-dimension">
+              <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-0.5 rounded-md border border-gray-200 bg-white text-muted-foreground mb-5" data-testid="badge-dimension">
+                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: dimensionData.hex }} />
                 {dimensionData.name}
               </span>
             )}
