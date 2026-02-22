@@ -142,22 +142,22 @@ function StepQuiz({
       setScore((s) => s + 1);
       confetti({ particleCount: 40, spread: 60, origin: { y: 0.7 } });
     }
-  };
 
-  const handleNext = () => {
-    if (currentQ < questions.length - 1) {
-      setCurrentQ((c) => c + 1);
-      setSelectedAnswer(null);
-      setAnswered(false);
-    } else {
-      const finalScore = score;
-      setFinished(true);
-      quizResultMutation.mutate({ s: finalScore, t: questions.length });
-      onComplete(finalScore, questions.length);
-      if (finalScore === questions.length) {
-        confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+    setTimeout(() => {
+      if (currentQ < questions.length - 1) {
+        setCurrentQ((c) => c + 1);
+        setSelectedAnswer(null);
+        setAnswered(false);
+      } else {
+        const finalScore = isCorrect ? score + 1 : score;
+        setFinished(true);
+        quizResultMutation.mutate({ s: finalScore, t: questions.length });
+        onComplete(finalScore, questions.length);
+        if (finalScore === questions.length) {
+          confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+        }
       }
-    }
+    }, 1200);
   };
 
   return (
@@ -168,6 +168,7 @@ function StepQuiz({
         </h4>
         <span className="text-xs text-muted-foreground">{currentQ + 1} / {questions.length}</span>
       </div>
+      <Progress value={((currentQ + (answered ? 1 : 0)) / questions.length) * 100} className="h-1.5" />
       <p className="text-base" data-testid="quiz-question-text">{q.question}</p>
       <div className="space-y-2">
         {q.options.map((opt, optIdx) => {
@@ -197,13 +198,13 @@ function StepQuiz({
         })}
       </div>
       {answered && (
-        <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 pt-1">
           <p className={`text-sm ${selectedAnswer === q.correctIndex ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>
             {selectedAnswer === q.correctIndex ? 'Correct!' : `The answer is: ${q.options[q.correctIndex]}`}
           </p>
-          <Button size="sm" onClick={handleNext} data-testid="button-quiz-next">
-            {currentQ < questions.length - 1 ? 'Next' : 'Finish Quiz'}
-          </Button>
+          <span className="text-xs text-muted-foreground ml-auto">
+            {currentQ < questions.length - 1 ? 'Next question loading...' : 'Finishing...'}
+          </span>
         </div>
       )}
     </div>
