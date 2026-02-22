@@ -226,6 +226,13 @@ export const richTextEditorStyles = `
     margin-bottom: 0.25em;
     display: list-item;
   }
+  .rich-text-editor-content .tiptap li::marker {
+    color: #9ca3af;
+  }
+  .rich-text-editor-content .tiptap ::selection {
+    background: #E5E7EB;
+    color: inherit;
+  }
   .rich-text-editor-content .tiptap li p {
     margin-bottom: 0;
   }
